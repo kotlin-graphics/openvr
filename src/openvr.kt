@@ -881,8 +881,8 @@ data class HmdRect2_t(var vTopLeft: HmdVector2_t, var vBottomRight: HmdVector2_t
 class DistortionCoordinates_t
 data class Texture_t(var handle: Pointer, var eType: EGraphicsAPIConvention, var eColorSpace: EColorSpace)
 
-data class TrackedDevicePose_t(var mDeviceToAbsoluteTracking: HmdMatrix34_t, var vVelocity: HmdVector3_t, var vAngularVelocity: HmdVector3_t, var eTrackingResult: ETrackingResult,
-                               var bPoseIsValid: Boolean, var bDeviceIsConnected: Boolean)
+data class TrackedDevicePose_t(var mDeviceToAbsoluteTracking: HmdMatrix34_t, var vVelocity: HmdVector3_t, var vAngularVelocity: HmdVector3_t,
+                               var eTrackingResult: ETrackingResult, var bPoseIsValid: Boolean, var bDeviceIsConnected: Boolean)
 
 data class VRTextureBounds_t(var uMin: Float, var vMin: Float, var uMax: Float, var vMax: Float)
 data class VREvent_Controller_t(var button: Int)
@@ -929,10 +929,10 @@ data class Compositor_FrameTiming(var m_nSize: Int, var m_nFrameIndex: Int, var 
 
 data class Compositor_CumulativeStats(var m_nPid: Int, var m_nNumFramePresents: Int, var m_nNumDroppedFrames: Int,
                                       var m_nNumReprojectedFrames: Int, var m_nNumFramePresentsOnStartup: Int,
-                                      var m_nNumDroppedFramesOnStartup: Int, var m_nNumReprojectedFramesOnStartup: Int, var m_nNumLoading: Int, var m_nNumFramePresentsLoading: Int,
-                                      var m_nNumDroppedFramesLoading: Int, var m_nNumReprojectedFramesLoading: Int, var m_nNumTimedOut: Int,
-                                      var m_nNumFramePresentsTimedOut: Int, var m_nNumDroppedFramesTimedOut: Int,
-                                      var m_nNumReprojectedFramesTimedOut: Int)
+                                      var m_nNumDroppedFramesOnStartup: Int, var m_nNumReprojectedFramesOnStartup: Int, var m_nNumLoading: Int,
+                                      var m_nNumFramePresentsLoading: Int, var m_nNumDroppedFramesLoading: Int,
+                                      var m_nNumReprojectedFramesLoading: Int, var m_nNumTimedOut: Int, var m_nNumFramePresentsTimedOut: Int,
+                                      var m_nNumDroppedFramesTimedOut: Int, var m_nNumReprojectedFramesTimedOut: Int)
 
 data class VROverlayIntersectionParams_t(var vSource: HmdVector3_t, var vDirection: HmdVector3_t, var eOrigin: ETrackingUniverseOrigin)
 
