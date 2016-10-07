@@ -1,9 +1,17 @@
 import java.nio.ByteBuffer
-import java.nio.ByteOrder
 
 /**
  * Created by GBarbieri on 07.10.2016.
  */
+
+class Native {
+
+    init {
+        System.loadLibrary("openvr_api")
+    }
+
+    external fun VR_Init(error: ByteBuffer, appType: Int)
+}
 
 const val k_unTrackingStringSize = 32
 const val k_unMaxDriverDebugResponseSize = 32768
