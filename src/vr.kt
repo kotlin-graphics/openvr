@@ -1,965 +1,1128 @@
+import com.sun.jna.*
 import java.nio.ByteBuffer
+import java.nio.IntBuffer
+import java.util.*
 
 /**
  * Created by GBarbieri on 07.10.2016.
  */
 
-class Native {
 
-    init {
-        System.loadLibrary("openvr_api")
+class OpenVR : Library {
+    companion object {
+        init {
+            Native.register(NativeLibrary.getInstance("openvr_api"))
+        }
+    }
+}
+
+/*struct VkDevice_T;
+struct VkPhysicalDevice_T;
+struct VkInstance_T;
+struct VkQueue_T;*/
+
+/**
+ * right-handed system
+ * +y is up
+ * +x is to the right
+ * -z is going away from you
+ * Distance unit is meters
+ */
+open class HmdMatrix34_t : Structure {
+
+    // C type : float[3][4]
+    var m = FloatArray(3 * 4)
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("m")
+
+    constructor(m: FloatArray) : super() {
+        if (m.size != this.m.size) throw IllegalArgumentException("Wrong array size !")
+        this.m = m
     }
 
-    external fun VR_Init(error: ByteBuffer, appType: Int)
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : HmdMatrix34_t(), Structure.ByReference
+    class ByValue : HmdMatrix34_t(), Structure.ByValue
+}
+
+open class HmdMatrix44_t : Structure {
+
+    // C type : float[4][4]
+    var m = FloatArray(4 * 4)
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("m")
+
+    constructor(m: FloatArray) : super() {
+        if (m.size != this.m.size) throw IllegalArgumentException("Wrong array size !")
+        this.m = m
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : HmdMatrix44_t(), Structure.ByReference
+    class ByValue : HmdMatrix44_t(), Structure.ByValue
+}
+
+open class HmdVector3_t : Structure {
+
+    //C type : float[3]
+    var v = FloatArray(3)
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("i")
+
+    constructor(v: FloatArray) : super() {
+        if (v.size != this.v.size) throw IllegalArgumentException("Wrong array size !")
+        this.v = v
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : HmdVector3_t(), Structure.ByReference
+    class ByValue : HmdVector3_t(), Structure.ByValue
+
+    fun toDbb(bb: ByteBuffer, offset: Int) {
+        // TODO move java.lang.Float.BYTES => glm
+        for (i in 0..2) bb.putFloat(offset + i * java.lang.Float.BYTES, v[i])
+    }
+
+    companion object {
+        val SIZE = 3 * java.lang.Float.BYTES
+    }
+}
+
+open class HmdVector4_t : Structure {
+
+    // C type : float[4]
+    var v = FloatArray(4)
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("i")
+
+    constructor(v: FloatArray) : super() {
+        if (v.size != this.v.size) throw IllegalArgumentException("Wrong array size !")
+        this.v = v
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : HmdVector4_t(), Structure.ByReference
+    class ByValue : HmdVector4_t(), Structure.ByValue
+}
+
+open class HmdVector3d_t : Structure {
+
+    //C type : double[3]
+    var v = DoubleArray(3)
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("i")
+
+    constructor(v: DoubleArray) : super() {
+        if (v.size != this.v.size) throw IllegalArgumentException("Wrong array size !")
+        this.v = v
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : HmdVector3d_t(), Structure.ByReference
+    class ByValue : HmdVector3d_t(), Structure.ByValue
+}
+
+open class HmdVector2_t : Structure {
+
+    // C type : float[2]
+    var v = FloatArray(2)
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("i")
+
+    constructor(v: FloatArray) : super() {
+        if (v.size != this.v.size) throw IllegalArgumentException("Wrong array size !")
+        this.v = v
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : HmdVector2_t(), Structure.ByReference
+    class ByValue : HmdVector2_t(), Structure.ByValue
+}
+
+open class HmdQuaternion_t : Structure {
+
+    var w: Double = 0.0
+    var x: Double = 0.0
+    var y: Double = 0.0
+    var z: Double = 0.0
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("w", "x", "y", "z")
+
+    constructor(w: Double, x: Double, y: Double, z: Double) : super() {
+        this.w = w
+        this.x = x
+        this.y = y
+        this.z = z
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : HmdQuaternion_t(), Structure.ByReference
+    class ByValue : HmdQuaternion_t(), Structure.ByValue
+}
+
+open class HmdColor_t : Structure {
+
+    var r: Float = 0f
+    var g: Float = 0f
+    var b: Float = 0f
+    var a: Float = 0f
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("r", "g", "b", "a")
+
+    constructor(r: Float, g: Float, b: Float, a: Float) : super() {
+        this.r = r
+        this.g = g
+        this.b = b
+        this.a = a
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : HmdColor_t(), Structure.ByReference
+    class ByValue : HmdColor_t(), Structure.ByValue
+}
+
+open class HmdQuad_t : Structure {
+
+    // C type : HmdVector3_t[4]
+    var vCorners = arrayOf(HmdVector3_t(), HmdVector3_t(), HmdVector3_t(), HmdVector3_t())
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("vCorners")
+
+    constructor(vCorners: Array<HmdVector3_t>) : super() {
+        if (vCorners.size != this.vCorners.size) throw IllegalArgumentException("Wrong array size !")
+        this.vCorners = vCorners
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : HmdQuad_t(), Structure.ByReference
+    class ByValue : HmdQuad_t(), Structure.ByValue
+}
+
+open class HmdRect2_t : Structure {
+
+    var vTopLeft = HmdVector2_t()
+    var vBottomRight = HmdVector2_t()
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("vTopLeft", "vBottomRight")
+
+    constructor(vTopLeft: HmdVector2_t, vBottomRight: HmdVector2_t) : super() {
+        this.vTopLeft = vTopLeft
+        this.vBottomRight = vBottomRight
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : HmdRect2_t(), Structure.ByReference
+    class ByValue : HmdRect2_t(), Structure.ByValue
+}
+
+/**
+ * Used to return the post-distortion UVs for each color channel.
+ * UVs range from 0 to 1 with 0,0 in the upper left corner of the source render target. The 0,0 to 1,1 range covers a single eye.
+ */
+open class DistortionCoordinates_t : Structure {
+
+    var rfRed = FloatArray(2)
+    var rfGreen = FloatArray(2)
+    var rfBlue = FloatArray(2)
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("rfRed", "rfGreen", "rfBlue")
+
+    constructor(rfRed: FloatArray, rfGreen: FloatArray, rfBlue: FloatArray) : super() {
+        if (rfRed.size != this.rfRed.size) throw IllegalArgumentException("Wrong rfRed array size !")
+        this.rfRed = rfRed
+        if (rfGreen.size != this.rfGreen.size) throw IllegalArgumentException("Wrong rfGreen array size !")
+        this.rfGreen = rfGreen
+        if (rfBlue.size != this.rfBlue.size) throw IllegalArgumentException("Wrong rfBlue array size !")
+        this.rfBlue = rfBlue
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : DistortionCoordinates_t(), Structure.ByReference
+    class ByValue : DistortionCoordinates_t(), Structure.ByValue
+}
+
+enum class EVREye(val i: Int) {
+    Eye_Left(0),
+    Eye_Right(1)
+}
+
+enum class EGraphicsAPIConvention(val i: Int) {
+    API_DirectX(0), // Normalized Z goes from 0 at the viewer to 1 at the far clip plane
+    API_OpenGL(1)   // Normalized Z goes from 1 at the viewer to -1 at the far clip plane
+}
+
+enum class EColorSpace(val i: Int) {
+    ColorSpace_Auto(0), // Assumes 'gamma' for 8-bit per component formats, otherwise 'linear'.  This mirrors the DXGI formats which have _SRGB variants.
+    ColorSpace_Gamma(1), // Texture data can be displayed directly on the display without any conversion (a.k.a. display native format).
+    ColorSpace_Linear(2)    // Same as gamma but has been converted to a linear representation using DXGI's sRGB conversion algorithm.
+}
+
+open class Texture_t : Structure {
+
+    var handle = 0  // Native d3d texture pointer or GL texture id.
+    var eType = 0
+    var eColorSpace = 0
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("handle", "eType", "eColorSpace")
+
+    constructor(handle: Int, eType: Int, eColorSpace: Int) : super() {
+        set(handle, eType, eColorSpace)
+    }
+
+    operator fun set(handle: Int, eType: Int, eColorSpace: Int) {
+        this.handle = handle
+        this.eType = eType
+        this.eColorSpace = eColorSpace
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : Texture_t(), Structure.ByReference
+    class ByValue : Texture_t(), Structure.ByValue
+}
+
+// Handle to a shared texture (HANDLE on Windows obtained using OpenSharedResource).
+typealias SharedTextureHandle_t = Long
+const val INVALID_SHARED_TEXTURE_HANDLE = 0L
+
+enum class ETrackingResult(val i: Int) {
+    TrackingResult_Uninitialized(1),
+
+    TrackingResult_Calibrating_InProgress(100),
+    TrackingResult_Calibrating_OutOfRange(101),
+
+    TrackingResult_Running_OK(200),
+    TrackingResult_Running_OutOfRange(201)
 }
 
 const val k_unTrackingStringSize = 32
 const val k_unMaxDriverDebugResponseSize = 32768
+
+/** Used to pass device IDs to API calls */
+typealias TrackedDeviceIndex_t = Int
 const val k_unTrackedDeviceIndex_Hmd = 0
 const val k_unMaxTrackedDeviceCount = 16
-const val k_unTrackedDeviceIndexOther = 4294967294
-const val k_unTrackedDeviceIndexInvalid = 4294967295
-const val k_unMaxPropertyStringSize = 32768
-const val k_unControllerStateAxisCount = 5
-const val k_ulOverlayHandleInvalid = 0L
-const val k_unScreenshotHandleInvalid = 0
-const val IVRSystem_Version = "IVRSystem_012"
-const val IVRExtendedDisplay_Version = "IVRExtendedDisplay_001"
-const val IVRTrackedCamera_Version = "IVRTrackedCamera_003"
-const val k_unMaxApplicationKeyLength = 128
-const val IVRApplications_Version = "IVRApplications_006"
-const val IVRChaperone_Version = "IVRChaperone_003"
-const val IVRChaperoneSetup_Version = "IVRChaperoneSetup_005"
-const val IVRCompositor_Version = "IVRCompositor_016"
-const val k_unVROverlayMaxKeyLength = 128
-const val k_unVROverlayMaxNameLength = 128
-const val k_unMaxOverlayCount = 64
-const val IVROverlay_Version = "IVROverlay_013"
-const val k_pch_Controller_Component_GDC2015 = "gdc2015"
-const val k_pch_Controller_Component_Base = "base"
-const val k_pch_Controller_Component_Tip = "tip"
-const val k_pch_Controller_Component_HandGrip = "handgrip"
-const val k_pch_Controller_Component_Status = "status"
-const val IVRRenderModels_Version = "IVRRenderModels_005"
-const val k_unNotificationTextMaxSize = 256
-const val IVRNotifications_Version = "IVRNotifications_002"
-const val k_unMaxSettingsKeyLength = 128
-const val IVRSettings_Version = "IVRSettings_001"
-const val k_pch_SteamVR_Section = "steamvr"
-const val k_pch_SteamVR_RequireHmd_String = "requireHmd"
-const val k_pch_SteamVR_ForcedDriverKey_String = "forcedDriver"
-const val k_pch_SteamVR_ForcedHmdKey_String = "forcedHmd"
-const val k_pch_SteamVR_DisplayDebug_Bool = "displayDebug"
-const val k_pch_SteamVR_DebugProcessPipe_String = "debugProcessPipe"
-const val k_pch_SteamVR_EnableDistortion_Bool = "enableDistortion"
-const val k_pch_SteamVR_DisplayDebugX_Int32 = "displayDebugX"
-const val k_pch_SteamVR_DisplayDebugY_Int32 = "displayDebugY"
-const val k_pch_SteamVR_SendSystemButtonToAllApps_Bool = "sendSystemButtonToAllApps"
-const val k_pch_SteamVR_LogLevel_Int32 = "loglevel"
-const val k_pch_SteamVR_IPD_Float = "ipd"
-const val k_pch_SteamVR_Background_String = "background"
-const val k_pch_SteamVR_BackgroundCameraHeight_Float = "backgroundCameraHeight"
-const val k_pch_SteamVR_BackgroundDomeRadius_Float = "backgroundDomeRadius"
-const val k_pch_SteamVR_Environment_String = "environment"
-const val k_pch_SteamVR_GridColor_String = "gridColor"
-const val k_pch_SteamVR_PlayAreaColor_String = "playAreaColor"
-const val k_pch_SteamVR_ShowStage_Bool = "showStage"
-const val k_pch_SteamVR_ActivateMultipleDrivers_Bool = "activateMultipleDrivers"
-const val k_pch_SteamVR_PowerOffOnExit_Bool = "powerOffOnExit"
-const val k_pch_SteamVR_StandbyAppRunningTimeout_Float = "standbyAppRunningTimeout"
-const val k_pch_SteamVR_StandbyNoAppTimeout_Float = "standbyNoAppTimeout"
-const val k_pch_SteamVR_DirectMode_Bool = "directMode"
-const val k_pch_SteamVR_DirectModeEdidVid_Int32 = "directModeEdidVid"
-const val k_pch_SteamVR_DirectModeEdidPid_Int32 = "directModeEdidPid"
-const val k_pch_SteamVR_UsingSpeakers_Bool = "usingSpeakers"
-const val k_pch_SteamVR_SpeakersForwardYawOffsetDegrees_Float = "speakersForwardYawOffsetDegrees"
-const val k_pch_SteamVR_BaseStationPowerManagement_Bool = "basestationPowerManagement"
-const val k_pch_SteamVR_NeverKillProcesses_Bool = "neverKillProcesses"
-const val k_pch_SteamVR_RenderTargetMultiplier_Float = "renderTargetMultiplier"
-const val k_pch_SteamVR_AllowReprojection_Bool = "allowReprojection"
-const val k_pch_SteamVR_ForceReprojection_Bool = "forceReprojection"
-const val k_pch_SteamVR_ForceFadeOnBadTracking_Bool = "forceFadeOnBadTracking"
-const val k_pch_SteamVR_DefaultMirrorView_Int32 = "defaultMirrorView"
-const val k_pch_SteamVR_ShowMirrorView_Bool = "showMirrorView"
-const val k_pch_SteamVR_StartMonitorFromAppLaunch = "startMonitorFromAppLaunch"
-const val k_pch_SteamVR_AutoLaunchSteamVROnButtonPress = "autoLaunchSteamVROnButtonPress"
-const val k_pch_SteamVR_UseGenericGraphcisDevice_Bool = "useGenericGraphicsDevice"
-const val k_pch_Lighthouse_Section = "driver_lighthouse"
-const val k_pch_Lighthouse_DisableIMU_Bool = "disableimu"
-const val k_pch_Lighthouse_UseDisambiguation_String = "usedisambiguation"
-const val k_pch_Lighthouse_DisambiguationDebug_Int32 = "disambiguationdebug"
-const val k_pch_Lighthouse_PrimaryBasestation_Int32 = "primarybasestation"
-const val k_pch_Lighthouse_LighthouseName_String = "lighthousename"
-const val k_pch_Lighthouse_MaxIncidenceAngleDegrees_Float = "maxincidenceangledegrees"
-const val k_pch_Lighthouse_UseLighthouseDirect_Bool = "uselighthousedirect"
-const val k_pch_Lighthouse_DBHistory_Bool = "dbhistory"
-const val k_pch_Null_Section = "driver_null"
-const val k_pch_Null_EnableNullDriver_Bool = "enable"
-const val k_pch_Null_SerialNumber_String = "serialNumber"
-const val k_pch_Null_ModelNumber_String = "modelNumber"
-const val k_pch_Null_WindowX_Int32 = "windowX"
-const val k_pch_Null_WindowY_Int32 = "windowY"
-const val k_pch_Null_WindowWidth_Int32 = "windowWidth"
-const val k_pch_Null_WindowHeight_Int32 = "windowHeight"
-const val k_pch_Null_RenderWidth_Int32 = "renderWidth"
-const val k_pch_Null_RenderHeight_Int32 = "renderHeight"
-const val k_pch_Null_SecondsFromVsyncToPhotons_Float = "secondsFromVsyncToPhotons"
-const val k_pch_Null_DisplayFrequency_Float = "displayFrequency"
-const val k_pch_UserInterface_Section = "userinterface"
-const val k_pch_UserInterface_StatusAlwaysOnTop_Bool = "StatusAlwaysOnTop"
-const val k_pch_UserInterface_Screenshots_Bool = "screenshots"
-const val k_pch_UserInterface_ScreenshotType_Int = "screenshotType"
-const val k_pch_Notifications_Section = "notifications"
-const val k_pch_Notifications_DoNotDisturb_Bool = "DoNotDisturb"
-const val k_pch_Keyboard_Section = "keyboard"
-const val k_pch_Keyboard_TutorialCompletions = "TutorialCompletions"
-const val k_pch_Keyboard_ScaleX = "ScaleX"
-const val k_pch_Keyboard_ScaleY = "ScaleY"
-const val k_pch_Keyboard_OffsetLeftX = "OffsetLeftX"
-const val k_pch_Keyboard_OffsetRightX = "OffsetRightX"
-const val k_pch_Keyboard_OffsetY = "OffsetY"
-const val k_pch_Keyboard_Smoothing = "Smoothing"
-const val k_pch_Perf_Section = "perfcheck"
-const val k_pch_Perf_HeuristicActive_Bool = "heuristicActive"
-const val k_pch_Perf_NotifyInHMD_Bool = "warnInHMD"
-const val k_pch_Perf_NotifyOnlyOnce_Bool = "warnOnlyOnce"
-const val k_pch_Perf_AllowTimingStore_Bool = "allowTimingStore"
-const val k_pch_Perf_SaveTimingsOnExit_Bool = "saveTimingsOnExit"
-const val k_pch_Perf_TestData_Float = "perfTestData"
-const val k_pch_CollisionBounds_Section = "collisionBounds"
-const val k_pch_CollisionBounds_Style_Int32 = "CollisionBoundsStyle"
-const val k_pch_CollisionBounds_GroundPerimeterOn_Bool = "CollisionBoundsGroundPerimeterOn"
-const val k_pch_CollisionBounds_CenterMarkerOn_Bool = "CollisionBoundsCenterMarkerOn"
-const val k_pch_CollisionBounds_PlaySpaceOn_Bool = "CollisionBoundsPlaySpaceOn"
-const val k_pch_CollisionBounds_FadeDistance_Float = "CollisionBoundsFadeDistance"
-const val k_pch_CollisionBounds_ColorGammaR_Int32 = "CollisionBoundsColorGammaR"
-const val k_pch_CollisionBounds_ColorGammaG_Int32 = "CollisionBoundsColorGammaG"
-const val k_pch_CollisionBounds_ColorGammaB_Int32 = "CollisionBoundsColorGammaB"
-const val k_pch_CollisionBounds_ColorGammaA_Int32 = "CollisionBoundsColorGammaA"
-const val k_pch_Camera_Section = "camera"
-const val k_pch_Camera_EnableCamera_Bool = "enableCamera"
-const val k_pch_Camera_EnableCameraInDashboard_Bool = "enableCameraInDashboard"
-const val k_pch_Camera_EnableCameraForCollisionBounds_Bool = "enableCameraForCollisionBounds"
-const val k_pch_Camera_EnableCameraForRoomView_Bool = "enableCameraForRoomView"
-const val k_pch_Camera_BoundsColorGammaR_Int32 = "cameraBoundsColorGammaR"
-const val k_pch_Camera_BoundsColorGammaG_Int32 = "cameraBoundsColorGammaG"
-const val k_pch_Camera_BoundsColorGammaB_Int32 = "cameraBoundsColorGammaB"
-const val k_pch_Camera_BoundsColorGammaA_Int32 = "cameraBoundsColorGammaA"
-const val k_pch_audio_Section = "audio"
-const val k_pch_audio_OnPlaybackDevice_String = "onPlaybackDevice"
-const val k_pch_audio_OnRecordDevice_String = "onRecordDevice"
-const val k_pch_audio_OnPlaybackMirrorDevice_String = "onPlaybackMirrorDevice"
-const val k_pch_audio_OffPlaybackDevice_String = "offPlaybackDevice"
-const val k_pch_audio_OffRecordDevice_String = "offRecordDevice"
-const val k_pch_audio_VIVEHDMIGain = "viveHDMIGain"
-const val k_pch_modelskin_Section = "modelskins"
-const val IVRScreenshots_Version = "IVRScreenshots_001"
-const val IVRResources_Version = "IVRResources_001"
+const val k_unTrackedDeviceIndexOther = 0xFFFFFFFE.toInt();
+const val k_unTrackedDeviceIndexInvalid = 0xFFFFFFFF.toInt();
 
-// OpenVR Enums
-
-enum class EVREye(val v: Int) {
-    EVREye_Eye_Left(0),
-    EVREye_Eye_Right(1)
-}
-
-enum class EGraphicsAPIConvention(val v: Int) {
-    EGraphicsAPIConvention_API_DirectX(0),
-    EGraphicsAPIConvention_API_OpenGL(1)
-}
-
-enum class EColorSpace(val v: Int) {
-    EColorSpace_ColorSpace_Auto(0),
-    EColorSpace_ColorSpace_Gamma(1),
-    EColorSpace_ColorSpace_Linear(2)
-}
-
-enum class ETrackingResult(val i: Int) {
-    ETrackingResult_TrackingResult_Uninitialized(1),
-    ETrackingResult_TrackingResult_Calibrating_InProgress(100),
-    ETrackingResult_TrackingResult_Calibrating_OutOfRange(101),
-    ETrackingResult_TrackingResult_Running_OK(200),
-    ETrackingResult_TrackingResult_Running_OutOfRange(201)
-}
-
+/** Describes what kind of object is being tracked at a given ID */
 enum class ETrackedDeviceClass(val i: Int) {
-    ETrackedDeviceClass_TrackedDeviceClass_Invalid(0),
-    ETrackedDeviceClass_TrackedDeviceClass_HMD(1),
-    ETrackedDeviceClass_TrackedDeviceClass_Controller(2),
-    ETrackedDeviceClass_TrackedDeviceClass_TrackingReference(4),
-    ETrackedDeviceClass_TrackedDeviceClass_Other(1000)
+    TrackedDeviceClass_Invalid(0), // the ID was not valid.
+    TrackedDeviceClass_HMD(1), // Head-Mounted Displays
+    TrackedDeviceClass_Controller(2), // Tracked controllers
+    TrackedDeviceClass_TrackingReference(4), // Camera and base stations that serve as tracking reference points
+
+    TrackedDeviceClass_Count(5), // This isn't a class that will ever be returned. It is used for allocating arrays and such
+
+    TrackedDeviceClass_Other(1000)
 }
 
+/** Describes what specific role associated with a tracked device */
 enum class ETrackedControllerRole(val i: Int) {
-    ETrackedControllerRole_TrackedControllerRole_Invalid(0),
-    ETrackedControllerRole_TrackedControllerRole_LeftHand(1),
-    ETrackedControllerRole_TrackedControllerRole_RightHand(2)
+    TrackedControllerRole_Invalid(0), // Invalid value for controller type
+    TrackedControllerRole_LeftHand(1), // Tracked device associated with the left hand
+    TrackedControllerRole_RightHand(2) // Tracked device associated with the right hand
 }
 
+/** describes a single pose for a tracked object */
+open class TrackedDevicePose_t : Structure {
+
+    var mDeviceToAbsoluteTracking = HmdMatrix34_t()
+    var vVelocity = HmdVector3_t()          // velocity in tracker space in m/s
+    var vAngularVelocity = HmdVector3_t()   // angular velocity in radians/s (?)
+    var eTrackingResult = 0
+    var bPoseIsValid: Byte = 0
+    /**
+     * This indicates that there is a device connected for this spot in the pose array.
+     * It could go from true to false if the user unplugs the device.
+     */
+    var bDeviceIsConnected: Byte = 0
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("mDeviceToAbsoluteTracking", "vVelocity", "vAngularVelocity",
+            "eTrackingResult", "bPoseIsValid", "bDeviceIsConnected")
+
+    /**
+     * @param mDeviceToAbsoluteTracking C type : HmdMatrix34_t<br></br>
+     * *
+     * @param vVelocity C type : HmdVector3_t<br></br>
+     * *
+     * @param vAngularVelocity C type : HmdVector3_t<br></br>
+     * *
+     * @param eTrackingResult @see ETrackingResult<br></br>
+     * * C type : ETrackingResult
+     */
+    constructor(mDeviceToAbsoluteTracking: HmdMatrix34_t, vVelocity: HmdVector3_t, vAngularVelocity: HmdVector3_t,
+                eTrackingResult: Int, bPoseIsValid: Byte, bDeviceIsConnected: Byte) : super() {
+        this.mDeviceToAbsoluteTracking = mDeviceToAbsoluteTracking
+        this.vVelocity = vVelocity
+        this.vAngularVelocity = vAngularVelocity
+        this.eTrackingResult = eTrackingResult
+        this.bPoseIsValid = bPoseIsValid
+        this.bDeviceIsConnected = bDeviceIsConnected
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : TrackedDevicePose_t(), Structure.ByReference
+    class ByValue : TrackedDevicePose_t(), Structure.ByValue
+}
+
+/** Identifies which style of tracking origin the application wants to use for the poses it is requesting */
 enum class ETrackingUniverseOrigin(val i: Int) {
-    ETrackingUniverseOrigin_TrackingUniverseSeated(0),
-    ETrackingUniverseOrigin_TrackingUniverseStanding(1),
-    ETrackingUniverseOrigin_TrackingUniverseRawAndUncalibrated(2)
+    TrackingUniverseSeated(0), // Poses are provided relative to the seated zero pose
+    TrackingUniverseStanding(1), // Poses are provided relative to the safe bounds configured by the user
+    TrackingUniverseRawAndUncalibrated(2)    // Poses are provided in the coordinate system defined by the driver. You probably don't want this one.
 }
 
+/** Each entry in this enum represents a property that can be retrieved about a tracked device.
+ * Many fields are only valid for one ETrackedDeviceClass.
+ */
 enum class ETrackedDeviceProperty(val i: Int) {
-    ETrackedDeviceProperty_Prop_TrackingSystemName_String(1000),
-    ETrackedDeviceProperty_Prop_ModelNumber_String(1001),
-    ETrackedDeviceProperty_Prop_SerialNumber_String(1002),
-    ETrackedDeviceProperty_Prop_RenderModelName_String(1003),
-    ETrackedDeviceProperty_Prop_WillDriftInYaw_Bool(1004),
-    ETrackedDeviceProperty_Prop_ManufacturerName_String(1005),
-    ETrackedDeviceProperty_Prop_TrackingFirmwareVersion_String(1006),
-    ETrackedDeviceProperty_Prop_HardwareRevision_String(1007),
-    ETrackedDeviceProperty_Prop_AllWirelessDongleDescriptions_String(1008),
-    ETrackedDeviceProperty_Prop_ConnectedWirelessDongle_String(1009),
-    ETrackedDeviceProperty_Prop_DeviceIsWireless_Bool(1010),
-    ETrackedDeviceProperty_Prop_DeviceIsCharging_Bool(1011),
-    ETrackedDeviceProperty_Prop_DeviceBatteryPercentage_Float(1012),
-    ETrackedDeviceProperty_Prop_StatusDisplayTransform_Matrix34(1013),
-    ETrackedDeviceProperty_Prop_Firmware_UpdateAvailable_Bool(1014),
-    ETrackedDeviceProperty_Prop_Firmware_ManualUpdate_Bool(1015),
-    ETrackedDeviceProperty_Prop_Firmware_ManualUpdateURL_String(1016),
-    ETrackedDeviceProperty_Prop_HardwareRevision_Uint64(1017),
-    ETrackedDeviceProperty_Prop_FirmwareVersion_Uint64(1018),
-    ETrackedDeviceProperty_Prop_FPGAVersion_Uint64(1019),
-    ETrackedDeviceProperty_Prop_VRCVersion_Uint64(1020),
-    ETrackedDeviceProperty_Prop_RadioVersion_Uint64(1021),
-    ETrackedDeviceProperty_Prop_DongleVersion_Uint64(1022),
-    ETrackedDeviceProperty_Prop_BlockServerShutdown_Bool(1023),
-    ETrackedDeviceProperty_Prop_CanUnifyCoordinateSystemWithHmd_Bool(1024),
-    ETrackedDeviceProperty_Prop_ContainsProximitySensor_Bool(1025),
-    ETrackedDeviceProperty_Prop_DeviceProvidesBatteryStatus_Bool(1026),
-    ETrackedDeviceProperty_Prop_DeviceCanPowerOff_Bool(1027),
-    ETrackedDeviceProperty_Prop_Firmware_ProgrammingTarget_String(1028),
-    ETrackedDeviceProperty_Prop_DeviceClass_Int32(1029),
-    ETrackedDeviceProperty_Prop_HasCamera_Bool(1030),
-    ETrackedDeviceProperty_Prop_DriverVersion_String(1031),
-    ETrackedDeviceProperty_Prop_Firmware_ForceUpdateRequired_Bool(1032),
-    ETrackedDeviceProperty_Prop_ReportsTimeSinceVSync_Bool(2000),
-    ETrackedDeviceProperty_Prop_SecondsFromVsyncToPhotons_Float(2001),
-    ETrackedDeviceProperty_Prop_DisplayFrequency_Float(2002),
-    ETrackedDeviceProperty_Prop_UserIpdMeters_Float(2003),
-    ETrackedDeviceProperty_Prop_CurrentUniverseId_Uint64(2004),
-    ETrackedDeviceProperty_Prop_PreviousUniverseId_Uint64(2005),
-    ETrackedDeviceProperty_Prop_DisplayFirmwareVersion_Uint64(2006),
-    ETrackedDeviceProperty_Prop_IsOnDesktop_Bool(2007),
-    ETrackedDeviceProperty_Prop_DisplayMCType_Int32(2008),
-    ETrackedDeviceProperty_Prop_DisplayMCOffset_Float(2009),
-    ETrackedDeviceProperty_Prop_DisplayMCScale_Float(2010),
-    ETrackedDeviceProperty_Prop_EdidVendorID_Int32(2011),
-    ETrackedDeviceProperty_Prop_DisplayMCImageLeft_String(2012),
-    ETrackedDeviceProperty_Prop_DisplayMCImageRight_String(2013),
-    ETrackedDeviceProperty_Prop_DisplayGCBlackClamp_Float(2014),
-    ETrackedDeviceProperty_Prop_EdidProductID_Int32(2015),
-    ETrackedDeviceProperty_Prop_CameraToHeadTransform_Matrix34(2016),
-    ETrackedDeviceProperty_Prop_DisplayGCType_Int32(2017),
-    ETrackedDeviceProperty_Prop_DisplayGCOffset_Float(2018),
-    ETrackedDeviceProperty_Prop_DisplayGCScale_Float(2019),
-    ETrackedDeviceProperty_Prop_DisplayGCPrescale_Float(2020),
-    ETrackedDeviceProperty_Prop_DisplayGCImage_String(2021),
-    ETrackedDeviceProperty_Prop_LensCenterLeftU_Float(2022),
-    ETrackedDeviceProperty_Prop_LensCenterLeftV_Float(2023),
-    ETrackedDeviceProperty_Prop_LensCenterRightU_Float(2024),
-    ETrackedDeviceProperty_Prop_LensCenterRightV_Float(2025),
-    ETrackedDeviceProperty_Prop_UserHeadToEyeDepthMeters_Float(2026),
-    ETrackedDeviceProperty_Prop_CameraFirmwareVersion_Uint64(2027),
-    ETrackedDeviceProperty_Prop_CameraFirmwareDescription_String(2028),
-    ETrackedDeviceProperty_Prop_DisplayFPGAVersion_Uint64(2029),
-    ETrackedDeviceProperty_Prop_DisplayBootloaderVersion_Uint64(2030),
-    ETrackedDeviceProperty_Prop_DisplayHardwareVersion_Uint64(2031),
-    ETrackedDeviceProperty_Prop_AudioFirmwareVersion_Uint64(2032),
-    ETrackedDeviceProperty_Prop_CameraCompatibilityMode_Int32(2033),
-    ETrackedDeviceProperty_Prop_ScreenshotHorizontalFieldOfViewDegrees_Float(2034),
-    ETrackedDeviceProperty_Prop_ScreenshotVerticalFieldOfViewDegrees_Float(2035),
-    ETrackedDeviceProperty_Prop_DisplaySuppressed_Bool(2036),
-    ETrackedDeviceProperty_Prop_AttachedDeviceId_String(3000),
-    ETrackedDeviceProperty_Prop_SupportedButtons_Uint64(3001),
-    ETrackedDeviceProperty_Prop_Axis0Type_Int32(3002),
-    ETrackedDeviceProperty_Prop_Axis1Type_Int32(3003),
-    ETrackedDeviceProperty_Prop_Axis2Type_Int32(3004),
-    ETrackedDeviceProperty_Prop_Axis3Type_Int32(3005),
-    ETrackedDeviceProperty_Prop_Axis4Type_Int32(3006),
-    ETrackedDeviceProperty_Prop_ControllerRoleHint_Int32(3007),
-    ETrackedDeviceProperty_Prop_FieldOfViewLeftDegrees_Float(4000),
-    ETrackedDeviceProperty_Prop_FieldOfViewRightDegrees_Float(4001),
-    ETrackedDeviceProperty_Prop_FieldOfViewTopDegrees_Float(4002),
-    ETrackedDeviceProperty_Prop_FieldOfViewBottomDegrees_Float(4003),
-    ETrackedDeviceProperty_Prop_TrackingRangeMinimumMeters_Float(4004),
-    ETrackedDeviceProperty_Prop_TrackingRangeMaximumMeters_Float(4005),
-    ETrackedDeviceProperty_Prop_ModeLabel_String(4006),
-    ETrackedDeviceProperty_Prop_VendorSpecific_Reserved_Start(10000),
-    ETrackedDeviceProperty_Prop_VendorSpecific_Reserved_End(10999)
+    // general properties that apply to all device classes
+    Prop_TrackingSystemName_String(1000),
+    Prop_ModelNumber_String(1001),
+    Prop_SerialNumber_String(1002),
+    Prop_RenderModelName_String(1003),
+    Prop_WillDriftInYaw_Bool(1004),
+    Prop_ManufacturerName_String(1005),
+    Prop_TrackingFirmwareVersion_String(1006),
+    Prop_HardwareRevision_String(1007),
+    Prop_AllWirelessDongleDescriptions_String(1008),
+    Prop_ConnectedWirelessDongle_String(1009),
+    Prop_DeviceIsWireless_Bool(1010),
+    Prop_DeviceIsCharging_Bool(1011),
+    Prop_DeviceBatteryPercentage_Float(1012), // 0 is empty), 1 is full
+    Prop_StatusDisplayTransform_Matrix34(1013),
+    Prop_Firmware_UpdateAvailable_Bool(1014),
+    Prop_Firmware_ManualUpdate_Bool(1015),
+    Prop_Firmware_ManualUpdateURL_String(1016),
+    Prop_HardwareRevision_Uint64(1017),
+    Prop_FirmwareVersion_Uint64(1018),
+    Prop_FPGAVersion_Uint64(1019),
+    Prop_VRCVersion_Uint64(1020),
+    Prop_RadioVersion_Uint64(1021),
+    Prop_DongleVersion_Uint64(1022),
+    Prop_BlockServerShutdown_Bool(1023),
+    Prop_CanUnifyCoordinateSystemWithHmd_Bool(1024),
+    Prop_ContainsProximitySensor_Bool(1025),
+    Prop_DeviceProvidesBatteryStatus_Bool(1026),
+    Prop_DeviceCanPowerOff_Bool(1027),
+    Prop_Firmware_ProgrammingTarget_String(1028),
+    Prop_DeviceClass_Int32(1029),
+    Prop_HasCamera_Bool(1030),
+    Prop_DriverVersion_String(1031),
+    Prop_Firmware_ForceUpdateRequired_Bool(1032),
+
+    // Properties that are unique to TrackedDeviceClass_HMD
+    Prop_ReportsTimeSinceVSync_Bool(2000),
+    Prop_SecondsFromVsyncToPhotons_Float(2001),
+    Prop_DisplayFrequency_Float(2002),
+    Prop_UserIpdMeters_Float(2003),
+    Prop_CurrentUniverseId_Uint64(2004),
+    Prop_PreviousUniverseId_Uint64(2005),
+    Prop_DisplayFirmwareVersion_Uint64(2006),
+    Prop_IsOnDesktop_Bool(2007),
+    Prop_DisplayMCType_Int32(2008),
+    Prop_DisplayMCOffset_Float(2009),
+    Prop_DisplayMCScale_Float(2010),
+    Prop_EdidVendorID_Int32(2011),
+    Prop_DisplayMCImageLeft_String(2012),
+    Prop_DisplayMCImageRight_String(2013),
+    Prop_DisplayGCBlackClamp_Float(2014),
+    Prop_EdidProductID_Int32(2015),
+    Prop_CameraToHeadTransform_Matrix34(2016),
+    Prop_DisplayGCType_Int32(2017),
+    Prop_DisplayGCOffset_Float(2018),
+    Prop_DisplayGCScale_Float(2019),
+    Prop_DisplayGCPrescale_Float(2020),
+    Prop_DisplayGCImage_String(2021),
+    Prop_LensCenterLeftU_Float(2022),
+    Prop_LensCenterLeftV_Float(2023),
+    Prop_LensCenterRightU_Float(2024),
+    Prop_LensCenterRightV_Float(2025),
+    Prop_UserHeadToEyeDepthMeters_Float(2026),
+    Prop_CameraFirmwareVersion_Uint64(2027),
+    Prop_CameraFirmwareDescription_String(2028),
+    Prop_DisplayFPGAVersion_Uint64(2029),
+    Prop_DisplayBootloaderVersion_Uint64(2030),
+    Prop_DisplayHardwareVersion_Uint64(2031),
+    Prop_AudioFirmwareVersion_Uint64(2032),
+    Prop_CameraCompatibilityMode_Int32(2033),
+    Prop_ScreenshotHorizontalFieldOfViewDegrees_Float(2034),
+    Prop_ScreenshotVerticalFieldOfViewDegrees_Float(2035),
+    Prop_DisplaySuppressed_Bool(2036),
+
+    // Properties that are unique to TrackedDeviceClass_Controller
+    Prop_AttachedDeviceId_String(3000),
+    Prop_SupportedButtons_Uint64(3001),
+    Prop_Axis0Type_Int32(3002), // Return value is of type EVRControllerAxisType
+    Prop_Axis1Type_Int32(3003), // Return value is of type EVRControllerAxisType
+    Prop_Axis2Type_Int32(3004), // Return value is of type EVRControllerAxisType
+    Prop_Axis3Type_Int32(3005), // Return value is of type EVRControllerAxisType
+    Prop_Axis4Type_Int32(3006), // Return value is of type EVRControllerAxisType
+    Prop_ControllerRoleHint_Int32(3007), // Return value is of type ETrackedControllerRole
+
+    // Properties that are unique to TrackedDeviceClass_TrackingReference
+    Prop_FieldOfViewLeftDegrees_Float(4000),
+    Prop_FieldOfViewRightDegrees_Float(4001),
+    Prop_FieldOfViewTopDegrees_Float(4002),
+    Prop_FieldOfViewBottomDegrees_Float(4003),
+    Prop_TrackingRangeMinimumMeters_Float(4004),
+    Prop_TrackingRangeMaximumMeters_Float(4005),
+    Prop_ModeLabel_String(4006),
+
+    // Properties that are used for user interface like icons names
+    Prop_IconPathName_String(5000), // usually a directory named "icons"
+    Prop_NamedIconPathDeviceOff_String(5001), // PNG for static icon), or GIF for animation), 50x32 for headsets and 32x32 for others
+    Prop_NamedIconPathDeviceSearching_String(5002), // PNG for static icon), or GIF for animation), 50x32 for headsets and 32x32 for others
+    Prop_NamedIconPathDeviceSearchingAlert_String(5003), // PNG for static icon), or GIF for animation), 50x32 for headsets and 32x32 for others
+    Prop_NamedIconPathDeviceReady_String(5004), // PNG for static icon), or GIF for animation), 50x32 for headsets and 32x32 for others
+    Prop_NamedIconPathDeviceReadyAlert_String(5005), // PNG for static icon), or GIF for animation), 50x32 for headsets and 32x32 for others
+    Prop_NamedIconPathDeviceNotReady_String(5006), // PNG for static icon), or GIF for animation), 50x32 for headsets and 32x32 for others
+    Prop_NamedIconPathDeviceStandby_String(5007), // PNG for static icon), or GIF for animation), 50x32 for headsets and 32x32 for others
+    Prop_NamedIconPathDeviceAlertLow_String(5008), // PNG for static icon), or GIF for animation), 50x32 for headsets and 32x32 for others
+
+    // Vendors are free to expose private debug data in this reserved region
+    Prop_VendorSpecific_Reserved_Start(10000),
+    Prop_VendorSpecific_Reserved_End(10999)
 }
 
+/** No string property will ever be longer than this length */
+const val k_unMaxPropertyStringSize = 32 * 1024
+
+/** Used to return errors that occur when reading properties. */
 enum class ETrackedPropertyError(val i: Int) {
-    ETrackedPropertyError_TrackedProp_Success(0),
-    ETrackedPropertyError_TrackedProp_WrongDataType(1),
-    ETrackedPropertyError_TrackedProp_WrongDeviceClass(2),
-    ETrackedPropertyError_TrackedProp_BufferTooSmall(3),
-    ETrackedPropertyError_TrackedProp_UnknownProperty(4),
-    ETrackedPropertyError_TrackedProp_InvalidDevice(5),
-    ETrackedPropertyError_TrackedProp_CouldNotContactServer(6),
-    ETrackedPropertyError_TrackedProp_ValueNotProvidedByDevice(7),
-    ETrackedPropertyError_TrackedProp_StringExceedsMaximumLength(8),
-    ETrackedPropertyError_TrackedProp_NotYetAvailable(9)
+    TrackedProp_Success(0),
+    TrackedProp_WrongDataType(1),
+    TrackedProp_WrongDeviceClass(2),
+    TrackedProp_BufferTooSmall(3),
+    TrackedProp_UnknownProperty(4),
+    TrackedProp_InvalidDevice(5),
+    TrackedProp_CouldNotContactServer(6),
+    TrackedProp_ValueNotProvidedByDevice(7),
+    TrackedProp_StringExceedsMaximumLength(8),
+    TrackedProp_NotYetAvailable(9) // The property value isn't known yet, but is expected soon. Call again later.
 }
 
+/** Allows the application to control what part of the provided texture will be used in the frame buffer. */
+open class VRTextureBounds_t : Structure {
+
+    var uMin = 0f
+    var vMin = 0f
+    var uMax = 0f
+    var vMax = 0f
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("uMin", "vMin", "uMax", "vMax")
+
+    constructor(uMin: Float, vMin: Float, uMax: Float, vMax: Float) : super() {
+        this.uMin = uMin
+        this.vMin = vMin
+        this.uMax = uMax
+        this.vMax = vMax
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : VRTextureBounds_t(), Structure.ByReference
+    class ByValue : VRTextureBounds_t(), Structure.ByValue
+}
+
+/** Allows the application to control how scene textures are used by the compositor when calling Submit. */
 enum class EVRSubmitFlags(val i: Int) {
-    EVRSubmitFlags_Submit_Default(0),
-    EVRSubmitFlags_Submit_LensDistortionAlreadyApplied(1),
-    EVRSubmitFlags_Submit_GlRenderBuffer(2)
+    // Simple render path. App submits rendered left and right eye images with no lens distortion correction applied.
+    Submit_Default(0x00),
+
+    // App submits final left and right eye images with lens distortion already applied (lens distortion makes the images appear
+    // barrel distorted with chromatic aberration correction applied). The app would have used the data returned by
+    // vr::IVRSystem::ComputeDistortion() to apply the correct distortion to the rendered images before calling Submit().
+    Submit_LensDistortionAlreadyApplied(0x01),
+
+    // If the texture pointer passed in is actually a renderbuffer (e.g. for MSAA in OpenGL) then set this flag.
+    Submit_GlRenderBuffer(0x02),
+
+    // Handle is pointer to VulkanData_t
+    Submit_VulkanTexture(0x04)
 }
 
+/** Data required for passing Vulkan textures to IVRCompositor::Submit.
+ * Be sure to call OpenVR_Shutdown before destroying these resources. */
+/*struct VulkanData_t
+{
+    uint64_t m_nImage; // VkImage
+    VkDevice_T *m_pDevice;
+    VkPhysicalDevice_T *m_pPhysicalDevice;
+    VkInstance_T *m_pInstance;
+    VkQueue_T *m_pQueue;
+    uint32_t m_nQueueFamilyIndex;
+    uint32_t m_nWidth, m_nHeight, m_nFormat, m_nSampleCount;
+};*/
+
+/** Status of the overall system or tracked objects */
 enum class EVRState(val i: Int) {
-    EVRState_VRState_Undefined(-1),
-    EVRState_VRState_Off(0),
-    EVRState_VRState_Searching(1),
-    EVRState_VRState_Searching_Alert(2),
-    EVRState_VRState_Ready(3),
-    EVRState_VRState_Ready_Alert(4),
-    EVRState_VRState_NotReady(5),
-    EVRState_VRState_Standby(6),
-    EVRState_VRState_Ready_Alert_Low(7)
+    VRState_Undefined(-1),
+    VRState_Off(0),
+    VRState_Searching(1),
+    VRState_Searching_Alert(2),
+    VRState_Ready(3),
+    VRState_Ready_Alert(4),
+    VRState_NotReady(5),
+    VRState_Standby(6),
+    VRState_Ready_Alert_Low(7)
 }
 
+/** The types of events that could be posted (and what the parameters mean for each event type) */
 enum class EVREventType(val i: Int) {
-    EVREventType_VREvent_None(0),
-    EVREventType_VREvent_TrackedDeviceActivated(100),
-    EVREventType_VREvent_TrackedDeviceDeactivated(101),
-    EVREventType_VREvent_TrackedDeviceUpdated(102),
-    EVREventType_VREvent_TrackedDeviceUserInteractionStarted(103),
-    EVREventType_VREvent_TrackedDeviceUserInteractionEnded(104),
-    EVREventType_VREvent_IpdChanged(105),
-    EVREventType_VREvent_EnterStandbyMode(106),
-    EVREventType_VREvent_LeaveStandbyMode(107),
-    EVREventType_VREvent_TrackedDeviceRoleChanged(108),
-    EVREventType_VREvent_WatchdogWakeUpRequested(109),
-    EVREventType_VREvent_ButtonPress(200),
-    EVREventType_VREvent_ButtonUnpress(201),
-    EVREventType_VREvent_ButtonTouch(202),
-    EVREventType_VREvent_ButtonUntouch(203),
-    EVREventType_VREvent_MouseMove(300),
-    EVREventType_VREvent_MouseButtonDown(301),
-    EVREventType_VREvent_MouseButtonUp(302),
-    EVREventType_VREvent_FocusEnter(303),
-    EVREventType_VREvent_FocusLeave(304),
-    EVREventType_VREvent_Scroll(305),
-    EVREventType_VREvent_TouchPadMove(306),
-    EVREventType_VREvent_OverlayFocusChanged(307),
-    EVREventType_VREvent_InputFocusCaptured(400),
-    EVREventType_VREvent_InputFocusReleased(401),
-    EVREventType_VREvent_SceneFocusLost(402),
-    EVREventType_VREvent_SceneFocusGained(403),
-    EVREventType_VREvent_SceneApplicationChanged(404),
-    EVREventType_VREvent_SceneFocusChanged(405),
-    EVREventType_VREvent_InputFocusChanged(406),
-    EVREventType_VREvent_SceneApplicationSecondaryRenderingStarted(407),
-    EVREventType_VREvent_HideRenderModels(410),
-    EVREventType_VREvent_ShowRenderModels(411),
-    EVREventType_VREvent_OverlayShown(500),
-    EVREventType_VREvent_OverlayHidden(501),
-    EVREventType_VREvent_DashboardActivated(502),
-    EVREventType_VREvent_DashboardDeactivated(503),
-    EVREventType_VREvent_DashboardThumbSelected(504),
-    EVREventType_VREvent_DashboardRequested(505),
-    EVREventType_VREvent_ResetDashboard(506),
-    EVREventType_VREvent_RenderToast(507),
-    EVREventType_VREvent_ImageLoaded(508),
-    EVREventType_VREvent_ShowKeyboard(509),
-    EVREventType_VREvent_HideKeyboard(510),
-    EVREventType_VREvent_OverlayGamepadFocusGained(511),
-    EVREventType_VREvent_OverlayGamepadFocusLost(512),
-    EVREventType_VREvent_OverlaySharedTextureChanged(513),
-    EVREventType_VREvent_DashboardGuideButtonDown(514),
-    EVREventType_VREvent_DashboardGuideButtonUp(515),
-    EVREventType_VREvent_ScreenshotTriggered(516),
-    EVREventType_VREvent_ImageFailed(517),
-    EVREventType_VREvent_RequestScreenshot(520),
-    EVREventType_VREvent_ScreenshotTaken(521),
-    EVREventType_VREvent_ScreenshotFailed(522),
-    EVREventType_VREvent_SubmitScreenshotToDashboard(523),
-    EVREventType_VREvent_ScreenshotProgressToDashboard(524),
-    EVREventType_VREvent_Notification_Shown(600),
-    EVREventType_VREvent_Notification_Hidden(601),
-    EVREventType_VREvent_Notification_BeginInteraction(602),
-    EVREventType_VREvent_Notification_Destroyed(603),
-    EVREventType_VREvent_Quit(700),
-    EVREventType_VREvent_ProcessQuit(701),
-    EVREventType_VREvent_QuitAborted_UserPrompt(702),
-    EVREventType_VREvent_QuitAcknowledged(703),
-    EVREventType_VREvent_DriverRequestedQuit(704),
-    EVREventType_VREvent_ChaperoneDataHasChanged(800),
-    EVREventType_VREvent_ChaperoneUniverseHasChanged(801),
-    EVREventType_VREvent_ChaperoneTempDataHasChanged(802),
-    EVREventType_VREvent_ChaperoneSettingsHaveChanged(803),
-    EVREventType_VREvent_SeatedZeroPoseReset(804),
-    EVREventType_VREvent_AudioSettingsHaveChanged(820),
-    EVREventType_VREvent_BackgroundSettingHasChanged(850),
-    EVREventType_VREvent_CameraSettingsHaveChanged(851),
-    EVREventType_VREvent_ReprojectionSettingHasChanged(852),
-    EVREventType_VREvent_ModelSkinSettingsHaveChanged(853),
-    EVREventType_VREvent_EnvironmentSettingsHaveChanged(854),
-    EVREventType_VREvent_StatusUpdate(900),
-    EVREventType_VREvent_MCImageUpdated(1000),
-    EVREventType_VREvent_FirmwareUpdateStarted(1100),
-    EVREventType_VREvent_FirmwareUpdateFinished(1101),
-    EVREventType_VREvent_KeyboardClosed(1200),
-    EVREventType_VREvent_KeyboardCharInput(1201),
-    EVREventType_VREvent_KeyboardDone(1202),
-    EVREventType_VREvent_ApplicationTransitionStarted(1300),
-    EVREventType_VREvent_ApplicationTransitionAborted(1301),
-    EVREventType_VREvent_ApplicationTransitionNewAppStarted(1302),
-    EVREventType_VREvent_ApplicationListUpdated(1303),
-    EVREventType_VREvent_ApplicationMimeTypeLoad(1304),
-    EVREventType_VREvent_Compositor_MirrorWindowShown(1400),
-    EVREventType_VREvent_Compositor_MirrorWindowHidden(1401),
-    EVREventType_VREvent_Compositor_ChaperoneBoundsShown(1410),
-    EVREventType_VREvent_Compositor_ChaperoneBoundsHidden(1411),
-    EVREventType_VREvent_TrackedCamera_StartVideoStream(1500),
-    EVREventType_VREvent_TrackedCamera_StopVideoStream(1501),
-    EVREventType_VREvent_TrackedCamera_PauseVideoStream(1502),
-    EVREventType_VREvent_TrackedCamera_ResumeVideoStream(1503),
-    EVREventType_VREvent_PerformanceTest_EnableCapture(1600),
-    EVREventType_VREvent_PerformanceTest_DisableCapture(1601),
-    EVREventType_VREvent_PerformanceTest_FidelityLevel(1602),
-    EVREventType_VREvent_VendorSpecific_Reserved_Start(10000),
-    EVREventType_VREvent_VendorSpecific_Reserved_End(19999)
+    VREvent_None(0),
+
+    VREvent_TrackedDeviceActivated(100),
+    VREvent_TrackedDeviceDeactivated(101),
+    VREvent_TrackedDeviceUpdated(102),
+    VREvent_TrackedDeviceUserInteractionStarted(103),
+    VREvent_TrackedDeviceUserInteractionEnded(104),
+    VREvent_IpdChanged(105),
+    VREvent_EnterStandbyMode(106),
+    VREvent_LeaveStandbyMode(107),
+    VREvent_TrackedDeviceRoleChanged(108),
+    VREvent_WatchdogWakeUpRequested(109),
+    VREvent_LensDistortionChanged(110),
+
+    VREvent_ButtonPress(200), // data is controller
+    VREvent_ButtonUnpress(201), // data is controller
+    VREvent_ButtonTouch(202), // data is controller
+    VREvent_ButtonUntouch(203), // data is controller
+
+    VREvent_MouseMove(300), // data is mouse
+    VREvent_MouseButtonDown(301), // data is mouse
+    VREvent_MouseButtonUp(302), // data is mouse
+    VREvent_FocusEnter(303), // data is overlay
+    VREvent_FocusLeave(304), // data is overlay
+    VREvent_Scroll(305), // data is mouse
+    VREvent_TouchPadMove(306), // data is mouse
+    VREvent_OverlayFocusChanged(307), // data is overlay), global event
+
+    VREvent_InputFocusCaptured(400), // data is process DEPRECATED
+    VREvent_InputFocusReleased(401), // data is process DEPRECATED
+    VREvent_SceneFocusLost(402), // data is process
+    VREvent_SceneFocusGained(403), // data is process
+    VREvent_SceneApplicationChanged(404), // data is process - The App actually drawing the scene changed (usually to or from the compositor)
+    VREvent_SceneFocusChanged(405), // data is process - New app got access to draw the scene
+    VREvent_InputFocusChanged(406), // data is process
+    VREvent_SceneApplicationSecondaryRenderingStarted(407), // data is process
+
+    VREvent_HideRenderModels(410), // Sent to the scene application to request hiding render models temporarily
+    VREvent_ShowRenderModels(411), // Sent to the scene application to request restoring render model visibility
+
+    VREvent_OverlayShown(500),
+    VREvent_OverlayHidden(501),
+    VREvent_DashboardActivated(502),
+    VREvent_DashboardDeactivated(503),
+    VREvent_DashboardThumbSelected(504), // Sent to the overlay manager - data is overlay
+    VREvent_DashboardRequested(505), // Sent to the overlay manager - data is overlay
+    VREvent_ResetDashboard(506), // Send to the overlay manager
+    VREvent_RenderToast(507), // Send to the dashboard to render a toast - data is the notification ID
+    VREvent_ImageLoaded(508), // Sent to overlays when a SetOverlayRaw or SetOverlayFromFile call finishes loading
+    VREvent_ShowKeyboard(509), // Sent to keyboard renderer in the dashboard to invoke it
+    VREvent_HideKeyboard(510), // Sent to keyboard renderer in the dashboard to hide it
+    VREvent_OverlayGamepadFocusGained(511), // Sent to an overlay when IVROverlay::SetFocusOverlay is called on it
+    VREvent_OverlayGamepadFocusLost(512), // Send to an overlay when it previously had focus and IVROverlay::SetFocusOverlay is called on something else
+    VREvent_OverlaySharedTextureChanged(513),
+    VREvent_DashboardGuideButtonDown(514),
+    VREvent_DashboardGuideButtonUp(515),
+    VREvent_ScreenshotTriggered(516), // Screenshot button combo was pressed), Dashboard should request a screenshot
+    VREvent_ImageFailed(517), // Sent to overlays when a SetOverlayRaw or SetOverlayfromFail fails to load
+    VREvent_DashboardOverlayCreated(518),
+
+    // Screenshot API
+    VREvent_RequestScreenshot(520), // Sent by vrclient application to compositor to take a screenshot
+    VREvent_ScreenshotTaken(521), // Sent by compositor to the application that the screenshot has been taken
+    VREvent_ScreenshotFailed(522), // Sent by compositor to the application that the screenshot failed to be taken
+    VREvent_SubmitScreenshotToDashboard(523), // Sent by compositor to the dashboard that a completed screenshot was submitted
+    VREvent_ScreenshotProgressToDashboard(524), // Sent by compositor to the dashboard that a completed screenshot was submitted
+
+    VREvent_Notification_Shown(600),
+    VREvent_Notification_Hidden(601),
+    VREvent_Notification_BeginInteraction(602),
+    VREvent_Notification_Destroyed(603),
+
+    VREvent_Quit(700), // data is process
+    VREvent_ProcessQuit(701), // data is process
+    VREvent_QuitAborted_UserPrompt(702), // data is process
+    VREvent_QuitAcknowledged(703), // data is process
+    VREvent_DriverRequestedQuit(704), // The driver has requested that SteamVR shut down
+
+    VREvent_ChaperoneDataHasChanged(800),
+    VREvent_ChaperoneUniverseHasChanged(801),
+    VREvent_ChaperoneTempDataHasChanged(802),
+    VREvent_ChaperoneSettingsHaveChanged(803),
+    VREvent_SeatedZeroPoseReset(804),
+
+    VREvent_AudioSettingsHaveChanged(820),
+
+    VREvent_BackgroundSettingHasChanged(850),
+    VREvent_CameraSettingsHaveChanged(851),
+    VREvent_ReprojectionSettingHasChanged(852),
+    VREvent_ModelSkinSettingsHaveChanged(853),
+    VREvent_EnvironmentSettingsHaveChanged(854),
+    VREvent_PowerSettingsHaveChanged(855),
+
+    VREvent_StatusUpdate(900),
+
+    VREvent_MCImageUpdated(1000),
+
+    VREvent_FirmwareUpdateStarted(1100),
+    VREvent_FirmwareUpdateFinished(1101),
+
+    VREvent_KeyboardClosed(1200),
+    VREvent_KeyboardCharInput(1201),
+    VREvent_KeyboardDone(1202), // Sent when DONE button clicked on keyboard
+
+    VREvent_ApplicationTransitionStarted(1300),
+    VREvent_ApplicationTransitionAborted(1301),
+    VREvent_ApplicationTransitionNewAppStarted(1302),
+    VREvent_ApplicationListUpdated(1303),
+    VREvent_ApplicationMimeTypeLoad(1304),
+
+    VREvent_Compositor_MirrorWindowShown(1400),
+    VREvent_Compositor_MirrorWindowHidden(1401),
+    VREvent_Compositor_ChaperoneBoundsShown(1410),
+    VREvent_Compositor_ChaperoneBoundsHidden(1411),
+
+    VREvent_TrackedCamera_StartVideoStream(1500),
+    VREvent_TrackedCamera_StopVideoStream(1501),
+    VREvent_TrackedCamera_PauseVideoStream(1502),
+    VREvent_TrackedCamera_ResumeVideoStream(1503),
+    VREvent_TrackedCamera_EditingSurface(1550),
+
+    VREvent_PerformanceTest_EnableCapture(1600),
+    VREvent_PerformanceTest_DisableCapture(1601),
+    VREvent_PerformanceTest_FidelityLevel(1602),
+
+    // Vendors are free to expose private events in this reserved region
+    VREvent_VendorSpecific_Reserved_Start(10000),
+    VREvent_VendorSpecific_Reserved_End(19999)
 }
 
+/** Level of Hmd activity */
 enum class EDeviceActivityLevel(val i: Int) {
-    EDeviceActivityLevel_k_EDeviceActivityLevel_Unknown(-1),
-    EDeviceActivityLevel_k_EDeviceActivityLevel_Idle(0),
-    EDeviceActivityLevel_k_EDeviceActivityLevel_UserInteraction(1),
-    EDeviceActivityLevel_k_EDeviceActivityLevel_UserInteraction_Timeout(2),
-    EDeviceActivityLevel_k_EDeviceActivityLevel_Standby(3)
+    k_EDeviceActivityLevel_Unknown(-1),
+    k_EDeviceActivityLevel_Idle(0),
+    k_EDeviceActivityLevel_UserInteraction(1),
+    k_EDeviceActivityLevel_UserInteraction_Timeout(2),
+    k_EDeviceActivityLevel_Standby(3)
 }
 
+/** VR controller button and axis IDs */
 enum class EVRButtonId(val i: Int) {
-    EVRButtonId_k_EButton_System(0),
-    EVRButtonId_k_EButton_ApplicationMenu(1),
-    EVRButtonId_k_EButton_Grip(2),
-    EVRButtonId_k_EButton_DPad_Left(3),
-    EVRButtonId_k_EButton_DPad_Up(4),
-    EVRButtonId_k_EButton_DPad_Right(5),
-    EVRButtonId_k_EButton_DPad_Down(6),
-    EVRButtonId_k_EButton_A(7),
-    EVRButtonId_k_EButton_Axis0(32),
-    EVRButtonId_k_EButton_Axis1(33),
-    EVRButtonId_k_EButton_Axis2(34),
-    EVRButtonId_k_EButton_Axis3(35),
-    EVRButtonId_k_EButton_Axis4(36),
-    EVRButtonId_k_EButton_SteamVR_Touchpad(32),
-    EVRButtonId_k_EButton_SteamVR_Trigger(33),
-    EVRButtonId_k_EButton_Dashboard_Back(2),
-    EVRButtonId_k_EButton_Max(64)
+    k_EButton_System(0),
+    k_EButton_ApplicationMenu(1),
+    k_EButton_Grip(2),
+    k_EButton_DPad_Left(3),
+    k_EButton_DPad_Up(4),
+    k_EButton_DPad_Right(5),
+    k_EButton_DPad_Down(6),
+    k_EButton_A(7),
+
+    k_EButton_ProximitySensor(31),
+
+    k_EButton_Axis0(32),
+    k_EButton_Axis1(33),
+    k_EButton_Axis2(34),
+    k_EButton_Axis3(35),
+    k_EButton_Axis4(36),
+
+    // aliases for well known controllers
+    k_EButton_SteamVR_Touchpad(k_EButton_Axis0.i),
+    k_EButton_SteamVR_Trigger(k_EButton_Axis1.i),
+
+    k_EButton_Dashboard_Back(k_EButton_Grip.i),
+
+    k_EButton_Max(64)
 }
 
+fun buttonMaskFromId(id: EVRButtonId) = (1 shl id.i).toLong()
+
+/** used for controller button events */
+open class VREvent_Controller_t : Structure {
+    // EVRButtonId enum
+    var button = 0
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("button")
+
+    constructor(button: Int) : super() {
+        this.button = button
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : VREvent_Controller_t(), Structure.ByReference
+    class ByValue : VREvent_Controller_t(), Structure.ByValue
+}
+
+/** used for simulated mouse events in overlay space */
 enum class EVRMouseButton(val i: Int) {
-    EVRMouseButton_VRMouseButton_Left(1),
-    EVRMouseButton_VRMouseButton_Right(2),
-    EVRMouseButton_VRMouseButton_Middle(4)
+    VRMouseButton_Left(0x0001),
+    VRMouseButton_Right(0x0002),
+    VRMouseButton_Middle(0x0004)
 }
 
-enum class EVRControllerAxisType(val i: Int) {
-    EVRControllerAxisType_k_eControllerAxis_None(0),
-    EVRControllerAxisType_k_eControllerAxis_TrackPad(1),
-    EVRControllerAxisType_k_eControllerAxis_Joystick(2),
-    EVRControllerAxisType_k_eControllerAxis_Trigger(3)
+/** used for simulated mouse events in overlay space */
+open class VREvent_Mouse_t : Structure {
+
+    // co-ords are in GL space, bottom left of the texture is 0,0
+    var x = 0f
+    var y = 0f
+    var button = 0  // EVRMouseButton enum
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("x", "y", "button")
+
+    constructor(x: Float, y: Float, button: Int) : super() {
+        this.x = x
+        this.y = y
+        this.button = button
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : VREvent_Mouse_t(), Structure.ByReference
+    class ByValue : VREvent_Mouse_t(), Structure.ByValue
 }
 
-enum class EVRControllerEventOutputType(val i: Int) {
-    EVRControllerEventOutputType_ControllerEventOutput_OSEvents(0),
-    EVRControllerEventOutputType_ControllerEventOutput_VREvents(1)
+/** used for simulated mouse wheel scroll in overlay space */
+open class VREvent_Scroll_t : Structure {
+
+    // movement in fraction of the pad traversed since last delta, 1.0 for a full swipe
+    var xdelta = 0f
+    var ydelta = 0f
+    var repeatCount = 0
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("xdelta", "ydelta", "repeatCount")
+
+    constructor(xdelta: Float, ydelta: Float, repeatCount: Int) : super() {
+        this.xdelta = xdelta
+        this.ydelta = ydelta
+        this.repeatCount = repeatCount
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : VREvent_Scroll_t(), Structure.ByReference
+    class ByValue : VREvent_Scroll_t(), Structure.ByValue
 }
 
-enum class ECollisionBoundsStyle(val i: Int) {
-    ECollisionBoundsStyle_COLLISION_BOUNDS_STYLE_BEGINNER(0),
-    ECollisionBoundsStyle_COLLISION_BOUNDS_STYLE_INTERMEDIATE(1),
-    ECollisionBoundsStyle_COLLISION_BOUNDS_STYLE_SQUARES(2),
-    ECollisionBoundsStyle_COLLISION_BOUNDS_STYLE_ADVANCED(3),
-    ECollisionBoundsStyle_COLLISION_BOUNDS_STYLE_NONE(4),
-    ECollisionBoundsStyle_COLLISION_BOUNDS_STYLE_COUNT(5)
+/** when in mouse input mode you can receive data from the touchpad, these events are only sent if the users finger
+ * is on the touchpad (or just released from it)
+ **/
+open class VREvent_TouchPadMove_t : Structure {
+
+    // true if the users finger is detected on the touch pad
+    var bFingerDown: Byte = 0
+
+    // How long the finger has been down in seconds
+    var flSecondsFingerDown = 0f
+
+    // These values indicate the starting finger position (so you can do some basic swipe stuff)
+    var fValueXFirst = 0f
+    var fValueYFirst = 0f
+
+    // This is the raw sampled coordinate without deadzoning
+    var fValueXRaw = 0f
+    var fValueYRaw = 0f
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("bFingerDown", "flSecondsFingerDown", "fValueXFirst", "fValueYFirst",
+            "fValueXRaw", "fValueYRaw")
+
+    constructor(bFingerDown: Byte, flSecondsFingerDown: Float, fValueXFirst: Float, fValueYFirst: Float, fValueXRaw: Float,
+                fValueYRaw: Float) : super() {
+        this.bFingerDown = bFingerDown
+        this.flSecondsFingerDown = flSecondsFingerDown
+        this.fValueXFirst = fValueXFirst
+        this.fValueYFirst = fValueYFirst
+        this.fValueXRaw = fValueXRaw
+        this.fValueYRaw = fValueYRaw
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : VREvent_TouchPadMove_t(), Structure.ByReference
+    class ByValue : VREvent_TouchPadMove_t(), Structure.ByValue
 }
 
-enum class EVROverlayError(val i: Int) {
-    EVROverlayError_VROverlayError_None(0),
-    EVROverlayError_VROverlayError_UnknownOverlay(10),
-    EVROverlayError_VROverlayError_InvalidHandle(11),
-    EVROverlayError_VROverlayError_PermissionDenied(12),
-    EVROverlayError_VROverlayError_OverlayLimitExceeded(13),
-    EVROverlayError_VROverlayError_WrongVisibilityType(14),
-    EVROverlayError_VROverlayError_KeyTooLong(15),
-    EVROverlayError_VROverlayError_NameTooLong(16),
-    EVROverlayError_VROverlayError_KeyInUse(17),
-    EVROverlayError_VROverlayError_WrongTransformType(18),
-    EVROverlayError_VROverlayError_InvalidTrackedDevice(19),
-    EVROverlayError_VROverlayError_InvalidParameter(20),
-    EVROverlayError_VROverlayError_ThumbnailCantBeDestroyed(21),
-    EVROverlayError_VROverlayError_ArrayTooSmall(22),
-    EVROverlayError_VROverlayError_RequestFailed(23),
-    EVROverlayError_VROverlayError_InvalidTexture(24),
-    EVROverlayError_VROverlayError_UnableToLoadFile(25),
-    EVROverlayError_VROVerlayError_KeyboardAlreadyInUse(26),
-    EVROverlayError_VROverlayError_NoNeighbor(27)
+/** notification related events. Details will still change at this point */
+open class VREvent_Notification_t : Structure {
+
+    var ulUserValue = 0L
+    var notificationId = 0
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("ulUserValue", "notificationId")
+
+    constructor(ulUserValue: Long, notificationId: Int) : super() {
+        this.ulUserValue = ulUserValue
+        this.notificationId = notificationId
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : VREvent_Notification_t(), Structure.ByReference
+    class ByValue : VREvent_Notification_t(), Structure.ByValue
 }
 
-enum class EVRApplicationType(val i: Int) {
-    EVRApplicationType_VRApplication_Other(0),
-    EVRApplicationType_VRApplication_Scene(1),
-    EVRApplicationType_VRApplication_Overlay(2),
-    EVRApplicationType_VRApplication_Background(3),
-    EVRApplicationType_VRApplication_Utility(4),
-    EVRApplicationType_VRApplication_VRMonitor(5),
-    EVRApplicationType_VRApplication_SteamWatchdog(6),
-    EVRApplicationType_VRApplication_Max(7)
+/** Used for events about processes */
+open class VREvent_Process_t : Structure {
+
+    var pid = 0
+    var oldPid = 0
+    var bForced: Byte = 0
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("pid", "oldPid", "bForced")
+
+    constructor(pid: Int, oldPid: Int, bForced: Byte) : super() {
+        this.pid = pid
+        this.oldPid = oldPid
+        this.bForced = bForced
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : VREvent_Process_t(), Structure.ByReference
+    class ByValue : VREvent_Process_t(), Structure.ByValue
 }
 
-enum class EVRFirmwareError(val i: Int) {
-    EVRFirmwareError_VRFirmwareError_None(0),
-    EVRFirmwareError_VRFirmwareError_Success(1),
-    EVRFirmwareError_VRFirmwareError_Fail(2)
+/** Used for a few events about overlays */
+open class VREvent_Overlay_t : Structure {
+
+    var overlayHandle = 0L
+
+    constructor() : super() {
+    }
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("overlayHandle")
+
+    constructor(overlayHandle: Long) : super() {
+        this.overlayHandle = overlayHandle
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : VREvent_Overlay_t(), Structure.ByReference
+    class ByValue : VREvent_Overlay_t(), Structure.ByValue
 }
 
-enum class EVRNotificationError(val i: Int) {
-    EVRNotificationError_VRNotificationError_OK(0),
-    EVRNotificationError_VRNotificationError_InvalidNotificationId(100),
-    EVRNotificationError_VRNotificationError_NotificationQueueFull(101),
-    EVRNotificationError_VRNotificationError_InvalidOverlayHandle(102),
-    EVRNotificationError_VRNotificationError_SystemWithUserValueAlreadyExists(103)
+/** Used for a few events about overlays */
+open class VREvent_Status_t : Structure {
+
+    var statusState = 0 // EVRState enum
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("statusState")
+
+    constructor(statusState: Int) : super() {
+        this.statusState = statusState
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : VREvent_Status_t(), Structure.ByReference
+    class ByValue : VREvent_Status_t(), Structure.ByValue
 }
 
-enum class EVRInitError(val i: Int) {
-    EVRInitError_VRInitError_None(0),
-    EVRInitError_VRInitError_Unknown(1),
-    EVRInitError_VRInitError_Init_InstallationNotFound(100),
-    EVRInitError_VRInitError_Init_InstallationCorrupt(101),
-    EVRInitError_VRInitError_Init_VRClientDLLNotFound(102),
-    EVRInitError_VRInitError_Init_FileNotFound(103),
-    EVRInitError_VRInitError_Init_FactoryNotFound(104),
-    EVRInitError_VRInitError_Init_InterfaceNotFound(105),
-    EVRInitError_VRInitError_Init_InvalidInterface(106),
-    EVRInitError_VRInitError_Init_UserConfigDirectoryInvalid(107),
-    EVRInitError_VRInitError_Init_HmdNotFound(108),
-    EVRInitError_VRInitError_Init_NotInitialized(109),
-    EVRInitError_VRInitError_Init_PathRegistryNotFound(110),
-    EVRInitError_VRInitError_Init_NoConfigPath(111),
-    EVRInitError_VRInitError_Init_NoLogPath(112),
-    EVRInitError_VRInitError_Init_PathRegistryNotWritable(113),
-    EVRInitError_VRInitError_Init_AppInfoInitFailed(114),
-    EVRInitError_VRInitError_Init_Retry(115),
-    EVRInitError_VRInitError_Init_InitCanceledByUser(116),
-    EVRInitError_VRInitError_Init_AnotherAppLaunching(117),
-    EVRInitError_VRInitError_Init_SettingsInitFailed(118),
-    EVRInitError_VRInitError_Init_ShuttingDown(119),
-    EVRInitError_VRInitError_Init_TooManyObjects(120),
-    EVRInitError_VRInitError_Init_NoServerForBackgroundApp(121),
-    EVRInitError_VRInitError_Init_NotSupportedWithCompositor(122),
-    EVRInitError_VRInitError_Init_NotAvailableToUtilityApps(123),
-    EVRInitError_VRInitError_Init_Internal(124),
-    EVRInitError_VRInitError_Init_HmdDriverIdIsNone(125),
-    EVRInitError_VRInitError_Init_HmdNotFoundPresenceFailed(126),
-    EVRInitError_VRInitError_Init_VRMonitorNotFound(127),
-    EVRInitError_VRInitError_Init_VRMonitorStartupFailed(128),
-    EVRInitError_VRInitError_Init_LowPowerWatchdogNotSupported(129),
-    EVRInitError_VRInitError_Init_InvalidApplicationType(130),
-    EVRInitError_VRInitError_Init_NotAvailableToWatchdogApps(131),
-    EVRInitError_VRInitError_Init_WatchdogDisabledInSettings(132),
-    EVRInitError_VRInitError_Driver_Failed(200),
-    EVRInitError_VRInitError_Driver_Unknown(201),
-    EVRInitError_VRInitError_Driver_HmdUnknown(202),
-    EVRInitError_VRInitError_Driver_NotLoaded(203),
-    EVRInitError_VRInitError_Driver_RuntimeOutOfDate(204),
-    EVRInitError_VRInitError_Driver_HmdInUse(205),
-    EVRInitError_VRInitError_Driver_NotCalibrated(206),
-    EVRInitError_VRInitError_Driver_CalibrationInvalid(207),
-    EVRInitError_VRInitError_Driver_HmdDisplayNotFound(208),
-    EVRInitError_VRInitError_Driver_TrackedDeviceInterfaceUnknown(209),
-    EVRInitError_VRInitError_Driver_HmdDriverIdOutOfBounds(211),
-    EVRInitError_VRInitError_Driver_HmdDisplayMirrored(212),
-    EVRInitError_VRInitError_IPC_ServerInitFailed(300),
-    EVRInitError_VRInitError_IPC_ConnectFailed(301),
-    EVRInitError_VRInitError_IPC_SharedStateInitFailed(302),
-    EVRInitError_VRInitError_IPC_CompositorInitFailed(303),
-    EVRInitError_VRInitError_IPC_MutexInitFailed(304),
-    EVRInitError_VRInitError_IPC_Failed(305),
-    EVRInitError_VRInitError_IPC_CompositorConnectFailed(306),
-    EVRInitError_VRInitError_IPC_CompositorInvalidConnectResponse(307),
-    EVRInitError_VRInitError_IPC_ConnectFailedAfterMultipleAttempts(308),
-    EVRInitError_VRInitError_Compositor_Failed(400),
-    EVRInitError_VRInitError_Compositor_D3D11HardwareRequired(401),
-    EVRInitError_VRInitError_Compositor_FirmwareRequiresUpdate(402),
-    EVRInitError_VRInitError_Compositor_OverlayInitFailed(403),
-    EVRInitError_VRInitError_Compositor_ScreenshotsInitFailed(404),
-    EVRInitError_VRInitError_VendorSpecific_UnableToConnectToOculusRuntime(1000),
-    EVRInitError_VRInitError_VendorSpecific_HmdFound_CantOpenDevice(1101),
-    EVRInitError_VRInitError_VendorSpecific_HmdFound_UnableToRequestConfigStart(1102),
-    EVRInitError_VRInitError_VendorSpecific_HmdFound_NoStoredConfig(1103),
-    EVRInitError_VRInitError_VendorSpecific_HmdFound_ConfigTooBig(1104),
-    EVRInitError_VRInitError_VendorSpecific_HmdFound_ConfigTooSmall(1105),
-    EVRInitError_VRInitError_VendorSpecific_HmdFound_UnableToInitZLib(1106),
-    EVRInitError_VRInitError_VendorSpecific_HmdFound_CantReadFirmwareVersion(1107),
-    EVRInitError_VRInitError_VendorSpecific_HmdFound_UnableToSendUserDataStart(1108),
-    EVRInitError_VRInitError_VendorSpecific_HmdFound_UnableToGetUserDataStart(1109),
-    EVRInitError_VRInitError_VendorSpecific_HmdFound_UnableToGetUserDataNext(1110),
-    EVRInitError_VRInitError_VendorSpecific_HmdFound_UserDataAddressRange(1111),
-    EVRInitError_VRInitError_VendorSpecific_HmdFound_UserDataError(1112),
-    EVRInitError_VRInitError_VendorSpecific_HmdFound_ConfigFailedSanityCheck(1113),
-    EVRInitError_VRInitError_Steam_SteamInstallationNotFound(2000)
+/** Used for keyboard events **/
+open class VREvent_Keyboard_t : Structure {
+
+    var cNewInput = ""    // Up to 11 bytes of new input
+    var uUserValue = 0L // Possible flags about the new input
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("cNewInput", "uUserValue")
+
+    constructor(cNewInput: String, uUserValue: Long) : super() {
+        this.cNewInput = cNewInput
+        this.uUserValue = uUserValue
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : VREvent_Keyboard_t(), Structure.ByReference
+    class ByValue : VREvent_Keyboard_t(), Structure.ByValue
 }
 
-enum class EVRScreenshotType(val i: Int) {
-    EVRScreenshotType_VRScreenshotType_None(0),
-    EVRScreenshotType_VRScreenshotType_Mono(1),
-    EVRScreenshotType_VRScreenshotType_Stereo(2),
-    EVRScreenshotType_VRScreenshotType_Cubemap(3),
-    EVRScreenshotType_VRScreenshotType_MonoPanorama(4),
-    EVRScreenshotType_VRScreenshotType_StereoPanorama(5)
+open class VREvent_Ipd_t : Structure {
+
+    var ipdMeters = 0f
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("ipdMeters")
+
+    constructor(ipdMeters: Float) : super() {
+        this.ipdMeters = ipdMeters
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : VREvent_Ipd_t(), Structure.ByReference
+    class ByValue : VREvent_Ipd_t(), Structure.ByValue
 }
 
-enum class EVRScreenshotPropertyFilenames(val i: Int) {
-    EVRScreenshotPropertyFilenames_VRScreenshotPropertyFilenames_Preview(0),
-    EVRScreenshotPropertyFilenames_VRScreenshotPropertyFilenames_VR(1)
+class IVRSystem : Structure {
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("GetRecommendedRenderTargetSize", "GetProjectionMatrix", "GetProjectionRaw",
+            "ComputeDistortion", "GetEyeToHeadTransform", "GetTimeSinceLastVsync", "GetD3D9AdapterIndex",
+            "GetDXGIOutputInfo", "IsDisplayOnDesktop", "SetDisplayVisibility", "GetDeviceToAbsoluteTrackingPose",
+            "ResetSeatedZeroPose", "GetSeatedZeroPoseToStandingAbsoluteTrackingPose",
+            "GetRawZeroPoseToStandingAbsoluteTrackingPose", "GetSortedTrackedDeviceIndicesOfClass",
+            "GetTrackedDeviceActivityLevel", "ApplyTransform", "GetTrackedDeviceIndexForControllerRole",
+            "GetControllerRoleForTrackedDeviceIndex", "GetTrackedDeviceClass", "IsTrackedDeviceConnected",
+            "GetBoolTrackedDeviceProperty", "GetFloatTrackedDeviceProperty", "GetInt32TrackedDeviceProperty",
+            "GetUint64TrackedDeviceProperty", "GetMatrix34TrackedDeviceProperty", "GetStringTrackedDeviceProperty",
+            "GetPropErrorNameFromEnum", "PollNextEvent", "PollNextEventWithPose", "GetEventTypeNameFromEnum",
+            "GetHiddenAreaMesh", "GetControllerState", "GetControllerStateWithPose", "TriggerHapticPulse",
+            "GetButtonIdNameFromEnum", "GetControllerAxisTypeNameFromEnum", "CaptureInputFocus",
+            "ReleaseInputFocus", "IsInputFocusCapturedByAnotherProcess", "DriverDebugRequest",
+            "PerformFirmwareUpdate", "AcknowledgeQuit_Exiting", "AcknowledgeQuit_UserPrompt",
+            "PerformanceTestEnableCapture", "PerformanceTestReportFidelityLevelChange")
+
+    constructor (peer: Pointer) : super(peer) {
+        read()
+    }
 }
 
-enum class EVRTrackedCameraError(val i: Int) {
-    EVRTrackedCameraError_VRTrackedCameraError_None(0),
-    EVRTrackedCameraError_VRTrackedCameraError_OperationFailed(100),
-    EVRTrackedCameraError_VRTrackedCameraError_InvalidHandle(101),
-    EVRTrackedCameraError_VRTrackedCameraError_InvalidFrameHeaderVersion(102),
-    EVRTrackedCameraError_VRTrackedCameraError_OutOfHandles(103),
-    EVRTrackedCameraError_VRTrackedCameraError_IPCFailure(104),
-    EVRTrackedCameraError_VRTrackedCameraError_NotSupportedForThisDevice(105),
-    EVRTrackedCameraError_VRTrackedCameraError_SharedMemoryFailure(106),
-    EVRTrackedCameraError_VRTrackedCameraError_FrameBufferingFailure(107),
-    EVRTrackedCameraError_VRTrackedCameraError_StreamSetupFailure(108),
-    EVRTrackedCameraError_VRTrackedCameraError_InvalidGLTextureId(109),
-    EVRTrackedCameraError_VRTrackedCameraError_InvalidSharedTextureHandle(110),
-    EVRTrackedCameraError_VRTrackedCameraError_FailedToGetGLTextureId(111),
-    EVRTrackedCameraError_VRTrackedCameraError_SharedTextureFailure(112),
-    EVRTrackedCameraError_VRTrackedCameraError_NoFrameAvailable(113),
-    EVRTrackedCameraError_VRTrackedCameraError_InvalidArgument(114),
-    EVRTrackedCameraError_VRTrackedCameraError_InvalidFrameBufferSize(115)
+external fun VR_GetGenericInterface(pchInterfaceVersion: String, peError: IntBuffer): Pointer
+external fun VR_IsInterfaceVersionValid(pchInterfaceVersion: String): Byte
+
+external fun VR_InitInternal(peError: IntBuffer, eType: Int): Pointer
+external fun VR_ShutdownInternal()
+
+fun VR_Init(error: IntBuffer, applicationType: Int): IVRSystem {
+
+    var vrSystem: IVRSystem? = null
+
+    VR_InitInternal(error, applicationType)
+//    val ctx = COpenVRContext()
+//    ctx.clear()
+
+//    if (error.get(0) === VRInitError_None) {
+    if (error.get(0) === 0) {
+
+//        if (VR_IsInterfaceVersionValid(IVRSystem_Version) !== 0.toByte()) {
+        if (VR_IsInterfaceVersionValid("IVRSystem_012") !== 0.toByte()) {
+
+            vrSystem = IVRSystem(VR_GetGenericInterface("IVRSystem_012", error))
+
+        } else {
+
+            VR_ShutdownInternal()
+//            error.put(0, EVRInitError.VRInitError_Init_InterfaceNotFound)
+            error.put(0, 105)
+        }
+    }
+    return vrSystem!!
 }
 
-enum class EVRTrackedCameraFrameType(val i: Int) {
-    EVRTrackedCameraFrameType_VRTrackedCameraFrameType_Distorted(0),
-    EVRTrackedCameraFrameType_VRTrackedCameraFrameType_Undistorted(1),
-    EVRTrackedCameraFrameType_VRTrackedCameraFrameType_MaximumUndistorted(2),
-    EVRTrackedCameraFrameType_MAX_CAMERA_FRAME_TYPES(3)
+fun main(args: Array<String>) {
+
+    val b = ByteBuffer.allocateDirect(java.lang.Integer.BYTES).asIntBuffer()
+    val a = VR_Init(b, 1)
 }
-
-enum class EVRApplicationError(val i: Int) {
-    EVRApplicationError_VRApplicationError_None(0),
-    EVRApplicationError_VRApplicationError_AppKeyAlreadyExists(100),
-    EVRApplicationError_VRApplicationError_NoManifest(101),
-    EVRApplicationError_VRApplicationError_NoApplication(102),
-    EVRApplicationError_VRApplicationError_InvalidIndex(103),
-    EVRApplicationError_VRApplicationError_UnknownApplication(104),
-    EVRApplicationError_VRApplicationError_IPCFailed(105),
-    EVRApplicationError_VRApplicationError_ApplicationAlreadyRunning(106),
-    EVRApplicationError_VRApplicationError_InvalidManifest(107),
-    EVRApplicationError_VRApplicationError_InvalidApplication(108),
-    EVRApplicationError_VRApplicationError_LaunchFailed(109),
-    EVRApplicationError_VRApplicationError_ApplicationAlreadyStarting(110),
-    EVRApplicationError_VRApplicationError_LaunchInProgress(111),
-    EVRApplicationError_VRApplicationError_OldApplicationQuitting(112),
-    EVRApplicationError_VRApplicationError_TransitionAborted(113),
-    EVRApplicationError_VRApplicationError_IsTemplate(114),
-    EVRApplicationError_VRApplicationError_BufferTooSmall(200),
-    EVRApplicationError_VRApplicationError_PropertyNotSet(201),
-    EVRApplicationError_VRApplicationError_UnknownProperty(202),
-    EVRApplicationError_VRApplicationError_InvalidParameter(203)
-}
-
-enum class EVRApplicationProperty(val i: Int) {
-    EVRApplicationProperty_VRApplicationProperty_Name_String(0),
-    EVRApplicationProperty_VRApplicationProperty_LaunchType_String(11),
-    EVRApplicationProperty_VRApplicationProperty_WorkingDirectory_String(12),
-    EVRApplicationProperty_VRApplicationProperty_BinaryPath_String(13),
-    EVRApplicationProperty_VRApplicationProperty_Arguments_String(14),
-    EVRApplicationProperty_VRApplicationProperty_URL_String(15),
-    EVRApplicationProperty_VRApplicationProperty_Description_String(50),
-    EVRApplicationProperty_VRApplicationProperty_NewsURL_String(51),
-    EVRApplicationProperty_VRApplicationProperty_ImagePath_String(52),
-    EVRApplicationProperty_VRApplicationProperty_Source_String(53),
-    EVRApplicationProperty_VRApplicationProperty_IsDashboardOverlay_Bool(60),
-    EVRApplicationProperty_VRApplicationProperty_IsTemplate_Bool(61),
-    EVRApplicationProperty_VRApplicationProperty_IsInstanced_Bool(62),
-    EVRApplicationProperty_VRApplicationProperty_LastLaunchTime_Uint64(70)
-}
-
-enum class EVRApplicationTransitionState(val i: Int) {
-    EVRApplicationTransitionState_VRApplicationTransition_None(0),
-    EVRApplicationTransitionState_VRApplicationTransition_OldAppQuitSent(10),
-    EVRApplicationTransitionState_VRApplicationTransition_WaitingForExternalLaunch(11),
-    EVRApplicationTransitionState_VRApplicationTransition_NewAppLaunched(20)
-}
-
-enum class ChaperoneCalibrationState(val i: Int) {
-    ChaperoneCalibrationState_OK(1),
-    ChaperoneCalibrationState_Warning(100),
-    ChaperoneCalibrationState_Warning_BaseStationMayHaveMoved(101),
-    ChaperoneCalibrationState_Warning_BaseStationRemoved(102),
-    ChaperoneCalibrationState_Warning_SeatedBoundsInvalid(103),
-    ChaperoneCalibrationState_Error(200),
-    ChaperoneCalibrationState_Error_BaseStationUninitalized(201),
-    ChaperoneCalibrationState_Error_BaseStationConflict(202),
-    ChaperoneCalibrationState_Error_PlayAreaInvalid(203),
-    ChaperoneCalibrationState_Error_CollisionBoundsInvalid(204)
-}
-
-enum class EChaperoneConfigFile(val i: Int) {
-    EChaperoneConfigFile_Live(0),
-    EChaperoneConfigFile_Temp(1)
-}
-
-enum class EChaperoneImportFlags(val i: Int) {
-    EChaperoneImportFlags_EChaperoneImport_BoundsOnly(1)
-}
-
-enum class EVRCompositorError(val i: Int) {
-    EVRCompositorError_VRCompositorError_None(0),
-    EVRCompositorError_VRCompositorError_RequestFailed(1),
-    EVRCompositorError_VRCompositorError_IncompatibleVersion(100),
-    EVRCompositorError_VRCompositorError_DoNotHaveFocus(101),
-    EVRCompositorError_VRCompositorError_InvalidTexture(102),
-    EVRCompositorError_VRCompositorError_IsNotSceneApplication(103),
-    EVRCompositorError_VRCompositorError_TextureIsOnWrongDevice(104),
-    EVRCompositorError_VRCompositorError_TextureUsesUnsupportedFormat(105),
-    EVRCompositorError_VRCompositorError_SharedTexturesNotSupported(106),
-    EVRCompositorError_VRCompositorError_IndexOutOfRange(107)
-}
-
-enum class VROverlayInputMethod(val i: Int) {
-    VROverlayInputMethod_None(0),
-    VROverlayInputMethod_Mouse(1)
-}
-
-enum class VROverlayTransformType(val i: Int) {
-    VROverlayTransformType_VROverlayTransform_Absolute(0),
-    VROverlayTransformType_VROverlayTransform_TrackedDeviceRelative(1),
-    VROverlayTransformType_VROverlayTransform_SystemOverlay(2),
-    VROverlayTransformType_VROverlayTransform_TrackedComponent(3)
-}
-
-enum class VROverlayFlags(val i: Int) {
-    VROverlayFlags_None(0),
-    VROverlayFlags_Curved(1),
-    VROverlayFlags_RGSS4X(2),
-    VROverlayFlags_NoDashboardTab(3),
-    VROverlayFlags_AcceptsGamepadEvents(4),
-    VROverlayFlags_ShowGamepadFocus(5),
-    VROverlayFlags_SendVRScrollEvents(6),
-    VROverlayFlags_SendVRTouchpadEvents(7),
-    VROverlayFlags_ShowTouchPadScrollWheel(8),
-    VROverlayFlags_TransferOwnershipToInternalProcess(9),
-    VROverlayFlags_SideBySide_Parallel(10),
-    VROverlayFlags_SideBySide_Crossed(11),
-    VROverlayFlags_Panorama(12),
-    VROverlayFlags_StereoPanorama(13),
-    VROverlayFlags_SortWithNonSceneOverlays(14)
-}
-
-enum class EGamepadTextInputMode(val i: Int) {
-    EGamepadTextInputMode_k_EGamepadTextInputModeNormal(0),
-    EGamepadTextInputMode_k_EGamepadTextInputModePassword(1),
-    EGamepadTextInputMode_k_EGamepadTextInputModeSubmit(2)
-}
-
-enum class EGamepadTextInputLineMode(val i: Int) {
-    EGamepadTextInputLineMode_k_EGamepadTextInputLineModeSingleLine(0),
-    EGamepadTextInputLineMode_k_EGamepadTextInputLineModeMultipleLines(1)
-}
-
-enum class EOverlayDirection(val i: Int) {
-    EOverlayDirection_OverlayDirection_Up(0),
-    EOverlayDirection_OverlayDirection_Down(1),
-    EOverlayDirection_OverlayDirection_Left(2),
-    EOverlayDirection_OverlayDirection_Right(3),
-    EOverlayDirection_OverlayDirection_Count(4)
-}
-
-enum class EVRRenderModelError(val i: Int) {
-    EVRRenderModelError_VRRenderModelError_None(0),
-    EVRRenderModelError_VRRenderModelError_Loading(100),
-    EVRRenderModelError_VRRenderModelError_NotSupported(200),
-    EVRRenderModelError_VRRenderModelError_InvalidArg(300),
-    EVRRenderModelError_VRRenderModelError_InvalidModel(301),
-    EVRRenderModelError_VRRenderModelError_NoShapes(302),
-    EVRRenderModelError_VRRenderModelError_MultipleShapes(303),
-    EVRRenderModelError_VRRenderModelError_TooManyVertices(304),
-    EVRRenderModelError_VRRenderModelError_MultipleTextures(305),
-    EVRRenderModelError_VRRenderModelError_BufferTooSmall(306),
-    EVRRenderModelError_VRRenderModelError_NotEnoughNormals(307),
-    EVRRenderModelError_VRRenderModelError_NotEnoughTexCoords(308),
-    EVRRenderModelError_VRRenderModelError_InvalidTexture(400)
-}
-
-enum class EVRComponentProperty(val i: Int) {
-    EVRComponentProperty_VRComponentProperty_IsStatic(1),
-    EVRComponentProperty_VRComponentProperty_IsVisible(2),
-    EVRComponentProperty_VRComponentProperty_IsTouched(4),
-    EVRComponentProperty_VRComponentProperty_IsPressed(8),
-    EVRComponentProperty_VRComponentProperty_IsScrolled(16)
-}
-
-enum class EVRNotificationType(val i: Int) {
-    EVRNotificationType_Transient(0),
-    EVRNotificationType_Persistent(1),
-    EVRNotificationType_Transient_SystemWithUserValue(2)
-}
-
-enum class EVRNotificationStyle(val i: Int) {
-    EVRNotificationStyle_None(0),
-    EVRNotificationStyle_Application(100),
-    EVRNotificationStyle_Contact_Disabled(200),
-    EVRNotificationStyle_Contact_Enabled(201),
-    EVRNotificationStyle_Contact_Active(202)
-}
-
-enum class EVRSettingsError(val i: Int) {
-    EVRSettingsError_VRSettingsError_None(0),
-    EVRSettingsError_VRSettingsError_IPCFailed(1),
-    EVRSettingsError_VRSettingsError_WriteFailed(2),
-    EVRSettingsError_VRSettingsError_ReadFailed(3)
-}
-
-enum class EVRScreenshotError(val i: Int) {
-    EVRScreenshotError_VRScreenshotError_None(0),
-    EVRScreenshotError_VRScreenshotError_RequestFailed(1),
-    EVRScreenshotError_VRScreenshotError_IncompatibleVersion(100),
-    EVRScreenshotError_VRScreenshotError_NotFound(101),
-    EVRScreenshotError_VRScreenshotError_BufferTooSmall(102),
-    EVRScreenshotError_VRScreenshotError_ScreenshotAlreadyInProgress(108)
-}
-
-typealias TrackedDeviceIndex_t = Int
-typealias VRNotificationId = Int;
-typealias VROverlayHandle_t = Long;
-data class Pointer(val l: Long)
-typealias glSharedTextureHandle_t = Pointer;
-typealias glInt_t = Int;
-typealias glUInt_t = Int;
-typealias TrackedCameraHandle_t = Long;
-typealias ScreenshotHandle_t = Int;
-typealias VRComponentProperties = Int;
-typealias TextureID_t = Int;
-typealias HmdError = EVRInitError;
-typealias Hmd_Eye = EVREye;
-typealias GraphicsAPIConvention = EGraphicsAPIConvention;
-typealias ColorSpace = EColorSpace;
-typealias HmdTrackingResult = ETrackingResult;
-typealias TrackedDeviceClass = ETrackedDeviceClass;
-typealias TrackingUniverseOrigin = ETrackingUniverseOrigin;
-typealias TrackedDeviceProperty = ETrackedDeviceProperty;
-typealias TrackedPropertyError = ETrackedPropertyError;
-typealias VRSubmitFlags_t = EVRSubmitFlags;
-typealias VRState_t = EVRState;
-typealias CollisionBoundsStyle_t = ECollisionBoundsStyle;
-typealias VROverlayError = EVROverlayError;
-typealias VRFirmwareError = EVRFirmwareError;
-typealias VRCompositorError = EVRCompositorError;
-typealias VRScreenshotsError = EVRScreenshotError;
-
-class HmdMatrix34_t() {
-
-//    fun toRawPointer(): Long{
-//
-//        val buf = ByteBuffer.allocateDirect(3*4).order(ByteOrder.nativeOrder())
-//
-//        buf.putFloat(0, m00)
-//        //other mXY
-//
-//        return memoryAddress(buf)
-//
-//    }
-
-}
-
-class HmdMatrix44_t
-class HmdVector3_t
-class HmdVector4_t
-class HmdVector3d_t
-class HmdVector2_t
-data class HmdQuaternion_t(var w: Double, var x: Double, var y: Double, var z: Double)
-data class HmdColor_t(var r: Float, var g: Float, var b: Float, var a: Float)
-class HmdQuad_t
-data class HmdRect2_t(var vTopLeft: HmdVector2_t, var vBottomRight: HmdVector2_t)
-class DistortionCoordinates_t
-data class Texture_t(var handle: Pointer, var eType: EGraphicsAPIConvention, var eColorSpace: EColorSpace)
-
-data class TrackedDevicePose_t(var mDeviceToAbsoluteTracking: HmdMatrix34_t, var vVelocity: HmdVector3_t, var vAngularVelocity: HmdVector3_t,
-                               var eTrackingResult: ETrackingResult, var bPoseIsValid: Boolean, var bDeviceIsConnected: Boolean)
-
-data class VRTextureBounds_t(var uMin: Float, var vMin: Float, var uMax: Float, var vMax: Float)
-data class VREvent_Controller_t(var button: Int)
-data class VREvent_Mouse_t(var x: Float, var y: Float, var button: Int)
-data class VREvent_Scroll_t(var xdelta: Float, var ydelta: Float, var repeatCount: Int)
-data class VREvent_TouchPadMove_t(var bFingerDown: Boolean, var flSecondsFingerDown: Float, var fValueXFirst: Float, var fValueYFirst: Float,
-                                  var fValueXRaw: Float, var fValueYRaw: Float)
-
-data class VREvent_Notification_t(var ulUserValue: Long, var notificationId: Int)
-data class VREvent_Process_t(var pid: Int, var oldPid: Int, var bForced: Boolean)
-data class VREvent_Overlay_t(var overlayHandle: Long)
-data class VREvent_Status_t(var statusState: Int)
-data class VREvent_Keyboard_t(var cNewInput: String, var uUserValue: Long)
-data class VREvent_Ipd_t(var ipdMeters: Float)
-data class VREvent_Chaperone_t(var m_nPreviousUniverse: Long, var m_nCurrentUniverse: Long)
-data class VREvent_Reserved_t(var reserved0: Long, var reserved1: Long)
-data class VREvent_PerformanceTest_t(var m_nFidelityLevel: Int)
-data class VREvent_SeatedZeroPoseReset_t(var bResetBySystemMenu: Boolean)
-data class VREvent_Screenshot_t(var handle: Int, var type: Int)
-data class VREvent_ScreenshotProgress_t(var progress: Float)
-data class VREvent_ApplicationLaunch_t(var pid: Int, var unArgsHandle: Int)
-data class HiddenAreaMesh_t(var pVertexData: Array<HmdVector2_t>, var unTriangleCount: Int)
-data class VRControllerAxis_t(var x: Float, var y: Float)
-data class VRControllerState_t(var unPacketNum: Int, var ulButtonPressed: Long, var ulButtonTouched: Long,
-                               var rAxis: Array<VRControllerState_t>)
-
-data class Compositor_OverlaySettings(var size: Int, var curved: Boolean, var antialias: Boolean, var scale: Float, var distance: Float,
-                                      var alpha: Float, var uOffset: Float, var vOffset: Float, var uScale: Float, var vScale: Float,
-                                      var gridDivs: Float, var gridWidth: Float, var gridScale: Float, var transform: HmdMatrix44_t)
-
-data class CameraVideoStreamFrameHeader_t(var eFrameType: EVRTrackedCameraFrameType, var nWidth: Int, var nHeight: Int,
-                                          var nBytesPerPixel: Int, var nFrameSequence: Int, var standingTrackedDevicePose: TrackedDevicePose_t)
-
-data class AppOverrideKeys_t(var pchKey: String, var pchValue: String)
-
-data class Compositor_FrameTiming(var m_nSize: Int, var m_nFrameIndex: Int, var m_nNumFramePresents: Int, var m_nNumDroppedFrames: Int,
-                                  var m_nReprojectionFlags: Int, var m_flSystemTimeInSeconds: Double, var m_flPreSubmitGpuMs: Float,
-                                  var m_flPostSubmitGpuMs: Float, var m_flTotalRenderGpuMs: Float, var m_flCompositorRenderGpuMs: Float,
-                                  var m_flCompositorRenderCpuMs: Float, var m_flCompositorIdleCpuMs: Float,
-                                  var m_flClientFrameIntervalMs: Float, var m_flPresentCallCpuMs: Float, var m_flWaitForPresentCpuMs: Float,
-                                  var m_flSubmitFrameMs: Float, var m_flWaitGetPosesCalledMs: Float, var m_flNewPosesReadyMs: Float,
-                                  var m_flNewFrameReadyMs: Float, var m_flCompositorUpdateStartMs: Float, var m_flCompositorUpdateEndMs: Float,
-                                  var m_flCompositorRenderStartMs: Float, var m_HmdPose: TrackedDevicePose_t)
-
-data class Compositor_CumulativeStats(var m_nPid: Int, var m_nNumFramePresents: Int, var m_nNumDroppedFrames: Int,
-                                      var m_nNumReprojectedFrames: Int, var m_nNumFramePresentsOnStartup: Int,
-                                      var m_nNumDroppedFramesOnStartup: Int, var m_nNumReprojectedFramesOnStartup: Int, var m_nNumLoading: Int,
-                                      var m_nNumFramePresentsLoading: Int, var m_nNumDroppedFramesLoading: Int,
-                                      var m_nNumReprojectedFramesLoading: Int, var m_nNumTimedOut: Int, var m_nNumFramePresentsTimedOut: Int,
-                                      var m_nNumDroppedFramesTimedOut: Int, var m_nNumReprojectedFramesTimedOut: Int)
-
-data class VROverlayIntersectionParams_t(var vSource: HmdVector3_t, var vDirection: HmdVector3_t, var eOrigin: ETrackingUniverseOrigin)
-
-data class VROverlayIntersectionResults_t(var vPoint: HmdVector3_t, var vNormal: HmdVector3_t, var vUVs: HmdVector2_t, var fDistance: Float)
-
-data class RenderModel_ComponentState_t(var mTrackingToComponentRenderModel: HmdMatrix34_t, var mTrackingToComponentLocal: HmdMatrix34_t,
-                                        var uProperties: VRComponentProperties)
-
-data class RenderModel_Vertex_t(var vPosition: HmdVector3_t, var vNormal: HmdVector3_t, var rfTextureCoord: FloatArray)
-
-data class RenderModel_TextureMap_t(var unWidth: Short, var unHeight: Short, var rubTextureMapData: ByteArray)
-
-data class RenderModel_t(var rVertexData: Array<RenderModel_t>, var unVertexCount: Int, var rIndexData: ShortArray, var unTriangleCount: Int,
-                         var diffuseTextureId: TextureID_t)
-
-data class RenderModel_ControllerMode_State_t(var bScrollWheelVisible: Boolean)
-
-data class NotificationBitmap_t(var m_pImageData: Pointer, var m_nWidth: Int, var m_nHeight: Int, var m_nBytesPerPixel: Int)
-
-data class COpenVRContext(var m_VRSystem: Long, var m_pVRChaperone: Long, var m_pVRChaperoneSetup: Long, var m_pVRCompositor: Long,
-                          var m_pVROverlay: Long, var m_pVRResources: Long, var m_pVRRenderModels: Long, var m_pVRExtendedDisplay: Long,
-                          var m_pVRSettings: Long, var m_pVRApplications: Long, var m_pVRTrackedCamera: Long, var m_pVRScreenshots: Long)
