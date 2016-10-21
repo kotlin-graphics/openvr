@@ -2088,7 +2088,7 @@ open class IVRSystem : Structure {
     )
 
     constructor (peer: Pointer) : super(peer) {
-        read()
+//        read()
     }
 }
 
@@ -2118,8 +2118,7 @@ fun VR_Init(error: IntBuffer, applicationType: Int): IVRSystem {
         } else {
 
             VR_ShutdownInternal()
-//            error.put(0, EVRInitError.VRInitError_Init_InterfaceNotFound)
-            error.put(0, 105)
+            error.put(0, EVRInitError.VRInitError_Init_InterfaceNotFound.i)
         }
     }
     return vrSystem!!
@@ -2132,6 +2131,9 @@ fun main(args: Array<String>) {
     val c = ByteBuffer.allocateDirect(java.lang.Integer.BYTES).asIntBuffer()
     val a = VR_Init(b, 1)
     println(b.get(0))
-
-    listOf(1, 2, 3).map { "" }
+    val w = IntByReference(0)
+    val h = IntByReference(0)
+    a.read()
+    a.GetRecommendedRenderTargetSize!!.apply(w, h)
+    println("w: $w, h: $h")
 }
