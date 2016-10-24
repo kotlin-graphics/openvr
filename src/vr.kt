@@ -2100,8 +2100,8 @@ open class IVRSystem : Structure {
         val problematicFields = mapOf("GetEyeToHeadTransform" to 32, "GetSeatedZeroPoseToStandingAbsoluteTrackingPose" to 96)
 //                "GetDXGIOutputInfo" to 56, "GetTrackedDeviceActivityLevel" to 120)
         problematicFields.forEach { field, offset -> m.setPointer(field.toLong(), null) }
-        super.read();
-        useMemory(old);
+        super.read()
+        useMemory(old)
     }
 }
 
