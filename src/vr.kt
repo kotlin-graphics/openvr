@@ -2084,11 +2084,24 @@ open class IVRSystem : Structure {
             "GetMatrix34TrackedDeviceProperty", "GetStringTrackedDeviceProperty", "GetPropErrorNameFromEnum", "PollNextEvent", "PollNextEventWithPose",
             "GetEventTypeNameFromEnum", "GetHiddenAreaMesh", "GetControllerState", "GetControllerStateWithPose", "TriggerHapticPulse", "GetButtonIdNameFromEnum",
             "GetControllerAxisTypeNameFromEnum", "CaptureInputFocus", "ReleaseInputFocus", "IsInputFocusCapturedByAnotherProcess", "DriverDebugRequest",
-            "PerformFirmwareUpdate", "AcknowledgeQuit_Exiting", "AcknowledgeQuit_UserPrompt"
-    )
+            "PerformFirmwareUpdate", "AcknowledgeQuit_Exiting", "AcknowledgeQuit_UserPrompt")
 
     constructor (peer: Pointer) : super(peer) {
-//        read()
+        read()
+    }
+
+    override fun read() {
+        val old = pointer
+        val m = autoAllocate(size())
+        // horribly inefficient, but it'll do
+        m.write(0, old.getByteArray(0, size()), 0, size())
+        useMemory(m)
+        // Zero out the problematic callbacks
+        val problematicFields = mapOf("GetEyeToHeadTransform" to 32, "GetSeatedZeroPoseToStandingAbsoluteTrackingPose" to 96)
+//                "GetDXGIOutputInfo" to 56, "GetTrackedDeviceActivityLevel" to 120)
+        problematicFields.forEach { field, offset -> m.setPointer(field.toLong(), null) }
+        super.read();
+        useMemory(old);
     }
 }
 
@@ -2127,10 +2140,10 @@ fun VR_Init(error: IntBuffer, applicationType: Int): IVRSystem {
 fun main(args: Array<String>) {
 
     Native.register(NativeLibrary.getInstance("openvr_api"))
-    val b = ByteBuffer.allocateDirect(java.lang.Integer.BYTES).asIntBuffer()
+    val error = ByteBuffer.allocateDirect(java.lang.Integer.BYTES).asIntBuffer()
     val c = ByteBuffer.allocateDirect(java.lang.Integer.BYTES).asIntBuffer()
-    val a = VR_Init(b, 1)
-    println(b.get(0))
+    val a = VR_Init(error, EVRApplicationType.VRApplication_Scene.i)
+    println(error.get(0))
     val w = IntByReference(0)
     val h = IntByReference(0)
     a.read()
