@@ -10,5 +10,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="kotlin" level="application" />
     <orderEntry type="library" name="net.java.dev.jna:jna:4.2.2" level="project" />
+    <orderEntry type="library" scope="TEST" name="junit:junit:4.12" level="project" />
   </component>
 </module>
