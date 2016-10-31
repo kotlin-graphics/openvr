@@ -298,8 +298,7 @@ open class DistortionCoordinates_t : Structure {
 
 enum class EVREye(@JvmField val i: Int) {
     Eye_Left(0),
-    Eye_Right(1),
-    MAX(2);
+    Eye_Right(1);
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -3701,13 +3700,14 @@ open class IVRCompositor : Structure {
     }
 
     /** Returns pose(s) to use to render scene (and optionally poses predicted two frames out for gameplay). */
-    fun waitGetPoses(pRenderPoseArray: TrackedDevicePose_t.ByReference, unRenderPoseArrayCount: Int, pGamePoseArray: TrackedDevicePose_t.ByReference,
+    fun waitGetPoses(pRenderPoseArray: TrackedDevicePose_t.ByReference, unRenderPoseArrayCount: Int, pGamePoseArray: TrackedDevicePose_t.ByReference?,
                      unGamePoseArrayCount: Int) = WaitGetPoses!!.invoke(pRenderPoseArray, unRenderPoseArrayCount, pGamePoseArray, unGamePoseArrayCount)
 
     @JvmField var WaitGetPoses: WaitGetPoses_callback? = null
 
     interface WaitGetPoses_callback : Callback {
-        fun invoke(pRenderPoseArray: TrackedDevicePose_t.ByReference, unRenderPoseArrayCount: Int, pGamePoseArray: TrackedDevicePose_t.ByReference, unGamePoseArrayCount: Int): Int
+        fun invoke(pRenderPoseArray: TrackedDevicePose_t.ByReference, unRenderPoseArrayCount: Int, pGamePoseArray: TrackedDevicePose_t.ByReference?,
+                   unGamePoseArrayCount: Int): Int
     }
 
     /** Get the last set of poses returned by WaitGetPoses. */
