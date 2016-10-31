@@ -18,8 +18,8 @@ class Test {
     @Test fun IVRSystem() {
 
         loadNatives()
-        val error = IntByReference()
-        val hmd = VR_Init(error, EVRApplicationType.VRApplication_Scene)
+        val error = EVRInitError_ByReference()
+        val hmd = VR_Init(error, EVRApplicationType.VRApplication_Scene)!!
 
 
         val w = IntByReference(0)

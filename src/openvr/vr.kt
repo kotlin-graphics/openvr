@@ -2,17 +2,9 @@
 
 package openvr
 
-import com.sun.jna.Library
-import com.sun.jna.Native
-import com.sun.jna.Pointer
-import com.sun.jna.Structure
-import com.sun.jna.NativeLibrary
-import com.sun.jna.Callback
+import com.sun.jna.*
 import com.sun.jna.ptr.*
 import java.nio.ByteBuffer
-import java.nio.FloatBuffer
-import java.nio.IntBuffer
-import java.nio.LongBuffer
 import java.util.*
 
 /**
@@ -21,6 +13,9 @@ import java.util.*
 
 /** Should be your first call   */
 fun loadNatives() = Native.register(NativeLibrary.getInstance("openvr_api"))
+
+class BooleanByReference(@JvmField var value: Boolean = false) : ByteByReference(if (value) 1 else 0)
+
 
 /*struct VkDevice_T;
 struct VkPhysicalDevice_T;
@@ -321,7 +316,7 @@ enum class EGraphicsAPIConvention(@JvmField val i: Int) {
     }
 }
 
-class EGraphicsAPIConvention_ByReference(@JvmField val value: EGraphicsAPIConvention) : IntByReference(value.i)
+class EGraphicsAPIConvention_ByReference(@JvmField var value: EGraphicsAPIConvention = EGraphicsAPIConvention.API_OpenGL) : IntByReference(value.i)
 
 enum class EColorSpace(@JvmField val i: Int) {
 
@@ -334,7 +329,7 @@ enum class EColorSpace(@JvmField val i: Int) {
     }
 }
 
-class EColorSpace_ByReference(@JvmField val value: EColorSpace) : IntByReference(value.i)
+class EColorSpace_ByReference(@JvmField var value: EColorSpace = EColorSpace.ColorSpace_Auto) : IntByReference(value.i)
 
 open class Texture_t : Structure {
 
@@ -481,9 +476,9 @@ enum class ETrackingUniverseOrigin(@JvmField val i: Int) {
     }
 }
 
-class ETrackingUniverseOrigin_ByReference(val enum: ETrackingUniverseOrigin) : IntByReference(enum.i)
+class ETrackingUniverseOrigin_ByReference(@JvmField var value: ETrackingUniverseOrigin = ETrackingUniverseOrigin.TrackingUniverseSeated) : IntByReference(value.i)
 
-/** Each entry in this enum represents a property that can be retrieved about a tracked device.
+/** Each entry in this value represents a property that can be retrieved about a tracked device.
  *  Many fields are only valid for one openvr.ETrackedDeviceClass. */
 enum class ETrackedDeviceProperty(@JvmField val i: Int) {
 
@@ -622,7 +617,7 @@ enum class ETrackedPropertyError(@JvmField val i: Int) {
     }
 }
 
-class ETrackedPropertyError_ByReference(@JvmField val value: ETrackedPropertyError) : IntByReference(value.i)
+class ETrackedPropertyError_ByReference(@JvmField var value: ETrackedPropertyError = ETrackedPropertyError.TrackedProp_Success) : IntByReference(value.i)
 
 /** Allows the application to control what part of the provided texture will be used in the frame buffer. */
 open class VRTextureBounds_t : Structure {
@@ -893,7 +888,7 @@ fun buttonMaskFromId(id: EVRButtonId) = (1 shl id.i).toLong()
 /** used for controller button events */
 open class VREvent_Controller_t : VREvent_Data_t {
 
-    @JvmField var button = 0  // openvr.EVRButtonId enum
+    @JvmField var button = 0  // openvr.EVRButtonId value
     fun button() = EVRButtonId.of(button)
 
     constructor()
@@ -932,7 +927,7 @@ open class VREvent_Mouse_t : VREvent_Data_t {
     // co-ords are in GL space, bottom left of the texture is 0,0
     @JvmField var x = 0f
     @JvmField var y = 0f
-    @JvmField var button = 0  // openvr.EVRMouseButton enum
+    @JvmField var button = 0  // openvr.EVRMouseButton value
     fun button() = EVRMouseButton.of(button)
 
     constructor()
@@ -1093,7 +1088,7 @@ open class VREvent_Overlay_t : VREvent_Data_t {
 /** Used for a few events about overlays */
 open class VREvent_Status_t : VREvent_Data_t {
 
-    @JvmField var statusState = 0 // openvr.EVRState enum
+    @JvmField var statusState = 0 // openvr.EVRState value
 
     constructor()
 
@@ -1334,7 +1329,7 @@ abstract class VREvent_Data_t : Structure {
 /** An event posted by the server to all running applications */
 open class VREvent_t : Structure {
 
-    @JvmField var eventType = 0   // openvr.EVREventType enum
+    @JvmField var eventType = 0   // openvr.EVREventType value
     fun eventType() = EVREventType.of(eventType)
     @JvmField var TrackedDeviceIndex_t = 0
     @JvmField var eventAgeSeconds = 0f
@@ -1573,9 +1568,9 @@ enum class EVROverlayError(@JvmField val i: Int) {
     }
 }
 
-class EVROverlayError_ByReference(@JvmField val value: EVROverlayError) : IntByReference(value.i)
+class EVROverlayError_ByReference(@JvmField var value: EVROverlayError = EVROverlayError.VROverlayError_None) : IntByReference(value.i)
 
-/** enum values to pass in to openvr.VR_Init to identify whether the application will draw a 3D scene.     */
+/** value values to pass in to openvr.VR_Init to identify whether the application will draw a 3D scene.     */
 enum class EVRApplicationType(@JvmField val i: Int) {
 
     VRApplication_Other(0), //          Some other kind of application that isn't covered by the other entries
@@ -1715,6 +1710,8 @@ enum class EVRInitError(@JvmField val i: Int) {
     }
 }
 
+class EVRInitError_ByReference(@JvmField var value: EVRInitError = EVRInitError.VRInitError_None) : IntByReference(value.i)
+
 enum class EVRScreenshotType(@JvmField val i: Int) {
 
     VRScreenshotType_None(0),
@@ -1819,6 +1816,7 @@ open class CameraVideoStreamFrameHeader_t : Structure {
 
 // Screenshot types
 typealias ScreenshotHandle_t = Int
+typealias ScreenshotHandle_t_ByReference = IntByReference
 const val k_unScreenshotHandleInvalid = 0
 
 // ivrsystem.h ====================================================================================================================================================
@@ -2153,7 +2151,7 @@ open class IVRSystem : Structure {
         fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pchValue: String, unBufferSize: Int, pError: ETrackedPropertyError_ByReference? = null): Int
     }
 
-    /** returns a string that corresponds with the specified property error. The string will be the name of the error enum value for all valid error codes */
+    /** returns a string that corresponds with the specified property error. The string will be the name of the error value value for all valid error codes */
     fun getPropErrorNameFromEnum(error: ETrackedPropertyError) = GetPropErrorNameFromEnum!!.invoke(error.i)
 
     @JvmField var GetPropErrorNameFromEnum: GetPropErrorNameFromEnum_callback? = null
@@ -2191,7 +2189,7 @@ open class IVRSystem : Structure {
         fun invoke(eOrigin: Int, pEvent: VREvent_t.ByReference, uncbVREvent: Int, pTrackedDevicePose: TrackedDevicePose_t.ByReference): Boolean
     }
 
-    /** returns the name of an EVREvent enum value */
+    /** returns the name of an EVREvent value value */
     fun getEventTypeNameFromEnum(eType: EVREventType) = GetEventTypeNameFromEnum!!.invoke(eType.i)
 
     @JvmField var GetEventTypeNameFromEnum: GetEventTypeNameFromEnum_callback? = null
@@ -2257,7 +2255,7 @@ open class IVRSystem : Structure {
         fun invoke(unControllerDeviceIndex: TrackedDeviceIndex_t, unAxisId: Int, usDurationMicroSec: Short)
     }
 
-    /** returns the name of an openvr.EVRButtonId enum value */
+    /** returns the name of an openvr.EVRButtonId value value */
     fun getButtonIdNameFromEnum(eButtonId: EVRButtonId) = GetButtonIdNameFromEnum!!.invoke(eButtonId.i)
 
     @JvmField var GetButtonIdNameFromEnum: GetButtonIdNameFromEnum_callback? = null
@@ -2266,7 +2264,7 @@ open class IVRSystem : Structure {
         fun invoke(eButtonId: Int): String
     }
 
-    /** returns the game of an openvr.EVRControllerAxisType enum value */
+    /** returns the game of an openvr.EVRControllerAxisType value value */
     fun getControllerAxisTypeNameFromEnum(eAxisType: EVRControllerAxisType) = GetControllerAxisTypeNameFromEnum!!.invoke(eAxisType.i)
 
     @JvmField var GetControllerAxisTypeNameFromEnum: GetControllerAxisTypeNameFromEnum_callback? = null
@@ -2380,6 +2378,9 @@ open class IVRSystem : Structure {
     constructor (peer: Pointer) : super(peer) {
         read()
     }
+
+    class ByReference : IVRSystem(), Structure.ByReference
+    class ByValue : IVRSystem(), Structure.ByValue
 }
 
 const val IVRSystem_Version = "FnTable:IVRSystem_012"
@@ -2415,7 +2416,7 @@ enum class EVRApplicationError(@JvmField val i: Int) {
     }
 }
 
-class EVRApplicationError_ByReference(val value: EVRApplicationError) : IntByReference(value.i)
+class EVRApplicationError_ByReference(val value: EVRApplicationError = EVRApplicationError.VRApplicationError_None) : IntByReference(value.i)
 
 /** The maximum length of an application key */
 const val k_unMaxApplicationKeyLength = 128
@@ -2814,6 +2815,9 @@ open class IVRApplications : Structure {
     constructor (peer: Pointer) : super(peer) {
         read()
     }
+
+    class ByReference : IVRApplications(), Structure.ByReference
+    class ByValue : IVRApplications(), Structure.ByValue
 }
 
 const val IVRApplications_Version = "FnTable:IVRApplications_006"
@@ -2832,7 +2836,7 @@ enum class EVRSettingsError(@JvmField val i: Int) {
     }
 }
 
-class EVRSettingsError_ByReference(@JvmField val value: EVRSettingsError) : IntByReference(value.i)
+class EVRSettingsError_ByReference(@JvmField var value: EVRSettingsError = EVRSettingsError.VRSettingsError_None) : IntByReference(value.i)
 
 // The maximum length of a settings key
 const val k_unMaxSettingsKeyLength = 128
@@ -4180,7 +4184,7 @@ enum class VROverlayInputMethod(@JvmField val i: Int) {
     }
 }
 
-class VROverlayInputMethod_ByReference(var value: VROverlayInputMethod) : IntByReference(value.i)
+class VROverlayInputMethod_ByReference(var value: VROverlayInputMethod = VROverlayInputMethod.VROverlayInputMethod_None) : IntByReference(value.i)
 
 /** Allows the caller to figure out which overlay transform getter to call. */
 enum class VROverlayTransformType(@JvmField val i: Int) {
@@ -4195,7 +4199,7 @@ enum class VROverlayTransformType(@JvmField val i: Int) {
     }
 }
 
-class VROverlayTransformType_ByReference(@JvmField var value: VROverlayTransformType) : IntByReference(value.i)
+class VROverlayTransformType_ByReference(@JvmField var value: VROverlayTransformType = VROverlayTransformType.VROverlayTransform_Absolute) : IntByReference(value.i)
 
 /** Overlay control settings */
 enum class VROverlayFlags(@JvmField val i: Int) {
@@ -4423,7 +4427,7 @@ open class IVROverlay : Structure {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pvBuffer: Pointer, unBufferSize: Int, punWidth: IntByReference, punHeight: IntByReference): Int
     }
 
-    /** returns a string that corresponds with the specified overlay error. The string will be the name of the error enum value for all valid error codes */
+    /** returns a string that corresponds with the specified overlay error. The string will be the name of the error value value for all valid error codes */
     fun getOverlayErrorNameFromEnum(error: EVROverlayError) = GetOverlayErrorNameFromEnum!!.invoke(error.i)
 
     @JvmField var GetOverlayErrorNameFromEnum: IVROverlay.GetOverlayErrorNameFromEnum_callback? = null
@@ -4467,7 +4471,7 @@ open class IVROverlay : Structure {
     }
 
     /** Sets flag setting for a given overlay */
-    fun getOverlayFlag(ulOverlayHandle: VROverlayHandle_t, eOverlayFlag: VROverlayFlags, pbEnabled: ByteByReference)
+    fun getOverlayFlag(ulOverlayHandle: VROverlayHandle_t, eOverlayFlag: VROverlayFlags, pbEnabled: BooleanByReference)
             = EVROverlayError.of(GetOverlayFlag!!.invoke(ulOverlayHandle, eOverlayFlag.i, pbEnabled))
 
     @JvmField var GetOverlayFlag: IVROverlay.GetOverlayFlag_callback? = null
@@ -5182,7 +5186,7 @@ enum class EVRRenderModelError(@JvmField val i: Int) {
     }
 }
 
-class EVRRenderModelError_ByReference(val value: EVRRenderModelError) : IntByReference(value.i)
+class EVRRenderModelError_ByReference(val value: EVRRenderModelError = EVRRenderModelError.VRRenderModelError_None) : IntByReference(value.i)
 
 typealias VRComponentProperties = Int
 
@@ -5417,7 +5421,7 @@ open class IVRRenderModels : Structure {
      *  available render models.  If the index is out of range, this function will return 0.
      *  Otherwise, it will return the size of the buffer required for the name. */
     fun getRenderModelName(unRenderModelIndex: Int, pchRenderModelName: String, unRenderModelNameLen: Int)
-            = GetRenderModelName!!.invoke(unRenderModelIndex, pchRenderModelName, unRenderModelIndex)
+            = GetRenderModelName!!.invoke(unRenderModelIndex, pchRenderModelName, unRenderModelNameLen)
 
     @JvmField var GetRenderModelName: GetRenderModelName_callback? = null
 
@@ -5612,33 +5616,466 @@ open class IVRExtendedDisplay : Structure {
 
 const val IVRExtendedDisplay_Version = "FnTable:IVRExtendedDisplay_001"
 
-//------------------------------------------------------------------------------------------------------------
+// ivrtrackedcamera.h =============================================================================================================================================
 
-external fun VR_GetGenericInterface(pchInterfaceVersion: String, peError: IntByReference): Pointer
+open class IVRTrackedCamera : Structure {
+
+    /** Returns a string for an error */
+    fun getCameraErrorNameFromEnum(eCameraError: EVRTrackedCameraError) = GetCameraErrorNameFromEnum!!.invoke(eCameraError.i)
+
+    @JvmField var GetCameraErrorNameFromEnum: GetCameraErrorNameFromEnum_callback? = null
+
+    interface GetCameraErrorNameFromEnum_callback : Callback {
+        fun invoke(eCameraError: Int): String
+    }
+
+    /** For convenience, same as tracked property request Prop_HasCamera_Bool */
+    // TODO check automatic conversion *Boolean -> *Byte
+    fun hasCamera(nDeviceIndex: TrackedDeviceIndex_t, pHasCamera: BooleanByReference) = EVRTrackedCameraError.of(HasCamera!!.invoke(nDeviceIndex, pHasCamera))
+
+    @JvmField var HasCamera: HasCamera_callback? = null
+
+    interface HasCamera_callback : Callback {
+        fun invoke(nDeviceIndex: TrackedDeviceIndex_t, pHasCamera: ByteByReference): Int
+    }
+
+    /** Gets size of the image frame. */
+    fun getCameraFrameSize(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: EVRTrackedCameraFrameType, pnWidth: IntByReference, pnHeight: IntByReference,
+                           pnFrameBufferSize: IntByReference)
+            = EVRTrackedCameraError.of(GetCameraFrameSize!!.invoke(nDeviceIndex, eFrameType.i, pnWidth, pnHeight, pnFrameBufferSize))
+
+    @JvmField var GetCameraFrameSize: GetCameraFrameSize_callback? = null
+
+    interface GetCameraFrameSize_callback : Callback {
+        fun invoke(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: Int, pnWidth: IntByReference, pnHeight: IntByReference, pnFrameBufferSize: IntByReference): Int
+    }
+
+
+    fun getCameraIntrinisics(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: EVRTrackedCameraFrameType, pFocalLength: HmdVector2_t.ByReference,
+                             pCenter: HmdVector2_t.ByReference)
+            = EVRTrackedCameraError.of(GetCameraIntrinisics!!.invoke(nDeviceIndex, eFrameType.i, pFocalLength, pCenter))
+
+    @JvmField var GetCameraIntrinisics: GetCameraIntrinisics_callback? = null
+
+    interface GetCameraIntrinisics_callback : Callback {
+        fun invoke(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: Int, pFocalLength: HmdVector2_t.ByReference, pCenter: HmdVector2_t.ByReference): Int
+    }
+
+
+    fun getCameraProjection(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: EVRTrackedCameraFrameType, flZNear: Float, flZFar: Float,
+                            pProjection: HmdMatrix44_t.ByReference)
+            = EVRTrackedCameraError.of(GetCameraProjection!!.invoke(nDeviceIndex, eFrameType.i, flZNear, flZFar, pProjection))
+
+    @JvmField var GetCameraProjection: GetCameraProjection_callback? = null
+
+    interface GetCameraProjection_callback : Callback {
+        fun invoke(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: Int, flZNear: Float, flZFar: Float, pProjection: HmdMatrix44_t.ByReference): Int
+    }
+
+    /** Acquiring streaming service permits video streaming for the caller. Releasing hints the system that video services do not need to be maintained for this
+     *  client.
+     *  If the camera has not already been activated, a one time spin up may incur some auto exposure as well as initial streaming frame delays.
+     *  The camera should be considered a global resource accessible for shared consumption but not exclusive to any caller.
+     *  The camera may go inactive due to lack of active consumers or headset idleness. */
+    fun acquireVideoStreamingService(nDeviceIndex: TrackedDeviceIndex_t, pHandle: TrackedCameraHandle_t)
+            = EVRTrackedCameraError.of(AcquireVideoStreamingService!!.invoke(nDeviceIndex, pHandle))
+
+    @JvmField var AcquireVideoStreamingService: AcquireVideoStreamingService_callback? = null
+
+    interface AcquireVideoStreamingService_callback : Callback {
+        fun invoke(nDeviceIndex: TrackedDeviceIndex_t, pHandle: TrackedCameraHandle_t): Int
+    }
+
+    fun releaseVideoStreamingService(hTrackedCamera: TrackedCameraHandle_t) = EVRTrackedCameraError.of(ReleaseVideoStreamingService!!.invoke(hTrackedCamera))
+    @JvmField var ReleaseVideoStreamingService: ReleaseVideoStreamingService_callback? = null
+
+    interface ReleaseVideoStreamingService_callback : Callback {
+        fun invoke(hTrackedCamera: TrackedCameraHandle_t): Int
+    }
+
+    /** Copies the image frame into a caller's provided buffer. The image data is currently provided as RGBA data, 4 bytes per pixel.
+     *  A caller can provide null for the framebuffer or frameheader if not desired. Requesting the frame header first, followed by the frame buffer allows
+     *  the caller to determine if the frame as advanced per the frame header sequence.
+     *  If there is no frame available yet, due to initial camera spinup or re-activation, the error will be VRTrackedCameraError_NoFrameAvailable.
+     *  Ideally a caller should be polling at ~16ms intervals */
+    fun getVideoStreamFrameBuffer(hTrackedCamera: TrackedCameraHandle_t, eFrameType: EVRTrackedCameraFrameType, pFrameBuffer: Pointer, nFrameBufferSize: Int,
+                                  pFrameHeader: CameraVideoStreamFrameHeader_t.ByReference, nFrameHeaderSize: Int)
+            = EVRTrackedCameraError.of(GetVideoStreamFrameBuffer!!.invoke(hTrackedCamera, eFrameType.i, pFrameBuffer, nFrameBufferSize, pFrameHeader,
+            nFrameHeaderSize))
+
+    @JvmField var GetVideoStreamFrameBuffer: GetVideoStreamFrameBuffer_callback? = null
+
+    interface GetVideoStreamFrameBuffer_callback : Callback {
+        fun invoke(hTrackedCamera: TrackedCameraHandle_t, eFrameType: Int, pFrameBuffer: Pointer, nFrameBufferSize: Int,
+                   pFrameHeader: CameraVideoStreamFrameHeader_t.ByReference, nFrameHeaderSize: Int): Int
+    }
+
+    /** Gets size of the image frame. */
+    fun getVideoStreamTextureSize(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: EVRTrackedCameraFrameType, pTextureBounds: VRTextureBounds_t.ByReference,
+                                  pnWidth: IntByReference, pnHeight: IntByReference)
+            = EVRTrackedCameraError.of(GetVideoStreamTextureSize!!.invoke(nDeviceIndex, eFrameType.i, pTextureBounds, pnWidth, pnHeight))
+
+    @JvmField var GetVideoStreamTextureSize: GetVideoStreamTextureSize_callback? = null
+
+    interface GetVideoStreamTextureSize_callback : Callback {
+        fun invoke(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: Int, pTextureBounds: VRTextureBounds_t.ByReference, pnWidth: IntByReference,
+                   pnHeight: IntByReference): Int
+    }
+
+    /** Access a shared D3D11 texture for the specified tracked camera stream */
+    fun getVideoStreamTextureD3D11(hTrackedCamera: TrackedCameraHandle_t, eFrameType: EVRTrackedCameraFrameType, pD3D11DeviceOrResource: Pointer,
+                                   ppD3D11ShaderResourceView: PointerByReference, pFrameHeader: CameraVideoStreamFrameHeader_t.ByReference, nFrameHeaderSize: Int)
+            = EVRTrackedCameraError.of(GetVideoStreamTextureD3D11!!.invoke(hTrackedCamera, eFrameType.i, pD3D11DeviceOrResource, ppD3D11ShaderResourceView,
+            pFrameHeader, nFrameHeaderSize))
+
+    @JvmField var GetVideoStreamTextureD3D11: GetVideoStreamTextureD3D11_callback? = null
+
+    interface GetVideoStreamTextureD3D11_callback : Callback {
+        fun invoke(hTrackedCamera: TrackedCameraHandle_t, eFrameType: Int, pD3D11DeviceOrResource: Pointer, ppD3D11ShaderResourceView: PointerByReference,
+                   pFrameHeader: CameraVideoStreamFrameHeader_t.ByReference, nFrameHeaderSize: Int): Int
+    }
+
+    /** Access a shared GL texture for the specified tracked camera stream */
+    fun getVideoStreamTextureGL(hTrackedCamera: TrackedCameraHandle_t, eFrameType: EVRTrackedCameraFrameType, pglTextureId: glUInt_t_ByReference,
+                                pFrameHeader: CameraVideoStreamFrameHeader_t.ByReference, nFrameHeaderSize: Int)
+            = EVRTrackedCameraError.of(GetVideoStreamTextureGL!!.invoke(hTrackedCamera, eFrameType.i, pglTextureId, pFrameHeader, nFrameHeaderSize))
+
+    @JvmField var GetVideoStreamTextureGL: GetVideoStreamTextureGL_callback? = null
+
+    interface GetVideoStreamTextureGL_callback : Callback {
+        fun invoke(hTrackedCamera: TrackedCameraHandle_t, eFrameType: Int, pglTextureId: IntByReference, pFrameHeader: CameraVideoStreamFrameHeader_t.ByReference,
+                   nFrameHeaderSize: Int): Int
+    }
+
+
+    fun releaseVideoStreamTextureGL(hTrackedCamera: TrackedCameraHandle_t, glTextureId: glUInt_t)
+            = EVRTrackedCameraError.of(ReleaseVideoStreamTextureGL!!.invoke(hTrackedCamera, glTextureId))
+
+    @JvmField var ReleaseVideoStreamTextureGL: ReleaseVideoStreamTextureGL_callback? = null
+
+    interface ReleaseVideoStreamTextureGL_callback : Callback {
+        fun invoke(hTrackedCamera: TrackedCameraHandle_t, glTextureId: Int): Int
+    }
+
+    constructor()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("GetCameraErrorNameFromEnum", "HasCamera", "GetCameraFrameSize", "GetCameraIntrinisics",
+            "GetCameraProjection", "AcquireVideoStreamingService", "ReleaseVideoStreamingService", "GetVideoStreamFrameBuffer", "GetVideoStreamTextureSize",
+            "GetVideoStreamTextureD3D11", "GetVideoStreamTextureGL", "ReleaseVideoStreamTextureGL")
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : IVRTrackedCamera(), Structure.ByReference
+    class ByValue : IVRTrackedCamera(), Structure.ByValue
+}
+
+const val IVRTrackedCamera_Version = "FnTable:IVRTrackedCamera_003"
+
+// ivrscreenshots.h ===============================================================================================================================================
+
+/** Errors that can occur with the VR compositor */
+enum class EVRScreenshotError(@JvmField val i: Int) {
+
+    VRScreenshotError_None(0),
+    VRScreenshotError_RequestFailed(1),
+    VRScreenshotError_IncompatibleVersion(100),
+    VRScreenshotError_NotFound(101),
+    VRScreenshotError_BufferTooSmall(102),
+    VRScreenshotError_ScreenshotAlreadyInProgress(108);
+
+    companion object {
+        fun of(i: Int) = values().first { it.i == i }
+    }
+}
+
+class EVRScreenshotError_ByReference(val value: EVRScreenshotError = EVRScreenshotError.VRScreenshotError_None) : IntByReference(value.i)
+
+/** Allows the application to generate screenshots */
+open class IVRScreenshots : Structure {
+
+    /** Request a screenshot of the requested type.
+     *  A request of the VRScreenshotType_Stereo type will always work. Other types will depend on the underlying application support.
+     *  The first file name is for the preview image and should be a regular screenshot (ideally from the left eye). The second is the VR screenshot in the correct
+     *  format. They should be in the same aspect ratio.
+     *  Formats per type:
+     *      VRScreenshotType_Mono: the VR filename is ignored (can be nullptr), this is a normal flat single shot.
+     *      VRScreenshotType_Stereo:  The VR image should be a side-by-side with the left eye image on the left.
+     *      VRScreenshotType_Cubemap: The VR image should be six square images composited horizontally.
+     *      VRScreenshotType_StereoPanorama: above/below with left eye panorama being the above image.  Image is typically square with the panorama being 2x
+     *      horizontal.
+     *
+     *  Note that the VR dashboard will call this function when the user presses the screenshot binding (currently System Button + Trigger).  If Steam is running,
+     *  the destination file names will be in %TEMP% and will be copied into Steam's screenshot library for the running application once SubmitScreenshot() is
+     *  called.
+     *  If Steam is not running, the paths will be in the user's documents folder under Documents\SteamVR\Screenshots.
+     *  Other VR applications can call this to initate a screenshot outside of user control.
+     *  The destination file names do not need an extension, will be replaced with the correct one for the format which is currently .png. */
+    fun requestScreenshot(pOutScreenshotHandle: ScreenshotHandle_t_ByReference, type: EVRScreenshotType, pchPreviewFilename: String, pchVRFilename: String)
+            = EVRScreenshotError.of(RequestScreenshot!!.invoke(pOutScreenshotHandle, type.i, pchPreviewFilename, pchVRFilename))
+
+    @JvmField var RequestScreenshot: RequestScreenshot_callback? = null
+
+    interface RequestScreenshot_callback : Callback {
+        fun invoke(pOutScreenshotHandle: ScreenshotHandle_t_ByReference, type: Int, pchPreviewFilename: String, pchVRFilename: String): Int
+    }
+
+    /** Called by the running VR application to indicate that it wishes to be in charge of screenshots.  If the application does not call this, the Compositor
+     *  will only support VRScreenshotType_Stereo screenshots that will be captured without notification to the running app.
+     *  Once hooked your application will receive a VREvent_RequestScreenshot event when the user presses the buttons to take a screenshot. */
+    fun hookScreenshot(pSupportedTypes: Array<EVRScreenshotType>, numTypes: Int): EVRScreenshotError {
+
+        val pointer = Memory((numTypes * Native.getNativeSize(java.lang.Double.TYPE)).toLong())
+        pointer.read(0, pSupportedTypes.map { it.i }.toIntArray(), 0, numTypes) // TODO probably also the other arrays needs Pointer type
+
+        return EVRScreenshotError.of(HookScreenshot!!.invoke(pointer, numTypes))
+    }
+
+    @JvmField var HookScreenshot: HookScreenshot_callback? = null
+
+    interface HookScreenshot_callback : Callback {
+        fun invoke(pSupportedTypes: Pointer, numTypes: Int): Int
+    }
+
+    /** When your application receives a VREvent_RequestScreenshot event, call these functions to get the details of the screenshot request. */
+    fun getScreenshotPropertyType(screenshotHandle: ScreenshotHandle_t, pError: EVRScreenshotError_ByReference)
+            = EVRScreenshotError.of(GetScreenshotPropertyType!!.invoke(screenshotHandle, pError))
+
+    @JvmField var GetScreenshotPropertyType: GetScreenshotPropertyType_callback? = null
+
+    interface GetScreenshotPropertyType_callback : Callback {
+        fun invoke(screenshotHandle: ScreenshotHandle_t, pError: IntByReference): Int
+    }
+
+    /** Get the filename for the preview or vr image (see vr::EScreenshotPropertyFilenames).  The return value is the size of the string.   */
+    fun getScreenshotPropertyFilename(screenshotHandle: ScreenshotHandle_t, filenameType: EVRScreenshotPropertyFilenames, pchFilename: String,
+                                      cchFilename: Int, pError: EVRScreenshotError_ByReference)
+            = EVRScreenshotError.of(GetScreenshotPropertyFilename!!.invoke(screenshotHandle, filenameType.i, pchFilename, cchFilename, pError))
+
+    @JvmField var GetScreenshotPropertyFilename: GetScreenshotPropertyFilename_callback? = null
+
+    interface GetScreenshotPropertyFilename_callback : Callback {
+        fun invoke(screenshotHandle: ScreenshotHandle_t, filenameType: Int, pchFilename: String, cchFilename: Int, pError: EVRScreenshotError_ByReference): Int
+    }
+
+    /** Call this if the application is taking the screen shot will take more than a few ms processing. This will result in an overlay being presented that shows
+     *  a completion bar. */
+    fun updateScreenshotProgress(screenshotHandle: ScreenshotHandle_t, flProgress: Float)
+            = EVRScreenshotError.of(UpdateScreenshotProgress!!.invoke(screenshotHandle, flProgress))
+
+    @JvmField var UpdateScreenshotProgress: UpdateScreenshotProgress_callback? = null
+
+    interface UpdateScreenshotProgress_callback : Callback {
+        fun invoke(screenshotHandle: ScreenshotHandle_t, flProgress: Float): Int
+    }
+
+    /** Tells the compositor to take an internal screenshot of type VRScreenshotType_Stereo. It will take the current submitted scene textures of the running
+     *  application and write them into the preview image and a side-by-side file for the VR image.
+     *  This is similiar to request screenshot, but doesn't ever talk to the application, just takes the shot and submits. */
+    fun takeStereoScreenshot(pOutScreenshotHandle: ScreenshotHandle_t_ByReference, pchPreviewFilename: String, pchVRFilename: String)
+            = EVRScreenshotError.of(TakeStereoScreenshot!!.invoke(pOutScreenshotHandle, pchPreviewFilename, pchVRFilename))
+
+    @JvmField var TakeStereoScreenshot: TakeStereoScreenshot_callback? = null
+
+    interface TakeStereoScreenshot_callback : Callback {
+        fun invoke(pOutScreenshotHandle: ScreenshotHandle_t_ByReference, pchPreviewFilename: String, pchVRFilename: String): Int
+    }
+
+    /** Submit the completed screenshot.  If Steam is running this will call into the Steam client and upload the screenshot to the screenshots section of the
+     *  library for the running application.  If Steam is not running, this function will display a notification to the user that the screenshot was taken.
+     *  The paths should be full paths with extensions.
+     *  File paths should be absolute including exntensions.
+     *  screenshotHandle can be k_unScreenshotHandleInvalid if this was a new shot taking by the app to be saved and not initiated by a user (achievement earned
+     *  or something) */
+    fun submitScreenshot(screenshotHandle: ScreenshotHandle_t, type: EVRScreenshotType, pchSourcePreviewFilename: String, pchSourceVRFilename: String)
+            = EVRScreenshotError.of(SubmitScreenshot!!.invoke(screenshotHandle, type.i, pchSourcePreviewFilename, pchSourceVRFilename))
+
+    @JvmField var SubmitScreenshot: SubmitScreenshot_callback? = null
+
+    interface SubmitScreenshot_callback : Callback {
+        fun invoke(screenshotHandle: ScreenshotHandle_t, type: Int, pchSourcePreviewFilename: String, pchSourceVRFilename: String): Int
+    }
+
+    constructor()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("RequestScreenshot", "HookScreenshot", "GetScreenshotPropertyType", "GetScreenshotPropertyFilename",
+            "UpdateScreenshotProgress", "TakeStereoScreenshot", "SubmitScreenshot")
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : IVRScreenshots(), Structure.ByReference
+    class ByValue : IVRScreenshots(), Structure.ByValue
+}
+
+const val IVRScreenshots_Version = "FnTable:IVRScreenshots_001"
+
+// ivrresources.h =================================================================================================================================================
+
+open class IVRResources : Structure {
+
+    // ------------------------------------
+    // Shared Resource Methods
+    // ------------------------------------
+
+    /** Loads the specified resource into the provided buffer if large enough.
+     *  Returns the size in bytes of the buffer required to hold the specified resource. */
+    fun loadSharedResource(pchResourceName: String, pchBuffer: String, unBufferSize: Int) = LoadSharedResource!!.invoke(pchResourceName, pchBuffer, unBufferSize)
+
+    @JvmField var LoadSharedResource: LoadSharedResource_callback? = null
+
+    interface LoadSharedResource_callback : Callback {
+        fun invoke(pchResourceName: String, pchBuffer: String, unBufferLen: Int): Int
+    }
+
+    /** Provides the full path to the specified resource. Resource names can include named directories for drivers and other things, and this resolves all of
+     *  those and returns the actual physical path.
+     *  pchResourceTypeDirectory is the subdirectory of resources to look in. */
+    fun getResourceFullPath(pchResourceName: String, pchResourceTypeDirectory: String, pchPathBuffer: String, unBufferLen: Int)
+            = GetResourceFullPath!!.invoke(pchResourceName, pchResourceTypeDirectory, pchPathBuffer, unBufferLen)
+
+    @JvmField var GetResourceFullPath: GetResourceFullPath_callback? = null
+
+    interface GetResourceFullPath_callback : Callback {
+        fun invoke(pchResourceName: String, pchResourceTypeDirectory: String, pchPathBuffer: String, unBufferLen: Int): Int
+    }
+
+    constructor()
+
+    override fun getFieldOrder(): List<*> = Arrays.asList("LoadSharedResource", "GetResourceFullPath")
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : IVRScreenshots(), Structure.ByReference
+    class ByValue : IVRScreenshots(), Structure.ByValue
+}
+
+const val IVRResources_Version = "FnTable:IVRResources_001"
+
+// ================================================================================================================================================================
+
+/** Finds the active installation of the VR API and initializes it. The provided path must be absolute or relative to the current working directory. These are
+ *  the local install versions of the equivalent functions in steamvr.h and will work without a local Steam install.
+ *
+ *  This path is to the "root" of the VR API install. That's the directory with the "drivers" directory and a platform (i.e. "win32") directory in it,
+ *  not the directory with the DLL itself.   */
+//fun vrInit(peError: EVRInitError_ByReference, eApplicationType: EVRApplicationError) = VR_Init(peError, eApplicationType.i)
+//external fun VR_Init(peError: IntByReference, eApplicationType: Int): IVRSystem.ByReference // TODO check
+
+/** unloads vrclient.dll. Any interface pointers from the interface are invalid after this point */
+//fun vrShutdown() = VR_Shutdown()
+//external fun VR_Shutdown()
+
+/** Returns true if there is an HMD attached. This check is as lightweight as possible and can be called outside of VR_Init/VR_Shutdown. It should be used when
+ *  an application wants to know if initializing VR is a possibility but isn't ready to take that step yet.  */
+fun vrIsHmdPresent() = VR_IsHmdPresent()
+
+external fun VR_IsHmdPresent(): Boolean
+
+/** Returns true if the OpenVR runtime is installed. */
+fun vrIsRuntimeInstalled() = VR_IsRuntimeInstalled()
+
+external fun VR_IsRuntimeInstalled(): Boolean
+
+/** Returns where the OpenVR runtime is installed. */
+fun vrRuntimePath() = VR_RuntimePath()
+
+external fun VR_RuntimePath(): String
+
+/** Returns the name of the value value for an EVRInitError. This function may be called outside of VR_Init()/VR_Shutdown(). */
+fun vrGetVRInitErrorAsSymbol(error: EVRInitError) = VR_GetVRInitErrorAsSymbol(error.i)
+
+external fun VR_GetVRInitErrorAsSymbol(error: Int): String
+
+/** Returns an english string for an EVRInitError. Applications should call VR_GetVRInitErrorAsSymbol instead and use that as a key to look up their own localized
+ *  error message. This function may be called outside of VR_Init()/VR_Shutdown(). */
+fun VR_GetVRInitErrorAsEnglishDescription(error: EVRInitError) = VR_GetVRInitErrorAsEnglishDescription(error.i)
+
+external fun VR_GetVRInitErrorAsEnglishDescription(error: Int): String
+
+/** Returns the interface of the specified version. This method must be called after VR_Init. The pointer returned is valid until VR_Shutdown is called.     */
+fun vrGetGenericInterface(pchInterfaceVersion: String, peError: EVRInitError_ByReference) = VR_GetGenericInterface(pchInterfaceVersion, peError)
+
+external fun VR_GetGenericInterface(pchInterfaceVersion: String, peError: EVRInitError_ByReference): Pointer
+
+/** Returns whether the interface of the specified version exists.   */
+fun vrIsInterfaceVersionValid(pchInterfaceVersion: String) = VR_IsInterfaceVersionValid(pchInterfaceVersion)
+
 external fun VR_IsInterfaceVersionValid(pchInterfaceVersion: String): Boolean
 
-external fun VR_InitInternal(peError: IntByReference, eType: Int): Pointer
+/** Returns a token that represents whether the VR interface handles need to be reloaded */
+fun vrGetInitToken() = VR_GetInitToken()
+
+external fun VR_GetInitToken()
+
+object COpenVRContext {
+
+    private var m_pVRSystem: IVRSystem? = null
+    private val m_pVRChaperone: IVRChaperone? = null
+    private val m_pVRChaperoneSetup: IVRChaperoneSetup? = null
+    private val m_pVRCompositor: IVRCompositor? = null
+    private val m_pVROverlay: IVROverlay? = null
+    private val m_pVRResources: IVRResources? = null
+    private val m_pVRRenderModels: IVRRenderModels? = null
+    private val m_pVRExtendedDisplay: IVRExtendedDisplay? = null
+    private val m_pVRSettings: IVRSettings? = null
+    private val m_pVRApplications: IVRApplications? = null
+    private val m_pVRTrackedCamera: IVRTrackedCamera? = null
+    private val m_pVRScreenshots: IVRScreenshots? = null
+
+    private val error = EVRInitError_ByReference(EVRInitError.VRInitError_None)
+
+    fun VRSystem() = m_pVRSystem ?: IVRSystem(vrGetGenericInterface(IVRSystem_Version, error))
+    fun VRChaperone() = m_pVRChaperone ?: IVRChaperone(vrGetGenericInterface(IVRChaperone_Version, error))
+    fun VRChaperoneSetup() = m_pVRChaperoneSetup ?: IVRChaperoneSetup(vrGetGenericInterface(IVRChaperoneSetup_Version, error))
+    fun VRCompositor() = m_pVRCompositor ?: IVRCompositor(vrGetGenericInterface(IVRCompositor_Version, error))
+    fun VROverlay() = m_pVROverlay ?: IVROverlay(vrGetGenericInterface(IVROverlay_Version, error))
+    fun VRResources() = m_pVRResources ?: IVRResources(vrGetGenericInterface(IVRResources_Version, error))
+    fun VRRenderModels() = m_pVRRenderModels ?: IVRRenderModels(vrGetGenericInterface(IVRRenderModels_Version, error))
+    fun VRExtendedDisplay() = m_pVRExtendedDisplay ?: IVRExtendedDisplay(vrGetGenericInterface(IVRExtendedDisplay_Version, error))
+    fun VRSettings() = m_pVRSettings ?: IVRSettings(vrGetGenericInterface(IVRSettings_Version, error))
+    fun VRApplications() = m_pVRApplications ?: IVRApplications(vrGetGenericInterface(IVRApplications_Version, error))
+    fun VRTrackedCamera() = m_pVRTrackedCamera ?: IVRTrackedCamera(vrGetGenericInterface(IVRTrackedCamera_Version, error))
+    fun VRScreenshots() = m_pVRScreenshots ?: IVRScreenshots(vrGetGenericInterface(IVRScreenshots_Version, error))
+}
+
+fun VRSystem() = COpenVRContext.VRSystem()
+fun VRChaperone() = COpenVRContext.VRChaperone()
+fun VRChaperoneSetup() = COpenVRContext.VRChaperoneSetup()
+fun VRCompositor() = COpenVRContext.VRCompositor()
+fun VROverlay() = COpenVRContext.VROverlay()
+fun VRResources() = COpenVRContext.VRResources()
+fun VRRenderModels() = COpenVRContext.VRRenderModels()
+fun VRExtendedDisplay() = COpenVRContext.VRExtendedDisplay()
+fun VRSettings() = COpenVRContext.VRSettings()
+fun VRApplications() = COpenVRContext.VRApplications()
+fun VRTrackedCamera() = COpenVRContext.VRTrackedCamera()
+fun VRScreenshots() = COpenVRContext.VRScreenshots()
+
+fun vrInitInternal(peError: EVRInitError_ByReference, eType: EVRApplicationType) = VR_InitInternal(peError, eType.i)
+external fun VR_InitInternal(peError: EVRInitError_ByReference, eType: Int): Pointer
+
+fun vrShutdownInternal() = VR_ShutdownInternal()
 external fun VR_ShutdownInternal()
 
-fun VR_Init(error: IntByReference, applicationType: EVRApplicationType): IVRSystem {
+fun VR_Init(error: EVRInitError_ByReference, applicationType: EVRApplicationType): IVRSystem? {
 
-    var vrSystem: IVRSystem? = null
+    var pVRSystem: IVRSystem? = null
 
-    VR_InitInternal(error, applicationType.i)
-//    val ctx = COpenVRContext()
-//    ctx.clear()
+    vrInitInternal(error, applicationType)
 
-    if (error.value == EVRInitError.VRInitError_None.i) {
+    if (error.value == EVRInitError.VRInitError_None)
 
-        if (VR_IsInterfaceVersionValid(IVRSystem_Version)) {
-
-            vrSystem = IVRSystem(VR_GetGenericInterface(IVRSystem_Version, error))
-
-        } else {
-
+        if (VR_IsInterfaceVersionValid(IVRSystem_Version))
+            pVRSystem = VRSystem()
+        else {
             VR_ShutdownInternal()
-            error.value = EVRInitError.VRInitError_Init_InterfaceNotFound.i
+            error.value = EVRInitError.VRInitError_Init_InterfaceNotFound
         }
-    }
-    return vrSystem!!
+
+    return pVRSystem
 }
