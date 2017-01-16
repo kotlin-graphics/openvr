@@ -15,10 +15,22 @@ fun loadNatives() = Native.register(NativeLibrary.getInstance("openvr_api"))
 class BooleanByReference(@JvmField var value: Boolean = false) : ByteByReference(if (value) 1 else 0)
 
 
-/*struct VkDevice_T;
-struct VkPhysicalDevice_T;
-struct VkInstance_T;
-struct VkQueue_T;*/
+//struct VkDevice_T;
+open class VkPhysicalDevice_T : Structure {
+
+    constructor()
+
+    override fun getFieldOrder(): List<String> = Arrays.asList("")
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : VkPhysicalDevice_T(), Structure.ByReference
+    class ByValue : VkPhysicalDevice_T(), Structure.ByValue
+}
+//struct VkInstance_T;
+//struct VkQueue_T;
 
 typealias glSharedTextureHandle_t = Pointer
 typealias glSharedTextureHandle_t_ByReference = PointerByReference
@@ -303,17 +315,18 @@ enum class EVREye(@JvmField val i: Int) {
     }
 }
 
-enum class EGraphicsAPIConvention(@JvmField val i: Int) {
+enum class ETextureType(@JvmField val i: Int) {
 
-    API_DirectX(0), // Normalized Z goes from 0 at the viewer to 1 at the far clip plane
-    API_OpenGL(1);  // Normalized Z goes from 1 at the viewer to -1 at the far clip plane
+    TextureType_DirectX(0), // Handle is an ID3D11Texture
+    TextureType_OpenGL(1), // Handle is an OpenGL texture name or an OpenGL render buffer name, depending on submit flags
+    TextureType_Vulkan(2);  // Handle is a pointer to a VRVulkanTextureData_t structure
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
     }
 }
 
-class EGraphicsAPIConvention_ByReference(@JvmField var value: EGraphicsAPIConvention = EGraphicsAPIConvention.API_OpenGL) : IntByReference(value.i)
+class ETextureType_ByReference(@JvmField var value: ETextureType = ETextureType.TextureType_OpenGL) : IntByReference(value.i)
 
 enum class EColorSpace(@JvmField val i: Int) {
 
@@ -330,9 +343,9 @@ class EColorSpace_ByReference(@JvmField var value: EColorSpace = EColorSpace.Col
 
 open class Texture_t : Structure {
 
-    @JvmField var handle = 0  // Native d3d texture pointer or GL texture id.
+    @JvmField var handle = 0  //See ETextureType definition above
     @JvmField var eType = 0
-    fun eType() = EGraphicsAPIConvention.of(eType)
+    fun eType() = ETextureType.of(eType)
     @JvmField var eColorSpace = 0
     fun eColorSpace() = EColorSpace.of(eColorSpace)
 
@@ -344,7 +357,7 @@ open class Texture_t : Structure {
         set(handle, eType, eColorSpace)
     }
 
-    constructor(handle: Int, eType: EGraphicsAPIConvention, eColorSpace: EColorSpace) : this(handle, eType.i, eColorSpace.i)
+    constructor(handle: Int, eType: ETextureType, eColorSpace: EColorSpace) : this(handle, eType.i, eColorSpace.i)
 
     operator fun set(handle: Int, eType: Int, eColorSpace: Int) {
         this.handle = handle
@@ -395,11 +408,8 @@ enum class ETrackedDeviceClass(@JvmField val i: Int) {
     TrackedDeviceClass_Invalid(0), //           the ID was not valid.
     TrackedDeviceClass_HMD(1), //               Head-Mounted Displays
     TrackedDeviceClass_Controller(2), //        Tracked controllers
-    TrackedDeviceClass_TrackingReference(4), // Camera and base stations that serve as tracking reference points
-
-    TrackedDeviceClass_Count(5), //             This isn't a class that will ever be returned. It is used for allocating arrays and such
-
-    TrackedDeviceClass_Other(1000);
+    TrackedDeviceClass_GenericTracker(3), // Generic trackers, similar to controllers
+    TrackedDeviceClass_TrackingReference(4); // Camera and base stations that serve as tracking reference points;
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -465,7 +475,9 @@ enum class ETrackingUniverseOrigin(@JvmField val i: Int) {
 
     TrackingUniverseSeated(0), //               Poses are provided relative to the seated zero pose
     TrackingUniverseStanding(1), //             Poses are provided relative to the safe bounds configured by the user
-    TrackingUniverseRawAndUncalibrated(2);    // Poses are provided in the coordinate system defined by the driver. You probably don't want this one.
+    /** Poses are provided in the coordinate system defined by the driver. It has Y up and is unified for devices of the same driver.
+     * You usually don't want this one. */
+    TrackingUniverseRawAndUncalibrated(2);
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -477,6 +489,8 @@ class ETrackingUniverseOrigin_ByReference(@JvmField var value: ETrackingUniverse
 /** Each entry in this value represents a property that can be retrieved about a tracked device.
  *  Many fields are only valid for one openvr.ETrackedDeviceClass. */
 enum class ETrackedDeviceProperty(@JvmField val i: Int) {
+
+    Prop_Invalid(0),
 
     // general properties that apply to all device classes
     Prop_TrackingSystemName_String(1000),
@@ -608,7 +622,8 @@ enum class ETrackedPropertyError(@JvmField val i: Int) {
     TrackedProp_CouldNotContactServer(6),
     TrackedProp_ValueNotProvidedByDevice(7),
     TrackedProp_StringExceedsMaximumLength(8),
-    TrackedProp_NotYetAvailable(9); // The property value isn't known yet, but is expected soon. Call again later.
+    TrackedProp_NotYetAvailable(9), // The property value isn't known yet, but is expected soon. Call again later.
+    TrackedProp_PermissionDenied(10);
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -658,8 +673,8 @@ enum class EVRSubmitFlags(@JvmField val i: Int) {
     // If the texture pointer passed in is actually a renderbuffer (e.g. for MSAA in OpenGL) then set this flag.
     Submit_GlRenderBuffer(0x02),
 
-    // Handle is pointer to VulkanData_t
-    Submit_VulkanTexture(0x04);
+    // Do not use
+    Submit_Reserved(0x04);
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -668,7 +683,7 @@ enum class EVRSubmitFlags(@JvmField val i: Int) {
 
 /** Data required for passing Vulkan textures to openvr.IVRCompositor::Submit.
  * Be sure to call OpenVR_Shutdown before destroying these resources. */
-/*struct VulkanData_t
+/*struct VRVulkanTextureData_t
 {
     uint64_t m_nImage; // VkImage
     VkDevice_T *m_pDevice;
@@ -824,6 +839,8 @@ enum class EVREventType(@JvmField val i: Int) {
     VREvent_PerformanceTest_EnableCapture(1600),
     VREvent_PerformanceTest_DisableCapture(1601),
     VREvent_PerformanceTest_FidelityLevel(1602),
+
+    VREvent_MessageOverlay_Closed(1650),
 
     // Vendors are free to expose private events in this reserved region
     VREvent_VendorSpecific_Reserved_Start(10000),
@@ -1318,6 +1335,30 @@ open class VREvent_EditingCameraSurface_t : VREvent_Data_t {
     class ByValue : VREvent_EditingCameraSurface_t(), Structure.ByValue
 }
 
+
+open class VREvent_MessageOverlay_t : VREvent_Data_t {
+
+    @JvmField var unVRMessageOverlayResponse = 0 // vr::VRMessageOverlayResponse enum
+    fun unVRMessageOverlayResponse() = VRMessageOverlayResponse.of(unVRMessageOverlayResponse)
+
+    constructor()
+
+    constructor(unVRMessageOverlayResponse: VRMessageOverlayResponse) : this(unVRMessageOverlayResponse.i)
+
+    constructor(unVRMessageOverlayResponse: Int) {
+        this.unVRMessageOverlayResponse = unVRMessageOverlayResponse
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    override fun getFieldOrder(): List<String> = Arrays.asList("unVRMessageOverlayResponse")
+
+    class ByReference : VREvent_MessageOverlay_t(), Structure.ByReference
+    class ByValue : VREvent_MessageOverlay_t(), Structure.ByValue
+}
+
 /** If you change this you must manually update openvr_interop.cs.py */
 abstract class VREvent_Data_t : Structure {
     constructor() : super()
@@ -1669,6 +1710,8 @@ enum class EVRInitError(@JvmField val i: Int) {
     VRInitError_Init_InvalidApplicationType(130),
     VRInitError_Init_NotAvailableToWatchdogApps(131),
     VRInitError_Init_WatchdogDisabledInSettings(132),
+    VRInitError_Init_VRDashboardNotFound(133),
+    VRInitError_Init_VRDashboardStartupFailed(134),
 
     VRInitError_Driver_Failed(200),
     VRInitError_Driver_Unknown(201),
@@ -1851,13 +1894,12 @@ open class IVRSystem : Structure {
     }
 
     /** The projection matrix for the specified eye */
-    fun getProjectionMatrix(eEye: EVREye, fNearZ: Float, fFarZ: Float, eProjType: EGraphicsAPIConvention)
-            = GetProjectionMatrix!!.invoke(eEye.i, fNearZ, fFarZ, eProjType.i)
+    fun getProjectionMatrix(eEye: EVREye, fNearZ: Float, fFarZ: Float) = GetProjectionMatrix!!.invoke(eEye.i, fNearZ, fFarZ)
 
     @JvmField var GetProjectionMatrix: GetProjectionMatrix_callback? = null
 
     interface GetProjectionMatrix_callback : Callback {
-        fun invoke(eEye: Int, fNearZ: Float, fFarZ: Float, eProjType: Int): HmdMatrix44_t.ByValue
+        fun invoke(eEye: Int, fNearZ: Float, fFarZ: Float): HmdMatrix44_t.ByValue
     }
 
     /** The components necessary to build your own projection matrix in case your application is doing something fancy like infinite Z  */
@@ -2417,7 +2459,7 @@ open class IVRSystem : Structure {
     class ByValue : IVRSystem(), Structure.ByValue
 }
 
-const val IVRSystem_Version = "FnTable:IVRSystem_014"
+const val IVRSystem_Version = "FnTable:IVRSystem_015"
 
 /** Used for all errors reported by the openvr.IVRApplications interface */
 enum class EVRApplicationError(@JvmField val i: Int) {
@@ -3062,6 +3104,9 @@ const val k_pch_SteamVR_DefaultMirrorView_Int32 = "defaultMirrorView"
 const val k_pch_SteamVR_ShowMirrorView_Bool = "showMirrorView"
 const val k_pch_SteamVR_MirrorViewGeometry_String = "mirrorViewGeometry"
 const val k_pch_SteamVR_StartMonitorFromAppLaunch = "startMonitorFromAppLaunch"
+const val k_pch_SteamVR_StartCompositorFromAppLaunch_Bool = "startCompositorFromAppLaunch"
+const val k_pch_SteamVR_StartDashboardFromAppLaunch_Bool = "startDashboardFromAppLaunch"
+const val k_pch_SteamVR_StartOverlayAppsFromDashboard_Bool = "startOverlayAppsFromDashboard"
 const val k_pch_SteamVR_EnableHomeApp = "enableHomeApp"
 const val k_pch_SteamVR_SetInitialDefaultHomeApp = "setInitialDefaultHomeApp"
 const val k_pch_SteamVR_CycleBackgroundImageTimeSec_Int32 = "CycleBackgroundImageTimeSec"
@@ -3076,7 +3121,6 @@ const val k_pch_Lighthouse_Section = "driver_lighthouse"
 const val k_pch_Lighthouse_DisableIMU_Bool = "disableimu"
 const val k_pch_Lighthouse_UseDisambiguation_String = "usedisambiguation"
 const val k_pch_Lighthouse_DisambiguationDebug_Int32 = "disambiguationdebug"
-
 const val k_pch_Lighthouse_PrimaryBasestation_Int32 = "primarybasestation"
 const val k_pch_Lighthouse_DBHistory_Bool = "dbhistory"
 
@@ -3200,7 +3244,7 @@ enum class ChaperoneCalibrationState(@JvmField val i: Int) {
 
     // Errors
     ChaperoneCalibrationState_Error(200), //                            The UniverseID is invalid
-    ChaperoneCalibrationState_Error_BaseStationUninitalized(201), //    Tracking center hasn't be calibrated for at least one of the base stations
+    ChaperoneCalibrationState_Error_BaseStationUninitialized(201), //    Tracking center hasn't be calibrated for at least one of the base stations
     ChaperoneCalibrationState_Error_BaseStationConflict(202), //        Tracking center is calibrated), but base stations disagree on the tracking space
     ChaperoneCalibrationState_Error_PlayAreaInvalid(203), //            Play Area hasn't been calibrated for the current tracking center
     ChaperoneCalibrationState_Error_CollisionBoundsInvalid(204);     // Collision Bounds haven't been calibrated for the current tracking center
@@ -4133,6 +4177,30 @@ open class IVRCompositor : Structure {
         fun invoke(glSharedTextureHandle: glSharedTextureHandle_t)
     }
 
+    /** [Vulkan Only]
+     *  return 0. Otherwise it returns the length of the number of bytes necessary to hold this string including the trailing
+     *  null.  The string will be a space separated list of-required instance extensions to enable in VkCreateInstance */
+    fun getVulkanInstanceExtensionsRequired(pchValue: String, unBufferSize: Int) =
+            GetVulkanInstanceExtensionsRequired!!.invoke(pchValue, unBufferSize)
+
+    @JvmField var GetVulkanInstanceExtensionsRequired: GetVulkanInstanceExtensionsRequired_callback? = null
+
+    interface GetVulkanInstanceExtensionsRequired_callback : Callback {
+        fun invoke(pchValue: String, unBufferSize: Int): Int
+    }
+
+    /** [Vulkan only]
+     *   return 0. Otherwise it returns the length of the number of bytes necessary to hold this string including the trailing
+     *   null.  The string will be a space separated list of required device extensions to enable in VkCreateDevice */
+    fun getVulkanDeviceExtensionsRequired(pPhysicalDevice: VkPhysicalDevice_T.ByReference, pchValue: String, unBufferSize: Int) =
+            GetVulkanDeviceExtensionsRequired!!.invoke(pPhysicalDevice, pchValue, unBufferSize)
+
+    @JvmField var GetVulkanDeviceExtensionsRequired: GetVulkanDeviceExtensionsRequired_callback? = null
+
+    interface GetVulkanDeviceExtensionsRequired_callback : Callback {
+        fun invoke(pPhysicalDevice: VkPhysicalDevice_T.ByReference, pchValue: String, unBufferSize: Int): Int
+    }
+
     constructor()
 
     override fun getFieldOrder(): List<String> = Arrays.asList("SetTrackingSpace", "GetTrackingSpace", "WaitGetPoses", "GetLastPoses",
@@ -4142,7 +4210,8 @@ open class IVRCompositor : Structure {
             "CompositorQuit", "IsFullscreen", "GetCurrentSceneFocusProcess", "GetLastFrameRenderer", "CanRenderScene",
             "ShowMirrorWindow", "HideMirrorWindow", "IsMirrorWindowVisible", "CompositorDumpImages", "ShouldAppRenderWithLowResources",
             "ForceInterleavedReprojectionOn", "ForceReconnectProcess", "SuspendRendering", "GetMirrorTextureD3D11",
-            "GetMirrorTextureGL", "ReleaseSharedGLTexture", "LockGLSharedTextureForAccess", "UnlockGLSharedTextureForAccess")
+            "GetMirrorTextureGL", "ReleaseSharedGLTexture", "LockGLSharedTextureForAccess", "UnlockGLSharedTextureForAccess",
+            "getVulkanInstanceExtensionsRequired", "getVulkanDeviceExtensionsRequired")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -4152,7 +4221,7 @@ open class IVRCompositor : Structure {
     class ByValue : IVRCompositor(), Structure.ByValue
 }
 
-const val IVRCompositor_Version = "FnTable:IVRCompositor_018"
+const val IVRCompositor_Version = "FnTable:IVRCompositor_019"
 
 // ivrnotifications.h =============================================================================================================================================
 
@@ -4351,7 +4420,25 @@ enum class VROverlayFlags(@JvmField val i: Int) {
     VROverlayFlags_StereoPanorama(13), // Texture is a stereo panorama
 
     // If this is set on an overlay owned by the scene application that overlay will be sorted with the "Other" overlays on top of all other scene overlays
-    VROverlayFlags_SortWithNonSceneOverlays(14);
+    VROverlayFlags_SortWithNonSceneOverlays(14),
+
+    // If set, the overlay will be shown in the dashboard, otherwise it will be hidden.
+    VROverlayFlags_VisibleInDashboard(15);
+
+    companion object {
+        fun of(i: Int) = values().first { it.i == i }
+    }
+}
+
+enum class VRMessageOverlayResponse(@JvmField val i: Int) {
+
+    VRMessageOverlayResponse_ButtonPress_0(0),
+    VRMessageOverlayResponse_ButtonPress_1(1),
+    VRMessageOverlayResponse_ButtonPress_2(2),
+    VRMessageOverlayResponse_ButtonPress_3(3),
+    VRMessageOverlayResponse_CouldntFindSystemOverlay(4),
+    VRMessageOverlayResponse_CouldntFindOrCreateClientOverlay(5),
+    VRMessageOverlayResponse_ApplicationQuit(6);
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -5161,16 +5248,19 @@ open class IVROverlay : Structure {
      *
      *  pNativeTextureHandle is an OUTPUT, it will be a pointer to a ID3D11ShaderResourceView *.
      *  pNativeTextureRef is an INPUT and should be a ID3D11Resource *. The device used by pNativeTextureRef will be used to bind pNativeTextureHandle.     */
-    fun getOverlayTexture(ulOverlayHandle: VROverlayHandle_t, pNativeTextureHandle: PointerByReference, pNativeTextureRef: Pointer, pnWidth: IntByReference,
-                          pnHeight: IntByReference, pNativeFormat: IntByReference, pAPI: EGraphicsAPIConvention_ByReference, pColorSpace: EColorSpace_ByReference)
-            = EVROverlayError.of(GetOverlayTexture!!.invoke(ulOverlayHandle, pNativeTextureHandle, pNativeTextureRef, pnWidth, pnHeight, pNativeFormat, pAPI,
-            pColorSpace))
+    fun getOverlayTexture(ulOverlayHandle: VROverlayHandle_t, pNativeTextureHandle: PointerByReference,
+                          pNativeTextureRef: Pointer, pnWidth: IntByReference, pnHeight: IntByReference,
+                          pNativeFormat: IntByReference, pAPIType: ETextureType_ByReference, pColorSpace: EColorSpace_ByReference,
+                          pTextureBounds: VRTextureBounds_t.ByReference)
+            = EVROverlayError.of(GetOverlayTexture!!.invoke(ulOverlayHandle, pNativeTextureHandle, pNativeTextureRef, pnWidth,
+            pnHeight, pNativeFormat, pAPIType, pColorSpace, pTextureBounds))
 
     @JvmField var GetOverlayTexture: GetOverlayTexture_callback? = null
 
     interface GetOverlayTexture_callback : Callback {
-        fun invoke(ulOverlayHandle: VROverlayHandle_t, pNativeTextureHandle: PointerByReference, pNativeTextureRef: Pointer, pWidth: IntByReference,
-                   pHeight: IntByReference, pNativeFormat: IntByReference, pAPI: EGraphicsAPIConvention_ByReference, pColorSpace: EColorSpace_ByReference): Int
+        fun invoke(ulOverlayHandle: VROverlayHandle_t, pNativeTextureHandle: PointerByReference, pNativeTextureRef: Pointer,
+                   pWidth: IntByReference, pHeight: IntByReference, pNativeFormat: IntByReference, pAPIType: ETextureType_ByReference,
+                   pColorSpace: EColorSpace_ByReference, pTextureBounds: VRTextureBounds_t.ByReference): Int
     }
 
     /** Release the pNativeTextureHandle provided from the GetOverlayTexture call, this allows the system to free the underlying GPU resources for this object,
@@ -5353,6 +5443,32 @@ open class IVROverlay : Structure {
     }
 
 
+    fun getOverlayFlags(ulOverlayHandle: VROverlayHandle_t, pFlags: IntByReference)
+            = EVROverlayError.of(GetOverlayFlags!!.invoke(ulOverlayHandle, pFlags))
+
+    @JvmField var GetOverlayFlags: GetOverlayFlags_callback? = null
+
+    interface GetOverlayFlags_callback : Callback {
+        fun invoke(ulOverlayHandle: VROverlayHandle_t, pFlags: IntByReference): Int
+    }
+
+    // ---------------------------------------------
+    // Message box methods
+    // ---------------------------------------------
+
+    /** Show the message overlay. This will block and return you a result. **/
+    @JvmOverloads fun showMessageOverlay(pchText: String, pchCaption: String, pchButton0Text: String, pchButton1Text: String? = null,
+                                         pchButton2Text: String? = null, pchButton3Text: String? = null) =
+            VRMessageOverlayResponse.of(ShowMessageOverlay!!.invoke(pchText, pchCaption, pchButton0Text, pchButton1Text,
+                    pchButton2Text, pchButton3Text))
+
+    @JvmField var ShowMessageOverlay: ShowMessageOverlay_callback? = null
+
+    interface ShowMessageOverlay_callback : Callback {
+        fun invoke(pchText: String, pchCaption: String, pchButton0Text: String, pchButton1Text: String?, pchButton2Text: String?,
+                   pchButton3Text: String?): Int
+    }
+
     constructor()
 
     override fun getFieldOrder(): List<String> = Arrays.asList("FindOverlay", "CreateOverlay", "DestroyOverlay",
@@ -5372,7 +5488,8 @@ open class IVROverlay : Structure {
             "GetOverlayTexture", "ReleaseNativeOverlayHandle", "GetOverlayTextureSize", "CreateDashboardOverlay", "IsDashboardVisible",
             "IsActiveDashboardOverlay", "SetDashboardOverlaySceneProcess", "GetDashboardOverlaySceneProcess", "ShowDashboard",
             "GetPrimaryDashboardDevice", "ShowKeyboard", "ShowKeyboardForOverlay", "GetKeyboardText", "HideKeyboard",
-            "SetKeyboardTransformAbsolute", "SetKeyboardPositionForOverlay", "SetOverlayIntersectionMask")
+            "SetKeyboardTransformAbsolute", "SetKeyboardPositionForOverlay", "SetOverlayIntersectionMask", "GetOverlayFlags",
+            "ShowMessageOverlay")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -5382,7 +5499,7 @@ open class IVROverlay : Structure {
     class ByValue : IVROverlay(), Structure.ByValue
 }
 
-const val IVROverlay_Version = "FnTable:IVROverlay_013";
+const val IVROverlay_Version = "FnTable:IVROverlay_014";
 
 // ivrrendermodels.h ==============================================================================================================================================
 
@@ -5880,13 +5997,13 @@ open class IVRTrackedCamera : Structure {
     }
 
 
-    fun getCameraIntrinisics(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: EVRTrackedCameraFrameType, pFocalLength: HmdVector2_t.ByReference,
-                             pCenter: HmdVector2_t.ByReference)
-            = EVRTrackedCameraError.of(GetCameraIntrinisics!!.invoke(nDeviceIndex, eFrameType.i, pFocalLength, pCenter))
+    fun GetCameraIntrinsics(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: EVRTrackedCameraFrameType, pFocalLength: HmdVector2_t.ByReference,
+                            pCenter: HmdVector2_t.ByReference)
+            = EVRTrackedCameraError.of(GetCameraIntrinsics!!.invoke(nDeviceIndex, eFrameType.i, pFocalLength, pCenter))
 
-    @JvmField var GetCameraIntrinisics: GetCameraIntrinisics_callback? = null
+    @JvmField var GetCameraIntrinsics: GetCameraIntrinsics_callback? = null
 
-    interface GetCameraIntrinisics_callback : Callback {
+    interface GetCameraIntrinsics_callback : Callback {
         fun invoke(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: Int, pFocalLength: HmdVector2_t.ByReference, pCenter: HmdVector2_t.ByReference): Int
     }
 
@@ -5951,7 +6068,14 @@ open class IVRTrackedCamera : Structure {
                    pnHeight: IntByReference): Int
     }
 
-    /** Access a shared D3D11 texture for the specified tracked camera stream */
+    /** Access a shared D3D11 texture for the specified tracked camera stream.
+     *  The camera frame type VRTrackedCameraFrameType_Undistorted is not supported directly as a shared texture. It is an interior
+     *  subregion of the shared texture VRTrackedCameraFrameType_MaximumUndistorted.
+     *  Instead, use GetVideoStreamTextureSize() with VRTrackedCameraFrameType_Undistorted to determine the proper interior subregion
+     *  bounds along with GetVideoStreamTextureD3D11() with VRTrackedCameraFrameType_MaximumUndistorted to provide the texture.
+     *  The VRTrackedCameraFrameType_MaximumUndistorted will yield an image where the invalid regions are decoded by the alpha channel
+     *  having a zero component. The valid regions all have a non-zero alpha component. The subregion as described by
+     *  VRTrackedCameraFrameType_Undistorted guarantees a rectangle where all pixels are valid. */
     fun getVideoStreamTextureD3D11(hTrackedCamera: TrackedCameraHandle_t, eFrameType: EVRTrackedCameraFrameType, pD3D11DeviceOrResource: Pointer,
                                    ppD3D11ShaderResourceView: PointerByReference, pFrameHeader: CameraVideoStreamFrameHeader_t.ByReference, nFrameHeaderSize: Int)
             = EVRTrackedCameraError.of(GetVideoStreamTextureD3D11!!.invoke(hTrackedCamera, eFrameType.i, pD3D11DeviceOrResource, ppD3D11ShaderResourceView,
@@ -5988,9 +6112,10 @@ open class IVRTrackedCamera : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("GetCameraErrorNameFromEnum", "HasCamera", "GetCameraFrameSize", "GetCameraIntrinisics",
-            "GetCameraProjection", "AcquireVideoStreamingService", "ReleaseVideoStreamingService", "GetVideoStreamFrameBuffer", "GetVideoStreamTextureSize",
-            "GetVideoStreamTextureD3D11", "GetVideoStreamTextureGL", "ReleaseVideoStreamTextureGL")
+    override fun getFieldOrder(): List<String> = Arrays.asList("GetCameraErrorNameFromEnum", "HasCamera", "GetCameraFrameSize",
+            "GetCameraIntrinsics", "GetCameraProjection", "AcquireVideoStreamingService", "ReleaseVideoStreamingService",
+            "GetVideoStreamFrameBuffer", "GetVideoStreamTextureSize", "GetVideoStreamTextureD3D11", "GetVideoStreamTextureGL",
+            "ReleaseVideoStreamTextureGL")
 
     constructor(peer: Pointer) : super(peer) {
         read()
