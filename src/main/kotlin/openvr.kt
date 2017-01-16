@@ -1,7 +1,5 @@
 @file:JvmName("vr")
 
-package openvr
-
 import com.sun.jna.*
 import com.sun.jna.ptr.*
 import java.nio.ByteBuffer
@@ -39,7 +37,7 @@ open class HmdMatrix34_t : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("m")
+    override fun getFieldOrder(): List<String> = Arrays.asList("m")
 
     constructor(m: FloatArray) {
         if (m.size != this.m.size) throw IllegalArgumentException("Wrong array size !")
@@ -62,7 +60,7 @@ open class HmdMatrix44_t : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("m")
+    override fun getFieldOrder(): List<String> = Arrays.asList("m")
 
     constructor(m: FloatArray) {
         if (m.size != this.m.size) throw IllegalArgumentException("Wrong array size !")
@@ -85,7 +83,7 @@ open class HmdVector3_t : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("v")
+    override fun getFieldOrder(): List<String> = Arrays.asList("v")
 
     constructor(v: FloatArray) {
         if (v.size != this.v.size) throw IllegalArgumentException("Wrong array size !")
@@ -115,7 +113,7 @@ open class HmdVector4_t : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("v")
+    override fun getFieldOrder(): List<String> = Arrays.asList("v")
 
     constructor(v: FloatArray) {
         if (v.size != this.v.size) throw IllegalArgumentException("Wrong array size !")
@@ -136,7 +134,7 @@ open class HmdVector3d_t : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("v")
+    override fun getFieldOrder(): List<String> = Arrays.asList("v")
 
     constructor(v: DoubleArray) {
         if (v.size != this.v.size) throw IllegalArgumentException("Wrong array size !")
@@ -157,7 +155,7 @@ open class HmdVector2_t : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("v")
+    override fun getFieldOrder(): List<String> = Arrays.asList("v")
 
     constructor(v: FloatArray) {
         if (v.size != this.v.size) throw IllegalArgumentException("Wrong array size !")
@@ -181,7 +179,7 @@ open class HmdQuaternion_t : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("w", "x", "y", "z")
+    override fun getFieldOrder(): List<String> = Arrays.asList("w", "x", "y", "z")
 
     constructor(w: Double, x: Double, y: Double, z: Double) {
         this.w = w
@@ -207,7 +205,7 @@ open class HmdColor_t : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("r", "g", "b", "a")
+    override fun getFieldOrder(): List<String> = Arrays.asList("r", "g", "b", "a")
 
     constructor(r: Float, g: Float, b: Float, a: Float) {
         this.r = r
@@ -230,7 +228,7 @@ open class HmdQuad_t : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("vCorners")
+    override fun getFieldOrder(): List<String> = Arrays.asList("vCorners")
 
     constructor(vCorners: Array<HmdVector3_t>) {
         if (vCorners.size != this.vCorners.size) throw IllegalArgumentException("Wrong array size !")
@@ -252,7 +250,7 @@ open class HmdRect2_t : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("vTopLeft", "vBottomRight")
+    override fun getFieldOrder(): List<String> = Arrays.asList("vTopLeft", "vBottomRight")
 
     constructor(vTopLeft: HmdVector2_t, vBottomRight: HmdVector2_t) {
         this.vTopLeft = vTopLeft
@@ -277,7 +275,7 @@ open class DistortionCoordinates_t : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("rfRed", "rfGreen", "rfBlue")
+    override fun getFieldOrder(): List<String> = Arrays.asList("rfRed", "rfGreen", "rfBlue")
 
     constructor(rfRed: FloatArray, rfGreen: FloatArray, rfBlue: FloatArray) {
         if (rfRed.size != this.rfRed.size) throw IllegalArgumentException("Wrong rfRed array size !")
@@ -340,7 +338,7 @@ open class Texture_t : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("handle", "eType", "eColorSpace")
+    override fun getFieldOrder(): List<String> = Arrays.asList("handle", "eType", "eColorSpace")
 
     constructor(handle: Int, eType: Int, eColorSpace: Int) {
         set(handle, eType, eColorSpace)
@@ -381,7 +379,6 @@ enum class ETrackingResult(@JvmField val i: Int) {
     }
 }
 
-const val k_unTrackingStringSize = 32
 const val k_unMaxDriverDebugResponseSize = 32768
 
 /** Used to pass device IDs to API calls */
@@ -438,7 +435,7 @@ open class TrackedDevicePose_t : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("mDeviceToAbsoluteTracking", "vVelocity", "vAngularVelocity",
+    override fun getFieldOrder(): List<String> = Arrays.asList("mDeviceToAbsoluteTracking", "vVelocity", "vAngularVelocity",
             "eTrackingResult", "bPoseIsValid", "bDeviceIsConnected")
 
     constructor(mDeviceToAbsoluteTracking: HmdMatrix34_t, vVelocity: HmdVector3_t, vAngularVelocity: HmdVector3_t, eTrackingResult: Int, bPoseIsValid: Boolean,
@@ -453,7 +450,7 @@ open class TrackedDevicePose_t : Structure {
 
     constructor(mDeviceToAbsoluteTracking: HmdMatrix34_t, vVelocity: HmdVector3_t, vAngularVelocity: HmdVector3_t, eTrackingResult: ETrackingResult,
                 bPoseIsValid: Boolean, bDeviceIsConnected: Boolean)
-    : this(mDeviceToAbsoluteTracking, vVelocity, vAngularVelocity, eTrackingResult.i, bPoseIsValid, bDeviceIsConnected)
+            : this(mDeviceToAbsoluteTracking, vVelocity, vAngularVelocity, eTrackingResult.i, bPoseIsValid, bDeviceIsConnected)
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -515,6 +512,7 @@ enum class ETrackedDeviceProperty(@JvmField val i: Int) {
     Prop_HasCamera_Bool(1030),
     Prop_DriverVersion_String(1031),
     Prop_Firmware_ForceUpdateRequired_Bool(1032),
+    Prop_ViveSystemButtonFixRequired_Bool(1033),
 
     // Properties that are unique to TrackedDeviceClass_HMD
     Prop_ReportsTimeSinceVSync_Bool(2000),
@@ -554,6 +552,7 @@ enum class ETrackedDeviceProperty(@JvmField val i: Int) {
     Prop_ScreenshotHorizontalFieldOfViewDegrees_Float(2034),
     Prop_ScreenshotVerticalFieldOfViewDegrees_Float(2035),
     Prop_DisplaySuppressed_Bool(2036),
+    Prop_DisplayAllowNightMode_Bool(2037),
 
     // Properties that are unique to TrackedDeviceClass_Controller
     Prop_AttachedDeviceId_String(3000),
@@ -628,7 +627,7 @@ open class VRTextureBounds_t : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("uMin", "vMin", "uMax", "vMax")
+    override fun getFieldOrder(): List<String> = Arrays.asList("uMin", "vMin", "uMax", "vMax")
 
     constructor(uMin: Float, vMin: Float, uMax: Float, vMax: Float) {
         this.uMin = uMin
@@ -892,7 +891,7 @@ open class VREvent_Controller_t : VREvent_Data_t {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("button")
+    override fun getFieldOrder(): List<String> = Arrays.asList("button")
 
     constructor(button: Int) {
         this.button = button
@@ -931,7 +930,7 @@ open class VREvent_Mouse_t : VREvent_Data_t {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("x", "y", "button")
+    override fun getFieldOrder(): List<String> = Arrays.asList("x", "y", "button")
 
     constructor(x: Float, y: Float, button: Int) {
         this.x = x
@@ -959,7 +958,7 @@ open class VREvent_Scroll_t : VREvent_Data_t {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("xdelta", "ydelta", "repeatCount")
+    override fun getFieldOrder(): List<String> = Arrays.asList("xdelta", "ydelta", "repeatCount")
 
     constructor(xdelta: Float, ydelta: Float, repeatCount: Int) {
         this.xdelta = xdelta
@@ -995,7 +994,7 @@ open class VREvent_TouchPadMove_t : VREvent_Data_t {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("bFingerDown", "flSecondsFingerDown", "fValueXFirst", "fValueYFirst",
+    override fun getFieldOrder(): List<String> = Arrays.asList("bFingerDown", "flSecondsFingerDown", "fValueXFirst", "fValueYFirst",
             "fValueXRaw", "fValueYRaw")
 
     constructor(bFingerDown: Boolean, flSecondsFingerDown: Float, fValueXFirst: Float, fValueYFirst: Float, fValueXRaw: Float, fValueYRaw: Float) {
@@ -1023,7 +1022,7 @@ open class VREvent_Notification_t : VREvent_Data_t {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("ulUserValue", "notificationId")
+    override fun getFieldOrder(): List<String> = Arrays.asList("ulUserValue", "notificationId")
 
     constructor(ulUserValue: Long, notificationId: Int) {
         this.ulUserValue = ulUserValue
@@ -1047,7 +1046,7 @@ open class VREvent_Process_t : VREvent_Data_t {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("pid", "oldPid", "bForced")
+    override fun getFieldOrder(): List<String> = Arrays.asList("pid", "oldPid", "bForced")
 
     constructor(pid: Int, oldPid: Int, bForced: Boolean) {
         this.pid = pid
@@ -1070,7 +1069,7 @@ open class VREvent_Overlay_t : VREvent_Data_t {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("overlayHandle")
+    override fun getFieldOrder(): List<String> = Arrays.asList("overlayHandle")
 
     constructor(overlayHandle: Long) {
         this.overlayHandle = overlayHandle
@@ -1091,7 +1090,7 @@ open class VREvent_Status_t : VREvent_Data_t {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("statusState")
+    override fun getFieldOrder(): List<String> = Arrays.asList("statusState")
 
     constructor(statusState: Int) {
         this.statusState = statusState
@@ -1113,7 +1112,7 @@ open class VREvent_Keyboard_t : VREvent_Data_t {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("cNewInput", "uUserValue")
+    override fun getFieldOrder(): List<String> = Arrays.asList("cNewInput", "uUserValue")
 
     constructor(cNewInput: String, uUserValue: Long) {
         this.cNewInput = cNewInput
@@ -1134,7 +1133,7 @@ open class VREvent_Ipd_t : VREvent_Data_t {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("ipdMeters")
+    override fun getFieldOrder(): List<String> = Arrays.asList("ipdMeters")
 
     constructor(ipdMeters: Float) {
         this.ipdMeters = ipdMeters
@@ -1155,7 +1154,7 @@ open class VREvent_Chaperone_t : VREvent_Data_t {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("m_nPreviousUniverse", "m_nCurrentUniverse")
+    override fun getFieldOrder(): List<String> = Arrays.asList("m_nPreviousUniverse", "m_nCurrentUniverse")
 
     constructor(m_nPreviousUniverse: Long, m_nCurrentUniverse: Long) {
         this.m_nPreviousUniverse = m_nPreviousUniverse
@@ -1178,7 +1177,7 @@ open class VREvent_Reserved_t : VREvent_Data_t {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("reserved0", "reserved1")
+    override fun getFieldOrder(): List<String> = Arrays.asList("reserved0", "reserved1")
 
     constructor(reserved0: Long, reserved1: Long) {
         this.reserved0 = reserved0
@@ -1199,7 +1198,7 @@ open class VREvent_PerformanceTest_t : VREvent_Data_t {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("m_nFidelityLevel")
+    override fun getFieldOrder(): List<String> = Arrays.asList("m_nFidelityLevel")
 
     constructor(m_nFidelityLevel: Int) {
         this.m_nFidelityLevel = m_nFidelityLevel
@@ -1219,7 +1218,7 @@ open class VREvent_SeatedZeroPoseReset_t : VREvent_Data_t {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("bResetBySystemMenu")
+    override fun getFieldOrder(): List<String> = Arrays.asList("bResetBySystemMenu")
 
     constructor(bResetBySystemMenu: Boolean) {
         this.bResetBySystemMenu = bResetBySystemMenu
@@ -1249,7 +1248,7 @@ open class VREvent_Screenshot_t : VREvent_Data_t {
         read()
     }
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("handle", "value")
+    override fun getFieldOrder(): List<String> = Arrays.asList("handle", "value")
 
     class ByReference : VREvent_Screenshot_t(), Structure.ByReference
     class ByValue : VREvent_Screenshot_t(), Structure.ByValue
@@ -1269,7 +1268,7 @@ open class VREvent_ScreenshotProgress_t : VREvent_Data_t {
         read()
     }
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("progress")
+    override fun getFieldOrder(): List<String> = Arrays.asList("progress")
 
     class ByReference : VREvent_ScreenshotProgress_t(), Structure.ByReference
     class ByValue : VREvent_ScreenshotProgress_t(), Structure.ByValue
@@ -1291,7 +1290,7 @@ open class VREvent_ApplicationLaunch_t : VREvent_Data_t {
         read()
     }
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("pid", "unArgsHandle")
+    override fun getFieldOrder(): List<String> = Arrays.asList("pid", "unArgsHandle")
 
     class ByReference : VREvent_ApplicationLaunch_t(), Structure.ByReference
     class ByValue : VREvent_ApplicationLaunch_t(), Structure.ByValue
@@ -1313,7 +1312,7 @@ open class VREvent_EditingCameraSurface_t : VREvent_Data_t {
         read()
     }
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("overlayHandle", "nVisualMode")
+    override fun getFieldOrder(): List<String> = Arrays.asList("overlayHandle", "nVisualMode")
 
     class ByReference : VREvent_EditingCameraSurface_t(), Structure.ByReference
     class ByValue : VREvent_EditingCameraSurface_t(), Structure.ByValue
@@ -1337,7 +1336,7 @@ open class VREvent_t : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("eventType", "trackedDeviceIndex", "eventAgeSeconds", "data")
+    override fun getFieldOrder(): List<String> = Arrays.asList("eventType", "trackedDeviceIndex", "eventAgeSeconds", "data")
 
     constructor(eventType: Int, trackedDeviceIndex: Int, eventAgeSeconds: Float, data: VREvent_Data_t) {
         this.eventType = eventType
@@ -1347,7 +1346,7 @@ open class VREvent_t : Structure {
     }
 
     constructor(eventType: EVREventType, trackedDeviceIndex: Int, eventAgeSeconds: Float, data: VREvent_Data_t)
-    : this(eventType.i, trackedDeviceIndex, eventAgeSeconds, data)
+            : this(eventType.i, trackedDeviceIndex, eventAgeSeconds, data)
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -1368,7 +1367,7 @@ open class HiddenAreaMesh_t : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("pVertexData", "unTriangleCount")
+    override fun getFieldOrder(): List<String> = Arrays.asList("pVertexData", "unTriangleCount")
 
     constructor(pVertexData: HmdVector2_t.ByReference, unTriangleCount: Int) {
         this.pVertexData = pVertexData
@@ -1382,6 +1381,19 @@ open class HiddenAreaMesh_t : Structure {
     class ByReference : HiddenAreaMesh_t(), Structure.ByReference
     class ByValue : HiddenAreaMesh_t(), Structure.ByValue
 }
+
+
+enum class EHiddenAreaMeshType(@JvmField val i: Int) {
+
+    k_eHiddenAreaMesh_Standard(0),
+    k_eHiddenAreaMesh_Inverse(1),
+    k_eHiddenAreaMesh_LineLoop(2);
+
+    companion object {
+        fun of(i: Int) = values().first { it.i == i }
+    }
+}
+
 
 /** Identifies what kind of axis is on the controller at index n. Read this value with pVRSystem->Get( nControllerDeviceIndex, Prop_Axis0Type_Int32 + n );   */
 enum class EVRControllerAxisType(@JvmField val i: Int) {
@@ -1404,7 +1416,7 @@ open class VRControllerAxis_t : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("x", "y")
+    override fun getFieldOrder(): List<String> = Arrays.asList("x", "y")
 
     constructor(x: Float, y: Float) {
         this.x = x
@@ -1436,7 +1448,7 @@ open class VRControllerState_t : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("unPacketNum", "ulButtonPressed", "ulButtonTouched", "rAxis")
+    override fun getFieldOrder(): List<String> = Arrays.asList("unPacketNum", "ulButtonPressed", "ulButtonTouched", "rAxis")
 
     constructor(unPacketNum: Int, ulButtonPressed: Long, ulButtonTouched: Long, rAxis: Array<VRControllerAxis_t>) {
         this.unPacketNum = unPacketNum
@@ -1521,7 +1533,7 @@ open class Compositor_OverlaySettings : Structure {
         this.transform = transform
     }
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("size", "curved", "antialias", "scale", "distance", "alpha", "uOffset", "vOffset", "uScale", "vScale",
+    override fun getFieldOrder(): List<String> = Arrays.asList("size", "curved", "antialias", "scale", "distance", "alpha", "uOffset", "vOffset", "uScale", "vScale",
             "gridDivs", "gridWidth", "gridScale", "transform")
 
     constructor(peer: Pointer) : super(peer) {
@@ -1560,7 +1572,9 @@ enum class EVROverlayError(@JvmField val i: Int) {
     VROverlayError_InvalidTexture(24),
     VROverlayError_UnableToLoadFile(25),
     VROverlayError_KeyboardAlreadyInUse(26),
-    VROverlayError_NoNeighbor(27);
+    VROverlayError_NoNeighbor(27),
+    VROverlayError_TooManyMaskPrimitives(29),
+    VROverlayError_BadMaskPrimitive(30);
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -1807,7 +1821,7 @@ open class CameraVideoStreamFrameHeader_t : Structure {
         read()
     }
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("eFrameType", "nWidth", "nHeight", "nBytesPerPixel", "nFrameSequence", "standingTrackedDevicePose")
+    override fun getFieldOrder(): List<String> = Arrays.asList("eFrameType", "nWidth", "nHeight", "nBytesPerPixel", "nFrameSequence", "standingTrackedDevicePose")
 
     class ByReference : CameraVideoStreamFrameHeader_t(), Structure.ByReference
     class ByValue : CameraVideoStreamFrameHeader_t(), Structure.ByValue
@@ -1856,15 +1870,16 @@ open class IVRSystem : Structure {
         fun invoke(eEye: Int, pfLeft: FloatByReference, pfRight: FloatByReference, pfTop: FloatByReference, pfBottom: FloatByReference)
     }
 
-    /** Returns the result of the distortion function for the specified eye and input UVs.
+    /** Gets the result of the distortion function for the specified eye and input UVs.
      *  UVs go from 0,0 in the upper left of that eye's viewport and 1,1 in the lower right of that eye's viewport.
-     *  Values may be NAN to indicate an error has occurred.     */
-    fun computeDistortion(eEye: EVREye, fU: Float, fV: Float) = ComputeDistortion!!.invoke(eEye.i, fU, fV)
+     *  Returns true for success. Otherwise, returns false, and distortion coordinates are not suitable.    */
+    fun computeDistortion(eEye: EVREye, fU: Float, fV: Float, pDistortionCoordinates_t: DistortionCoordinates_t.ByReference)
+            = ComputeDistortion!!.invoke(eEye.i, fU, fV, pDistortionCoordinates_t)
 
     @JvmField var ComputeDistortion: ComputeDistortion_callback? = null
 
     interface ComputeDistortion_callback : Callback {
-        fun invoke(eEye: Int, fU: Float, fV: Float): DistortionCoordinates_t.ByValue
+        fun invoke(eEye: Int, fU: Float, fV: Float, pDistortionCoordinates_t: DistortionCoordinates_t.ByReference): Boolean
     }
 
     /** Returns the transform from eye space to the head space. Eye space is the per-eye flavor of head space that provides stereo disparity.
@@ -2007,10 +2022,10 @@ open class IVRSystem : Structure {
     /** Get a sorted array of device indices of a given class of tracked devices (e.g. controllers).  Devices are sorted right to left relative to the specified
      *  tracked device (default: hmd -- pass in -1 for absolute tracking space).  Returns the number of devices in the list, or the size of the array needed if
      *  not large enough. */
-    fun getSortedTrackedDeviceIndicesOfClass(eTrackedDeviceClass: ETrackedDeviceClass,
-                                             punTrackedDeviceIndexArray: TrackedDeviceIndex_t_ByReference,
-                                             unTrackedDeviceIndexArrayCount: Int,
-                                             unRelativeToTrackedDeviceIndex: TrackedDeviceIndex_t = k_unTrackedDeviceIndex_Hmd)
+    @JvmOverloads fun getSortedTrackedDeviceIndicesOfClass(eTrackedDeviceClass: ETrackedDeviceClass,
+                                                           punTrackedDeviceIndexArray: TrackedDeviceIndex_t_ByReference,
+                                                           unTrackedDeviceIndexArrayCount: Int,
+                                                           unRelativeToTrackedDeviceIndex: TrackedDeviceIndex_t = k_unTrackedDeviceIndex_Hmd)
             = GetSortedTrackedDeviceIndicesOfClass!!.invoke(eTrackedDeviceClass.i, punTrackedDeviceIndexArray, unTrackedDeviceIndexArrayCount,
             unRelativeToTrackedDeviceIndex)
 
@@ -2018,7 +2033,7 @@ open class IVRSystem : Structure {
 
     interface GetSortedTrackedDeviceIndicesOfClass_callback : Callback {
         fun invoke(eTrackedDeviceClass: Int, punTrackedDeviceIndexArray: TrackedDeviceIndex_t_ByReference, unTrackedDeviceIndexArrayCount: Int,
-                   unRelativeToTrackedDeviceIndex: TrackedDeviceIndex_t = k_unTrackedDeviceIndex_Hmd): Int
+                   unRelativeToTrackedDeviceIndex: TrackedDeviceIndex_t): Int
     }
 
     /** Returns the level of activity on the device. */
@@ -2088,66 +2103,73 @@ open class IVRSystem : Structure {
     }
 
     /** Returns a bool property. If the device index is not valid or the property is not a bool value this function will return false. */
-    fun getBoolTrackedDeviceProperty(unDeviceIndex: TrackedDeviceIndex_t, prop: ETrackedDeviceProperty, pError: ETrackedPropertyError_ByReference? = null)
+    @JvmOverloads fun getBoolTrackedDeviceProperty(unDeviceIndex: TrackedDeviceIndex_t, prop: ETrackedDeviceProperty,
+                                                   pError: ETrackedPropertyError_ByReference? = null)
             = GetBoolTrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, pError)
 
     @JvmField var GetBoolTrackedDeviceProperty: GetBoolTrackedDeviceProperty_callback? = null
 
     interface GetBoolTrackedDeviceProperty_callback : Callback {
-        fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pError: ETrackedPropertyError_ByReference? = null): Boolean
+        fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pError: ETrackedPropertyError_ByReference?): Boolean
     }
 
     /** Returns a float property. If the device index is not valid or the property is not a float value this function will return 0. */
-    fun getFloatTrackedDeviceProperty(unDeviceIndex: TrackedDeviceIndex_t, prop: ETrackedDeviceProperty, pError: ETrackedPropertyError_ByReference? = null): Float
+    @JvmOverloads fun getFloatTrackedDeviceProperty(unDeviceIndex: TrackedDeviceIndex_t, prop: ETrackedDeviceProperty,
+                                                    pError: ETrackedPropertyError_ByReference? = null): Float
             = GetFloatTrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, pError)
 
     @JvmField var GetFloatTrackedDeviceProperty: GetFloatTrackedDeviceProperty_callback? = null
 
     interface GetFloatTrackedDeviceProperty_callback : Callback {
-        fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pError: ETrackedPropertyError_ByReference? = null): Float
+        fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pError: ETrackedPropertyError_ByReference?): Float
     }
 
     /** Returns an int property. If the device index is not valid or the property is not a int value this function will return 0. */
-    fun getInt32TrackedDeviceProperty(unDeviceIndex: TrackedDeviceIndex_t, prop: ETrackedDeviceProperty, pError: ETrackedPropertyError_ByReference? = null)
+    @JvmOverloads fun getInt32TrackedDeviceProperty(unDeviceIndex: TrackedDeviceIndex_t, prop: ETrackedDeviceProperty,
+                                                    pError: ETrackedPropertyError_ByReference? = null)
             = GetInt32TrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, pError)
 
     @JvmField var GetInt32TrackedDeviceProperty: GetInt32TrackedDeviceProperty_callback? = null
 
     interface GetInt32TrackedDeviceProperty_callback : Callback {
-        fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pError: ETrackedPropertyError_ByReference? = null): Int
+        fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pError: ETrackedPropertyError_ByReference?): Int
     }
 
     /** Returns a uint64 property. If the device index is not valid or the property is not a uint64 value this function will return 0. */
-    fun getUint64TrackedDeviceProperty(unDeviceIndex: TrackedDeviceIndex_t, prop: ETrackedDeviceProperty, pError: ETrackedPropertyError_ByReference? = null)
+    @JvmOverloads fun getUint64TrackedDeviceProperty(unDeviceIndex: TrackedDeviceIndex_t, prop: ETrackedDeviceProperty,
+                                                     pError: ETrackedPropertyError_ByReference? = null)
             = GetUint64TrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, pError)
 
     @JvmField var GetUint64TrackedDeviceProperty: GetUint64TrackedDeviceProperty_callback? = null
 
     interface GetUint64TrackedDeviceProperty_callback : Callback {
-        fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pError: ETrackedPropertyError_ByReference? = null): Long
+        fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pError: ETrackedPropertyError_ByReference?): Long
     }
 
     /** Returns a matrix property. If the device index is not valid or the property is not a matrix value, this function will return identity. */
-    fun getMatrix34TrackedDeviceProperty(unDeviceIndex: TrackedDeviceIndex_t, prop: ETrackedDeviceProperty, pError: ETrackedPropertyError_ByReference? = null)
+    @JvmOverloads fun getMatrix34TrackedDeviceProperty(unDeviceIndex: TrackedDeviceIndex_t, prop: ETrackedDeviceProperty,
+                                                       pError: ETrackedPropertyError_ByReference? = null)
             = GetMatrix34TrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, pError)
 
     @JvmField var GetMatrix34TrackedDeviceProperty: GetMatrix34TrackedDeviceProperty_callback? = null
 
     interface GetMatrix34TrackedDeviceProperty_callback : Callback {
-        fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pError: ETrackedPropertyError_ByReference? = null): HmdMatrix34_t.ByValue
+        fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pError: ETrackedPropertyError_ByReference?): HmdMatrix34_t.ByValue
     }
 
-    /** Returns a string property. If the device index is not valid or the property is not a string value this function will return 0. Otherwise it returns the
-     *  length of the number of bytes necessary to hold this string including the trailing null. Strings will generally fit in buffers of openvr.k_unTrackingStringSize
-     *  characters. */
-    fun getStringTrackedDeviceProperty(unDeviceIndex: TrackedDeviceIndex_t, prop: ETrackedDeviceProperty, pchValue: String, unBufferSize: Int,
-                                       pError: ETrackedPropertyError_ByReference? = null)
+    /** Returns a string property. If the device index is not valid or the property is not a string value this function will return 0.
+     *  Otherwise it returns the length of the number of bytes necessary to hold this string including the trailing null.
+     *  Strings will always fit in buffers of k_unMaxPropertyStringSize characters. */
+    @JvmOverloads fun getStringTrackedDeviceProperty(unDeviceIndex: TrackedDeviceIndex_t, prop: ETrackedDeviceProperty,
+                                                     pchValue: String, unBufferSize: Int,
+                                                     pError: ETrackedPropertyError_ByReference? = null)
             = GetStringTrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, pchValue, unBufferSize, pError)
 
     @JvmField var GetStringTrackedDeviceProperty: GetStringTrackedDeviceProperty_callback? = null
 
     interface GetStringTrackedDeviceProperty_callback : Callback {
-        fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pchValue: String, unBufferSize: Int, pError: ETrackedPropertyError_ByReference? = null): Int
+        fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pchValue: String, unBufferSize: Int,
+                   pError: ETrackedPropertyError_ByReference?): Int
     }
 
     /** returns a string that corresponds with the specified property error. The string will be the name of the error value value for all valid error codes */
@@ -2202,17 +2224,26 @@ open class IVRSystem : Structure {
     // Rendering helper methods
     // ------------------------------------
 
-    /** Returns the stencil mesh information for the current HMD. If this HMD does not have a stencil mesh the vertex data and count will be NULL and 0
-     *  respectively. This mesh is meant to be rendered into the stencil buffer (or into the depth buffer setting nearz) before rendering each eye's view.
-     *  The pixels covered by this mesh will never be seen by the user after the lens distortion is applied and based on visibility to the panels.
-     *  This will improve perf by letting the GPU early-reject pixels the user will never see before running the pixel shader.
-     *  NOTE: Render this mesh with backface culling disabled since the winding order of the vertices can be different per-HMD or per-eye.     */
-    fun GetHiddenAreaMesh(eEye: EVREye) = GetHiddenAreaMesh!!.invoke(eEye.i)
+    /** Returns the hidden area mesh for the current HMD. The pixels covered by this mesh will never be seen by the user after the lens
+     *  distortion is applied based on visibility to the panels. If this HMD does not have a hidden area mesh, the vertex data and
+     *  count will be NULL and 0 respectively.
+     *  This mesh is meant to be rendered into the stencil buffer (or into the depth buffer setting nearz) before rendering each eye's
+     *  view.
+     *  This will improve performance by letting the GPU early-reject pixels the user will never see before running the pixel shader.
+     *  NOTE: Render this mesh with backface culling disabled since the winding order of the vertices can be different per-HMD or
+     *  per-eye.
+     *  Setting the bInverse argument to true will produce the visible area mesh that is commonly used in place of full-screen quads.
+     *  The visible area mesh covers all of the pixels the hidden area mesh does not cover.
+     *  Setting the bLineLoop argument will return a line loop of vertices in HiddenAreaMesh_t->pVertexData with
+     *  HiddenAreaMesh_t->unTriangleCount set to the number of vertices.
+     */
+    @JvmOverloads fun GetHiddenAreaMesh(eEye: EVREye, type: EHiddenAreaMeshType = EHiddenAreaMeshType.k_eHiddenAreaMesh_Standard)
+            = GetHiddenAreaMesh!!.invoke(eEye.i, type)
 
     @JvmField var GetHiddenAreaMesh: GetHiddenAreaMesh_callback? = null
 
     interface GetHiddenAreaMesh_callback : Callback {
-        fun invoke(eEye: Int): HiddenAreaMesh_t.ByValue
+        fun invoke(eEye: Int, type: EHiddenAreaMeshType): HiddenAreaMesh_t.ByValue
     }
 
 
@@ -2221,26 +2252,30 @@ open class IVRSystem : Structure {
     // ------------------------------------
 
     /** Fills the supplied struct with the current state of the controller. Returns false if the controller index is invalid. */
-    fun getControllerState(unControllerDeviceIndex: TrackedDeviceIndex_t, pControllerState: VRControllerState_t.ByReference)
-            = GetControllerState!!.invoke(unControllerDeviceIndex, pControllerState)
+    fun getControllerState(unControllerDeviceIndex: TrackedDeviceIndex_t, pControllerState: VRControllerState_t.ByReference,
+                           unControllerStateSize: Int)
+            = GetControllerState!!.invoke(unControllerDeviceIndex, pControllerState, unControllerStateSize)
 
     @JvmField var GetControllerState: GetControllerState_callback? = null
 
     interface GetControllerState_callback : Callback {
-        fun invoke(unControllerDeviceIndex: TrackedDeviceIndex_t, pControllerState: VRControllerState_t.ByReference): Boolean
+        fun invoke(unControllerDeviceIndex: TrackedDeviceIndex_t, pControllerState: VRControllerState_t.ByReference,
+                   unControllerStateSize: Int): Boolean
     }
 
     /** Fills the supplied struct with the current state of the controller and the provided pose with the pose of the controller when the controller state was
      *  updated most recently. Use this form if you need a precise controller pose as input to your application when the user presses or releases a button. */
     fun GetControllerStateWithPose(eOrigin: ETrackingUniverseOrigin, unControllerDeviceIndex: TrackedDeviceIndex_t,
-                                   pControllerState: VRControllerState_t.ByReference, pTrackedDevicePose: TrackedDevicePose_t.ByReference)
-            = GetControllerStateWithPose!!.invoke(eOrigin.i, unControllerDeviceIndex, pControllerState, pTrackedDevicePose)
+                                   pControllerState: VRControllerState_t.ByReference,
+                                   pTrackedDevicePose: TrackedDevicePose_t.ByReference, unControllerStateSize: Int)
+            = GetControllerStateWithPose!!.invoke(eOrigin.i, unControllerDeviceIndex, pControllerState, pTrackedDevicePose,
+            unControllerStateSize)
 
     @JvmField var GetControllerStateWithPose: GetControllerStateWithPose_callback? = null
 
     interface GetControllerStateWithPose_callback : Callback {
         fun invoke(eOrigin: Int, unControllerDeviceIndex: TrackedDeviceIndex_t, pControllerState: VRControllerState_t.ByReference,
-                   pTrackedDevicePose: TrackedDevicePose_t.ByReference): Boolean
+                   pTrackedDevicePose: TrackedDevicePose_t.ByReference, unControllerStateSize: Int): Boolean
     }
 
     /** Trigger a single haptic pulse on a controller. After this call the application may not trigger another haptic pulse on this controller and axis
@@ -2363,7 +2398,7 @@ open class IVRSystem : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("GetRecommendedRenderTargetSize", "GetProjectionMatrix", "GetProjectionRaw", "ComputeDistortion",
+    override fun getFieldOrder(): List<String> = Arrays.asList("GetRecommendedRenderTargetSize", "GetProjectionMatrix", "GetProjectionRaw", "ComputeDistortion",
             "GetEyeToHeadTransform", "GetTimeSinceLastVsync", "GetD3D9AdapterIndex", "GetDXGIOutputInfo", "IsDisplayOnDesktop", "SetDisplayVisibility",
             "GetDeviceToAbsoluteTrackingPose", "ResetSeatedZeroPose", "GetSeatedZeroPoseToStandingAbsoluteTrackingPose",
             "GetRawZeroPoseToStandingAbsoluteTrackingPose", "GetSortedTrackedDeviceIndicesOfClass", "GetTrackedDeviceActivityLevel", "ApplyTransform",
@@ -2382,7 +2417,7 @@ open class IVRSystem : Structure {
     class ByValue : IVRSystem(), Structure.ByValue
 }
 
-const val IVRSystem_Version = "FnTable:IVRSystem_012"
+const val IVRSystem_Version = "FnTable:IVRSystem_014"
 
 /** Used for all errors reported by the openvr.IVRApplications interface */
 enum class EVRApplicationError(@JvmField val i: Int) {
@@ -2480,7 +2515,7 @@ open class AppOverrideKeys_t : Structure {
         read()
     }
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("pchKey", "pchValue")
+    override fun getFieldOrder(): List<String> = Arrays.asList("pchKey", "pchValue")
 
     class ByReference : AppOverrideKeys_t(), Structure.ByReference
     class ByValue : AppOverrideKeys_t(), Structure.ByValue
@@ -2498,13 +2533,13 @@ open class IVRApplications : Structure {
 
     /** Adds an application manifest to the list to load when building the list of installed applications.
      *  Temporary manifests are not automatically loaded */
-    fun addApplicationManifest(pchApplicationManifestFullPath: String, bTemporary: Boolean = false)
+    @JvmOverloads fun addApplicationManifest(pchApplicationManifestFullPath: String, bTemporary: Boolean = false)
             = AddApplicationManifest!!.invoke(pchApplicationManifestFullPath, bTemporary)
 
     @JvmField var AddApplicationManifest: AddApplicationManifest_callback? = null
 
     interface AddApplicationManifest_callback : Callback {
-        fun invoke(pchApplicationManifestFullPath: String, bTemporary: Boolean = false): Int
+        fun invoke(pchApplicationManifestFullPath: String, bTemporary: Boolean): Int
     }
 
     /** Removes an application manifest from the list to load when building the list of installed applications. */
@@ -2637,35 +2672,38 @@ open class IVRApplications : Structure {
     // ---------------  Application properties  --------------- //
 
     /** Returns a value for an application property. The required buffer size to fit this value will be returned. */
-    fun getApplicationPropertyString(pchAppKey: String, eProperty: EVRApplicationProperty, pchPropertyValueBuffer: String,
-                                     unPropertyValueBufferLen: Int, peError: EVRApplicationError_ByReference? = null)
+    @JvmOverloads fun getApplicationPropertyString(pchAppKey: String, eProperty: EVRApplicationProperty,
+                                                   pchPropertyValueBuffer: String, unPropertyValueBufferLen: Int,
+                                                   peError: EVRApplicationError_ByReference? = null)
             = GetApplicationPropertyString!!.invoke(pchAppKey, eProperty.i, pchPropertyValueBuffer, unPropertyValueBufferLen, peError)
 
     @JvmField var GetApplicationPropertyString: GetApplicationPropertyString_callback? = null
 
     interface GetApplicationPropertyString_callback : Callback {
         fun invoke(pchAppKey: String, eProperty: Int, pchPropertyValueBuffer: String, unPropertyValueBufferLen: Int,
-                   peError: EVRApplicationError_ByReference? = null)
+                   peError: EVRApplicationError_ByReference?)
     }
 
     /** Returns a bool value for an application property. Returns false in all error cases. */
-    fun getApplicationPropertyBool(pchAppKey: String, eProperty: EVRApplicationProperty, peError: EVRApplicationError_ByReference? = null)
+    @JvmOverloads fun getApplicationPropertyBool(pchAppKey: String, eProperty: EVRApplicationProperty,
+                                                 peError: EVRApplicationError_ByReference? = null)
             = GetApplicationPropertyBool!!.invoke(pchAppKey, eProperty.i, peError)
 
     @JvmField var GetApplicationPropertyBool: GetApplicationPropertyBool_callback? = null
 
     interface GetApplicationPropertyBool_callback : Callback {
-        fun invoke(pchAppKey: String, eProperty: Int, peError: EVRApplicationError_ByReference? = null): Boolean
+        fun invoke(pchAppKey: String, eProperty: Int, peError: EVRApplicationError_ByReference?): Boolean
     }
 
     /** Returns a uint64 value for an application property. Returns 0 in all error cases. */
-    fun getApplicationPropertyUint64(pchAppKey: String, eProperty: EVRApplicationProperty, peError: EVRApplicationError_ByReference? = null)
+    @JvmOverloads fun getApplicationPropertyUint64(pchAppKey: String, eProperty: EVRApplicationProperty,
+                                                   peError: EVRApplicationError_ByReference? = null)
             = GetApplicationPropertyUint64!!.invoke(pchAppKey, eProperty.i, peError)
 
     @JvmField var GetApplicationPropertyUint64: GetApplicationPropertyUint64_callback? = null
 
     interface GetApplicationPropertyUint64_callback : Callback {
-        fun invoke(pchAppKey: String, eProperty: Int, peError: EVRApplicationError_ByReference? = null): Long
+        fun invoke(pchAppKey: String, eProperty: Int, peError: EVRApplicationError_ByReference?): Long
     }
 
     /** Sets the application auto-launch flag. This is only valid for applications which return true for VRApplicationProperty_IsDashboardOverlay_Bool. */
@@ -2803,7 +2841,7 @@ open class IVRApplications : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("AddApplicationManifest", "RemoveApplicationManifest", "IsApplicationInstalled", "GetApplicationCount",
+    override fun getFieldOrder(): List<String> = Arrays.asList("AddApplicationManifest", "RemoveApplicationManifest", "IsApplicationInstalled", "GetApplicationCount",
             "GetApplicationKeyByIndex", "GetApplicationKeyByProcessId", "LaunchApplication", "LaunchTemplateApplication", "LaunchApplicationFromMimeType",
             "LaunchDashboardOverlay", "CancelApplicationLaunch", "IdentifyApplication", "GetApplicationProcessId", "GetApplicationsErrorNameFromEnum",
             "GetApplicationPropertyString", "GetApplicationPropertyBool", "GetApplicationPropertyUint64", "SetApplicationAutoLaunch", "GetApplicationAutoLaunch",
@@ -2853,119 +2891,126 @@ open class IVRSettings : Structure {
 
 
     // Returns true if file sync occurred (force or settings dirty)
-    fun sync(bForce: Boolean = false, peError: EVRSettingsError_ByReference? = null) = Sync!!.invoke(bForce, peError)
+    @JvmOverloads fun sync(bForce: Boolean = false, peError: EVRSettingsError_ByReference? = null) = Sync!!.invoke(bForce, peError)
 
     @JvmField var Sync: Sync_callback? = null
 
     interface Sync_callback : Callback {
-        fun invoke(bForce: Boolean = false, peError: EVRSettingsError_ByReference? = null): Boolean
+        fun invoke(bForce: Boolean, peError: EVRSettingsError_ByReference?): Boolean
     }
 
 
-    fun setBool(pchSection: String, pchSettingsKey: String, bValue: Boolean, peError: EVRSettingsError_ByReference? = null)
+    @JvmOverloads fun setBool(pchSection: String, pchSettingsKey: String, bValue: Boolean,
+                              peError: EVRSettingsError_ByReference? = null)
             = SetBool!!.invoke(pchSection, pchSettingsKey, bValue, peError)
 
     @JvmField var SetBool: SetBool_callback? = null
 
     interface SetBool_callback : Callback {
-        fun invoke(pchSection: String, pchSettingsKey: String, bValue: Boolean, peError: EVRSettingsError_ByReference? = null)
+        fun invoke(pchSection: String, pchSettingsKey: String, bValue: Boolean, peError: EVRSettingsError_ByReference?)
     }
 
 
-    fun setInt32(pchSection: String, pchSettingsKey: String, nValue: Int, peError: EVRSettingsError_ByReference? = null)
+    @JvmOverloads fun setInt32(pchSection: String, pchSettingsKey: String, nValue: Int, peError: EVRSettingsError_ByReference? = null)
             = SetInt32!!.invoke(pchSection, pchSettingsKey, nValue, peError)
 
     @JvmField var SetInt32: SetInt32_callback? = null
 
     interface SetInt32_callback : Callback {
-        fun invoke(pchSection: String, pchSettingsKey: String, nValue: Int, peError: EVRSettingsError_ByReference? = null)
+        fun invoke(pchSection: String, pchSettingsKey: String, nValue: Int, peError: EVRSettingsError_ByReference?)
     }
 
 
-    fun setFloat(pchSection: String, pchSettingsKey: String, flValue: Float, peError: EVRSettingsError_ByReference? = null)
+    @JvmOverloads fun setFloat(pchSection: String, pchSettingsKey: String, flValue: Float,
+                               peError: EVRSettingsError_ByReference? = null)
             = SetFloat!!.invoke(pchSection, pchSettingsKey, flValue, peError)
 
     @JvmField var SetFloat: SetFloat_callback? = null
 
     interface SetFloat_callback : Callback {
-        fun invoke(pchSection: String, pchSettingsKey: String, flValue: Float, peError: EVRSettingsError_ByReference? = null)
+        fun invoke(pchSection: String, pchSettingsKey: String, flValue: Float, peError: EVRSettingsError_ByReference?)
     }
 
 
-    fun setString(pchSection: String, pchSettingsKey: String, pchValue: String, peError: EVRSettingsError_ByReference? = null)
+    @JvmOverloads fun setString(pchSection: String, pchSettingsKey: String, pchValue: String,
+                                peError: EVRSettingsError_ByReference? = null)
             = SetString!!.invoke(pchSection, pchSettingsKey, pchValue, peError)
 
     @JvmField var SetString: SetString_callback? = null
 
     interface SetString_callback : Callback {
-        fun invoke(pchSection: String, pchSettingsKey: String, pchValue: String, peError: EVRSettingsError_ByReference? = null)
+        fun invoke(pchSection: String, pchSettingsKey: String, pchValue: String, peError: EVRSettingsError_ByReference?)
     }
 
 
     // Users of the system need to provide a proper default in default.vrsettings in the resources/settings/ directory of either the runtime or the driver_xxx
     // directory. Otherwise the default will be false, 0, 0.0 or ""
-    fun getBool(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference? = null)
+    @JvmOverloads fun getBool(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference? = null)
             = GetBool!!.invoke(pchSection, pchSettingsKey, peError)
 
     @JvmField var GetBool: GetBool_callback? = null
 
     interface GetBool_callback : Callback {
-        fun invoke(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference? = null): Boolean
+        fun invoke(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference?): Boolean
     }
 
 
-    fun getInt32(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference? = null)
+    @JvmOverloads fun getInt32(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference? = null)
             = GetInt32!!.invoke(pchSection, pchSettingsKey, peError)
 
     @JvmField var GetInt32: GetInt32_callback? = null
 
     interface GetInt32_callback : Callback {
-        fun invoke(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference? = null): Int
+        fun invoke(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference?): Int
     }
 
 
-    fun getFloat(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference? = null)
+    @JvmOverloads fun getFloat(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference? = null)
             = GetFloat!!.invoke(pchSection, pchSettingsKey, peError)
 
     @JvmField var GetFloat: GetFloat_callback? = null
 
     interface GetFloat_callback : Callback {
-        fun invoke(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference? = null): Float
+        fun invoke(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference?): Float
     }
 
 
-    fun getString(pchSection: String, pchSettingsKey: String, pchValue: String, unValueLen: Int, peError: EVRSettingsError_ByReference? = null)
+    fun getString(pchSection: String, pchSettingsKey: String, pchValue: String, unValueLen: Int,
+                  peError: EVRSettingsError_ByReference? = null)
             = GetString!!.invoke(pchSection, pchSettingsKey, pchValue, unValueLen, peError)
 
     @JvmField var GetString: GetString_callback? = null
 
     interface GetString_callback : Callback {
-        fun invoke(pchSection: String, pchSettingsKey: String, pchValue: String, unValueLen: Int, peError: EVRSettingsError_ByReference? = null)
+        fun invoke(pchSection: String, pchSettingsKey: String, pchValue: String, unValueLen: Int,
+                   peError: EVRSettingsError_ByReference?)
     }
 
 
-    fun removeSection(pchSection: String, peError: EVRSettingsError_ByReference? = null) = RemoveSection!!.invoke(pchSection, peError)
+    @JvmOverloads fun removeSection(pchSection: String, peError: EVRSettingsError_ByReference? = null)
+            = RemoveSection!!.invoke(pchSection, peError)
+
     @JvmField var RemoveSection: RemoveSection_callback? = null
 
     interface RemoveSection_callback : Callback {
-        fun invoke(pchSection: String, peError: EVRSettingsError_ByReference? = null)
+        fun invoke(pchSection: String, peError: EVRSettingsError_ByReference?)
     }
 
 
-    fun removeKeyInSection(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference? = null)
+    @JvmOverloads fun removeKeyInSection(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference? = null)
             = RemoveKeyInSection!!.invoke(pchSection, pchSettingsKey, peError)
 
     @JvmField var RemoveKeyInSection: RemoveKeyInSection_callback? = null
 
     interface RemoveKeyInSection_callback : Callback {
-        fun invoke(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference? = null)
+        fun invoke(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference?)
     }
 
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("GetSettingsErrorNameFromEnum", "Sync", "SetBool", "SetInt32", "SetFloat", "SetString", "GetBool",
-            "GetInt32", "GetFloat", "GetString", "RemoveSection", "RemoveKeyInSection")
+    override fun getFieldOrder(): List<String> = Arrays.asList("GetSettingsErrorNameFromEnum", "Sync", "SetBool", "SetInt32",
+            "SetFloat", "SetString", "GetBool", "GetInt32", "GetFloat", "GetString", "RemoveSection", "RemoveKeyInSection")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -2994,9 +3039,9 @@ const val k_pch_SteamVR_SendSystemButtonToAllApps_Bool = "sendSystemButtonToAllA
 const val k_pch_SteamVR_LogLevel_Int32 = "loglevel"
 const val k_pch_SteamVR_IPD_Float = "ipd"
 const val k_pch_SteamVR_Background_String = "background"
+const val k_pch_SteamVR_BackgroundUseDomeProjection_Bool = "backgroundUseDomeProjection"
 const val k_pch_SteamVR_BackgroundCameraHeight_Float = "backgroundCameraHeight"
 const val k_pch_SteamVR_BackgroundDomeRadius_Float = "backgroundDomeRadius"
-const val k_pch_SteamVR_Environment_String = "environment"
 const val k_pch_SteamVR_GridColor_String = "gridColor"
 const val k_pch_SteamVR_PlayAreaColor_String = "playAreaColor"
 const val k_pch_SteamVR_ShowStage_Bool = "showStage"
@@ -3009,7 +3054,8 @@ const val k_pch_SteamVR_SpeakersForwardYawOffsetDegrees_Float = "speakersForward
 const val k_pch_SteamVR_BaseStationPowerManagement_Bool = "basestationPowerManagement"
 const val k_pch_SteamVR_NeverKillProcesses_Bool = "neverKillProcesses"
 const val k_pch_SteamVR_RenderTargetMultiplier_Float = "renderTargetMultiplier"
-const val k_pch_SteamVR_AllowReprojection_Bool = "allowReprojection"
+const val k_pch_SteamVR_AllowAsyncReprojection_Bool = "allowAsyncReprojection";
+const val k_pch_SteamVR_AllowReprojection_Bool = "allowInterleavedReprojection";
 const val k_pch_SteamVR_ForceReprojection_Bool = "forceReprojection"
 const val k_pch_SteamVR_ForceFadeOnBadTracking_Bool = "forceFadeOnBadTracking"
 const val k_pch_SteamVR_DefaultMirrorView_Int32 = "defaultMirrorView"
@@ -3020,6 +3066,7 @@ const val k_pch_SteamVR_EnableHomeApp = "enableHomeApp"
 const val k_pch_SteamVR_SetInitialDefaultHomeApp = "setInitialDefaultHomeApp"
 const val k_pch_SteamVR_CycleBackgroundImageTimeSec_Int32 = "CycleBackgroundImageTimeSec"
 const val k_pch_SteamVR_RetailDemo_Bool = "retailDemo"
+const val k_pch_SteamVR_IpdOffset_Float = "ipdOffset"
 
 
 //-----------------------------------------------------------------------------
@@ -3053,6 +3100,7 @@ const val k_pch_Null_DisplayFrequency_Float = "displayFrequency"
 // user interface keys
 const val k_pch_UserInterface_Section = "userinterface"
 const val k_pch_UserInterface_StatusAlwaysOnTop_Bool = "StatusAlwaysOnTop"
+const val k_pch_UserInterface_MinimizeToTray_Bool = "MinimizeToTray"
 const val k_pch_UserInterface_Screenshots_Bool = "screenshots"
 const val k_pch_UserInterface_ScreenshotType_Int = "screenshotType"
 
@@ -3253,7 +3301,7 @@ open class IVRChaperone : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("GetCalibrationState", "GetPlayAreaSize", "GetPlayAreaRect", "ReloadInfo", "SetSceneColor",
+    override fun getFieldOrder(): List<String> = Arrays.asList("GetCalibrationState", "GetPlayAreaSize", "GetPlayAreaRect", "ReloadInfo", "SetSceneColor",
             "GetBoundsColor", "AreBoundsVisible_callback", "ForceBoundsVisible")
 
     constructor(peer: Pointer) : super(peer) {
@@ -3490,7 +3538,7 @@ open class IVRChaperoneSetup : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("CommitWorkingCopy", "RevertWorkingCopy", "GetWorkingPlayAreaSize", "GetWorkingPlayAreaRect",
+    override fun getFieldOrder(): List<String> = Arrays.asList("CommitWorkingCopy", "RevertWorkingCopy", "GetWorkingPlayAreaSize", "GetWorkingPlayAreaRect",
             "GetWorkingCollisionBoundsInfo", "GetLiveCollisionBoundsInfo", "GetWorkingSeatedZeroPoseToRawTrackingPose",
             "GetWorkingStandingZeroPoseToRawTrackingPose", "SetWorkingPlayAreaSize", "SetWorkingCollisionBoundsInfo", "SetWorkingSeatedZeroPoseToRawTrackingPose",
             "SetWorkingStandingZeroPoseToRawTrackingPose", "ReloadFromDisk", "GetLiveSeatedZeroPoseToRawTrackingPose", "SetWorkingCollisionBoundsTagsInfo",
@@ -3520,7 +3568,8 @@ enum class EVRCompositorError(@JvmField val i: Int) {
     VRCompositorError_TextureIsOnWrongDevice(104),
     VRCompositorError_TextureUsesUnsupportedFormat(105),
     VRCompositorError_SharedTexturesNotSupported(106),
-    VRCompositorError_IndexOutOfRange(107);
+    VRCompositorError_IndexOutOfRange(107),
+    VRCompositorError_AlreadySubmitted(108);
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -3529,6 +3578,11 @@ enum class EVRCompositorError(@JvmField val i: Int) {
 
 const val VRCompositor_ReprojectionReason_Cpu = 0x01
 const val VRCompositor_ReprojectionReason_Gpu = 0x02
+/**
+ *  This flag indicates the async reprojection mode is active, but does not indicate if reprojection actually happened or not.
+ *  Use the ReprojectionReason flags above to check if reprojection was actually applied (i.e. scene texture was reused).
+ *  NumFramePresents > 1 also indicates the scene texture was reused, and also the number of times that it was presented in total.  */
+const val VRCompositor_ReprojectionAsync = 0x04
 
 /** Provides a single frame's timing information to the app */
 open class Compositor_FrameTiming : Structure {
@@ -3536,6 +3590,7 @@ open class Compositor_FrameTiming : Structure {
     var m_nSize = 0 // Set to sizeof( openvr.Compositor_FrameTiming )
     var m_nFrameIndex = 0
     var m_nNumFramePresents = 0 // number of times this frame was presented
+    var m_nNumMisPresented = 0 // number of times this frame was presented on a vsync other than it was originally predicted to
     var m_nNumDroppedFrames = 0 // number of additional times previous frame was scanned out
     var m_nReprojectionFlags = 0
 
@@ -3570,14 +3625,17 @@ open class Compositor_FrameTiming : Structure {
 
     constructor()
 
-    constructor(m_nSize: Int, m_nFrameIndex: Int, m_nNumFramePresents: Int, m_nNumDroppedFrames: Int, m_nReprojectionFlags: Int, m_flSystemTimeInSeconds: Double,
-                m_flPreSubmitGpuMs: Float, m_flPostSubmitGpuMs: Float, m_flTotalRenderGpuMs: Float, m_flCompositorRenderGpuMs: Float,
-                m_flCompositorRenderCpuMs: Float, m_flCompositorIdleCpuMs: Float, m_flClientFrameIntervalMs: Float, m_flPresentCallCpuMs: Float,
-                m_flWaitForPresentCpuMs: Float, m_flSubmitFrameMs: Float, m_flWaitGetPosesCalledMs: Float, m_flNewPosesReadyMs: Float, m_flNewFrameReadyMs: Float,
-                m_flCompositorUpdateStartMs: Float, m_flCompositorUpdateEndMs: Float, m_flCompositorRenderStartMs: Float, m_HmdPose: TrackedDevicePose_t) {
+    constructor(m_nSize: Int, m_nFrameIndex: Int, m_nNumFramePresents: Int, m_nNumMisPresented: Int, m_nNumDroppedFrames: Int,
+                m_nReprojectionFlags: Int, m_flSystemTimeInSeconds: Double, m_flPreSubmitGpuMs: Float, m_flPostSubmitGpuMs: Float,
+                m_flTotalRenderGpuMs: Float, m_flCompositorRenderGpuMs: Float, m_flCompositorRenderCpuMs: Float,
+                m_flCompositorIdleCpuMs: Float, m_flClientFrameIntervalMs: Float, m_flPresentCallCpuMs: Float,
+                m_flWaitForPresentCpuMs: Float, m_flSubmitFrameMs: Float, m_flWaitGetPosesCalledMs: Float, m_flNewPosesReadyMs: Float,
+                m_flNewFrameReadyMs: Float, m_flCompositorUpdateStartMs: Float, m_flCompositorUpdateEndMs: Float,
+                m_flCompositorRenderStartMs: Float, m_HmdPose: TrackedDevicePose_t) {
         this.m_nSize = m_nSize
         this.m_nFrameIndex = m_nFrameIndex
         this.m_nNumFramePresents = m_nNumFramePresents
+        this.m_nNumMisPresented = m_nNumMisPresented
         this.m_nNumDroppedFrames = m_nNumDroppedFrames
         this.m_nReprojectionFlags = m_nReprojectionFlags
         this.m_flSystemTimeInSeconds = m_flSystemTimeInSeconds
@@ -3600,10 +3658,11 @@ open class Compositor_FrameTiming : Structure {
         this.m_HmdPose = m_HmdPose
     }
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("m_nSize", "m_nFrameIndex", "m_nNumFramePresents", "m_nNumDroppedFrames", "m_nReprojectionFlags",
-            "m_flSystemTimeInSeconds", "m_flPreSubmitGpuMs", "m_flPostSubmitGpuMs", "m_flTotalRenderGpuMs", "m_flCompositorRenderGpuMs",
-            "m_flCompositorRenderCpuMs", "m_flCompositorIdleCpuMs", "m_flClientFrameIntervalMs", "m_flPresentCallCpuMs", "m_flWaitForPresentCpuMs",
-            "m_flSubmitFrameMs", "m_flWaitGetPosesCalledMs", "m_flNewPosesReadyMs", "m_flNewFrameReadyMs", "m_flCompositorUpdateStartMs",
+    override fun getFieldOrder(): List<String> = Arrays.asList("m_nSize", "m_nFrameIndex", "m_nNumFramePresents", "m_nNumMisPresented",
+            "m_nNumDroppedFrames", "m_nReprojectionFlags", "m_flSystemTimeInSeconds", "m_flPreSubmitGpuMs", "m_flPostSubmitGpuMs",
+            "m_flTotalRenderGpuMs", "m_flCompositorRenderGpuMs", "m_flCompositorRenderCpuMs", "m_flCompositorIdleCpuMs",
+            "m_flClientFrameIntervalMs", "m_flPresentCallCpuMs", "m_flWaitForPresentCpuMs", "m_flSubmitFrameMs",
+            "m_flWaitGetPosesCalledMs", "m_flNewPosesReadyMs", "m_flNewFrameReadyMs", "m_flCompositorUpdateStartMs",
             "m_flCompositorUpdateEndMs", "m_flCompositorRenderStartMs", "m_HmdPose")
 
     constructor(peer: Pointer) : super(peer) {
@@ -3665,7 +3724,7 @@ open class Compositor_CumulativeStats : Structure {
         this.m_nNumReprojectedFramesTimedOut = m_nNumReprojectedFramesTimedOut
     }
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("m_nPid", "m_nNumFramePresents", "m_nNumDroppedFrames", "m_nNumReprojectedFrames",
+    override fun getFieldOrder(): List<String> = Arrays.asList("m_nPid", "m_nNumFramePresents", "m_nNumDroppedFrames", "m_nNumReprojectedFrames",
             "m_nNumFramePresentsOnStartup", "m_nNumDroppedFramesOnStartup", "m_nNumReprojectedFramesOnStartup", "m_nNumLoading", "m_nNumFramePresentsLoading",
             "m_nNumDroppedFramesLoading", "m_nNumReprojectedFramesLoading", "m_nNumTimedOut", "m_nNumFramePresentsTimedOut", "m_nNumDroppedFramesTimedOut",
             "m_nNumReprojectedFramesTimedOut")
@@ -3699,7 +3758,14 @@ open class IVRCompositor : Structure {
         fun invoke(): Int
     }
 
-    /** Returns pose(s) to use to render scene (and optionally poses predicted two frames out for gameplay). */
+    /** Scene applications should call this function to get poses to render with (and optionally poses predicted an additional frame
+     *  out to use for gameplay).
+     *  This function will block until "running start" milliseconds before the start of the frame, and should be called at the last
+     *  moment before needing to start rendering.
+     *
+     *  Return codes:
+     *      - IsNotSceneApplication (make sure to call VR_Init with VRApplicaiton_Scene)
+     *      - DoNotHaveFocus (some other app has taken focus - this will throttle the call to 10hz to reduce the impact on that app)    */
     fun waitGetPoses(pRenderPoseArray: TrackedDevicePose_t.ByReference, unRenderPoseArrayCount: Int, pGamePoseArray: TrackedDevicePose_t.ByReference?,
                      unGamePoseArrayCount: Int) = WaitGetPoses!!.invoke(pRenderPoseArray, unRenderPoseArrayCount, pGamePoseArray, unGamePoseArrayCount)
 
@@ -3738,15 +3804,25 @@ open class IVRCompositor : Structure {
      *  Submitting both frames to signal the driver to start processing, otherwise it may wait until the command buffer fills up, causing the app to miss frames.
      *
      *  OpenGL dirty state:
-     *	    glBindTexture     */
-    fun submit(eEye: EVREye, pTexture: Texture_t.ByReference, pBounds: VRTextureBounds_t.ByReference? = null,
-               nSubmitFlags: EVRSubmitFlags = EVRSubmitFlags.Submit_Default) = EVRCompositorError.of(Submit!!.invoke(eEye.i, pTexture, pBounds, nSubmitFlags.i))
+     *	    glBindTexture
+     *
+     *	Return codes:
+     *      - IsNotSceneApplication (make sure to call VR_Init with VRApplicaiton_Scene)
+     *      - DoNotHaveFocus (some other app has taken focus)
+     *      - TextureIsOnWrongDevice (application did not use proper AdapterIndex - see IVRSystem.GetDXGIOutputInfo)
+     *      - SharedTexturesNotSupported (application needs to call CreateDXGIFactory1 or later before creating DX device)
+     *      - TextureUsesUnsupportedFormat (scene textures must be compatible with DXGI sharing rules - e.g. uncompressed, no mips, etc.)
+     *      - InvalidTexture (usually means bad arguments passed in)
+     *      - AlreadySubmitted (app has submitted two left textures or two right textures in a single frame - i.e. before calling
+     *          WaitGetPoses again) */
+    @JvmOverloads fun submit(eEye: EVREye, pTexture: Texture_t.ByReference, pBounds: VRTextureBounds_t.ByReference? = null,
+                             nSubmitFlags: EVRSubmitFlags = EVRSubmitFlags.Submit_Default)
+            = EVRCompositorError.of(Submit!!.invoke(eEye.i, pTexture, pBounds, nSubmitFlags.i))
 
     @JvmField var Submit: Submit_callback? = null
 
     interface Submit_callback : Callback {
-        fun invoke(eEye: Int, pTexture: Texture_t.ByReference, pBounds: VRTextureBounds_t.ByReference? = null,
-                   nSubmitFlags: Int = EVRSubmitFlags.Submit_Default.i): Int
+        fun invoke(eEye: Int, pTexture: Texture_t.ByReference, pBounds: VRTextureBounds_t.ByReference?, nSubmitFlags: Int): Int
     }
 
     /** Clears the frame that was sent with the last call to Submit. This will cause the compositor to show the grid until Submit is called again. */
@@ -3773,12 +3849,25 @@ open class IVRCompositor : Structure {
 
     /** Returns true if timing data is filled it.  Sets oldest timing info if nFramesAgo is larger than the stored history.
      *  Be sure to set timing.size = sizeof(openvr.Compositor_FrameTiming) on struct passed in before calling this function. */
-    fun getFrameTiming(pTiming: Compositor_FrameTiming.ByReference, unFramesAgo: Int = 0) = GetFrameTiming!!.invoke(pTiming, unFramesAgo)
+    @JvmOverloads fun getFrameTiming(pTiming: Compositor_FrameTiming.ByReference, unFramesAgo: Int = 0)
+            = GetFrameTiming!!.invoke(pTiming, unFramesAgo)
 
     @JvmField var GetFrameTiming: GetFrameTiming_callback? = null
 
     interface GetFrameTiming_callback : Callback {
-        fun invoke(pTiming: Compositor_FrameTiming.ByReference, unFramesAgo: Int = 0): Boolean
+        fun invoke(pTiming: Compositor_FrameTiming.ByReference, unFramesAgo: Int): Boolean
+    }
+
+    /** Interface for copying a range of timing data.  Frames are returned in ascending order (oldest to newest) with the last being
+     *  the most recent frame.
+     *  Only the first entry's m_nSize needs to be set, as the rest will be inferred from that.  Returns total number of entries
+     *  filled out. */
+    fun getFrameTimings(pTiming: Compositor_FrameTiming.ByReference, nFrames: Int) = GetFrameTimings!!.invoke(pTiming, nFrames)
+
+    @JvmField var GetFrameTimings: GetFrameTimings_callback? = null
+
+    interface GetFrameTimings_callback : Callback {
+        fun invoke(pTiming: Compositor_FrameTiming.ByReference, nFrames: Int): Int
     }
 
     /** Returns the time in seconds left in the current (as identified by FrameTiming's frameIndex) frame.
@@ -3803,13 +3892,23 @@ open class IVRCompositor : Structure {
     /** Fades the view on the HMD to the specified color. The fade will take fSeconds, and the color values are between 0.0 and 1.0. This color is faded on top
      *  of the scene based on the alpha parameter. Removing the fade color instantly would be FadeToColor( 0.0, 0.0, 0.0, 0.0, 0.0 ).
      *  Values are in un-premultiplied alpha space. */
-    fun fadeToColor(fSeconds: Float, fRed: Float, fGreen: Float, fBlue: Float, fAlpha: Float, bBackground: Boolean = false)
+    @JvmOverloads fun fadeToColor(fSeconds: Float, fRed: Float, fGreen: Float, fBlue: Float, fAlpha: Float,
+                                  bBackground: Boolean = false)
             = FadeToColor!!.invoke(fSeconds, fRed, fGreen, fBlue, fAlpha, bBackground)
 
     @JvmField var FadeToColor: FadeToColor_callback? = null
 
     interface FadeToColor_callback : Callback {
-        fun invoke(fSeconds: Float, fRed: Float, fGreen: Float, fBlue: Float, fAlpha: Float, bBackground: Boolean = false)
+        fun invoke(fSeconds: Float, fRed: Float, fGreen: Float, fBlue: Float, fAlpha: Float, bBackground: Boolean)
+    }
+
+    /** Get current fade color value. */
+    @JvmOverloads fun getCurrentFadeColor(bBackground: Boolean = false) = GetCurrentFadeColor!!.invoke(bBackground)
+
+    @JvmField var GetCurrentFadeColor: GetCurrentFadeColor_callback? = null
+
+    interface GetCurrentFadeColor_callback : Callback {
+        fun invoke(bBackground: Boolean): HmdColor_t
     }
 
     /** Fading the Grid in or out in fSeconds */
@@ -3821,10 +3920,20 @@ open class IVRCompositor : Structure {
         fun invoke(fSeconds: Float, bFadeIn: Boolean)
     }
 
+    /** Get current alpha value of grid. */
+    fun getCurrentGridAlpha() = GetCurrentGridAlpha!!.invoke()
+
+    @JvmField var GetCurrentGridAlpha: GetCurrentGridAlpha_callback? = null
+
+    interface GetCurrentGridAlpha_callback : Callback {
+        fun invoke(): Float
+    }
+
     /** Override the skybox used in the compositor (e.g. for during level loads when the app can't feed scene images fast enough)
      *  Order is Front, Back, Left, Right, Top, Bottom.  If only a single texture is passed, it is assumed in lat-long format.
      *  If two are passed, it is assumed a lat-long stereo pair. */
-    fun setSkyboxOverride(pTextures: Texture_t.ByReference, unTextureCount: Int) = EVRCompositorError.of(SetSkyboxOverride!!.invoke(pTextures, unTextureCount))
+    fun setSkyboxOverride(pTextures: Texture_t.ByReference, unTextureCount: Int)
+            = EVRCompositorError.of(SetSkyboxOverride!!.invoke(pTextures, unTextureCount))
 
     @JvmField var SetSkyboxOverride: SetSkyboxOverride_callback? = null
 
@@ -4026,13 +4135,14 @@ open class IVRCompositor : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("SetTrackingSpace", "GetTrackingSpace", "WaitGetPoses", "GetLastPoses",
-            "GetLastPoseForTrackedDeviceIndex", "Submit", "ClearLastSubmittedFrame", "PostPresentHandoff", "GetFrameTiming", "GetFrameTimeRemaining",
-            "GetCumulativeStats", "FadeToColor", "FadeGrid", "SetSkyboxOverride", "ClearSkyboxOverride", "CompositorBringToFront", "CompositorGoToBack",
-            "CompositorQuit", "IsFullscreen", "GetCurrentSceneFocusProcess", "GetLastFrameRenderer", "CanRenderScene", "ShowMirrorWindow", "HideMirrorWindow",
-            "IsMirrorWindowVisible", "CompositorDumpImages", "ShouldAppRenderWithLowResources", "ForceInterleavedReprojectionOn", "ForceReconnectProcess",
-            "SuspendRendering", "GetMirrorTextureD3D11", "GetMirrorTextureGL", "ReleaseSharedGLTexture", "LockGLSharedTextureForAccess",
-            "UnlockGLSharedTextureForAccess")
+    override fun getFieldOrder(): List<String> = Arrays.asList("SetTrackingSpace", "GetTrackingSpace", "WaitGetPoses", "GetLastPoses",
+            "GetLastPoseForTrackedDeviceIndex", "Submit", "ClearLastSubmittedFrame", "PostPresentHandoff", "GetFrameTiming",
+            "GetFrameTimings", "GetFrameTimeRemaining", "GetCumulativeStats", "FadeToColor", "GetCurrentFadeColor", "FadeGrid",
+            "GetCurrentGridAlpha", "SetSkyboxOverride", "ClearSkyboxOverride", "CompositorBringToFront", "CompositorGoToBack",
+            "CompositorQuit", "IsFullscreen", "GetCurrentSceneFocusProcess", "GetLastFrameRenderer", "CanRenderScene",
+            "ShowMirrorWindow", "HideMirrorWindow", "IsMirrorWindowVisible", "CompositorDumpImages", "ShouldAppRenderWithLowResources",
+            "ForceInterleavedReprojectionOn", "ForceReconnectProcess", "SuspendRendering", "GetMirrorTextureD3D11",
+            "GetMirrorTextureGL", "ReleaseSharedGLTexture", "LockGLSharedTextureForAccess", "UnlockGLSharedTextureForAccess")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -4042,7 +4152,7 @@ open class IVRCompositor : Structure {
     class ByValue : IVRCompositor(), Structure.ByValue
 }
 
-const val IVRCompositor_Version = "FnTable:IVRCompositor_016"
+const val IVRCompositor_Version = "FnTable:IVRCompositor_018"
 
 // ivrnotifications.h =============================================================================================================================================
 
@@ -4063,7 +4173,7 @@ open class NotificationBitmap_t : Structure {
         this.m_nBytesPerPixel = m_nBytesPerPixel
     }
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("m_pImageData", "m_nWidth", "m_nHeight", "m_nBytesPerPixel")
+    override fun getFieldOrder(): List<String> = Arrays.asList("m_pImageData", "m_nWidth", "m_nHeight", "m_nBytesPerPixel")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -4150,7 +4260,7 @@ open class IVRNotifications : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("CreateNotification", "RemoveNotification")
+    override fun getFieldOrder(): List<String> = Arrays.asList("CreateNotification", "RemoveNotification")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -4172,6 +4282,9 @@ const val k_unVROverlayMaxNameLength = 128
 
 /** The maximum number of overlays that can exist in the system at one time. */
 const val k_unMaxOverlayCount = 64
+
+/** The maximum number of overlay intersection mask primitives per overlay */
+const val k_unMaxOverlayIntersectionMaskPrimitivesCount = 32
 
 /** Types of input supported by VR Overlays */
 enum class VROverlayInputMethod(@JvmField val i: Int) {
@@ -4262,7 +4375,7 @@ open class VROverlayIntersectionParams_t : Structure {
 
     constructor(vSource: HmdVector3_t, vDirection: HmdVector3_t, eOrigin: ETrackingUniverseOrigin) : this(vSource, vDirection, eOrigin.i)
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("vPoint", "vNormal", "eOrigin")
+    override fun getFieldOrder(): List<String> = Arrays.asList("vPoint", "vNormal", "eOrigin")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -4288,7 +4401,7 @@ open class VROverlayIntersectionResults_t : Structure {
         this.fDistance = fDistance
     }
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("vPoint", "vNormal", "vUVs", "fDistance")
+    override fun getFieldOrder(): List<String> = Arrays.asList("vPoint", "vNormal", "vUVs", "fDistance")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -4334,6 +4447,98 @@ enum class EOverlayDirection(@JvmField val i: Int) {
     companion object {
         fun of(i: Int) = values().first { it.i == i }
     }
+}
+
+enum class EVROverlayIntersectionMaskPrimitiveType(@JvmField val i: Int) {
+
+    OverlayIntersectionPrimitiveType_Rectangle(0),
+    OverlayIntersectionPrimitiveType_Circle(1);
+
+    companion object {
+        fun of(i: Int) = values().first { it.i == i }
+    }
+}
+
+open class IntersectionMaskRectangle_t : VROverlayIntersectionMaskPrimitive_Data_t {
+
+    @JvmField var m_flTopLeftX = 0f
+    @JvmField var m_flTopLeftY = 0f
+    @JvmField var m_flWidth = 0f
+    @JvmField var m_flHeight = 0f
+
+    constructor()
+
+    constructor(m_flTopLeftX: Float, m_flTopLeftY: Float, m_flWidth: Float, m_flHeight: Float) {
+        this.m_flTopLeftX = m_flTopLeftX
+        this.m_flTopLeftY = m_flTopLeftY
+        this.m_flWidth = m_flWidth
+        this.m_flHeight = m_flHeight
+    }
+
+    override fun getFieldOrder(): List<String> = Arrays.asList("m_flTopLeftX", "m_flTopLeftY", "m_flWidth", "m_flHeight")
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : IntersectionMaskRectangle_t(), Structure.ByReference
+    class ByValue : IntersectionMaskRectangle_t(), Structure.ByValue
+}
+
+open class IntersectionMaskCircle_t : VROverlayIntersectionMaskPrimitive_Data_t {
+
+    @JvmField var m_flCenterX = 0f
+    @JvmField var m_flCenterY = 0f
+    @JvmField var m_flRadius = 0f
+
+    constructor()
+
+    constructor(m_flCenterX: Float, m_flCenterY: Float, m_flRadius: Float) {
+        this.m_flCenterX = m_flCenterX
+        this.m_flCenterY = m_flCenterY
+        this.m_flRadius = m_flRadius
+    }
+
+    override fun getFieldOrder(): List<String> = Arrays.asList("m_flCenterX", "m_flCenterY", "m_flRadius")
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : IntersectionMaskRectangle_t(), Structure.ByReference
+    class ByValue : IntersectionMaskRectangle_t(), Structure.ByValue
+}
+
+/** NOTE!!! If you change this you MUST manually update openvr_interop.cs.py and openvr_api_flat.h.py */
+abstract class VROverlayIntersectionMaskPrimitive_Data_t : Structure {
+
+    constructor() : super()
+    constructor(peer: Pointer) : super(peer)
+}
+
+open class VROverlayIntersectionMaskPrimitive_t : Structure {
+
+    @JvmField var m_nPrimitiveType = 0
+    @JvmField var m_Primitive: VROverlayIntersectionMaskPrimitive_Data_t? = null
+
+    constructor()
+
+    constructor(m_nPrimitiveType: EVROverlayIntersectionMaskPrimitiveType, m_Primitive: VROverlayIntersectionMaskPrimitive_Data_t) :
+            this(m_nPrimitiveType.i, m_Primitive)
+
+    constructor(m_nPrimitiveType: Int, m_Primitive: VROverlayIntersectionMaskPrimitive_Data_t) {
+        this.m_nPrimitiveType = m_nPrimitiveType
+        this.m_Primitive = m_Primitive
+    }
+
+    override fun getFieldOrder(): List<String> = Arrays.asList("m_nPrimitiveType", "m_Primitive")
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : VROverlayIntersectionMaskPrimitive_t(), Structure.ByReference
+    class ByValue : VROverlayIntersectionMaskPrimitive_t(), Structure.ByValue
 }
 
 open class IVROverlay : Structure {
@@ -5128,22 +5333,46 @@ open class IVROverlay : Structure {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, avoidRect: HmdRect2_t)
     }
 
+
+    // ---------------------------------------------
+    // Overlay input methods
+    // ---------------------------------------------
+
+    /** Sets a list of primitives to be used for controller ray intersection typically the size of the underlying UI in pixels
+     *  (not in world space). */
+    @JvmOverloads fun setOverlayIntersectionMask(ulOverlayHandle: VROverlayHandle_t,
+                                                 pMaskPrimitives: VROverlayIntersectionMaskPrimitive_t.ByReference,
+                                                 unNumMaskPrimitives: Int, unPrimitiveSize: Int = Int.BYTES * 2) =
+            SetOverlayIntersectionMask!!.invoke(ulOverlayHandle, pMaskPrimitives, unNumMaskPrimitives, unPrimitiveSize)
+
+    @JvmField var SetOverlayIntersectionMask: SetOverlayIntersectionMask_callback? = null
+
+    interface SetOverlayIntersectionMask_callback : Callback {
+        fun invoke(ulOverlayHandle: VROverlayHandle_t, pMaskPrimitives: VROverlayIntersectionMaskPrimitive_t.ByReference,
+                   unNumMaskPrimitives: Int, unPrimitiveSize: Int): EVROverlayError
+    }
+
+
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("FindOverlay", "CreateOverlay", "DestroyOverlay", "SetHighQualityOverlay", "GetHighQualityOverlay",
-            "GetOverlayKey", "GetOverlayName", "GetOverlayImageData", "GetOverlayErrorNameFromEnum", "SetOverlayRenderingPid", "GetOverlayRenderingPid",
-            "SetOverlayFlag", "GetOverlayFlag", "SetOverlayColor", "GetOverlayColor", "SetOverlayAlpha", "GetOverlayAlpha", "SetOverlayTexelAspect",
-            "GetOverlayTexelAspect", "SetOverlaySortOrder", "GetOverlaySortOrder", "SetOverlayWidthInMeters", "GetOverlayWidthInMeters",
-            "SetOverlayAutoCurveDistanceRangeInMeters", "GetOverlayAutoCurveDistanceRangeInMeters", "SetOverlayTextureColorSpace", "GetOverlayTextureColorSpace",
-            "SetOverlayTextureBounds", "GetOverlayTextureBounds", "GetOverlayTransformType", "SetOverlayTransformAbsolute", "GetOverlayTransformAbsolute",
-            "SetOverlayTransformTrackedDeviceRelative", "GetOverlayTransformTrackedDeviceRelative", "SetOverlayTransformTrackedDeviceComponent",
-            "GetOverlayTransformTrackedDeviceComponent", "ShowOverlay", "HideOverlay", "IsOverlayVisible", "GetTransformForOverlayCoordinates", "PollNextOverlayEvent",
-            "GetOverlayInputMethod", "GetOverlayMouseScale", "SetOverlayMouseScale", "ComputeOverlayIntersection", "HandleControllerOverlayInteractionAsMouse",
-            "IsHoverTargetOverlay", "GetGamepadFocusOverlay", "SetGamepadFocusOverlay", "SetOverlayNeighbor", "MoveGamepadFocusToNeighbor", "SetOverlayTexture",
-            "ClearOverlayTexture", "SetOverlayRaw", "SetOverlayFromFile", "GetOverlayTexture", "ReleaseNativeOverlayHandle", "GetOverlayTextureSize",
-            "CreateDashboardOverlay", "IsDashboardVisible", "IsActiveDashboardOverlay", "SetDashboardOverlaySceneProcess", "GetDashboardOverlaySceneProcess",
-            "ShowDashboard", "GetPrimaryDashboardDevice", "ShowKeyboard", "ShowKeyboardForOverlay", "GetKeyboardText", "HideKeyboard",
-            "SetKeyboardTransformAbsolute", "SetKeyboardPositionForOverlay")
+    override fun getFieldOrder(): List<String> = Arrays.asList("FindOverlay", "CreateOverlay", "DestroyOverlay",
+            "SetHighQualityOverlay", "GetHighQualityOverlay", "GetOverlayKey", "GetOverlayName", "GetOverlayImageData",
+            "GetOverlayErrorNameFromEnum", "SetOverlayRenderingPid", "GetOverlayRenderingPid", "SetOverlayFlag", "GetOverlayFlag",
+            "SetOverlayColor", "GetOverlayColor", "SetOverlayAlpha", "GetOverlayAlpha", "SetOverlayTexelAspect",
+            "GetOverlayTexelAspect", "SetOverlaySortOrder", "GetOverlaySortOrder", "SetOverlayWidthInMeters",
+            "GetOverlayWidthInMeters", "SetOverlayAutoCurveDistanceRangeInMeters", "GetOverlayAutoCurveDistanceRangeInMeters",
+            "SetOverlayTextureColorSpace", "GetOverlayTextureColorSpace", "SetOverlayTextureBounds", "GetOverlayTextureBounds",
+            "GetOverlayTransformType", "SetOverlayTransformAbsolute", "GetOverlayTransformAbsolute",
+            "SetOverlayTransformTrackedDeviceRelative", "GetOverlayTransformTrackedDeviceRelative",
+            "SetOverlayTransformTrackedDeviceComponent", "GetOverlayTransformTrackedDeviceComponent", "ShowOverlay", "HideOverlay",
+            "IsOverlayVisible", "GetTransformForOverlayCoordinates", "PollNextOverlayEvent", "GetOverlayInputMethod",
+            "GetOverlayMouseScale", "SetOverlayMouseScale", "ComputeOverlayIntersection", "HandleControllerOverlayInteractionAsMouse",
+            "IsHoverTargetOverlay", "GetGamepadFocusOverlay", "SetGamepadFocusOverlay", "SetOverlayNeighbor",
+            "MoveGamepadFocusToNeighbor", "SetOverlayTexture", "ClearOverlayTexture", "SetOverlayRaw", "SetOverlayFromFile",
+            "GetOverlayTexture", "ReleaseNativeOverlayHandle", "GetOverlayTextureSize", "CreateDashboardOverlay", "IsDashboardVisible",
+            "IsActiveDashboardOverlay", "SetDashboardOverlaySceneProcess", "GetDashboardOverlaySceneProcess", "ShowDashboard",
+            "GetPrimaryDashboardDevice", "ShowKeyboard", "ShowKeyboardForOverlay", "GetKeyboardText", "HideKeyboard",
+            "SetKeyboardTransformAbsolute", "SetKeyboardPositionForOverlay", "SetOverlayIntersectionMask")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -5218,7 +5447,7 @@ open class RenderModel_ComponentState_t : Structure {
         this.uProperties = uProperties
     }
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("mTrackingToComponentRenderModel", "mTrackingToComponentLocal", "uProperties")
+    override fun getFieldOrder(): List<String> = Arrays.asList("mTrackingToComponentRenderModel", "mTrackingToComponentLocal", "uProperties")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -5245,7 +5474,7 @@ open class RenderModel_Vertex_t : Structure {
         this.rfTextureCoord = rfTextureCoord
     }
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("vPosition", "vNormal", "rfTextureCoord")
+    override fun getFieldOrder(): List<String> = Arrays.asList("vPosition", "vNormal", "rfTextureCoord")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -5272,7 +5501,7 @@ open class RenderModel_TextureMap_t : Structure {
         this.rubTextureMapData = rubTextureMapData
     }
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("unWidth", "unHeight", "rubTextureMapData")
+    override fun getFieldOrder(): List<String> = Arrays.asList("unWidth", "unHeight", "rubTextureMapData")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -5309,7 +5538,7 @@ open class RenderModel_t : Structure {
         this.diffuseTextureId = diffuseTextureId
     }
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("rVertexData", "unVertexCount", "rIndexData", "unTriangleCount", "diffuseTextureId")
+    override fun getFieldOrder(): List<String> = Arrays.asList("rVertexData", "unVertexCount", "rIndexData", "unTriangleCount", "diffuseTextureId")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -5330,7 +5559,7 @@ open class RenderModel_ControllerMode_State_t : Structure {
         this.bScrollWheelVisible = bScrollWheelVisible
     }
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("bScrollWheelVisible")
+    override fun getFieldOrder(): List<String> = Arrays.asList("bScrollWheelVisible")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -5550,7 +5779,7 @@ open class IVRRenderModels : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("LoadRenderModel_Async", "FreeRenderModel", "LoadTexture_Async", "FreeTexture",
+    override fun getFieldOrder(): List<String> = Arrays.asList("LoadRenderModel_Async", "FreeRenderModel", "LoadTexture_Async", "FreeTexture",
             "LoadTextureD3D11_Async", "LoadIntoTextureD3D11_Async", "FreeTextureD3D11", "GetRenderModelName", "GetRenderModelCount", "GetComponentCount",
             "GetComponentName", "GetComponentButtonMask", "GetComponentRenderModelName", "GetComponentState", "RenderModelHasComponent",
             "GetRenderModelThumbnailURL", "GetRenderModelOriginalPath", "GetRenderModelErrorNameFromEnum")
@@ -5604,7 +5833,7 @@ open class IVRExtendedDisplay : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("GetWindowBounds", "GetEyeOutputViewport", "GetDXGIOutputInfo")
+    override fun getFieldOrder(): List<String> = Arrays.asList("GetWindowBounds", "GetEyeOutputViewport", "GetDXGIOutputInfo")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -5759,7 +5988,7 @@ open class IVRTrackedCamera : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("GetCameraErrorNameFromEnum", "HasCamera", "GetCameraFrameSize", "GetCameraIntrinisics",
+    override fun getFieldOrder(): List<String> = Arrays.asList("GetCameraErrorNameFromEnum", "HasCamera", "GetCameraFrameSize", "GetCameraIntrinisics",
             "GetCameraProjection", "AcquireVideoStreamingService", "ReleaseVideoStreamingService", "GetVideoStreamFrameBuffer", "GetVideoStreamTextureSize",
             "GetVideoStreamTextureD3D11", "GetVideoStreamTextureGL", "ReleaseVideoStreamTextureGL")
 
@@ -5899,7 +6128,7 @@ open class IVRScreenshots : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("RequestScreenshot", "HookScreenshot", "GetScreenshotPropertyType", "GetScreenshotPropertyFilename",
+    override fun getFieldOrder(): List<String> = Arrays.asList("RequestScreenshot", "HookScreenshot", "GetScreenshotPropertyType", "GetScreenshotPropertyFilename",
             "UpdateScreenshotProgress", "TakeStereoScreenshot", "SubmitScreenshot")
 
     constructor(peer: Pointer) : super(peer) {
@@ -5944,7 +6173,7 @@ open class IVRResources : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<*> = Arrays.asList("LoadSharedResource", "GetResourceFullPath")
+    override fun getFieldOrder(): List<String> = Arrays.asList("LoadSharedResource", "GetResourceFullPath")
 
     constructor(peer: Pointer) : super(peer) {
         read()
