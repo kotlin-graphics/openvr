@@ -1,3 +1,3 @@
 # openvr
 
-JVM Bindings for OpenVR SDK 1.0.4
+JVM Bindings for OpenVR SDK 1.0.5
