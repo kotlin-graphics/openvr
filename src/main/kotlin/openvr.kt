@@ -5432,7 +5432,7 @@ open class IVROverlay : Structure {
      *  (not in world space). */
     @JvmOverloads fun setOverlayIntersectionMask(ulOverlayHandle: VROverlayHandle_t,
                                                  pMaskPrimitives: VROverlayIntersectionMaskPrimitive_t.ByReference,
-                                                 unNumMaskPrimitives: Int, unPrimitiveSize: Int = Int.BYTES * 2) =
+                                                 unNumMaskPrimitives: Int, unPrimitiveSize: Int = Int.BYTES + Pointer.SIZE) =
             SetOverlayIntersectionMask!!.invoke(ulOverlayHandle, pMaskPrimitives, unNumMaskPrimitives, unPrimitiveSize)
 
     @JvmField var SetOverlayIntersectionMask: SetOverlayIntersectionMask_callback? = null
