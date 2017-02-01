@@ -1169,4 +1169,4 @@ open class IVROverlay : Structure {
     class ByValue : IVROverlay(), Structure.ByValue
 }
 
-val IVROverlay_Version = "FnTable:IVROverlay_014";
+val IVROverlay_Version = "FnTable:IVROverlay_014"
