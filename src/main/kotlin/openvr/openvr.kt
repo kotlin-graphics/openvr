@@ -2,6 +2,7 @@
 
 import com.sun.jna.*
 import com.sun.jna.ptr.*
+import main.BYTES
 import java.nio.ByteBuffer
 import java.util.*
 
@@ -114,12 +115,11 @@ open class HmdVector3_t : Structure {
     class ByValue : HmdVector3_t(), Structure.ByValue
 
     fun toDbb(bb: ByteBuffer, offset: Int) {
-        // TODO move java.lang.Float.BYTES => glm
-        for (i in 0..2) bb.putFloat(offset + i * java.lang.Float.BYTES, v[i])
+        for (i in 0..2) bb.putFloat(offset + i * Float.BYTES, v[i])
     }
 
     companion object {
-        val SIZE = 3 * java.lang.Float.BYTES
+        val SIZE = 3 * Float.BYTES
     }
 }
 

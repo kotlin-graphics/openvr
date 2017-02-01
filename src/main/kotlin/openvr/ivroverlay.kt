@@ -1,10 +1,12 @@
 import com.sun.jna.Callback
 import com.sun.jna.Pointer
 import com.sun.jna.Structure
+import com.sun.jna.Union
 import com.sun.jna.ptr.ByteByReference
 import com.sun.jna.ptr.FloatByReference
 import com.sun.jna.ptr.IntByReference
 import com.sun.jna.ptr.PointerByReference
+import main.BYTES
 import java.util.*
 
 // ivroverlay.h ===================================================================================================================================================
@@ -212,7 +214,7 @@ enum class EVROverlayIntersectionMaskPrimitiveType(@JvmField val i: Int) {
     }
 }
 
-open class IntersectionMaskRectangle_t : VROverlayIntersectionMaskPrimitive_Data_t {
+open class IntersectionMaskRectangle_t : Structure {
 
     @JvmField var m_flTopLeftX = 0f
     @JvmField var m_flTopLeftY = 0f
@@ -238,7 +240,7 @@ open class IntersectionMaskRectangle_t : VROverlayIntersectionMaskPrimitive_Data
     class ByValue : IntersectionMaskRectangle_t(), Structure.ByValue
 }
 
-open class IntersectionMaskCircle_t : VROverlayIntersectionMaskPrimitive_Data_t {
+open class IntersectionMaskCircle_t : Structure {
 
     @JvmField var m_flCenterX = 0f
     @JvmField var m_flCenterY = 0f
@@ -263,10 +265,12 @@ open class IntersectionMaskCircle_t : VROverlayIntersectionMaskPrimitive_Data_t 
 }
 
 /** NOTE!!! If you change this you MUST manually update openvr_interop.cs.py and openvr_api_flat.h.py */
-abstract class VROverlayIntersectionMaskPrimitive_Data_t : Structure {
+abstract class VROverlayIntersectionMaskPrimitive_Data_t : Union() {
 
-    constructor() : super()
-    constructor(peer: Pointer) : super(peer)
+    class ByValue : VROverlayIntersectionMaskPrimitive_Data_t(), Structure.ByValue
+
+    var m_Rectangle: IntersectionMaskRectangle_t? = null
+    var m_Circle: IntersectionMaskCircle_t? = null
 }
 
 open class VROverlayIntersectionMaskPrimitive_t : Structure {
