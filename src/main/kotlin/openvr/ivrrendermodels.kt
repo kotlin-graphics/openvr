@@ -4,6 +4,7 @@ import com.sun.jna.Structure
 import com.sun.jna.ptr.IntByReference
 import com.sun.jna.ptr.PointerByReference
 import com.sun.jna.ptr.ShortByReference
+import main.BYTES
 import java.util.*
 
 // ivrrendermodels.h ==============================================================================================================================================
@@ -104,6 +105,10 @@ open class RenderModel_Vertex_t : Structure {
 
     class ByReference : RenderModel_Vertex_t(), Structure.ByReference
     class ByValue : RenderModel_Vertex_t(), Structure.ByValue
+
+    companion object {
+        @JvmStatic val SIZE = 2 * HmdVector3_t.SIZE + 2 * Float.BYTES
+    }
 }
 
 /** A texture map for use on a render model */
