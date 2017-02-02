@@ -130,6 +130,10 @@ open class RenderModel_TextureMap_t : Structure {
     // Map texture data. All textures are RGBA with 8 bits per channel per pixel. Data size is width * height * 4ub
     @JvmField var rubTextureMapData: Pointer? = null
 
+    fun SIZE() = unWidth * unHeight * 4 * Byte.BYTES
+
+    fun dataToBA() = rubTextureMapData!!.getByteArray(0, SIZE())
+
     constructor()
 
     constructor(unWidth: Short, unHeight: Short, rubTextureMapData: Pointer) {
@@ -165,15 +169,9 @@ open class RenderModel_t : Structure {
     // Session unique texture identifier. Rendermodels which share the same texture will have the same id. <0 == texture not present
     @JvmField var diffuseTextureId = INVALID_TEXTURE_ID
 
-    fun vertexDataToFA(): FloatArray {
-        val array = rVertexData!!.toArray(unVertexCount)
-        return FloatArray(unVertexCount, { (array[it] as RenderModel_Vertex_t)[it / 8 + it % 8] })
-    }
+    fun vertexDataToFA() = rVertexData!!.pointer.getFloatArray(0, unVertexCount)
 
-    fun indexDataToSA(): ShortArray {
-        val array = rIndexData!!.pointer.getShortArray(0, unTriangleCount * 3)
-        return ShortArray(unTriangleCount * 3, { array[it] as Short })
-    }
+    fun indexDataToSA() = rIndexData!!.pointer.getShortArray(0, unTriangleCount * 3)
 
     constructor()
 
