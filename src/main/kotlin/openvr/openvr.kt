@@ -1,17 +1,19 @@
 @file:JvmName("vr")
 
-import com.sun.jna.*
-import com.sun.jna.ptr.*
+import com.sun.jna.Native
+import com.sun.jna.Pointer
+import com.sun.jna.Structure
+import com.sun.jna.Union
+import com.sun.jna.ptr.ByteByReference
+import com.sun.jna.ptr.IntByReference
+import com.sun.jna.ptr.LongByReference
+import com.sun.jna.ptr.PointerByReference
 import main.BYTES
 import java.nio.ByteBuffer
-import java.util.*
 
 /**
  * Created by GBarbieri on 07.10.2016.
  */
-
-/** Should be the first call. It's called automatically from VR_Init   */
-fun loadNative() = Native.register("openvr_api")
 
 class BooleanByReference(@JvmField var value: Boolean = false) : ByteByReference(if (value) 1 else 0)
 
@@ -2113,7 +2115,7 @@ external fun VR_ShutdownInternal()
 
 fun VR_Init(error: EVRInitError_ByReference, applicationType: EVRApplicationType): IVRSystem? {
 
-    loadNative()
+    Native.register("openvr_api")
 
     var pVRSystem: IVRSystem? = null
 
