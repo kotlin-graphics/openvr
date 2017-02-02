@@ -13,8 +13,6 @@ class Test : StringSpec() {
 
         "simple test" {
 
-            loadNatives()
-
             val error = EVRInitError_ByReference()
             val hmd = VR_Init(error, EVRApplicationType.Scene)!!
 

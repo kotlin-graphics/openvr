@@ -10,8 +10,8 @@ import java.util.*
  * Created by GBarbieri on 07.10.2016.
  */
 
-/** Should be your first call   */
-fun loadNatives() = Native.register(NativeLibrary.getInstance("openvr_api"))
+/** Should be the first call. It's called automatically from VR_Init   */
+fun loadNative() = Native.register("openvr_api")
 
 class BooleanByReference(@JvmField var value: Boolean = false) : ByteByReference(if (value) 1 else 0)
 
@@ -2112,6 +2112,8 @@ fun vrShutdownInternal() = VR_ShutdownInternal()
 external fun VR_ShutdownInternal()
 
 fun VR_Init(error: EVRInitError_ByReference, applicationType: EVRApplicationType): IVRSystem? {
+
+    loadNative()
 
     var pVRSystem: IVRSystem? = null
 
