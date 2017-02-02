@@ -2021,28 +2021,28 @@ val k_unScreenshotHandleInvalid = 0
 
 /** Returns true if there is an HMD attached. This check is as lightweight as possible and can be called outside of VR_Init/VR_Shutdown. It should be used when
  *  an application wants to know if initializing VR is a possibility but isn't ready to take that step yet.  */
-fun isHmdPresent() = VR_IsHmdPresent()
+fun vrIsHmdPresent() = VR_IsHmdPresent()
 
 external fun VR_IsHmdPresent(): Boolean
 
 /** Returns true if the OpenVR runtime is installed. */
-fun isRuntimeInstalled() = VR_IsRuntimeInstalled()
+fun vrIsRuntimeInstalled() = VR_IsRuntimeInstalled()
 
 external fun VR_IsRuntimeInstalled(): Boolean
 
 /** Returns where the OpenVR runtime is installed. */
-fun runtimePath() = VR_RuntimePath()
+fun vrRuntimePath() = VR_RuntimePath()
 
 external fun VR_RuntimePath(): String
 
 /** Returns the name of the value value for an EVRInitError. This function may be called outside of VR_Init()/VR_Shutdown(). */
-fun vRInitErrorAsSymbol(error: EVRInitError) = VR_GetVRInitErrorAsSymbol(error.i)
+fun vrGetVRInitErrorAsSymbol(error: EVRInitError) = VR_GetVRInitErrorAsSymbol(error.i)
 
 external fun VR_GetVRInitErrorAsSymbol(error: Int): String
 
 /** Returns an english string for an EVRInitError. Applications should call VR_GetVRInitErrorAsSymbol instead and use that as a key to look up their own localized
  *  error message. This function may be called outside of VR_Init()/VR_Shutdown(). */
-fun getVRInitErrorAsEnglishDescription(error: EVRInitError) = VR_GetVRInitErrorAsEnglishDescription(error.i)
+fun VR_GetVRInitErrorAsEnglishDescription(error: EVRInitError) = VR_GetVRInitErrorAsEnglishDescription(error.i)
 
 external fun VR_GetVRInitErrorAsEnglishDescription(error: Int): String
 
