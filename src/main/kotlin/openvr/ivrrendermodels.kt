@@ -162,7 +162,7 @@ open class RenderModel_t : Structure {
     // Session unique texture identifier. Rendermodels which share the same texture will have the same id. <0 == texture not present
     @JvmField var diffuseTextureId = INVALID_TEXTURE_ID
 
-    fun data(): FloatArray {
+    fun vertexDataToFA(): FloatArray {
         val array = rVertexData!!.toArray(unVertexCount)
         return FloatArray(unVertexCount, { (array[it] as RenderModel_Vertex_t)[it / 8 + it % 8] })
     }
