@@ -170,6 +170,11 @@ open class RenderModel_t : Structure {
         return FloatArray(unVertexCount, { (array[it] as RenderModel_Vertex_t)[it / 8 + it % 8] })
     }
 
+    fun indexDataToSA(): ShortArray {
+        val array = rIndexData!!.pointer.getShortArray(0, unTriangleCount * 3)
+        return ShortArray(unTriangleCount * 3, { array[it] as Short })
+    }
+
     constructor()
 
     constructor(rVertexData: RenderModel_Vertex_t.ByReference, unVertexCount: Int, rIndexData: ShortByReference, unTriangleCount: Int, diffuseTextureId: Int) {
