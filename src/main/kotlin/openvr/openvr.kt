@@ -2023,28 +2023,28 @@ val k_unScreenshotHandleInvalid = 0
  *  an application wants to know if initializing VR is a possibility but isn't ready to take that step yet.  */
 fun isHmdPresent() = VR_IsHmdPresent()
 
-internal external fun VR_IsHmdPresent(): Boolean
+external fun VR_IsHmdPresent(): Boolean
 
 /** Returns true if the OpenVR runtime is installed. */
 fun isRuntimeInstalled() = VR_IsRuntimeInstalled()
 
-internal external fun VR_IsRuntimeInstalled(): Boolean
+external fun VR_IsRuntimeInstalled(): Boolean
 
 /** Returns where the OpenVR runtime is installed. */
 fun runtimePath() = VR_RuntimePath()
 
-internal external fun VR_RuntimePath(): String
+external fun VR_RuntimePath(): String
 
 /** Returns the name of the value value for an EVRInitError. This function may be called outside of VR_Init()/VR_Shutdown(). */
 fun vRInitErrorAsSymbol(error: EVRInitError) = VR_GetVRInitErrorAsSymbol(error.i)
 
-internal external fun VR_GetVRInitErrorAsSymbol(error: Int): String
+external fun VR_GetVRInitErrorAsSymbol(error: Int): String
 
 /** Returns an english string for an EVRInitError. Applications should call VR_GetVRInitErrorAsSymbol instead and use that as a key to look up their own localized
  *  error message. This function may be called outside of VR_Init()/VR_Shutdown(). */
 fun getVRInitErrorAsEnglishDescription(error: EVRInitError) = VR_GetVRInitErrorAsEnglishDescription(error.i)
 
-internal external fun VR_GetVRInitErrorAsEnglishDescription(error: Int): String
+external fun VR_GetVRInitErrorAsEnglishDescription(error: Int): String
 
 /** Returns the interface of the specified version. This method must be called after VR_Init. The pointer returned is valid until VR_Shutdown is called.     */
 fun vrGetGenericInterface(pchInterfaceVersion: String, peError: EVRInitError_ByReference) = VR_GetGenericInterface(pchInterfaceVersion, peError)
