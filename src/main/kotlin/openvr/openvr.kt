@@ -121,6 +121,8 @@ open class HmdVector3_t : Structure {
     companion object {
         val SIZE = 3 * Float.BYTES
     }
+
+    operator fun get(i: Int) = v[i]
 }
 
 open class HmdVector4_t : Structure {
@@ -142,6 +144,8 @@ open class HmdVector4_t : Structure {
 
     class ByReference : HmdVector4_t(), Structure.ByReference
     class ByValue : HmdVector4_t(), Structure.ByValue
+
+    operator fun get(i: Int) = v[i]
 }
 
 open class HmdVector3d_t : Structure {
@@ -163,6 +167,8 @@ open class HmdVector3d_t : Structure {
 
     class ByReference : HmdVector3d_t(), Structure.ByReference
     class ByValue : HmdVector3d_t(), Structure.ByValue
+
+    operator fun get(i: Int) = v[i]
 }
 
 open class HmdVector2_t : Structure {
@@ -184,6 +190,8 @@ open class HmdVector2_t : Structure {
 
     class ByReference : HmdVector2_t(), Structure.ByReference
     class ByValue : HmdVector2_t(), Structure.ByValue
+
+    operator fun get(i: Int) = v[i]
 }
 
 open class HmdQuaternion_t : Structure {
@@ -210,6 +218,14 @@ open class HmdQuaternion_t : Structure {
 
     class ByReference : HmdQuaternion_t(), Structure.ByReference
     class ByValue : HmdQuaternion_t(), Structure.ByValue
+
+    operator fun get(i: Int) = when (i) {
+        0 -> x
+        1 -> y
+        2 -> z
+        3 -> w
+        else -> throw IndexOutOfBoundsException()
+    }
 }
 
 open class HmdColor_t : Structure {
@@ -236,6 +252,14 @@ open class HmdColor_t : Structure {
 
     class ByReference : HmdColor_t(), Structure.ByReference
     class ByValue : HmdColor_t(), Structure.ByValue
+
+    operator fun get(i: Int) = when (i) {
+        0 -> r
+        1 -> g
+        2 -> b
+        3 -> a
+        else -> throw IndexOutOfBoundsException()
+    }
 }
 
 open class HmdQuad_t : Structure {
@@ -1421,17 +1445,17 @@ open class VREvent_MessageOverlay_t : Structure {
 
 open class VREvent_Property_t : Structure {
 
-    @JvmField var container:PropertyContainerHandle_t = 0
+    @JvmField var container: PropertyContainerHandle_t = 0
     @JvmField var prop = 0
     fun prop() = ETrackedDeviceProperty.of(prop)
 
     constructor()
 
-    constructor(container:PropertyContainerHandle_t,prop: ETrackedDeviceProperty) : this(container,prop.i)
+    constructor(container: PropertyContainerHandle_t, prop: ETrackedDeviceProperty) : this(container, prop.i)
 
-    constructor(container:PropertyContainerHandle_t, prop: Int) {
+    constructor(container: PropertyContainerHandle_t, prop: Int) {
         this.container = container
-        this.prop=prop
+        this.prop = prop
         write() // TODO?
     }
 

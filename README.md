@@ -1,7 +1,12 @@
 # openvr jvm binding
 
+## Features:
 
-ChangeLog:
+- array classes `[]` operator, included `RenderModel_Vertex_t`
+- concise enumerators, e.g. `EVRComponentProperty.VRComponentProperty_IsStatic` is `EVRComponentProperty.IsStatic`
+
+
+## ChangeLog:
 
  OpenVR SDK 1.0.6:
 

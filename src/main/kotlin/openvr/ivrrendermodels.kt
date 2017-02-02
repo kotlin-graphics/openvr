@@ -87,6 +87,13 @@ open class RenderModel_Vertex_t : Structure {
     @JvmField var vNormal = HmdVector3_t()
     @JvmField var rfTextureCoord = floatArrayOf(0f, 0f)
 
+    operator fun get(i: Int) = when (i) {
+        in 0 until 3 -> vPosition[i]
+        in 3 until 6 -> vNormal[i]
+        in 6 until 8 -> rfTextureCoord[i]
+        else -> throw IndexOutOfBoundsException()
+    }
+
     constructor()
 
     constructor(vPosition: HmdVector3_t, vNormal: HmdVector3_t, rfTextureCoord: FloatArray) {
@@ -154,6 +161,11 @@ open class RenderModel_t : Structure {
     @JvmField var unTriangleCount = 0                    //                 Number of triangles in the mesh. Index count is 3 * TriangleCount
     // Session unique texture identifier. Rendermodels which share the same texture will have the same id. <0 == texture not present
     @JvmField var diffuseTextureId = INVALID_TEXTURE_ID
+
+    fun data(): FloatArray {
+        val array = rVertexData!!.toArray(unVertexCount)
+        return FloatArray(unVertexCount, { (array[it] as RenderModel_Vertex_t)[it / 8 + it % 8] })
+    }
 
     constructor()
 
