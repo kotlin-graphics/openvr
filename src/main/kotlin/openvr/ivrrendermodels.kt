@@ -115,6 +115,9 @@ open class RenderModel_Vertex_t : Structure {
 
     companion object {
         @JvmStatic val SIZE = 2 * HmdVector3_t.SIZE + 2 * Float.BYTES
+        @JvmStatic val POSITION_OFFSET = 0
+        @JvmStatic val NORMAL_OFFSET = HmdVector3_t.SIZE
+        @JvmStatic val TEX_COORD_OFFSET = HmdVector3_t.SIZE * 2
     }
 }
 
