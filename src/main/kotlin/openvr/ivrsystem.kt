@@ -18,7 +18,7 @@ open class IVRSystem : Structure {
     fun getRecommendedRenderTargetSize(pnWidth: IntByReference, pnHeight: IntByReference)
             = GetRecommendedRenderTargetSize!!.invoke(pnWidth, pnHeight)
 
-    @JvmField var GetRecommendedRenderTargetSize: GetRecommendedRenderTargetSize_callback? = null
+    internal @JvmField var GetRecommendedRenderTargetSize: GetRecommendedRenderTargetSize_callback? = null
 
     interface GetRecommendedRenderTargetSize_callback : Callback {
         fun invoke(pnWidth: IntByReference, pnHeight: IntByReference)
