@@ -13,7 +13,7 @@ open class IVRTrackedCamera : Structure {
     /** Returns a string for an error */
     fun getCameraErrorNameFromEnum(eCameraError: EVRTrackedCameraError) = GetCameraErrorNameFromEnum!!.invoke(eCameraError.i)
 
-    @JvmField var GetCameraErrorNameFromEnum: GetCameraErrorNameFromEnum_callback? = null
+    internal @JvmField var GetCameraErrorNameFromEnum: GetCameraErrorNameFromEnum_callback? = null
 
     interface GetCameraErrorNameFromEnum_callback : Callback {
         fun invoke(eCameraError: Int): String
@@ -23,7 +23,7 @@ open class IVRTrackedCamera : Structure {
     // TODO check automatic conversion *Boolean -> *Byte
     fun hasCamera(nDeviceIndex: TrackedDeviceIndex_t, pHasCamera: BooleanByReference) = EVRTrackedCameraError.of(HasCamera!!.invoke(nDeviceIndex, pHasCamera))
 
-    @JvmField var HasCamera: HasCamera_callback? = null
+    internal @JvmField var HasCamera: HasCamera_callback? = null
 
     interface HasCamera_callback : Callback {
         fun invoke(nDeviceIndex: TrackedDeviceIndex_t, pHasCamera: ByteByReference): Int
@@ -34,7 +34,7 @@ open class IVRTrackedCamera : Structure {
                            pnFrameBufferSize: IntByReference)
             = EVRTrackedCameraError.of(GetCameraFrameSize!!.invoke(nDeviceIndex, eFrameType.i, pnWidth, pnHeight, pnFrameBufferSize))
 
-    @JvmField var GetCameraFrameSize: GetCameraFrameSize_callback? = null
+    internal @JvmField var GetCameraFrameSize: GetCameraFrameSize_callback? = null
 
     interface GetCameraFrameSize_callback : Callback {
         fun invoke(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: Int, pnWidth: IntByReference, pnHeight: IntByReference, pnFrameBufferSize: IntByReference): Int
@@ -45,7 +45,7 @@ open class IVRTrackedCamera : Structure {
                             pCenter: HmdVector2_t.ByReference)
             = EVRTrackedCameraError.of(GetCameraIntrinsics!!.invoke(nDeviceIndex, eFrameType.i, pFocalLength, pCenter))
 
-    @JvmField var GetCameraIntrinsics: GetCameraIntrinsics_callback? = null
+    internal @JvmField var GetCameraIntrinsics: GetCameraIntrinsics_callback? = null
 
     interface GetCameraIntrinsics_callback : Callback {
         fun invoke(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: Int, pFocalLength: HmdVector2_t.ByReference, pCenter: HmdVector2_t.ByReference): Int
@@ -56,7 +56,7 @@ open class IVRTrackedCamera : Structure {
                             pProjection: HmdMatrix44_t.ByReference)
             = EVRTrackedCameraError.of(GetCameraProjection!!.invoke(nDeviceIndex, eFrameType.i, flZNear, flZFar, pProjection))
 
-    @JvmField var GetCameraProjection: GetCameraProjection_callback? = null
+    internal @JvmField var GetCameraProjection: GetCameraProjection_callback? = null
 
     interface GetCameraProjection_callback : Callback {
         fun invoke(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: Int, flZNear: Float, flZFar: Float, pProjection: HmdMatrix44_t.ByReference): Int
@@ -70,14 +70,14 @@ open class IVRTrackedCamera : Structure {
     fun acquireVideoStreamingService(nDeviceIndex: TrackedDeviceIndex_t, pHandle: TrackedCameraHandle_t)
             = EVRTrackedCameraError.of(AcquireVideoStreamingService!!.invoke(nDeviceIndex, pHandle))
 
-    @JvmField var AcquireVideoStreamingService: AcquireVideoStreamingService_callback? = null
+    internal @JvmField var AcquireVideoStreamingService: AcquireVideoStreamingService_callback? = null
 
     interface AcquireVideoStreamingService_callback : Callback {
         fun invoke(nDeviceIndex: TrackedDeviceIndex_t, pHandle: TrackedCameraHandle_t): Int
     }
 
     fun releaseVideoStreamingService(hTrackedCamera: TrackedCameraHandle_t) = EVRTrackedCameraError.of(ReleaseVideoStreamingService!!.invoke(hTrackedCamera))
-    @JvmField var ReleaseVideoStreamingService: ReleaseVideoStreamingService_callback? = null
+    internal @JvmField var ReleaseVideoStreamingService: ReleaseVideoStreamingService_callback? = null
 
     interface ReleaseVideoStreamingService_callback : Callback {
         fun invoke(hTrackedCamera: TrackedCameraHandle_t): Int
@@ -93,7 +93,7 @@ open class IVRTrackedCamera : Structure {
             = EVRTrackedCameraError.of(GetVideoStreamFrameBuffer!!.invoke(hTrackedCamera, eFrameType.i, pFrameBuffer, nFrameBufferSize, pFrameHeader,
             nFrameHeaderSize))
 
-    @JvmField var GetVideoStreamFrameBuffer: GetVideoStreamFrameBuffer_callback? = null
+    internal @JvmField var GetVideoStreamFrameBuffer: GetVideoStreamFrameBuffer_callback? = null
 
     interface GetVideoStreamFrameBuffer_callback : Callback {
         fun invoke(hTrackedCamera: TrackedCameraHandle_t, eFrameType: Int, pFrameBuffer: Pointer, nFrameBufferSize: Int,
@@ -105,7 +105,7 @@ open class IVRTrackedCamera : Structure {
                                   pnWidth: IntByReference, pnHeight: IntByReference)
             = EVRTrackedCameraError.of(GetVideoStreamTextureSize!!.invoke(nDeviceIndex, eFrameType.i, pTextureBounds, pnWidth, pnHeight))
 
-    @JvmField var GetVideoStreamTextureSize: GetVideoStreamTextureSize_callback? = null
+    internal @JvmField var GetVideoStreamTextureSize: GetVideoStreamTextureSize_callback? = null
 
     interface GetVideoStreamTextureSize_callback : Callback {
         fun invoke(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: Int, pTextureBounds: VRTextureBounds_t.ByReference, pnWidth: IntByReference,
@@ -125,7 +125,7 @@ open class IVRTrackedCamera : Structure {
             = EVRTrackedCameraError.of(GetVideoStreamTextureD3D11!!.invoke(hTrackedCamera, eFrameType.i, pD3D11DeviceOrResource, ppD3D11ShaderResourceView,
             pFrameHeader, nFrameHeaderSize))
 
-    @JvmField var GetVideoStreamTextureD3D11: GetVideoStreamTextureD3D11_callback? = null
+    internal @JvmField var GetVideoStreamTextureD3D11: GetVideoStreamTextureD3D11_callback? = null
 
     interface GetVideoStreamTextureD3D11_callback : Callback {
         fun invoke(hTrackedCamera: TrackedCameraHandle_t, eFrameType: Int, pD3D11DeviceOrResource: Pointer, ppD3D11ShaderResourceView: PointerByReference,
@@ -137,7 +137,7 @@ open class IVRTrackedCamera : Structure {
                                 pFrameHeader: CameraVideoStreamFrameHeader_t.ByReference, nFrameHeaderSize: Int)
             = EVRTrackedCameraError.of(GetVideoStreamTextureGL!!.invoke(hTrackedCamera, eFrameType.i, pglTextureId, pFrameHeader, nFrameHeaderSize))
 
-    @JvmField var GetVideoStreamTextureGL: GetVideoStreamTextureGL_callback? = null
+    internal @JvmField var GetVideoStreamTextureGL: GetVideoStreamTextureGL_callback? = null
 
     interface GetVideoStreamTextureGL_callback : Callback {
         fun invoke(hTrackedCamera: TrackedCameraHandle_t, eFrameType: Int, pglTextureId: IntByReference, pFrameHeader: CameraVideoStreamFrameHeader_t.ByReference,
@@ -148,7 +148,7 @@ open class IVRTrackedCamera : Structure {
     fun releaseVideoStreamTextureGL(hTrackedCamera: TrackedCameraHandle_t, glTextureId: glUInt_t)
             = EVRTrackedCameraError.of(ReleaseVideoStreamTextureGL!!.invoke(hTrackedCamera, glTextureId))
 
-    @JvmField var ReleaseVideoStreamTextureGL: ReleaseVideoStreamTextureGL_callback? = null
+    internal @JvmField var ReleaseVideoStreamTextureGL: ReleaseVideoStreamTextureGL_callback? = null
 
     interface ReleaseVideoStreamTextureGL_callback : Callback {
         fun invoke(hTrackedCamera: TrackedCameraHandle_t, glTextureId: Int): Int

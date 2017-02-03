@@ -14,7 +14,7 @@ open class IVRExtendedDisplay : Structure {
     fun getWindowBounds(pnX: IntByReference, pnY: IntByReference, pnWidth: IntByReference, pnHeight: IntByReference)
             = GetWindowBounds!!.invoke(pnX, pnY, pnWidth, pnHeight)
 
-    @JvmField var GetWindowBounds: GetWindowBounds_callback? = null
+    internal @JvmField var GetWindowBounds: GetWindowBounds_callback? = null
 
     interface GetWindowBounds_callback : Callback {
         fun invoke(pnX: IntByReference, pnY: IntByReference, pnWidth: IntByReference, pnHeight: IntByReference)
@@ -24,7 +24,7 @@ open class IVRExtendedDisplay : Structure {
     fun getEyeOutputViewport(eEye: EVREye, pnX: IntByReference, pnY: IntByReference, pnWidth: IntByReference, pnHeight: IntByReference)
             = GetEyeOutputViewport!!.invoke(eEye.i, pnX, pnY, pnWidth, pnHeight)
 
-    @JvmField var GetEyeOutputViewport: GetEyeOutputViewport_callback? = null
+    internal @JvmField var GetEyeOutputViewport: GetEyeOutputViewport_callback? = null
 
     interface GetEyeOutputViewport_callback : Callback {
         fun invoke(eEye: Int, pnX: IntByReference, pnY: IntByReference, pnWidth: IntByReference, pnHeight: IntByReference)
@@ -35,7 +35,7 @@ open class IVRExtendedDisplay : Structure {
      *  DX11. If an error occurs both indices will be set to -1.     */
     fun getDXGIOutputInfo(pnAdapterIndex: IntByReference, pnAdapterOutputIndex: IntByReference) = GetDXGIOutputInfo!!.invoke(pnAdapterIndex, pnAdapterOutputIndex)
 
-    @JvmField var GetDXGIOutputInfo: GetDXGIOutputInfo_callback? = null
+    internal @JvmField var GetDXGIOutputInfo: GetDXGIOutputInfo_callback? = null
 
     interface GetDXGIOutputInfo_callback : Callback {
         fun invoke(pnAdapterIndex: IntByReference, pnAdapterOutputIndex: IntByReference)

@@ -45,7 +45,7 @@ open class IVRScreenshots : Structure {
     fun requestScreenshot(pOutScreenshotHandle: ScreenshotHandle_t_ByReference, type: EVRScreenshotType, pchPreviewFilename: String, pchVRFilename: String)
             = EVRScreenshotError.of(RequestScreenshot!!.invoke(pOutScreenshotHandle, type.i, pchPreviewFilename, pchVRFilename))
 
-    @JvmField var RequestScreenshot: RequestScreenshot_callback? = null
+    internal @JvmField var RequestScreenshot: RequestScreenshot_callback? = null
 
     interface RequestScreenshot_callback : Callback {
         fun invoke(pOutScreenshotHandle: ScreenshotHandle_t_ByReference, type: Int, pchPreviewFilename: String, pchVRFilename: String): Int
@@ -62,7 +62,7 @@ open class IVRScreenshots : Structure {
         return EVRScreenshotError.of(HookScreenshot!!.invoke(pointer, numTypes))
     }
 
-    @JvmField var HookScreenshot: HookScreenshot_callback? = null
+    internal @JvmField var HookScreenshot: HookScreenshot_callback? = null
 
     interface HookScreenshot_callback : Callback {
         fun invoke(pSupportedTypes: Pointer, numTypes: Int): Int
@@ -72,7 +72,7 @@ open class IVRScreenshots : Structure {
     fun getScreenshotPropertyType(screenshotHandle: ScreenshotHandle_t, pError: EVRScreenshotError_ByReference)
             = EVRScreenshotError.of(GetScreenshotPropertyType!!.invoke(screenshotHandle, pError))
 
-    @JvmField var GetScreenshotPropertyType: GetScreenshotPropertyType_callback? = null
+    internal @JvmField var GetScreenshotPropertyType: GetScreenshotPropertyType_callback? = null
 
     interface GetScreenshotPropertyType_callback : Callback {
         fun invoke(screenshotHandle: ScreenshotHandle_t, pError: IntByReference): Int
@@ -83,7 +83,7 @@ open class IVRScreenshots : Structure {
                                       cchFilename: Int, pError: EVRScreenshotError_ByReference)
             = EVRScreenshotError.of(GetScreenshotPropertyFilename!!.invoke(screenshotHandle, filenameType.i, pchFilename, cchFilename, pError))
 
-    @JvmField var GetScreenshotPropertyFilename: GetScreenshotPropertyFilename_callback? = null
+    internal @JvmField var GetScreenshotPropertyFilename: GetScreenshotPropertyFilename_callback? = null
 
     interface GetScreenshotPropertyFilename_callback : Callback {
         fun invoke(screenshotHandle: ScreenshotHandle_t, filenameType: Int, pchFilename: String, cchFilename: Int, pError: EVRScreenshotError_ByReference): Int
@@ -94,7 +94,7 @@ open class IVRScreenshots : Structure {
     fun updateScreenshotProgress(screenshotHandle: ScreenshotHandle_t, flProgress: Float)
             = EVRScreenshotError.of(UpdateScreenshotProgress!!.invoke(screenshotHandle, flProgress))
 
-    @JvmField var UpdateScreenshotProgress: UpdateScreenshotProgress_callback? = null
+    internal @JvmField var UpdateScreenshotProgress: UpdateScreenshotProgress_callback? = null
 
     interface UpdateScreenshotProgress_callback : Callback {
         fun invoke(screenshotHandle: ScreenshotHandle_t, flProgress: Float): Int
@@ -106,7 +106,7 @@ open class IVRScreenshots : Structure {
     fun takeStereoScreenshot(pOutScreenshotHandle: ScreenshotHandle_t_ByReference, pchPreviewFilename: String, pchVRFilename: String)
             = EVRScreenshotError.of(TakeStereoScreenshot!!.invoke(pOutScreenshotHandle, pchPreviewFilename, pchVRFilename))
 
-    @JvmField var TakeStereoScreenshot: TakeStereoScreenshot_callback? = null
+    internal @JvmField var TakeStereoScreenshot: TakeStereoScreenshot_callback? = null
 
     interface TakeStereoScreenshot_callback : Callback {
         fun invoke(pOutScreenshotHandle: ScreenshotHandle_t_ByReference, pchPreviewFilename: String, pchVRFilename: String): Int
@@ -121,7 +121,7 @@ open class IVRScreenshots : Structure {
     fun submitScreenshot(screenshotHandle: ScreenshotHandle_t, type: EVRScreenshotType, pchSourcePreviewFilename: String, pchSourceVRFilename: String)
             = EVRScreenshotError.of(SubmitScreenshot!!.invoke(screenshotHandle, type.i, pchSourcePreviewFilename, pchSourceVRFilename))
 
-    @JvmField var SubmitScreenshot: SubmitScreenshot_callback? = null
+    internal @JvmField var SubmitScreenshot: SubmitScreenshot_callback? = null
 
     interface SubmitScreenshot_callback : Callback {
         fun invoke(screenshotHandle: ScreenshotHandle_t, type: Int, pchSourcePreviewFilename: String, pchSourceVRFilename: String): Int

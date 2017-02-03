@@ -15,7 +15,7 @@ open class IVRApplications : Structure {
     @JvmOverloads fun addApplicationManifest(pchApplicationManifestFullPath: String, bTemporary: Boolean = false)
             = AddApplicationManifest!!.invoke(pchApplicationManifestFullPath, bTemporary)
 
-    @JvmField var AddApplicationManifest: AddApplicationManifest_callback? = null
+    internal @JvmField var AddApplicationManifest: AddApplicationManifest_callback? = null
 
     interface AddApplicationManifest_callback : Callback {
         fun invoke(pchApplicationManifestFullPath: String, bTemporary: Boolean): Int
@@ -25,7 +25,7 @@ open class IVRApplications : Structure {
     fun removeApplicationManifest(pchApplicationManifestFullPath: String)
             = EVRApplicationError.of(RemoveApplicationManifest!!.invoke(pchApplicationManifestFullPath))
 
-    @JvmField var RemoveApplicationManifest: RemoveApplicationManifest_callback? = null
+    internal @JvmField var RemoveApplicationManifest: RemoveApplicationManifest_callback? = null
 
     interface RemoveApplicationManifest_callback : Callback {
         fun invoke(pchApplicationManifestFullPath: String): Int
@@ -34,7 +34,7 @@ open class IVRApplications : Structure {
     /** Returns true if an application is installed */
     fun isApplicationInstalled(pchAppKey: String) = IsApplicationInstalled!!.invoke(pchAppKey)
 
-    @JvmField var IsApplicationInstalled: IsApplicationInstalled_callback? = null
+    internal @JvmField var IsApplicationInstalled: IsApplicationInstalled_callback? = null
 
     interface IsApplicationInstalled_callback : Callback {
         fun invoke(pchAppKey: String): Boolean
@@ -43,7 +43,7 @@ open class IVRApplications : Structure {
     /** Returns the number of applications available in the list */
     fun getApplicationCount() = GetApplicationCount!!.invoke()
 
-    @JvmField var GetApplicationCount: GetApplicationCount_callback? = null
+    internal @JvmField var GetApplicationCount: GetApplicationCount_callback? = null
 
     interface GetApplicationCount_callback : Callback {
         fun invoke(): Int
@@ -54,7 +54,7 @@ open class IVRApplications : Structure {
     fun getApplicationKeyByIndex(unApplicationIndex: Int, pchAppKeyBuffer: String, unAppKeyBufferLen: Int)
             = EVRApplicationError.of(GetApplicationKeyByIndex!!.invoke(unApplicationIndex, pchAppKeyBuffer, unAppKeyBufferLen))
 
-    @JvmField var GetApplicationKeyByIndex: GetApplicationKeyByIndex_callback? = null
+    internal @JvmField var GetApplicationKeyByIndex: GetApplicationKeyByIndex_callback? = null
 
     interface GetApplicationKeyByIndex_callback : Callback {
         fun invoke(unApplicationIndex: Int, pchAppKeyBuffer: String, unAppKeyBufferLen: Int): Int
@@ -64,7 +64,7 @@ open class IVRApplications : Structure {
     fun getApplicationKeyByProcessId(unProcessId: Int, pchAppKeyBuffer: String, unAppKeyBufferLen: Int)
             = EVRApplicationError.of(GetApplicationKeyByProcessId!!.invoke(unProcessId, pchAppKeyBuffer, unAppKeyBufferLen))
 
-    @JvmField var GetApplicationKeyByProcessId: GetApplicationKeyByProcessId_callback? = null
+    internal @JvmField var GetApplicationKeyByProcessId: GetApplicationKeyByProcessId_callback? = null
 
     interface GetApplicationKeyByProcessId_callback : Callback {
         fun invoke(unProcessId: Int, pchAppKeyBuffer: String, unAppKeyBufferLen: Int): Int
@@ -74,7 +74,7 @@ open class IVRApplications : Structure {
      *  This call is not valid for dashboard overlay applications. */
     fun launchApplication(pchAppKey: String) = EVRApplicationError.of(LaunchApplication!!.invoke(pchAppKey))
 
-    @JvmField var LaunchApplication: LaunchApplication_callback? = null
+    internal @JvmField var LaunchApplication: LaunchApplication_callback? = null
 
     interface LaunchApplication_callback : Callback {
         fun invoke(pchAppKey: String): Int
@@ -85,7 +85,7 @@ open class IVRApplications : Structure {
     fun launchTemplateApplication(pchTemplateAppKey: String, pchNewAppKey: String, pKeys: AppOverrideKeys_t.ByReference, unKeys: Int)
             = EVRApplicationError.of(LaunchTemplateApplication!!.invoke(pchTemplateAppKey, pchNewAppKey, pKeys, unKeys))
 
-    @JvmField var LaunchTemplateApplication: LaunchTemplateApplication_callback? = null
+    internal @JvmField var LaunchTemplateApplication: LaunchTemplateApplication_callback? = null
 
     interface LaunchTemplateApplication_callback : Callback {
         fun invoke(pchTemplateAppKey: String, pchNewAppKey: String, pKeys: AppOverrideKeys_t.ByReference, unKeys: Int): Int
@@ -95,7 +95,7 @@ open class IVRApplications : Structure {
      *  launched     */
     fun launchApplicationFromMimeType(pchMimeType: String, pchArgs: String) = EVRApplicationError.of(LaunchApplicationFromMimeType!!.invoke(pchMimeType, pchArgs))
 
-    @JvmField var LaunchApplicationFromMimeType: LaunchApplicationFromMimeType_callback? = null
+    internal @JvmField var LaunchApplicationFromMimeType: LaunchApplicationFromMimeType_callback? = null
 
     interface LaunchApplicationFromMimeType_callback : Callback {
         fun invoke(pchMimeType: String, pchArgs: String): Int
@@ -104,7 +104,7 @@ open class IVRApplications : Structure {
     /** Launches the dashboard overlay application if it is not already running. This call is only valid for dashboard overlay applications. */
     fun launchDashboardOverlay(pchAppKey: String) = EVRApplicationError.of(LaunchDashboardOverlay!!.invoke(pchAppKey))
 
-    @JvmField var LaunchDashboardOverlay: LaunchDashboardOverlay_callback? = null
+    internal @JvmField var LaunchDashboardOverlay: LaunchDashboardOverlay_callback? = null
 
     interface LaunchDashboardOverlay_callback : Callback {
         fun invoke(pchAppKey: String): Int
@@ -113,7 +113,7 @@ open class IVRApplications : Structure {
     /** Cancel a pending launch for an application */
     fun cancelApplicationLaunch(pchAppKey: String) = CancelApplicationLaunch!!.invoke(pchAppKey)
 
-    @JvmField var CancelApplicationLaunch: CancelApplicationLaunch_callback? = null
+    internal @JvmField var CancelApplicationLaunch: CancelApplicationLaunch_callback? = null
 
     interface CancelApplicationLaunch_callback : Callback {
         fun invoke(pchAppKey: String): Boolean
@@ -124,7 +124,7 @@ open class IVRApplications : Structure {
      *  The application must be one that's known to the system via a call to AddApplicationManifest. */
     fun identifyApplication(unProcessId: Int, pchAppKey: String) = EVRApplicationError.of(IdentifyApplication!!.invoke(unProcessId, pchAppKey))
 
-    @JvmField var IdentifyApplication: IdentifyApplication_callback? = null
+    internal @JvmField var IdentifyApplication: IdentifyApplication_callback? = null
 
     interface IdentifyApplication_callback : Callback {
         fun invoke(unProcessId: Int, pchAppKey: String): Int
@@ -133,7 +133,7 @@ open class IVRApplications : Structure {
     /** Returns the process ID for an application. Return 0 if the application was not found or is not running. */
     fun getApplicationProcessId(pchAppKey: String) = GetApplicationProcessId!!.invoke(pchAppKey)
 
-    @JvmField var GetApplicationProcessId: GetApplicationProcessId_callback? = null
+    internal @JvmField var GetApplicationProcessId: GetApplicationProcessId_callback? = null
 
     interface GetApplicationProcessId_callback : Callback {
         fun invoke(pchAppKey: String): Int
@@ -142,7 +142,7 @@ open class IVRApplications : Structure {
     /** Returns a string for an applications error */
     fun getApplicationsErrorNameFromEnum(error: EVRApplicationError) = GetApplicationsErrorNameFromEnum!!.invoke(error.i)
 
-    @JvmField var GetApplicationsErrorNameFromEnum: GetApplicationsErrorNameFromEnum_callback? = null
+    internal @JvmField var GetApplicationsErrorNameFromEnum: GetApplicationsErrorNameFromEnum_callback? = null
 
     interface GetApplicationsErrorNameFromEnum_callback : Callback {
         fun invoke(error: Int): String
@@ -156,7 +156,7 @@ open class IVRApplications : Structure {
                                                    peError: EVRApplicationError_ByReference? = null)
             = GetApplicationPropertyString!!.invoke(pchAppKey, eProperty.i, pchPropertyValueBuffer, unPropertyValueBufferLen, peError)
 
-    @JvmField var GetApplicationPropertyString: GetApplicationPropertyString_callback? = null
+    internal @JvmField var GetApplicationPropertyString: GetApplicationPropertyString_callback? = null
 
     interface GetApplicationPropertyString_callback : Callback {
         fun invoke(pchAppKey: String, eProperty: Int, pchPropertyValueBuffer: String, unPropertyValueBufferLen: Int,
@@ -168,7 +168,7 @@ open class IVRApplications : Structure {
                                                  peError: EVRApplicationError_ByReference? = null)
             = GetApplicationPropertyBool!!.invoke(pchAppKey, eProperty.i, peError)
 
-    @JvmField var GetApplicationPropertyBool: GetApplicationPropertyBool_callback? = null
+    internal @JvmField var GetApplicationPropertyBool: GetApplicationPropertyBool_callback? = null
 
     interface GetApplicationPropertyBool_callback : Callback {
         fun invoke(pchAppKey: String, eProperty: Int, peError: EVRApplicationError_ByReference?): Boolean
@@ -179,7 +179,7 @@ open class IVRApplications : Structure {
                                                    peError: EVRApplicationError_ByReference? = null)
             = GetApplicationPropertyUint64!!.invoke(pchAppKey, eProperty.i, peError)
 
-    @JvmField var GetApplicationPropertyUint64: GetApplicationPropertyUint64_callback? = null
+    internal @JvmField var GetApplicationPropertyUint64: GetApplicationPropertyUint64_callback? = null
 
     interface GetApplicationPropertyUint64_callback : Callback {
         fun invoke(pchAppKey: String, eProperty: Int, peError: EVRApplicationError_ByReference?): Long
@@ -188,7 +188,7 @@ open class IVRApplications : Structure {
     /** Sets the application auto-launch flag. This is only valid for applications which return true for VRApplicationProperty_IsDashboardOverlay_Bool. */
     fun setApplicationAutoLaunch(pchAppKey: String, bAutoLaunch: Boolean) = EVRApplicationError.of(SetApplicationAutoLaunch!!.invoke(pchAppKey, bAutoLaunch))
 
-    @JvmField var SetApplicationAutoLaunch: SetApplicationAutoLaunch_callback? = null
+    internal @JvmField var SetApplicationAutoLaunch: SetApplicationAutoLaunch_callback? = null
 
     interface SetApplicationAutoLaunch_callback : Callback {
         fun invoke(pchAppKey: String, bAutoLaunch: Boolean): Int
@@ -197,7 +197,7 @@ open class IVRApplications : Structure {
     /** Gets the application auto-launch flag. This is only valid for applications which return true for VRApplicationProperty_IsDashboardOverlay_Bool. */
     fun getApplicationAutoLaunch(pchAppKey: String) = GetApplicationAutoLaunch!!.invoke(pchAppKey)
 
-    @JvmField var GetApplicationAutoLaunch: GetApplicationAutoLaunch_callback? = null
+    internal @JvmField var GetApplicationAutoLaunch: GetApplicationAutoLaunch_callback? = null
 
     interface GetApplicationAutoLaunch_callback : Callback {
         fun invoke(pchAppKey: String): Boolean
@@ -207,7 +207,7 @@ open class IVRApplications : Structure {
     fun setDefaultApplicationForMimeType(pchAppKey: String, pchMimeType: String)
             = EVRApplicationError.of(SetDefaultApplicationForMimeType!!.invoke(pchAppKey, pchMimeType))
 
-    @JvmField var SetDefaultApplicationForMimeType: SetDefaultApplicationForMimeType_callback? = null
+    internal @JvmField var SetDefaultApplicationForMimeType: SetDefaultApplicationForMimeType_callback? = null
 
     interface SetDefaultApplicationForMimeType_callback : Callback {
         fun invoke(pchAppKey: String, pchMimeType: String): Int
@@ -217,7 +217,7 @@ open class IVRApplications : Structure {
     fun getDefaultApplicationForMimeType(pchMimeType: String, pchAppKeyBuffer: String, unAppKeyBufferLen: Int)
             = GetDefaultApplicationForMimeType!!.invoke(pchMimeType, pchAppKeyBuffer, unAppKeyBufferLen)
 
-    @JvmField var GetDefaultApplicationForMimeType: GetDefaultApplicationForMimeType_callback? = null
+    internal @JvmField var GetDefaultApplicationForMimeType: GetDefaultApplicationForMimeType_callback? = null
 
     interface GetDefaultApplicationForMimeType_callback : Callback {
         fun invoke(pchMimeType: String, pchAppKeyBuffer: String, unAppKeyBufferLen: Int): Boolean
@@ -227,7 +227,7 @@ open class IVRApplications : Structure {
     fun getApplicationSupportedMimeTypes(pchAppKey: String, pchMimeTypesBuffer: String, unMimeTypesBuffer: Int)
             = GetApplicationSupportedMimeTypes!!.invoke(pchAppKey, pchMimeTypesBuffer, unMimeTypesBuffer)
 
-    @JvmField var GetApplicationSupportedMimeTypes: GetApplicationSupportedMimeTypes_callback? = null
+    internal @JvmField var GetApplicationSupportedMimeTypes: GetApplicationSupportedMimeTypes_callback? = null
 
     interface GetApplicationSupportedMimeTypes_callback : Callback {
         fun invoke(pchAppKey: String, pchMimeTypesBuffer: String, unMimeTypesBuffer: Int): Boolean
@@ -237,7 +237,7 @@ open class IVRApplications : Structure {
     fun getApplicationsThatSupportMimeType(pchMimeType: String, pchAppKeysThatSupportBuffer: String, unAppKeysThatSupportBuffer: Int)
             = GetApplicationsThatSupportMimeType!!.invoke(pchMimeType, pchAppKeysThatSupportBuffer, unAppKeysThatSupportBuffer)
 
-    @JvmField var GetApplicationsThatSupportMimeType: GetApplicationsThatSupportMimeType_callback? = null
+    internal @JvmField var GetApplicationsThatSupportMimeType: GetApplicationsThatSupportMimeType_callback? = null
 
     interface GetApplicationsThatSupportMimeType_callback : Callback {
         fun invoke(pchMimeType: String, pchAppKeysThatSupportBuffer: String, unAppKeysThatSupportBuffer: Int): Int
@@ -246,7 +246,7 @@ open class IVRApplications : Structure {
     /** Get the args list from an app launch that had the process already running, you call this when you get a VREvent_ApplicationMimeTypeLoad */
     fun getApplicationLaunchArguments(unHandle: Int, pchArgs: String, unArgs: Int) = GetApplicationLaunchArguments!!.invoke(unHandle, pchArgs, unArgs)
 
-    @JvmField var GetApplicationLaunchArguments: GetApplicationLaunchArguments_callback? = null
+    internal @JvmField var GetApplicationLaunchArguments: GetApplicationLaunchArguments_callback? = null
 
     interface GetApplicationLaunchArguments_callback : Callback {
         fun invoke(unHandle: Int, pchArgs: String, unArgs: Int): Int
@@ -258,7 +258,7 @@ open class IVRApplications : Structure {
     fun getStartingApplication(pchAppKeyBuffer: String, unAppKeyBufferLen: Int)
             = EVRApplicationError.of(GetStartingApplication!!.invoke(pchAppKeyBuffer, unAppKeyBufferLen))
 
-    @JvmField var GetStartingApplication: GetStartingApplication_callback? = null
+    internal @JvmField var GetStartingApplication: GetStartingApplication_callback? = null
 
     interface GetStartingApplication_callback : Callback {
         fun invoke(pchAppKeyBuffer: String, unAppKeyBufferLen: Int): Int
@@ -267,7 +267,7 @@ open class IVRApplications : Structure {
     /** Returns the application transition state */
     fun getTransitionState() = GetTransitionState!!.invoke().toEVRApplicationTransitionState()
 
-    @JvmField var GetTransitionState: GetTransitionState_callback? = null
+    internal @JvmField var GetTransitionState: GetTransitionState_callback? = null
 
     interface GetTransitionState_callback : Callback {
         fun invoke(): Int
@@ -282,7 +282,7 @@ open class IVRApplications : Structure {
      *      VRApplicationError_None                         - Go ahead and launch. Everything is clear.     */
     fun performApplicationPrelaunchCheck(pchAppKey: String) = EVRApplicationError.of(PerformApplicationPrelaunchCheck!!.invoke(pchAppKey))
 
-    @JvmField var PerformApplicationPrelaunchCheck: PerformApplicationPrelaunchCheck_callback? = null
+    internal @JvmField var PerformApplicationPrelaunchCheck: PerformApplicationPrelaunchCheck_callback? = null
 
     interface PerformApplicationPrelaunchCheck_callback : Callback {
         fun invoke(pchAppKey: String): Int
@@ -291,7 +291,7 @@ open class IVRApplications : Structure {
     /** Returns a string for an application transition state */
     fun getApplicationsTransitionStateNameFromEnum(state: EVRApplicationTransitionState) = GetApplicationsTransitionStateNameFromEnum!!.invoke(state.i)
 
-    @JvmField var GetApplicationsTransitionStateNameFromEnum: GetApplicationsTransitionStateNameFromEnum_callback? = null
+    internal @JvmField var GetApplicationsTransitionStateNameFromEnum: GetApplicationsTransitionStateNameFromEnum_callback? = null
 
     interface GetApplicationsTransitionStateNameFromEnum_callback : Callback {
         fun invoke(state: Int): String
@@ -300,7 +300,7 @@ open class IVRApplications : Structure {
     /** Returns true if the outgoing scene app has requested a save prompt before exiting */
     fun isQuitUserPromptRequested() = IsQuitUserPromptRequested!!.invoke()
 
-    @JvmField var IsQuitUserPromptRequested: IsQuitUserPromptRequested_callback? = null
+    internal @JvmField var IsQuitUserPromptRequested: IsQuitUserPromptRequested_callback? = null
 
     interface IsQuitUserPromptRequested_callback : Callback {
         fun invoke(): Boolean
@@ -312,7 +312,7 @@ open class IVRApplications : Structure {
     fun launchInternalProcess(pchBinaryPath: String, pchArguments: String, pchWorkingDirectory: String)
             = EVRApplicationError.of(LaunchInternalProcess!!.invoke(pchBinaryPath, pchArguments, pchWorkingDirectory))
 
-    @JvmField var LaunchInternalProcess: LaunchInternalProcess_callback? = null
+    internal @JvmField var LaunchInternalProcess: LaunchInternalProcess_callback? = null
 
     interface LaunchInternalProcess_callback : Callback {
         fun invoke(pchBinaryPath: String, pchArguments: String, pchWorkingDirectory: String): Int
@@ -322,7 +322,7 @@ open class IVRApplications : Structure {
      *  rendering, but it will appear here once it calls VR_Init with the Scene application type. */
     fun getCurrentSceneProcessId() = GetCurrentSceneProcessId!!.invoke()
 
-    @JvmField var GetCurrentSceneProcessId: GetCurrentSceneProcessId_callback?=null
+    internal @JvmField var GetCurrentSceneProcessId: GetCurrentSceneProcessId_callback?=null
 
     interface GetCurrentSceneProcessId_callback:Callback {
         fun invoke():Int

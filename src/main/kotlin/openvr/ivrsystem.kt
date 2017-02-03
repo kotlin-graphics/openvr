@@ -27,7 +27,7 @@ open class IVRSystem : Structure {
     /** The projection matrix for the specified eye */
     fun getProjectionMatrix(eEye: EVREye, fNearZ: Float, fFarZ: Float) = GetProjectionMatrix!!.invoke(eEye.i, fNearZ, fFarZ)
 
-    @JvmField var GetProjectionMatrix: GetProjectionMatrix_callback? = null
+    internal @JvmField var GetProjectionMatrix: GetProjectionMatrix_callback? = null
 
     interface GetProjectionMatrix_callback : Callback {
         fun invoke(eEye: Int, fNearZ: Float, fFarZ: Float): HmdMatrix44_t.ByValue
@@ -37,7 +37,7 @@ open class IVRSystem : Structure {
     fun getProjectionRaw(eEye: EVREye, pfLeft: FloatByReference, pfRight: FloatByReference, pfTop: FloatByReference, pfBottom: FloatByReference)
             = GetProjectionRaw!!.invoke(eEye.i, pfLeft, pfRight, pfTop, pfBottom)
 
-    @JvmField var GetProjectionRaw: GetProjectionRaw_callback? = null
+    internal @JvmField var GetProjectionRaw: GetProjectionRaw_callback? = null
 
     interface GetProjectionRaw_callback : Callback {
         fun invoke(eEye: Int, pfLeft: FloatByReference, pfRight: FloatByReference, pfTop: FloatByReference, pfBottom: FloatByReference)
@@ -49,7 +49,7 @@ open class IVRSystem : Structure {
     fun computeDistortion(eEye: EVREye, fU: Float, fV: Float, pDistortionCoordinates_t: DistortionCoordinates_t.ByReference)
             = ComputeDistortion!!.invoke(eEye.i, fU, fV, pDistortionCoordinates_t)
 
-    @JvmField var ComputeDistortion: ComputeDistortion_callback? = null
+    internal @JvmField var ComputeDistortion: ComputeDistortion_callback? = null
 
     interface ComputeDistortion_callback : Callback {
         fun invoke(eEye: Int, fU: Float, fV: Float, pDistortionCoordinates_t: DistortionCoordinates_t.ByReference): Boolean
@@ -60,7 +60,7 @@ open class IVRSystem : Structure {
      *  Normally View and Eye^-1 will be multiplied together and treated as View in your application.   */
     fun getEyeToHeadTransform(eEye: EVREye) = GetEyeToHeadTransform!!.invoke(eEye.i)
 
-    @JvmField var GetEyeToHeadTransform: GetEyeToHeadTransform_callback? = null
+    internal @JvmField var GetEyeToHeadTransform: GetEyeToHeadTransform_callback? = null
 
     interface GetEyeToHeadTransform_callback : Callback {
         fun invoke(eEye: Int): HmdMatrix34_t.ByValue
@@ -72,7 +72,7 @@ open class IVRSystem : Structure {
     fun getTimeSinceLastVsync(pfSecondsSinceLastVsync: FloatByReference, pulFrameCounter: LongByReference)
             = GetTimeSinceLastVsync!!.invoke(pfSecondsSinceLastVsync, pulFrameCounter)
 
-    @JvmField var GetTimeSinceLastVsync: GetTimeSinceLastVsync_callback? = null
+    internal @JvmField var GetTimeSinceLastVsync: GetTimeSinceLastVsync_callback? = null
 
     interface GetTimeSinceLastVsync_callback : Callback {
         fun invoke(pfSecondsSinceLastVsync: FloatByReference, pulFrameCounter: LongByReference): Boolean
@@ -83,7 +83,7 @@ open class IVRSystem : Structure {
      * Returns -1 if there was an error.     */
     fun getD3D9AdapterIndex() = GetD3D9AdapterIndex!!.invoke()
 
-    @JvmField var GetD3D9AdapterIndex: GetD3D9AdapterIndex_callback? = null
+    internal @JvmField var GetD3D9AdapterIndex: GetD3D9AdapterIndex_callback? = null
 
     interface GetD3D9AdapterIndex_callback : Callback {
         fun invoke(): Int
@@ -94,7 +94,7 @@ open class IVRSystem : Structure {
      * If an error occurs the index will be set to -1.  */
     fun getDXGIOutputInfo(pnAdapterIndex: IntByReference) = GetDXGIOutputInfo!!.invoke(pnAdapterIndex)
 
-    @JvmField var GetDXGIOutputInfo: GetDXGIOutputInfo_callback? = null
+    internal @JvmField var GetDXGIOutputInfo: GetDXGIOutputInfo_callback? = null
 
     interface GetDXGIOutputInfo_callback : Callback {
         fun invoke(pnAdapterIndex: IntByReference)
@@ -108,7 +108,7 @@ open class IVRSystem : Structure {
     /** Use to determine if the headset display is part of the desktop (i.e. extended) or hidden (i.e. direct mode). */
     fun isDisplayOnDesktop() = IsDisplayOnDesktop!!.invoke()
 
-    @JvmField var IsDisplayOnDesktop: IsDisplayOnDesktop_callback? = null
+    internal @JvmField var IsDisplayOnDesktop: IsDisplayOnDesktop_callback? = null
 
     interface IsDisplayOnDesktop_callback : Callback {
         fun invoke(): Boolean
@@ -117,7 +117,7 @@ open class IVRSystem : Structure {
     /** Set the display visibility (true = extended, false = direct mode).  Return value of true indicates that the change was successful. */
     fun setDisplayVisibility(bIsVisibleOnDesktop: Boolean): Boolean = SetDisplayVisibility!!.invoke(bIsVisibleOnDesktop)
 
-    @JvmField var SetDisplayVisibility: SetDisplayVisibility_callback? = null
+    internal @JvmField var SetDisplayVisibility: SetDisplayVisibility_callback? = null
 
     interface SetDisplayVisibility_callback : Callback {
         fun invoke(bIsVisibleOnDesktop: Boolean): Boolean
@@ -146,7 +146,7 @@ open class IVRSystem : Structure {
                                         pTrackedDevicePoseArray: TrackedDevicePose_t.ByReference, unTrackedDevicePoseArrayCount: Int)
             = GetDeviceToAbsoluteTrackingPose!!.invoke(eOrigin.i, fPredictedSecondsToPhotonsFromNow, pTrackedDevicePoseArray, unTrackedDevicePoseArrayCount)
 
-    @JvmField var GetDeviceToAbsoluteTrackingPose: GetDeviceToAbsoluteTrackingPose_callback? = null
+    internal @JvmField var GetDeviceToAbsoluteTrackingPose: GetDeviceToAbsoluteTrackingPose_callback? = null
 
     interface GetDeviceToAbsoluteTrackingPose_callback : Callback {
         fun invoke(eOrigin: Int, fPredictedSecondsToPhotonsFromNow: Float, pTrackedDevicePoseArray: TrackedDevicePose_t.ByReference,
@@ -162,7 +162,7 @@ open class IVRSystem : Structure {
      *  Users are also able to set their seated zero pose via the openvr.OpenVR Dashboard.     **/
     fun resetSeatedZeroPose() = ResetSeatedZeroPose!!.invoke()
 
-    @JvmField var ResetSeatedZeroPose: ResetSeatedZeroPose_callback? = null
+    internal @JvmField var ResetSeatedZeroPose: ResetSeatedZeroPose_callback? = null
 
     interface ResetSeatedZeroPose_callback : Callback {
         fun invoke()
@@ -175,7 +175,7 @@ open class IVRSystem : Structure {
      *  from the Dashboard settings and previous calls to ResetSeatedZeroPose. */
     fun getSeatedZeroPoseToStandingAbsoluteTrackingPose() = GetSeatedZeroPoseToStandingAbsoluteTrackingPose!!.invoke()
 
-    @JvmField var GetSeatedZeroPoseToStandingAbsoluteTrackingPose: GetSeatedZeroPoseToStandingAbsoluteTrackingPose_callback? = null
+    internal @JvmField var GetSeatedZeroPoseToStandingAbsoluteTrackingPose: GetSeatedZeroPoseToStandingAbsoluteTrackingPose_callback? = null
 
     interface GetSeatedZeroPoseToStandingAbsoluteTrackingPose_callback : Callback {
         fun invoke(): HmdMatrix34_t.ByValue
@@ -185,7 +185,7 @@ open class IVRSystem : Structure {
      *  the calibrated standing coordinate system. */
     fun getRawZeroPoseToStandingAbsoluteTrackingPose() = GetRawZeroPoseToStandingAbsoluteTrackingPose!!.invoke()
 
-    @JvmField var GetRawZeroPoseToStandingAbsoluteTrackingPose: GetRawZeroPoseToStandingAbsoluteTrackingPose_callback? = null
+    internal @JvmField var GetRawZeroPoseToStandingAbsoluteTrackingPose: GetRawZeroPoseToStandingAbsoluteTrackingPose_callback? = null
 
     interface GetRawZeroPoseToStandingAbsoluteTrackingPose_callback : Callback {
         fun invoke(): HmdMatrix34_t.ByValue
@@ -201,7 +201,7 @@ open class IVRSystem : Structure {
             = GetSortedTrackedDeviceIndicesOfClass!!.invoke(eTrackedDeviceClass.i, punTrackedDeviceIndexArray, unTrackedDeviceIndexArrayCount,
             unRelativeToTrackedDeviceIndex)
 
-    @JvmField var GetSortedTrackedDeviceIndicesOfClass: GetSortedTrackedDeviceIndicesOfClass_callback? = null
+    internal @JvmField var GetSortedTrackedDeviceIndicesOfClass: GetSortedTrackedDeviceIndicesOfClass_callback? = null
 
     interface GetSortedTrackedDeviceIndicesOfClass_callback : Callback {
         fun invoke(eTrackedDeviceClass: Int, punTrackedDeviceIndexArray: TrackedDeviceIndex_t_ByReference, unTrackedDeviceIndexArrayCount: Int,
@@ -211,7 +211,7 @@ open class IVRSystem : Structure {
     /** Returns the level of activity on the device. */
     fun getTrackedDeviceActivityLevel(unDeviceId: TrackedDeviceIndex_t) = EDeviceActivityLevel.of(GetTrackedDeviceActivityLevel!!.invoke(unDeviceId))
 
-    @JvmField var GetTrackedDeviceActivityLevel: GetTrackedDeviceActivityLevel_callback? = null
+    internal @JvmField var GetTrackedDeviceActivityLevel: GetTrackedDeviceActivityLevel_callback? = null
 
     interface GetTrackedDeviceActivityLevel_callback : Callback {
         fun invoke(unDeviceId: TrackedDeviceIndex_t): Int
@@ -222,7 +222,7 @@ open class IVRSystem : Structure {
     fun invokeTransform(pOutputPose: TrackedDevicePose_t.ByReference, pTrackedDevicePose: TrackedDevicePose_t.ByReference, pTransform: HmdMatrix34_t.ByReference)
             = ApplyTransform!!.invoke(pOutputPose, pTrackedDevicePose, pTransform)
 
-    @JvmField var ApplyTransform: ApplyTransform_callback? = null
+    internal @JvmField var ApplyTransform: ApplyTransform_callback? = null
 
     interface ApplyTransform_callback : Callback {
         fun invoke(pOutputPose: TrackedDevicePose_t.ByReference, pTrackedDevicePose: TrackedDevicePose_t.ByReference, pTransform: HmdMatrix34_t.ByReference)
@@ -231,7 +231,7 @@ open class IVRSystem : Structure {
     /** Returns the device index associated with a specific role, for example the left hand or the right hand. */
     fun getTrackedDeviceIndexForControllerRole(unDeviceType: ETrackedControllerRole) = GetTrackedDeviceIndexForControllerRole!!.invoke(unDeviceType.i)
 
-    @JvmField var GetTrackedDeviceIndexForControllerRole: GetTrackedDeviceIndexForControllerRole_callback? = null
+    internal @JvmField var GetTrackedDeviceIndexForControllerRole: GetTrackedDeviceIndexForControllerRole_callback? = null
 
     interface GetTrackedDeviceIndexForControllerRole_callback : Callback {
         fun invoke(unDeviceType: Int): TrackedDeviceIndex_t
@@ -241,7 +241,7 @@ open class IVRSystem : Structure {
     fun getControllerRoleForTrackedDeviceIndex(unDeviceIndex: TrackedDeviceIndex_t)
             = ETrackedControllerRole.of(GetControllerRoleForTrackedDeviceIndex!!.invoke(unDeviceIndex))
 
-    @JvmField var GetControllerRoleForTrackedDeviceIndex: GetControllerRoleForTrackedDeviceIndex_callback? = null
+    internal @JvmField var GetControllerRoleForTrackedDeviceIndex: GetControllerRoleForTrackedDeviceIndex_callback? = null
 
     interface GetControllerRoleForTrackedDeviceIndex_callback : Callback {
         fun invoke(unDeviceIndex: TrackedDeviceIndex_t): Int
@@ -259,7 +259,7 @@ open class IVRSystem : Structure {
      * other than TrackedDevice_Invalid is associated with an actual tracked device. */
     fun getTrackedDeviceClass(unDeviceIndex: TrackedDeviceIndex_t) = ETrackedDeviceClass.of(GetTrackedDeviceClass!!.invoke(unDeviceIndex))
 
-    @JvmField var GetTrackedDeviceClass: GetTrackedDeviceClass_callback? = null
+    internal @JvmField var GetTrackedDeviceClass: GetTrackedDeviceClass_callback? = null
 
     interface GetTrackedDeviceClass_callback : Callback {
         fun invoke(unDeviceIndex: TrackedDeviceIndex_t): Int
@@ -268,7 +268,7 @@ open class IVRSystem : Structure {
     /** Returns true if there is a device connected in this slot. */
     fun isTrackedDeviceConnected(unDeviceIndex: TrackedDeviceIndex_t) = IsTrackedDeviceConnected!!.invoke(unDeviceIndex)
 
-    @JvmField var IsTrackedDeviceConnected: IsTrackedDeviceConnected_callback? = null
+    internal @JvmField var IsTrackedDeviceConnected: IsTrackedDeviceConnected_callback? = null
 
     interface IsTrackedDeviceConnected_callback : Callback {
         fun invoke(unDeviceIndex: TrackedDeviceIndex_t): Boolean
@@ -279,7 +279,7 @@ open class IVRSystem : Structure {
                                                    pError: ETrackedPropertyError_ByReference? = null)
             = GetBoolTrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, pError)
 
-    @JvmField var GetBoolTrackedDeviceProperty: GetBoolTrackedDeviceProperty_callback? = null
+    internal @JvmField var GetBoolTrackedDeviceProperty: GetBoolTrackedDeviceProperty_callback? = null
 
     interface GetBoolTrackedDeviceProperty_callback : Callback {
         fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pError: ETrackedPropertyError_ByReference?): Boolean
@@ -290,7 +290,7 @@ open class IVRSystem : Structure {
                                                     pError: ETrackedPropertyError_ByReference? = null): Float
             = GetFloatTrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, pError)
 
-    @JvmField var GetFloatTrackedDeviceProperty: GetFloatTrackedDeviceProperty_callback? = null
+    internal @JvmField var GetFloatTrackedDeviceProperty: GetFloatTrackedDeviceProperty_callback? = null
 
     interface GetFloatTrackedDeviceProperty_callback : Callback {
         fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pError: ETrackedPropertyError_ByReference?): Float
@@ -301,7 +301,7 @@ open class IVRSystem : Structure {
                                                     pError: ETrackedPropertyError_ByReference? = null)
             = GetInt32TrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, pError)
 
-    @JvmField var GetInt32TrackedDeviceProperty: GetInt32TrackedDeviceProperty_callback? = null
+    internal @JvmField var GetInt32TrackedDeviceProperty: GetInt32TrackedDeviceProperty_callback? = null
 
     interface GetInt32TrackedDeviceProperty_callback : Callback {
         fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pError: ETrackedPropertyError_ByReference?): Int
@@ -312,7 +312,7 @@ open class IVRSystem : Structure {
                                                      pError: ETrackedPropertyError_ByReference? = null)
             = GetUint64TrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, pError)
 
-    @JvmField var GetUint64TrackedDeviceProperty: GetUint64TrackedDeviceProperty_callback? = null
+    internal @JvmField var GetUint64TrackedDeviceProperty: GetUint64TrackedDeviceProperty_callback? = null
 
     interface GetUint64TrackedDeviceProperty_callback : Callback {
         fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pError: ETrackedPropertyError_ByReference?): Long
@@ -323,7 +323,7 @@ open class IVRSystem : Structure {
                                                        pError: ETrackedPropertyError_ByReference? = null)
             = GetMatrix34TrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, pError)
 
-    @JvmField var GetMatrix34TrackedDeviceProperty: GetMatrix34TrackedDeviceProperty_callback? = null
+    internal @JvmField var GetMatrix34TrackedDeviceProperty: GetMatrix34TrackedDeviceProperty_callback? = null
 
     interface GetMatrix34TrackedDeviceProperty_callback : Callback {
         fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pError: ETrackedPropertyError_ByReference?): HmdMatrix34_t.ByValue
@@ -337,7 +337,7 @@ open class IVRSystem : Structure {
                                                      pError: ETrackedPropertyError_ByReference? = null)
             = GetStringTrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, pchValue, unBufferSize, pError)
 
-    @JvmField var GetStringTrackedDeviceProperty: GetStringTrackedDeviceProperty_callback? = null
+    internal @JvmField var GetStringTrackedDeviceProperty: GetStringTrackedDeviceProperty_callback? = null
 
     interface GetStringTrackedDeviceProperty_callback : Callback {
         fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pchValue: String, unBufferSize: Int,
@@ -347,7 +347,7 @@ open class IVRSystem : Structure {
     /** returns a string that corresponds with the specified property error. The string will be the name of the error value value for all valid error codes */
     fun getPropErrorNameFromEnum(error: ETrackedPropertyError) = GetPropErrorNameFromEnum!!.invoke(error.i)
 
-    @JvmField var GetPropErrorNameFromEnum: GetPropErrorNameFromEnum_callback? = null
+    internal @JvmField var GetPropErrorNameFromEnum: GetPropErrorNameFromEnum_callback? = null
 
     interface GetPropErrorNameFromEnum_callback : Callback {
         fun invoke(error: Int): String
@@ -362,7 +362,7 @@ open class IVRSystem : Structure {
      *  be the size in bytes of the openvr.VREvent_t struct */
     fun pollNextEvent(pEvent: VREvent_t.ByReference, uncbVREvent: Int) = PollNextEvent!!.invoke(pEvent, uncbVREvent)
 
-    @JvmField var PollNextEvent: PollNextEvent_callback? = null
+    internal @JvmField var PollNextEvent: PollNextEvent_callback? = null
 
     interface PollNextEvent_callback : Callback {
         fun invoke(pEvent: VREvent_t.ByReference, uncbVREvent: Int): Boolean
@@ -376,7 +376,7 @@ open class IVRSystem : Structure {
                               pTrackedDevicePose: TrackedDevicePose_t.ByReference)
             = PollNextEventWithPose!!.invoke(eOrigin.i, pEvent, uncbVREvent, pTrackedDevicePose)
 
-    @JvmField var PollNextEventWithPose: PollNextEventWithPose_callback? = null
+    internal @JvmField var PollNextEventWithPose: PollNextEventWithPose_callback? = null
 
     interface PollNextEventWithPose_callback : Callback {
         fun invoke(eOrigin: Int, pEvent: VREvent_t.ByReference, uncbVREvent: Int, pTrackedDevicePose: TrackedDevicePose_t.ByReference): Boolean
@@ -385,7 +385,7 @@ open class IVRSystem : Structure {
     /** returns the name of an EVREvent value value */
     fun getEventTypeNameFromEnum(eType: EVREventType) = GetEventTypeNameFromEnum!!.invoke(eType.i)
 
-    @JvmField var GetEventTypeNameFromEnum: GetEventTypeNameFromEnum_callback? = null
+    internal @JvmField var GetEventTypeNameFromEnum: GetEventTypeNameFromEnum_callback? = null
 
     interface GetEventTypeNameFromEnum_callback : Callback {
         fun invoke(eType: Int): String
@@ -412,7 +412,7 @@ open class IVRSystem : Structure {
     @JvmOverloads fun GetHiddenAreaMesh(eEye: EVREye, type: EHiddenAreaMeshType = EHiddenAreaMeshType.Standard)
             = GetHiddenAreaMesh!!.invoke(eEye.i, type)
 
-    @JvmField var GetHiddenAreaMesh: GetHiddenAreaMesh_callback? = null
+    internal @JvmField var GetHiddenAreaMesh: GetHiddenAreaMesh_callback? = null
 
     interface GetHiddenAreaMesh_callback : Callback {
         fun invoke(eEye: Int, type: EHiddenAreaMeshType): HiddenAreaMesh_t.ByValue
@@ -428,7 +428,7 @@ open class IVRSystem : Structure {
                            unControllerStateSize: Int)
             = GetControllerState!!.invoke(unControllerDeviceIndex, pControllerState, unControllerStateSize)
 
-    @JvmField var GetControllerState: GetControllerState_callback? = null
+    internal @JvmField var GetControllerState: GetControllerState_callback? = null
 
     interface GetControllerState_callback : Callback {
         fun invoke(unControllerDeviceIndex: TrackedDeviceIndex_t, pControllerState: VRControllerState_t.ByReference,
@@ -443,7 +443,7 @@ open class IVRSystem : Structure {
             = GetControllerStateWithPose!!.invoke(eOrigin.i, unControllerDeviceIndex, pControllerState, pTrackedDevicePose,
             unControllerStateSize)
 
-    @JvmField var GetControllerStateWithPose: GetControllerStateWithPose_callback? = null
+    internal @JvmField var GetControllerStateWithPose: GetControllerStateWithPose_callback? = null
 
     interface GetControllerStateWithPose_callback : Callback {
         fun invoke(eOrigin: Int, unControllerDeviceIndex: TrackedDeviceIndex_t, pControllerState: VRControllerState_t.ByReference,
@@ -455,7 +455,7 @@ open class IVRSystem : Structure {
     fun triggerHapticPulse(unControllerDeviceIndex: TrackedDeviceIndex_t, unAxisId: Int, usDurationMicroSec: Short)
             = TriggerHapticPulse!!.invoke(unControllerDeviceIndex, unAxisId, usDurationMicroSec)
 
-    @JvmField var TriggerHapticPulse: TriggerHapticPulse_callback? = null
+    internal @JvmField var TriggerHapticPulse: TriggerHapticPulse_callback? = null
 
     interface TriggerHapticPulse_callback : Callback {
         fun invoke(unControllerDeviceIndex: TrackedDeviceIndex_t, unAxisId: Int, usDurationMicroSec: Short)
@@ -464,7 +464,7 @@ open class IVRSystem : Structure {
     /** returns the name of an openvr.EVRButtonId value value */
     fun getButtonIdNameFromEnum(eButtonId: EVRButtonId) = GetButtonIdNameFromEnum!!.invoke(eButtonId.i)
 
-    @JvmField var GetButtonIdNameFromEnum: GetButtonIdNameFromEnum_callback? = null
+    internal @JvmField var GetButtonIdNameFromEnum: GetButtonIdNameFromEnum_callback? = null
 
     interface GetButtonIdNameFromEnum_callback : Callback {
         fun invoke(eButtonId: Int): String
@@ -473,7 +473,7 @@ open class IVRSystem : Structure {
     /** returns the game of an openvr.EVRControllerAxisType value value */
     fun getControllerAxisTypeNameFromEnum(eAxisType: EVRControllerAxisType) = GetControllerAxisTypeNameFromEnum!!.invoke(eAxisType.i)
 
-    @JvmField var GetControllerAxisTypeNameFromEnum: GetControllerAxisTypeNameFromEnum_callback? = null
+    internal @JvmField var GetControllerAxisTypeNameFromEnum: GetControllerAxisTypeNameFromEnum_callback? = null
 
     interface GetControllerAxisTypeNameFromEnum_callback : Callback {
         fun invoke(eAxisType: Int): String
@@ -483,7 +483,7 @@ open class IVRSystem : Structure {
      *  input focus with a VREvent_InputFocusCaptured event. Returns false if input focus could not be captured for some reason. */
     fun captureInputFocus() = CaptureInputFocus!!.invoke()
 
-    @JvmField var CaptureInputFocus: CaptureInputFocus_callback? = null
+    internal @JvmField var CaptureInputFocus: CaptureInputFocus_callback? = null
 
     interface CaptureInputFocus_callback : Callback {
         fun invoke(): Boolean
@@ -493,7 +493,7 @@ open class IVRSystem : Structure {
      *  been released with a VREvent_InputFocusReleased event. */
     fun releaseInputFocus() = ReleaseInputFocus!!.invoke()
 
-    @JvmField var ReleaseInputFocus: ReleaseInputFocus_callback? = null
+    internal @JvmField var ReleaseInputFocus: ReleaseInputFocus_callback? = null
 
     interface ReleaseInputFocus_callback : Callback {
         fun invoke()
@@ -502,7 +502,7 @@ open class IVRSystem : Structure {
     /** Returns true if input focus is captured by another process. */
     fun isInputFocusCapturedByAnotherProcess() = IsInputFocusCapturedByAnotherProcess!!.invoke()
 
-    @JvmField var IsInputFocusCapturedByAnotherProcess: IsInputFocusCapturedByAnotherProcess_callback? = null
+    internal @JvmField var IsInputFocusCapturedByAnotherProcess: IsInputFocusCapturedByAnotherProcess_callback? = null
 
     interface IsInputFocusCapturedByAnotherProcess_callback : Callback {
         fun invoke(): Boolean
@@ -519,7 +519,7 @@ open class IVRSystem : Structure {
     fun driverDebugRequest(unDeviceIndex: TrackedDeviceIndex_t, pchRequest: String, pchResponseBuffer: String, unResponseBufferSize: Int)
             = DriverDebugRequest!!.invoke(unDeviceIndex, pchRequest, pchResponseBuffer, unResponseBufferSize)
 
-    @JvmField var DriverDebugRequest: DriverDebugRequest_callback? = null
+    internal @JvmField var DriverDebugRequest: DriverDebugRequest_callback? = null
 
     interface DriverDebugRequest_callback : Callback {
         fun invoke(unDeviceIndex: TrackedDeviceIndex_t, pchRequest: String, pchResponseBuffer: String, unResponseBufferSize: Int): Int
@@ -537,7 +537,7 @@ open class IVRSystem : Structure {
      *  Prop_Firmware_ManualUpdateURL_String should point to an URL describing the manual update process */
     fun performFirmwareUpdate(unDeviceIndex: TrackedDeviceIndex_t) = EVRFirmwareError.of(PerformFirmwareUpdate!!.invoke(unDeviceIndex))
 
-    @JvmField var PerformFirmwareUpdate: PerformFirmwareUpdate_callback? = null
+    internal @JvmField var PerformFirmwareUpdate: PerformFirmwareUpdate_callback? = null
 
     interface PerformFirmwareUpdate_callback : Callback {
         fun invoke(unDeviceIndex: TrackedDeviceIndex_t): Int
@@ -552,7 +552,7 @@ open class IVRSystem : Structure {
      *  This extends the timeout until the process is killed. */
     fun acknowledgeQuit_Exiting() = AcknowledgeQuit_Exiting!!.invoke()
 
-    @JvmField var AcknowledgeQuit_Exiting: AcknowledgeQuit_Exiting_callback? = null
+    internal @JvmField var AcknowledgeQuit_Exiting: AcknowledgeQuit_Exiting_callback? = null
 
     interface AcknowledgeQuit_Exiting_callback : Callback {
         fun invoke()
@@ -562,7 +562,7 @@ open class IVRSystem : Structure {
      *  Applications should be sure to actually prompt the user to save and then exit afterward, otherwise the user will be left in a confusing state. */
     fun acknowledgeQuit_UserPrompt() = AcknowledgeQuit_UserPrompt!!.invoke()
 
-    @JvmField var AcknowledgeQuit_UserPrompt: AcknowledgeQuit_UserPrompt_callback? = null
+    internal @JvmField var AcknowledgeQuit_UserPrompt: AcknowledgeQuit_UserPrompt_callback? = null
 
     interface AcknowledgeQuit_UserPrompt_callback : Callback {
         fun invoke()

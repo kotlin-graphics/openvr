@@ -39,7 +39,7 @@ open class IVRChaperone : Structure {
     /** Get the current state of Chaperone calibration. This state can change at any time during a session due to physical base station changes. **/
     fun getCalibrationState() = ChaperoneCalibrationState.of(GetCalibrationState!!.invoke())
 
-    @JvmField var GetCalibrationState: GetCalibrationState_callback? = null
+    internal @JvmField var GetCalibrationState: GetCalibrationState_callback? = null
 
     interface GetCalibrationState_callback : Callback {
         fun invoke(): Int
@@ -49,7 +49,7 @@ open class IVRChaperone : Structure {
      * Tracking space center (0,0,0) is the center of the Play Area. **/
     fun getPlayAreaSize(pSizeX: FloatByReference, pSizeZ: FloatByReference) = GetPlayAreaSize!!.invoke(pSizeX, pSizeZ)
 
-    @JvmField var GetPlayAreaSize: GetPlayAreaSize_callback? = null
+    internal @JvmField var GetPlayAreaSize: GetPlayAreaSize_callback? = null
 
     interface GetPlayAreaSize_callback : Callback {
         fun invoke(pSizeX: FloatByReference, pSizeZ: FloatByReference): Boolean
@@ -63,7 +63,7 @@ open class IVRChaperone : Structure {
      * Height of every corner is 0Y (on the floor). **/
     fun getPlayAreaRect(rect: HmdQuad_t.ByReference) = GetPlayAreaRect!!.invoke(rect)
 
-    @JvmField var GetPlayAreaRect: GetPlayAreaRect_callback? = null
+    internal @JvmField var GetPlayAreaRect: GetPlayAreaRect_callback? = null
 
     interface GetPlayAreaRect_callback : Callback {
         fun invoke(rect: HmdQuad_t.ByReference): Boolean
@@ -72,7 +72,7 @@ open class IVRChaperone : Structure {
     /** Reload Chaperone data from the .vrchap file on disk. */
     fun reloadInfo() = ReloadInfo!!.invoke()
 
-    @JvmField var ReloadInfo: ReloadInfo_callback? = null
+    internal @JvmField var ReloadInfo: ReloadInfo_callback? = null
 
     interface ReloadInfo_callback : Callback {
         fun invoke()
@@ -81,7 +81,7 @@ open class IVRChaperone : Structure {
     /** Optionally give the chaperone system a hit about the color and brightness in the scene **/
     fun setSceneColor(color: HmdColor_t) = SetSceneColor!!.invoke(color)
 
-    @JvmField var SetSceneColor: SetSceneColor_callback? = null
+    internal @JvmField var SetSceneColor: SetSceneColor_callback? = null
 
     interface SetSceneColor_callback : Callback {
         fun invoke(color: HmdColor_t)
@@ -92,7 +92,7 @@ open class IVRChaperone : Structure {
                        pOutputCameraColor: HmdColor_t.ByReference)
             = GetBoundsColor!!.invoke(pOutputColorArray, nNumOutputColors, flCollisionBoundsFadeDistance, pOutputCameraColor)
 
-    @JvmField var GetBoundsColor: GetBoundsColor_callback? = null
+    internal @JvmField var GetBoundsColor: GetBoundsColor_callback? = null
 
     interface GetBoundsColor_callback : Callback {
         fun invoke(pOutputColorArray: HmdColor_t.ByReference, nNumOutputColors: Int, flCollisionBoundsFadeDistance: Float,
@@ -102,7 +102,7 @@ open class IVRChaperone : Structure {
     /** Determine whether the bounds are showing right now **/
     fun areBoundsVisible() = AreBoundsVisible!!.invoke()
 
-    @JvmField var AreBoundsVisible: AreBoundsVisible_callback? = null
+    internal @JvmField var AreBoundsVisible: AreBoundsVisible_callback? = null
 
     interface AreBoundsVisible_callback : Callback {
         fun invoke(): Boolean
@@ -111,7 +111,7 @@ open class IVRChaperone : Structure {
     /** Force the bounds to show, mostly for utilities **/
     fun forceBoundsVisible(bForce: Boolean) = ForceBoundsVisible!!.invoke(bForce)
 
-    @JvmField var ForceBoundsVisible: ForceBoundsVisible_callback? = null
+    internal @JvmField var ForceBoundsVisible: ForceBoundsVisible_callback? = null
 
     interface ForceBoundsVisible_callback : Callback {
         fun invoke(bForce: Boolean)

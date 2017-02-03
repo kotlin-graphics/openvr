@@ -31,7 +31,7 @@ Server driver Interface:
 * Replace the property functions on ITrackedDeviceServerDriver with the IVRProperties interface and the CPropertyHelpers helper functions. This should result in significantly less boilerplate code in drivers and allows drivers to invalidate properties immediately instead of waiting for the client-side cache to expire. Use vr::VRProperties() to get the new helper interface. See the sample driver for details.
 * Added a new "enable" setting to all drivers that will prevent the driver DLL from being loaded. The enable flag has been removed from the sample driver.
 * IServerDriverHost has been renamed to IVRServerDriverHost no longer contains a few functions that are now handled by property setters.
- * GetSettings() is now handled with vr::VRSettings()
+ * GetSettings() is now handled with vr::vrSettings()
  * PhysicalIpdSet() is now handled by setting the Prop_UserIpdMeters_Float property.
  * TrackedDevicePropertiesChanged() is now handled automatically when a property is set.
  * MCImageUpdated() was undocumented and not useful outside the Lighthouse driver. It has been removed.

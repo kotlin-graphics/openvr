@@ -2014,52 +2014,68 @@ val k_unScreenshotHandleInvalid = 0
  *
  *  This path is to the "root" of the VR API install. That's the directory with the "drivers" directory and a platform (i.e. "win32") directory in it,
  *  not the directory with the DLL itself.   */
-//fun vrInit(peError: EVRInitError_ByReference, eApplicationType: EVRApplicationError) = VR_Init(peError, eApplicationType.i)
-//external fun VR_Init(peError: IntByReference, eApplicationType: Int): IVRSystem.ByReference // TODO check
+fun vrInit(error: EVRInitError_ByReference, applicationType: EVRApplicationType): IVRSystem? {
+
+    Native.register("openvr_api")
+
+    var pVRSystem: IVRSystem? = null
+
+    VR_InitInternal(error, applicationType.i)
+
+    if (error.value == EVRInitError.None)
+
+        if (VR_IsInterfaceVersionValid(IVRSystem_Version))
+            pVRSystem = vrSystem()
+        else {
+            VR_ShutdownInternal()
+            error.value = EVRInitError.Init_InterfaceNotFound
+        }
+
+    return pVRSystem
+}
 
 /** unloads vrclient.dll. Any interface pointers from the interface are invalid after this point */
-//fun vrShutdown() = VR_Shutdown()
-//external fun VR_Shutdown()
+fun vrShutdown() = VR_ShutdownInternal()
 
 /** Returns true if there is an HMD attached. This check is as lightweight as possible and can be called outside of VR_Init/VR_Shutdown. It should be used when
  *  an application wants to know if initializing VR is a possibility but isn't ready to take that step yet.  */
-fun isHmdPresent() = VR_IsHmdPresent()
+fun vrIsHmdPresent() = VR_IsHmdPresent()
 
 internal external fun VR_IsHmdPresent(): Boolean
 
 /** Returns true if the OpenVR runtime is installed. */
-fun isRuntimeInstalled() = VR_IsRuntimeInstalled()
+fun vrIsRuntimeInstalled() = VR_IsRuntimeInstalled()
 
 internal external fun VR_IsRuntimeInstalled(): Boolean
 
 /** Returns where the OpenVR runtime is installed. */
-fun runtimePath() = VR_RuntimePath()
+fun vrRuntimePath() = VR_RuntimePath()
 
 internal external fun VR_RuntimePath(): String
 
 /** Returns the name of the value value for an EVRInitError. This function may be called outside of VR_Init()/VR_Shutdown(). */
-fun getVRInitErrorAsSymbol(error: EVRInitError) = VR_GetVRInitErrorAsSymbol(error.i)
+fun vrGetVRInitErrorAsSymbol(error: EVRInitError) = VR_GetVRInitErrorAsSymbol(error.i)
 
 internal external fun VR_GetVRInitErrorAsSymbol(error: Int): String
 
 /** Returns an english string for an EVRInitError. Applications should call VR_GetVRInitErrorAsSymbol instead and use that as a key to look up their own localized
  *  error message. This function may be called outside of VR_Init()/VR_Shutdown(). */
-fun getVRInitErrorAsEnglishDescription(error: EVRInitError) = VR_GetVRInitErrorAsEnglishDescription(error.i)
+fun vrGetVRInitErrorAsEnglishDescription(error: EVRInitError) = VR_GetVRInitErrorAsEnglishDescription(error.i)
 
 internal external fun VR_GetVRInitErrorAsEnglishDescription(error: Int): String
 
 /** Returns the interface of the specified version. This method must be called after VR_Init. The pointer returned is valid until VR_Shutdown is called.     */
-fun getGenericInterface(pchInterfaceVersion: String, peError: EVRInitError_ByReference) = VR_GetGenericInterface(pchInterfaceVersion, peError)
+fun vrGetGenericInterface(pchInterfaceVersion: String, peError: EVRInitError_ByReference) = VR_GetGenericInterface(pchInterfaceVersion, peError)
 
 internal external fun VR_GetGenericInterface(pchInterfaceVersion: String, peError: EVRInitError_ByReference): Pointer
 
 /** Returns whether the interface of the specified version exists.   */
-fun isInterfaceVersionValid(pchInterfaceVersion: String) = VR_IsInterfaceVersionValid(pchInterfaceVersion)
+fun vrIsInterfaceVersionValid(pchInterfaceVersion: String) = VR_IsInterfaceVersionValid(pchInterfaceVersion)
 
 internal external fun VR_IsInterfaceVersionValid(pchInterfaceVersion: String): Boolean
 
 /** Returns a token that represents whether the VR interface handles need to be reloaded */
-fun getInitToken() = VR_GetInitToken()
+fun vrGetInitToken() = VR_GetInitToken()
 
 internal external fun VR_GetInitToken()
 
@@ -2080,55 +2096,32 @@ object COpenVRContext {
 
     private val error = EVRInitError_ByReference(EVRInitError.None)
 
-    fun VRSystem() = m_pVRSystem ?: IVRSystem(getGenericInterface(IVRSystem_Version, error))
-    fun VRChaperone() = m_pVRChaperone ?: IVRChaperone(getGenericInterface(IVRChaperone_Version, error))
-    fun VRChaperoneSetup() = m_pVRChaperoneSetup ?: IVRChaperoneSetup(getGenericInterface(IVRChaperoneSetup_Version, error))
-    fun VRCompositor() = m_pVRCompositor ?: IVRCompositor(getGenericInterface(IVRCompositor_Version, error))
-    fun VROverlay() = m_pVROverlay ?: IVROverlay(getGenericInterface(IVROverlay_Version, error))
-    fun VRResources() = m_pVRResources ?: IVRResources(getGenericInterface(IVRResources_Version, error))
-    fun VRRenderModels() = m_pVRRenderModels ?: IVRRenderModels(getGenericInterface(IVRRenderModels_Version, error))
-    fun VRExtendedDisplay() = m_pVRExtendedDisplay ?: IVRExtendedDisplay(getGenericInterface(IVRExtendedDisplay_Version, error))
-    fun VRSettings() = m_pVRSettings ?: IVRSettings(getGenericInterface(IVRSettings_Version, error))
-    fun VRApplications() = m_pVRApplications ?: IVRApplications(getGenericInterface(IVRApplications_Version, error))
-    fun VRTrackedCamera() = m_pVRTrackedCamera ?: IVRTrackedCamera(getGenericInterface(IVRTrackedCamera_Version, error))
-    fun VRScreenshots() = m_pVRScreenshots ?: IVRScreenshots(getGenericInterface(IVRScreenshots_Version, error))
+    fun vrSystem() = m_pVRSystem ?: IVRSystem(vrGetGenericInterface(IVRSystem_Version, error))
+    fun vrChaperone() = m_pVRChaperone ?: IVRChaperone(vrGetGenericInterface(IVRChaperone_Version, error))
+    fun vrChaperoneSetup() = m_pVRChaperoneSetup ?: IVRChaperoneSetup(vrGetGenericInterface(IVRChaperoneSetup_Version, error))
+    fun vrCompositor() = m_pVRCompositor ?: IVRCompositor(vrGetGenericInterface(IVRCompositor_Version, error))
+    fun vrOverlay() = m_pVROverlay ?: IVROverlay(vrGetGenericInterface(IVROverlay_Version, error))
+    fun vrResources() = m_pVRResources ?: IVRResources(vrGetGenericInterface(IVRResources_Version, error))
+    fun vrRenderModels() = m_pVRRenderModels ?: IVRRenderModels(vrGetGenericInterface(IVRRenderModels_Version, error))
+    fun vrExtendedDisplay() = m_pVRExtendedDisplay ?: IVRExtendedDisplay(vrGetGenericInterface(IVRExtendedDisplay_Version, error))
+    fun vrSettings() = m_pVRSettings ?: IVRSettings(vrGetGenericInterface(IVRSettings_Version, error))
+    fun vrApplications() = m_pVRApplications ?: IVRApplications(vrGetGenericInterface(IVRApplications_Version, error))
+    fun vrTrackedCamera() = m_pVRTrackedCamera ?: IVRTrackedCamera(vrGetGenericInterface(IVRTrackedCamera_Version, error))
+    fun vrScreenshots() = m_pVRScreenshots ?: IVRScreenshots(vrGetGenericInterface(IVRScreenshots_Version, error))
 }
 
-fun VRSystem() = COpenVRContext.VRSystem()
-fun VRChaperone() = COpenVRContext.VRChaperone()
-fun VRChaperoneSetup() = COpenVRContext.VRChaperoneSetup()
-fun VRCompositor() = COpenVRContext.VRCompositor()
-fun VROverlay() = COpenVRContext.VROverlay()
-fun VRResources() = COpenVRContext.VRResources()
-fun VRRenderModels() = COpenVRContext.VRRenderModels()
-fun VRExtendedDisplay() = COpenVRContext.VRExtendedDisplay()
-fun VRSettings() = COpenVRContext.VRSettings()
-fun VRApplications() = COpenVRContext.VRApplications()
-fun VRTrackedCamera() = COpenVRContext.VRTrackedCamera()
-fun VRScreenshots() = COpenVRContext.VRScreenshots()
+fun vrSystem() = COpenVRContext.vrSystem()
+fun vrChaperone() = COpenVRContext.vrChaperone()
+fun vrChaperoneSetup() = COpenVRContext.vrChaperoneSetup()
+fun vrCompositor() = COpenVRContext.vrCompositor()
+fun vrOverlay() = COpenVRContext.vrOverlay()
+fun vrResources() = COpenVRContext.vrResources()
+fun vrRenderModels() = COpenVRContext.vrRenderModels()
+fun vrExtendedDisplay() = COpenVRContext.vrExtendedDisplay()
+fun vrSettings() = COpenVRContext.vrSettings()
+fun vrApplications() = COpenVRContext.vrApplications()
+fun vrTrackedCamera() = COpenVRContext.vrTrackedCamera()
+fun vrScreenshots() = COpenVRContext.vrScreenshots()
 
-fun vrInitInternal(peError: EVRInitError_ByReference, eType: EVRApplicationType) = VR_InitInternal(peError, eType.i)
-external fun VR_InitInternal(peError: EVRInitError_ByReference, eType: Int): Pointer
-
-fun vrShutdownInternal() = VR_ShutdownInternal()
-external fun VR_ShutdownInternal()
-
-fun VR_Init(error: EVRInitError_ByReference, applicationType: EVRApplicationType): IVRSystem? {
-
-    Native.register("openvr_api")
-
-    var pVRSystem: IVRSystem? = null
-
-    vrInitInternal(error, applicationType)
-
-    if (error.value == EVRInitError.None)
-
-        if (VR_IsInterfaceVersionValid(IVRSystem_Version))
-            pVRSystem = VRSystem()
-        else {
-            VR_ShutdownInternal()
-            error.value = EVRInitError.Init_InterfaceNotFound
-        }
-
-    return pVRSystem
-}
+internal external fun VR_InitInternal(peError: EVRInitError_ByReference, eType: Int): Pointer
+internal external fun VR_ShutdownInternal()

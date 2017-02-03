@@ -14,7 +14,8 @@ class Test : StringSpec() {
         "simple test" {
 
             val error = EVRInitError_ByReference()
-            val hmd = VR_Init(error, EVRApplicationType.Scene)!!
+
+            val hmd = vrInit(error, EVRApplicationType.Scene)!!
 
             error.value shouldBe EVRInitError.None
 

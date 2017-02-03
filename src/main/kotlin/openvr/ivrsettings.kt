@@ -8,7 +8,7 @@ import java.util.*
 open class IVRSettings : Structure {
 
     fun getSettingsErrorNameFromEnum(eError: EVRSettingsError) = GetSettingsErrorNameFromEnum!!.invoke(eError.i)
-    @JvmField var GetSettingsErrorNameFromEnum: GetSettingsErrorNameFromEnum_callback? = null
+    internal @JvmField var GetSettingsErrorNameFromEnum: GetSettingsErrorNameFromEnum_callback? = null
 
     interface GetSettingsErrorNameFromEnum_callback : Callback {
         fun invoke(eError: Int): String
@@ -18,7 +18,7 @@ open class IVRSettings : Structure {
     // Returns true if file sync occurred (force or settings dirty)
     @JvmOverloads fun sync(bForce: Boolean = false, peError: EVRSettingsError_ByReference? = null) = Sync!!.invoke(bForce, peError)
 
-    @JvmField var Sync: Sync_callback? = null
+    internal @JvmField var Sync: Sync_callback? = null
 
     interface Sync_callback : Callback {
         fun invoke(bForce: Boolean, peError: EVRSettingsError_ByReference?): Boolean
@@ -29,7 +29,7 @@ open class IVRSettings : Structure {
                               peError: EVRSettingsError_ByReference? = null)
             = SetBool!!.invoke(pchSection, pchSettingsKey, bValue, peError)
 
-    @JvmField var SetBool: SetBool_callback? = null
+    internal @JvmField var SetBool: SetBool_callback? = null
 
     interface SetBool_callback : Callback {
         fun invoke(pchSection: String, pchSettingsKey: String, bValue: Boolean, peError: EVRSettingsError_ByReference?)
@@ -39,7 +39,7 @@ open class IVRSettings : Structure {
     @JvmOverloads fun setInt32(pchSection: String, pchSettingsKey: String, nValue: Int, peError: EVRSettingsError_ByReference? = null)
             = SetInt32!!.invoke(pchSection, pchSettingsKey, nValue, peError)
 
-    @JvmField var SetInt32: SetInt32_callback? = null
+    internal @JvmField var SetInt32: SetInt32_callback? = null
 
     interface SetInt32_callback : Callback {
         fun invoke(pchSection: String, pchSettingsKey: String, nValue: Int, peError: EVRSettingsError_ByReference?)
@@ -50,7 +50,7 @@ open class IVRSettings : Structure {
                                peError: EVRSettingsError_ByReference? = null)
             = SetFloat!!.invoke(pchSection, pchSettingsKey, flValue, peError)
 
-    @JvmField var SetFloat: SetFloat_callback? = null
+    internal @JvmField var SetFloat: SetFloat_callback? = null
 
     interface SetFloat_callback : Callback {
         fun invoke(pchSection: String, pchSettingsKey: String, flValue: Float, peError: EVRSettingsError_ByReference?)
@@ -61,7 +61,7 @@ open class IVRSettings : Structure {
                                 peError: EVRSettingsError_ByReference? = null)
             = SetString!!.invoke(pchSection, pchSettingsKey, pchValue, peError)
 
-    @JvmField var SetString: SetString_callback? = null
+    internal @JvmField var SetString: SetString_callback? = null
 
     interface SetString_callback : Callback {
         fun invoke(pchSection: String, pchSettingsKey: String, pchValue: String, peError: EVRSettingsError_ByReference?)
@@ -73,7 +73,7 @@ open class IVRSettings : Structure {
     @JvmOverloads fun getBool(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference? = null)
             = GetBool!!.invoke(pchSection, pchSettingsKey, peError)
 
-    @JvmField var GetBool: GetBool_callback? = null
+    internal @JvmField var GetBool: GetBool_callback? = null
 
     interface GetBool_callback : Callback {
         fun invoke(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference?): Boolean
@@ -83,7 +83,7 @@ open class IVRSettings : Structure {
     @JvmOverloads fun getInt32(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference? = null)
             = GetInt32!!.invoke(pchSection, pchSettingsKey, peError)
 
-    @JvmField var GetInt32: GetInt32_callback? = null
+    internal @JvmField var GetInt32: GetInt32_callback? = null
 
     interface GetInt32_callback : Callback {
         fun invoke(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference?): Int
@@ -93,7 +93,7 @@ open class IVRSettings : Structure {
     @JvmOverloads fun getFloat(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference? = null)
             = GetFloat!!.invoke(pchSection, pchSettingsKey, peError)
 
-    @JvmField var GetFloat: GetFloat_callback? = null
+    internal @JvmField var GetFloat: GetFloat_callback? = null
 
     interface GetFloat_callback : Callback {
         fun invoke(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference?): Float
@@ -104,7 +104,7 @@ open class IVRSettings : Structure {
                   peError: EVRSettingsError_ByReference? = null)
             = GetString!!.invoke(pchSection, pchSettingsKey, pchValue, unValueLen, peError)
 
-    @JvmField var GetString: GetString_callback? = null
+    internal @JvmField var GetString: GetString_callback? = null
 
     interface GetString_callback : Callback {
         fun invoke(pchSection: String, pchSettingsKey: String, pchValue: String, unValueLen: Int,
@@ -115,7 +115,7 @@ open class IVRSettings : Structure {
     @JvmOverloads fun removeSection(pchSection: String, peError: EVRSettingsError_ByReference? = null)
             = RemoveSection!!.invoke(pchSection, peError)
 
-    @JvmField var RemoveSection: RemoveSection_callback? = null
+    internal @JvmField var RemoveSection: RemoveSection_callback? = null
 
     interface RemoveSection_callback : Callback {
         fun invoke(pchSection: String, peError: EVRSettingsError_ByReference?)
@@ -125,7 +125,7 @@ open class IVRSettings : Structure {
     @JvmOverloads fun removeKeyInSection(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference? = null)
             = RemoveKeyInSection!!.invoke(pchSection, pchSettingsKey, peError)
 
-    @JvmField var RemoveKeyInSection: RemoveKeyInSection_callback? = null
+    internal @JvmField var RemoveKeyInSection: RemoveKeyInSection_callback? = null
 
     interface RemoveKeyInSection_callback : Callback {
         fun invoke(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference?)
