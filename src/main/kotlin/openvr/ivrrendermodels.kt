@@ -191,7 +191,10 @@ open class RenderModel_t : Structure {
         read()
     }
 
-    class ByReference : RenderModel_t(), Structure.ByReference
+    class ByReference : RenderModel_t, Structure.ByReference {
+        constructor() : super()
+        constructor(peer: Pointer) : super(peer)
+    }
     class ByValue : RenderModel_t(), Structure.ByValue
 }
 
