@@ -1,3 +1,5 @@
+package openvr
+
 import com.sun.jna.Callback
 import com.sun.jna.Pointer
 import com.sun.jna.Structure
@@ -619,15 +621,15 @@ open class IVRCompositor : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("SetTrackingSpace", "GetTrackingSpace", "WaitGetPoses", "GetLastPoses",
+    override fun getFieldOrder(): List<String> = listOf("SetTrackingSpace", "GetTrackingSpace", "WaitGetPoses", "GetLastPoses",
             "GetLastPoseForTrackedDeviceIndex", "Submit", "ClearLastSubmittedFrame", "PostPresentHandoff", "GetFrameTiming",
             "GetFrameTimings", "GetFrameTimeRemaining", "GetCumulativeStats", "FadeToColor", "GetCurrentFadeColor", "FadeGrid",
             "GetCurrentGridAlpha", "SetSkyboxOverride", "ClearSkyboxOverride", "CompositorBringToFront", "CompositorGoToBack",
             "CompositorQuit", "IsFullscreen", "GetCurrentSceneFocusProcess", "GetLastFrameRenderer", "CanRenderScene",
             "ShowMirrorWindow", "HideMirrorWindow", "IsMirrorWindowVisible", "CompositorDumpImages", "ShouldAppRenderWithLowResources",
             "ForceInterleavedReprojectionOn", "ForceReconnectProcess", "SuspendRendering", "GetMirrorTextureD3D11",
-            "GetMirrorTextureGL", "ReleaseSharedGLTexture", "LockGLSharedTextureForAccess", "UnlockGLSharedTextureForAccess",
-            "getVulkanInstanceExtensionsRequired", "getVulkanDeviceExtensionsRequired")
+            "ReleaseMirrorTextureD3D11", "GetMirrorTextureGL", "ReleaseSharedGLTexture", "LockGLSharedTextureForAccess",
+            "UnlockGLSharedTextureForAccess", "GetVulkanInstanceExtensionsRequired", "GetVulkanDeviceExtensionsRequired")
 
     constructor(peer: Pointer) : super(peer) {
         read()

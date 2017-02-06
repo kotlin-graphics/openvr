@@ -1,3 +1,5 @@
+package openvr
+
 import com.sun.jna.*
 import com.sun.jna.ptr.IntByReference
 import java.lang.Double

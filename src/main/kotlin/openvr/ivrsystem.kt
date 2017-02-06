@@ -1,3 +1,5 @@
+package openvr
+
 import com.sun.jna.Callback
 import com.sun.jna.Pointer
 import com.sun.jna.Structure
@@ -333,14 +335,14 @@ open class IVRSystem : Structure {
      *  Otherwise it returns the length of the number of bytes necessary to hold this string including the trailing null.
      *  Strings will always fit in buffers of k_unMaxPropertyStringSize characters. */
     @JvmOverloads fun getStringTrackedDeviceProperty(unDeviceIndex: TrackedDeviceIndex_t, prop: ETrackedDeviceProperty,
-                                                     pchValue: String, unBufferSize: Int,
+                                                     pchValue: String?, unBufferSize: Int,
                                                      pError: ETrackedPropertyError_ByReference? = null)
             = GetStringTrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, pchValue, unBufferSize, pError)
 
     internal @JvmField var GetStringTrackedDeviceProperty: GetStringTrackedDeviceProperty_callback? = null
 
     interface GetStringTrackedDeviceProperty_callback : Callback {
-        fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pchValue: String, unBufferSize: Int,
+        fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pchValue: String?, unBufferSize: Int,
                    pError: ETrackedPropertyError_ByReference?): Int
     }
 

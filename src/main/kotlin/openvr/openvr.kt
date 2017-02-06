@@ -1,5 +1,7 @@
 @file:JvmName("vr")
 
+package openvr
+
 import com.sun.jna.Native
 import com.sun.jna.Pointer
 import com.sun.jna.Structure
@@ -341,6 +343,7 @@ enum class EVREye(@JvmField val i: Int) {
     Right(1);
 
     companion object {
+        @JvmStatic val MAX = 2
         fun of(i: Int) = values().first { it.i == i }
     }
 }
@@ -429,10 +432,10 @@ val k_unMaxDriverDebugResponseSize = 32768
 /** Used to pass device IDs to API calls */
 typealias TrackedDeviceIndex_t = Int
 typealias TrackedDeviceIndex_t_ByReference = IntByReference
-val k_unTrackedDeviceIndex_Hmd = 0
-val k_unMaxTrackedDeviceCount = 16
-val k_unTrackedDeviceIndexOther = 0xFFFFFFFE.toInt()
-val k_unTrackedDeviceIndexInvalid = 0xFFFFFFFF.toInt()
+@JvmField val k_unTrackedDeviceIndex_Hmd = 0
+@JvmField val k_unMaxTrackedDeviceCount = 16
+@JvmField val k_unTrackedDeviceIndexOther = 0xFFFFFFFE.toInt()
+@JvmField val k_unTrackedDeviceIndexInvalid = 0xFFFFFFFF.toInt()
 
 /** Describes what kind of object is being tracked at a given ID */
 enum class ETrackedDeviceClass(@JvmField val i: Int) {

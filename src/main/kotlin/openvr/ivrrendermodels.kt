@@ -1,3 +1,5 @@
+package openvr
+
 import com.sun.jna.Callback
 import com.sun.jna.Pointer
 import com.sun.jna.Structure
