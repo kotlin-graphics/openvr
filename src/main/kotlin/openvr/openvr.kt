@@ -1503,8 +1503,12 @@ open class VREvent_Data_t : Union() {
 /** An event posted by the server to all running applications */
 open class VREvent_t : Structure {
 
-    @JvmField var eventType = 0   // openvr.EVREventType value
-    fun eventType() = EVREventType.of(eventType)
+    internal @JvmField var eventType_internal = 0   // openvr.EVREventType value
+    var eventType
+        set(value) {
+            eventType_internal = value.i
+        }
+        get() = EVREventType.of(eventType_internal)
     @JvmField var TrackedDeviceIndex_t = 0
     @JvmField var eventAgeSeconds = 0f
     // event data must be the end of the struct as its size is variable
@@ -1515,7 +1519,7 @@ open class VREvent_t : Structure {
     override fun getFieldOrder(): List<String> = listOf("eventType", "trackedDeviceIndex", "eventAgeSeconds", "data")
 
     constructor(eventType: Int, trackedDeviceIndex: Int, eventAgeSeconds: Float, data: VREvent_Data_t) {
-        this.eventType = eventType
+        this.eventType_internal = eventType
         this.TrackedDeviceIndex_t = trackedDeviceIndex
         this.eventAgeSeconds = eventAgeSeconds
         this.data = data
