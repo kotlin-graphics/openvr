@@ -1479,25 +1479,25 @@ open class VREvent_Data_t : Union() {
 
     class ByValue : VREvent_Data_t(), Structure.ByValue
 
-    var controller: VREvent_Controller_t? = null
-    var mouse: VREvent_Mouse_t? = null
-    var scroll: VREvent_Scroll_t? = null
-    var process: VREvent_Process_t? = null
-    var notification: VREvent_Notification_t? = null
-    var overlay: VREvent_Overlay_t? = null
-    var status: VREvent_Status_t? = null
-    var keyboard: VREvent_Keyboard_t? = null
-    var ipd: VREvent_Ipd_t? = null
-    var chaperone: VREvent_Chaperone_t? = null
-    var performanceTest: VREvent_PerformanceTest_t? = null
-    var touchPadMove: VREvent_TouchPadMove_t? = null
-    var seatedZeroPoseReset: VREvent_SeatedZeroPoseReset_t? = null
-    var screenshot: VREvent_Screenshot_t? = null
-    var screenshotProgress: VREvent_ScreenshotProgress_t? = null
-    var applicationLaunch: VREvent_ApplicationLaunch_t? = null
-    var cameraSurface: VREvent_EditingCameraSurface_t? = null
-    var messageOverlay: VREvent_MessageOverlay_t? = null
-    var property: VREvent_Property_t? = null
+    var controller = VREvent_Controller_t()
+    var mouse = VREvent_Mouse_t()
+    var scroll = VREvent_Scroll_t()
+    var process = VREvent_Process_t()
+    var notification = VREvent_Notification_t()
+    var overlay = VREvent_Overlay_t()
+    var status = VREvent_Status_t()
+    var keyboard = VREvent_Keyboard_t()
+    var ipd = VREvent_Ipd_t()
+    var chaperone = VREvent_Chaperone_t()
+    var performanceTest = VREvent_PerformanceTest_t()
+    var touchPadMove = VREvent_TouchPadMove_t()
+    var seatedZeroPoseReset = VREvent_SeatedZeroPoseReset_t()
+    var screenshot = VREvent_Screenshot_t()
+    var screenshotProgress = VREvent_ScreenshotProgress_t()
+    var applicationLaunch = VREvent_ApplicationLaunch_t()
+    var cameraSurface = VREvent_EditingCameraSurface_t()
+    var messageOverlay = VREvent_MessageOverlay_t()
+    var property = VREvent_Property_t()
 }
 
 /** An event posted by the server to all running applications */
@@ -1512,7 +1512,7 @@ open class VREvent_t : Structure {
     @JvmField var trackedDeviceIndex = 0
     @JvmField var eventAgeSeconds = 0f
     // event data must be the end of the struct as its size is variable
-    @JvmField var data: VREvent_Data_t? = null
+    @JvmField var data = VREvent_Data_t()
 
     constructor()
 
@@ -1620,8 +1620,9 @@ open class VRControllerState_t : Structure {
     @JvmField var unPacketNum = 0
 
     // bit flags for each of the buttons. Use ButtonMaskFromId to turn an ID into a mask
-    @JvmField var ulButtonPressed = 0L
-    @JvmField var ulButtonTouched = 0L
+    internal @JvmField var ulButtonPressed_internal = 0L
+    internal @JvmField var ulButtonTouched_internal = 0L
+
     // Axis data for the controller's analog inputs
     @JvmField var rAxis = arrayOf(VRControllerAxis_t(), VRControllerAxis_t(), VRControllerAxis_t(), VRControllerAxis_t(), VRControllerAxis_t())
 
@@ -1631,8 +1632,8 @@ open class VRControllerState_t : Structure {
 
     constructor(unPacketNum: Int, ulButtonPressed: Long, ulButtonTouched: Long, rAxis: Array<VRControllerAxis_t>) {
         this.unPacketNum = unPacketNum
-        this.ulButtonPressed = ulButtonPressed
-        this.ulButtonTouched = ulButtonTouched
+        this.ulButtonPressed_internal = ulButtonPressed
+        this.ulButtonTouched_internal = ulButtonTouched
         if (rAxis.size != this.rAxis.size) throw IllegalArgumentException("Wrong array size !")
         this.rAxis = rAxis
     }

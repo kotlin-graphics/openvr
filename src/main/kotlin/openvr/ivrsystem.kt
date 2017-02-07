@@ -345,12 +345,12 @@ open class IVRSystem : Structure {
         val bytes = ByteArray(32)
         val propLen = GetStringTrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, bytes, bytes.size, err)
 
-        if(err.value == ETrackedPropertyError.Success)
+        if (err.value == ETrackedPropertyError.Success)
             ret = String(bytes).filter(Char::isJavaIdentifierPart)
-        else if(err.value == ETrackedPropertyError.BufferTooSmall) {
+        else if (err.value == ETrackedPropertyError.BufferTooSmall) {
             val newBytes = ByteArray(propLen)
             GetStringTrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, newBytes, propLen, err)
-            if(err.value == ETrackedPropertyError.Success)
+            if (err.value == ETrackedPropertyError.Success)
                 ret = String(newBytes).drop(1)
         }
         pError?.let {
@@ -383,8 +383,8 @@ open class IVRSystem : Structure {
     // Event methods
     // ------------------------------------
 
-    /** Returns true and fills the event with the next event on the queue if there is one. If there are no events this method returns false. uncbVREvent should
-     *  be the size in bytes of the openvr.VREvent_t struct */
+    /** Returns true and fills the event with the next event on the queue if there is one. If there are no events this method returns
+     *  false. uncbVREvent should be the size in bytes of the openvr.VREvent_t struct */
     fun pollNextEvent(pEvent: VREvent_t.ByReference, uncbVREvent: Int) = PollNextEvent!!.invoke(pEvent, uncbVREvent)
 
     internal @JvmField var PollNextEvent: PollNextEvent_callback? = null
@@ -595,16 +595,18 @@ open class IVRSystem : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("GetRecommendedRenderTargetSize", "GetProjectionMatrix", "GetProjectionRaw", "ComputeDistortion",
-            "GetEyeToHeadTransform", "GetTimeSinceLastVsync", "GetD3D9AdapterIndex", "GetDXGIOutputInfo", "IsDisplayOnDesktop", "SetDisplayVisibility",
-            "GetDeviceToAbsoluteTrackingPose", "ResetSeatedZeroPose", "GetSeatedZeroPoseToStandingAbsoluteTrackingPose",
-            "GetRawZeroPoseToStandingAbsoluteTrackingPose", "GetSortedTrackedDeviceIndicesOfClass", "GetTrackedDeviceActivityLevel", "ApplyTransform",
-            "GetTrackedDeviceIndexForControllerRole", "GetControllerRoleForTrackedDeviceIndex", "GetTrackedDeviceClass", "IsTrackedDeviceConnected",
-            "GetBoolTrackedDeviceProperty", "GetFloatTrackedDeviceProperty", "GetInt32TrackedDeviceProperty", "GetUint64TrackedDeviceProperty",
-            "GetMatrix34TrackedDeviceProperty", "GetStringTrackedDeviceProperty", "GetPropErrorNameFromEnum", "PollNextEvent", "PollNextEventWithPose",
-            "GetEventTypeNameFromEnum", "GetHiddenAreaMesh", "GetControllerState", "GetControllerStateWithPose", "TriggerHapticPulse", "GetButtonIdNameFromEnum",
-            "GetControllerAxisTypeNameFromEnum", "CaptureInputFocus", "ReleaseInputFocus", "IsInputFocusCapturedByAnotherProcess", "DriverDebugRequest",
-            "PerformFirmwareUpdate", "AcknowledgeQuit_Exiting", "AcknowledgeQuit_UserPrompt")
+    override fun getFieldOrder(): List<String> = Arrays.asList("GetRecommendedRenderTargetSize", "GetProjectionMatrix",
+            "GetProjectionRaw", "ComputeDistortion", "GetEyeToHeadTransform", "GetTimeSinceLastVsync", "GetD3D9AdapterIndex",
+            "GetDXGIOutputInfo", "IsDisplayOnDesktop", "SetDisplayVisibility", "GetDeviceToAbsoluteTrackingPose", "ResetSeatedZeroPose",
+            "GetSeatedZeroPoseToStandingAbsoluteTrackingPose", "GetRawZeroPoseToStandingAbsoluteTrackingPose",
+            "GetSortedTrackedDeviceIndicesOfClass", "GetTrackedDeviceActivityLevel", "ApplyTransform",
+            "GetTrackedDeviceIndexForControllerRole", "GetControllerRoleForTrackedDeviceIndex", "GetTrackedDeviceClass",
+            "IsTrackedDeviceConnected", "GetBoolTrackedDeviceProperty", "GetFloatTrackedDeviceProperty", "GetInt32TrackedDeviceProperty",
+            "GetUint64TrackedDeviceProperty", "GetMatrix34TrackedDeviceProperty", "GetStringTrackedDeviceProperty",
+            "GetPropErrorNameFromEnum", "PollNextEvent", "PollNextEventWithPose", "GetEventTypeNameFromEnum", "GetHiddenAreaMesh",
+            "GetControllerState", "GetControllerStateWithPose", "TriggerHapticPulse", "GetButtonIdNameFromEnum",
+            "GetControllerAxisTypeNameFromEnum", "CaptureInputFocus", "ReleaseInputFocus", "IsInputFocusCapturedByAnotherProcess",
+            "DriverDebugRequest", "PerformFirmwareUpdate", "AcknowledgeQuit_Exiting", "AcknowledgeQuit_UserPrompt")
 
     constructor (peer: Pointer) : super(peer) {
         read()
