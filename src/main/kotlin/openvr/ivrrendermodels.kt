@@ -150,7 +150,10 @@ open class RenderModel_TextureMap_t : Structure {
         read()
     }
 
-    class ByReference : RenderModel_TextureMap_t(), Structure.ByReference
+    class ByReference : RenderModel_TextureMap_t, Structure.ByReference {
+        constructor() : super()
+        constructor(peer: Pointer) : super(peer)
+    }
     class ByValue : RenderModel_TextureMap_t(), Structure.ByValue
 }
 
