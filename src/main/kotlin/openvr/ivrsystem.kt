@@ -344,7 +344,7 @@ open class IVRSystem : Structure {
         val propLen = GetStringTrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, bytes, bytes.size, err)
 
         if(err.value == ETrackedPropertyError.Success)
-            ret = String(bytes).trimEnd()
+            ret = String(bytes).filter(Char::isLetterOrDigit)
         else if(err.value == ETrackedPropertyError.BufferTooSmall) {
             val newBytes = ByteArray(propLen)
             GetStringTrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, newBytes, propLen, err)
