@@ -357,9 +357,10 @@ open class IVROverlay : Structure {
         fun invoke(): VROverlayHandle_t
     }
 
-    /** Fills the provided buffer with the string key of the overlay. Returns the size of buffer required to store the key, including the terminating null
-     *  character. openvr.k_unVROverlayMaxKeyLength will be enough bytes to fit the string. */
-    fun getOverlayKey(ulOverlayHandle: VROverlayHandle_t, pchValue: String, unBufferSize: Int, pError: EVROverlayError_ByReference? = null)
+    /** Fills the provided buffer with the string key of the overlay. Returns the size of buffer required to store the key, including
+     *  the terminating null character. openvr.k_unVROverlayMaxKeyLength will be enough bytes to fit the string. */
+    fun getOverlayKey(ulOverlayHandle: VROverlayHandle_t, pchValue: String, unBufferSize: Int,
+                      pError: EVROverlayError_ByReference? = null)
             = GetOverlayKey!!.invoke(ulOverlayHandle, pchValue, unBufferSize, pError)
 
     internal @JvmField var GetOverlayKey: IVROverlay.GetOverlayKey_callback? = null

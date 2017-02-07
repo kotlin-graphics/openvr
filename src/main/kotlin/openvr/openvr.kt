@@ -2068,9 +2068,10 @@ fun vrGetVRInitErrorAsEnglishDescription(error: EVRInitError) = VR_GetVRInitErro
 internal external fun VR_GetVRInitErrorAsEnglishDescription(error: Int): String
 
 /** Returns the interface of the specified version. This method must be called after VR_Init. The pointer returned is valid until VR_Shutdown is called.     */
-fun vrGetGenericInterface(pchInterfaceVersion: String, peError: EVRInitError_ByReference) = VR_GetGenericInterface(pchInterfaceVersion, peError)
+fun vrGetGenericInterface(pchInterfaceVersion: String, peError: EVRInitError_ByReference) =
+        VR_GetGenericInterface(pchInterfaceVersion, peError)
 
-internal external fun VR_GetGenericInterface(pchInterfaceVersion: String, peError: EVRInitError_ByReference): Pointer
+internal external fun VR_GetGenericInterface(pchInterfaceVersion: String, peError: EVRInitError_ByReference): Pointer?
 
 /** Returns whether the interface of the specified version exists.   */
 fun vrIsInterfaceVersionValid(pchInterfaceVersion: String) = VR_IsInterfaceVersionValid(pchInterfaceVersion)
@@ -2099,18 +2100,18 @@ object COpenVRContext {
 
     private val error = EVRInitError_ByReference(EVRInitError.None)
 
-    fun vrSystem() = m_pVRSystem ?: IVRSystem(vrGetGenericInterface(IVRSystem_Version, error))
-    fun vrChaperone() = m_pVRChaperone ?: IVRChaperone(vrGetGenericInterface(IVRChaperone_Version, error))
-    fun vrChaperoneSetup() = m_pVRChaperoneSetup ?: IVRChaperoneSetup(vrGetGenericInterface(IVRChaperoneSetup_Version, error))
-    fun vrCompositor() = m_pVRCompositor ?: IVRCompositor(vrGetGenericInterface(IVRCompositor_Version, error))
-    fun vrOverlay() = m_pVROverlay ?: IVROverlay(vrGetGenericInterface(IVROverlay_Version, error))
-    fun vrResources() = m_pVRResources ?: IVRResources(vrGetGenericInterface(IVRResources_Version, error))
-    fun vrRenderModels() = m_pVRRenderModels ?: IVRRenderModels(vrGetGenericInterface(IVRRenderModels_Version, error))
-    fun vrExtendedDisplay() = m_pVRExtendedDisplay ?: IVRExtendedDisplay(vrGetGenericInterface(IVRExtendedDisplay_Version, error))
-    fun vrSettings() = m_pVRSettings ?: IVRSettings(vrGetGenericInterface(IVRSettings_Version, error))
-    fun vrApplications() = m_pVRApplications ?: IVRApplications(vrGetGenericInterface(IVRApplications_Version, error))
-    fun vrTrackedCamera() = m_pVRTrackedCamera ?: IVRTrackedCamera(vrGetGenericInterface(IVRTrackedCamera_Version, error))
-    fun vrScreenshots() = m_pVRScreenshots ?: IVRScreenshots(vrGetGenericInterface(IVRScreenshots_Version, error))
+    fun vrSystem() = m_pVRSystem ?: vrGetGenericInterface(IVRSystem_Version, error)?.let(::IVRSystem)
+    fun vrChaperone() = m_pVRChaperone ?: vrGetGenericInterface(IVRChaperone_Version, error)?.let(::IVRChaperone)
+    fun vrChaperoneSetup() = m_pVRChaperoneSetup ?: vrGetGenericInterface(IVRChaperoneSetup_Version, error)?.let(::IVRChaperoneSetup)
+    fun vrCompositor() = m_pVRCompositor ?: vrGetGenericInterface(IVRCompositor_Version, error)?.let(::IVRCompositor)
+    fun vrOverlay() = m_pVROverlay ?: vrGetGenericInterface(IVROverlay_Version, error)?.let(::IVROverlay)
+    fun vrResources() = m_pVRResources ?: vrGetGenericInterface(IVRResources_Version, error)?.let(::IVRResources)
+    fun vrRenderModels() = m_pVRRenderModels ?: vrGetGenericInterface(IVRRenderModels_Version, error)?.let(::IVRRenderModels)
+    fun vrExtendedDisplay() = m_pVRExtendedDisplay ?: vrGetGenericInterface(IVRExtendedDisplay_Version, error)?.let(::IVRExtendedDisplay)
+    fun vrSettings() = m_pVRSettings ?: vrGetGenericInterface(IVRSettings_Version, error)?.let(::IVRSettings)
+    fun vrApplications() = m_pVRApplications ?: vrGetGenericInterface(IVRApplications_Version, error)?.let(::IVRApplications)
+    fun vrTrackedCamera() = m_pVRTrackedCamera ?: vrGetGenericInterface(IVRTrackedCamera_Version, error)?.let(::IVRTrackedCamera)
+    fun vrScreenshots() = m_pVRScreenshots ?: vrGetGenericInterface(IVRScreenshots_Version, error)?.let(::IVRScreenshots)
 }
 
 fun vrSystem() = COpenVRContext.vrSystem()
