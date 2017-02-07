@@ -1509,7 +1509,7 @@ open class VREvent_t : Structure {
             eventType_internal = value.i
         }
         get() = EVREventType.of(eventType_internal)
-    @JvmField var TrackedDeviceIndex_t = 0
+    @JvmField var trackedDeviceIndex = 0
     @JvmField var eventAgeSeconds = 0f
     // event data must be the end of the struct as its size is variable
     @JvmField var data: VREvent_Data_t? = null
@@ -1520,7 +1520,7 @@ open class VREvent_t : Structure {
 
     constructor(eventType: Int, trackedDeviceIndex: Int, eventAgeSeconds: Float, data: VREvent_Data_t) {
         this.eventType_internal = eventType
-        this.TrackedDeviceIndex_t = trackedDeviceIndex
+        this.trackedDeviceIndex = trackedDeviceIndex
         this.eventAgeSeconds = eventAgeSeconds
         this.data = data
     }
