@@ -1355,7 +1355,7 @@ open class VREvent_Screenshot_t : Structure {
         read()
     }
 
-    override fun getFieldOrder(): List<String> = listOf("handle", "value")
+    override fun getFieldOrder(): List<String> = listOf("handle", "type")
 
     class ByReference : VREvent_Screenshot_t(), Structure.ByReference
     class ByValue : VREvent_Screenshot_t(), Structure.ByValue
@@ -1526,7 +1526,7 @@ open class VREvent_t : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("eventType", "trackedDeviceIndex", "eventAgeSeconds", "data")
+    override fun getFieldOrder(): List<String> = listOf("eventType_internal", "trackedDeviceIndex", "eventAgeSeconds", "data")
 
     constructor(eventType: Int, trackedDeviceIndex: Int, eventAgeSeconds: Float, data: VREvent_Data_t) {
         this.eventType_internal = eventType
@@ -1545,10 +1545,6 @@ open class VREvent_t : Structure {
     class ByReference : VREvent_t(), Structure.ByReference
 
     class ByValue : VREvent_t(), Structure.ByValue
-}
-
-fun main(args: Array<String>) {
-    println(VREvent_t().size())
 }
 
 /** The mesh to draw into the stencil (or depth) buffer to perform early stencil (or depth) kills of pixels that will never appear on the HMD.
