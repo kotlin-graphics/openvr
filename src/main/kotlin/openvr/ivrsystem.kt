@@ -335,7 +335,7 @@ open class IVRSystem : Structure {
     /** Wrapper: returns a string property. If the device index is not valid or the property is not a string value this function will
      *  return an empty String. */
     @JvmOverloads fun getStringTrackedDeviceProperty(unDeviceIndex: TrackedDeviceIndex_t, prop: ETrackedDeviceProperty,
-                                                     pError: ETrackedPropertyError_ByReference? = null): String? {
+                                                     pError: ETrackedPropertyError_ByReference? = null): String {
 
         val err = ETrackedPropertyError_ByReference(ETrackedPropertyError.Success)
         var ret = ""
@@ -344,7 +344,7 @@ open class IVRSystem : Structure {
         val propLen = GetStringTrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, bytes, bytes.size, err)
 
         if(err.value == ETrackedPropertyError.Success)
-            ret = String(bytes).dropLast(1)
+            ret = String(bytes).trimEnd()
         else if(err.value == ETrackedPropertyError.BufferTooSmall) {
             val newBytes = ByteArray(propLen)
             GetStringTrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, newBytes, propLen, err)
