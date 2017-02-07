@@ -1630,11 +1630,11 @@ open class VRControllerState_t : Structure {
     @JvmField var unPacketNum = 0
 
     // bit flags for each of the buttons. Use ButtonMaskFromId to turn an ID into a mask
-    internal @JvmField var ulButtonPressed_internal = 0L
-    internal @JvmField var ulButtonTouched_internal = 0L
+    @JvmField var ulButtonPressed = 0L
+    @JvmField var ulButtonTouched = 0L
 
     // Axis data for the controller's analog inputs
-    @JvmField var rAxis = arrayOf(VRControllerAxis_t(), VRControllerAxis_t(), VRControllerAxis_t(), VRControllerAxis_t(), VRControllerAxis_t())
+    @JvmField var rAxis = Array(k_unControllerStateAxisCount, { VRControllerAxis_t() })
 
     constructor()
 
@@ -1642,8 +1642,8 @@ open class VRControllerState_t : Structure {
 
     constructor(unPacketNum: Int, ulButtonPressed: Long, ulButtonTouched: Long, rAxis: Array<VRControllerAxis_t>) {
         this.unPacketNum = unPacketNum
-        this.ulButtonPressed_internal = ulButtonPressed
-        this.ulButtonTouched_internal = ulButtonTouched
+        this.ulButtonPressed = ulButtonPressed
+        this.ulButtonTouched = ulButtonTouched
         if (rAxis.size != this.rAxis.size) throw IllegalArgumentException("Wrong array size !")
         this.rAxis = rAxis
     }
