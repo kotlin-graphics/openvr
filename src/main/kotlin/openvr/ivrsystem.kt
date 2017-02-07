@@ -332,16 +332,36 @@ open class IVRSystem : Structure {
         fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pError: ETrackedPropertyError_ByReference?): HmdMatrix34_t.ByValue
     }
 
-    /** Returns a string property. If the device index is not valid or the property is not a string value this function will return 0.
-     *  Otherwise it returns the length of the number of bytes necessary to hold this string including the trailing null.
-     *  Strings will always fit in buffers of k_unMaxPropertyStringSize characters. */
+    /** Wrapper: returns a string property. If the device index is not valid or the property is not a string value this function will
+     *  return an empty String. */
     @JvmOverloads fun getStringTrackedDeviceProperty(unDeviceIndex: TrackedDeviceIndex_t, prop: ETrackedDeviceProperty,
-                                                     pchValue: ByteArray?, unBufferSize: Int,
-                                                     pError: ETrackedPropertyError_ByReference? = null)
-            = GetStringTrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, pchValue, unBufferSize, pError)
+                                                     pError: ETrackedPropertyError_ByReference? = null): String? {
+
+        val err = ETrackedPropertyError_ByReference(ETrackedPropertyError.Success)
+        var ret = ""
+
+        val bytes = ByteArray(32)
+        val propLen = GetStringTrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, bytes, bytes.size, err)
+
+        if(err.value == ETrackedPropertyError.Success)
+            ret = String(bytes).dropLast(1)
+        else if(err.value == ETrackedPropertyError.BufferTooSmall) {
+            val newBytes = ByteArray(propLen)
+            GetStringTrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, newBytes, propLen, err)
+            if(err.value == ETrackedPropertyError.Success)
+                ret = String(newBytes).drop(1)
+        }
+        pError?.let {
+            it.value = err.value
+        }
+        return ret
+    }
 
     internal @JvmField var GetStringTrackedDeviceProperty: GetStringTrackedDeviceProperty_callback? = null
 
+    /** Returns a string property. If the device index is not valid or the property is not a string value this function will return 0.
+     *  Otherwise it returns the length of the number of bytes necessary to hold this string including the trailing null.
+     *  Strings will always fit in buffers of k_unMaxPropertyStringSize characters. */
     interface GetStringTrackedDeviceProperty_callback : Callback {
         fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pchValue: ByteArray?, unBufferSize: Int,
                    pError: ETrackedPropertyError_ByReference?): Int
