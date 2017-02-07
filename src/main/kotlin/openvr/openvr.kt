@@ -1475,35 +1475,45 @@ open class VREvent_Property_t : Structure {
 }
 
 /** If you change this you must manually update openvr_interop.cs.py */
-open class VREvent_Data_t : Union() {
+open class VREvent_Data_t : Union {
 
+    @JvmField var controller = VREvent_Controller_t()
+    @JvmField var mouse = VREvent_Mouse_t()
+    @JvmField var scroll = VREvent_Scroll_t()
+    @JvmField var process = VREvent_Process_t()
+    @JvmField var notification = VREvent_Notification_t()
+    @JvmField var overlay = VREvent_Overlay_t()
+    @JvmField var status = VREvent_Status_t()
+    @JvmField var keyboard = VREvent_Keyboard_t()
+    @JvmField var ipd = VREvent_Ipd_t()
+    @JvmField var chaperone = VREvent_Chaperone_t()
+    @JvmField var performanceTest = VREvent_PerformanceTest_t()
+    @JvmField var touchPadMove = VREvent_TouchPadMove_t()
+    @JvmField var seatedZeroPoseReset = VREvent_SeatedZeroPoseReset_t()
+    @JvmField var screenshot = VREvent_Screenshot_t()
+    @JvmField var screenshotProgress = VREvent_ScreenshotProgress_t()
+    @JvmField var applicationLaunch = VREvent_ApplicationLaunch_t()
+    @JvmField var cameraSurface = VREvent_EditingCameraSurface_t()
+    @JvmField var messageOverlay = VREvent_MessageOverlay_t()
+    @JvmField var property = VREvent_Property_t()
+
+    constructor() : super()
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : VREvent_Data_t(), Structure.ByReference
     class ByValue : VREvent_Data_t(), Structure.ByValue
 
-    var controller = VREvent_Controller_t()
-    var mouse = VREvent_Mouse_t()
-    var scroll = VREvent_Scroll_t()
-    var process = VREvent_Process_t()
-    var notification = VREvent_Notification_t()
-    var overlay = VREvent_Overlay_t()
-    var status = VREvent_Status_t()
-    var keyboard = VREvent_Keyboard_t()
-    var ipd = VREvent_Ipd_t()
-    var chaperone = VREvent_Chaperone_t()
-    var performanceTest = VREvent_PerformanceTest_t()
-    var touchPadMove = VREvent_TouchPadMove_t()
-    var seatedZeroPoseReset = VREvent_SeatedZeroPoseReset_t()
-    var screenshot = VREvent_Screenshot_t()
-    var screenshotProgress = VREvent_ScreenshotProgress_t()
-    var applicationLaunch = VREvent_ApplicationLaunch_t()
-    var cameraSurface = VREvent_EditingCameraSurface_t()
-    var messageOverlay = VREvent_MessageOverlay_t()
-    var property = VREvent_Property_t()
+    override fun getFieldOrder(): List<String> = listOf("controller", "mouse", "scroll", "process", "notification", "overlay", "status",
+            "keyboard", "ipd", "chaperone", "performanceTest", "touchPadMove", "seatedZeroPoseReset", "screenshot", "screenshotProgress",
+            "applicationLaunch", "cameraSurface", "messageOverlay", "property")
 }
 
 /** An event posted by the server to all running applications */
 open class VREvent_t : Structure {
 
-    internal @JvmField var eventType_internal = 0   // openvr.EVREventType value
+    @JvmField var eventType_internal = 0   // openvr.EVREventType value
     var eventType
         set(value) {
             eventType_internal = value.i
@@ -1535,6 +1545,10 @@ open class VREvent_t : Structure {
     class ByReference : VREvent_t(), Structure.ByReference
 
     class ByValue : VREvent_t(), Structure.ByValue
+}
+
+fun main(args: Array<String>) {
+    println(VREvent_t().size())
 }
 
 /** The mesh to draw into the stencil (or depth) buffer to perform early stencil (or depth) kills of pixels that will never appear on the HMD.
