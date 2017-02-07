@@ -7,6 +7,7 @@ import com.sun.jna.ptr.IntByReference
 import com.sun.jna.ptr.PointerByReference
 import com.sun.jna.ptr.ShortByReference
 import main.BYTES
+import main.b
 import java.util.*
 
 // ivrrendermodels.h ==============================================================================================================================================
@@ -102,7 +103,7 @@ open class RenderModel_Vertex_t : Structure {
         this.vPosition = vPosition
         this.vNormal = vNormal
         // TODO check all size checks, necessary/dangerous?
-        if (rfTextureCoord.size != this.rfTextureCoord.size) throw IllegalArgumentException("Wrong array size !")
+        if (rfTextureCoord.size != this.rfTextureCoord.size) throw IllegalArgumentException("Wrong array size!")
         this.rfTextureCoord = rfTextureCoord
     }
 
@@ -130,21 +131,22 @@ open class RenderModel_TextureMap_t : Structure {
     @JvmField var unWidth = 0.toShort()
     @JvmField var unHeight = 0.toShort()
     // Map texture data. All textures are RGBA with 8 bits per channel per pixel. Data size is width * height * 4ub
-    @JvmField var rubTextureMapData: Pointer? = null
+    internal @JvmField var rubTextureMapData_internal: Pointer? = null
+    val textureMapData
+        get() = rubTextureMapData_internal?.getByteArray(0, SIZE)
 
-    fun SIZE() = unWidth * unHeight * 4 * Byte.BYTES
-
-    fun dataToBA() = rubTextureMapData!!.getByteArray(0, SIZE())
+    val SIZE
+        get() = unWidth * unHeight * 4 * Byte.BYTES
 
     constructor()
 
-    constructor(unWidth: Short, unHeight: Short, rubTextureMapData: Pointer) {
+    constructor(unWidth: Short, unHeight: Short, rubTextureMapData_internal: Pointer?) {
         this.unWidth = unWidth
         this.unHeight = unHeight
-        this.rubTextureMapData = rubTextureMapData
+        this.rubTextureMapData_internal = rubTextureMapData_internal
     }
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("unWidth", "unHeight", "rubTextureMapData")
+    override fun getFieldOrder(): List<String> = Arrays.asList("unWidth", "unHeight", "rubTextureMapData_internal")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -154,6 +156,7 @@ open class RenderModel_TextureMap_t : Structure {
         constructor() : super()
         constructor(peer: Pointer) : super(peer)
     }
+
     class ByValue : RenderModel_TextureMap_t(), Structure.ByValue
 }
 
@@ -167,28 +170,32 @@ val INVALID_TEXTURE_ID = -1
 /** A texture map for use on a render model */
 open class RenderModel_t : Structure {
 
-    @JvmField var rVertexData: RenderModel_Vertex_t.ByReference? = null//   Vertex data for the mesh
+    internal @JvmField var rVertexData_internal: RenderModel_Vertex_t.ByReference? = null//   Vertex data for the mesh
     @JvmField var unVertexCount = 0                                      // Number of vertices in the vertex data
-    @JvmField var rIndexData: ShortByReference? = null                   // Indices into the vertex data for each triangle
+    internal @JvmField var rIndexData_internal: ShortByReference? = null                   // Indices into the vertex data for each triangle
     @JvmField var unTriangleCount = 0                    //                 Number of triangles in the mesh. Index count is 3 * TriangleCount
     // Session unique texture identifier. Rendermodels which share the same texture will have the same id. <0 == texture not present
     @JvmField var diffuseTextureId = INVALID_TEXTURE_ID
 
-    fun vertexDataToFA() = rVertexData!!.pointer.getFloatArray(0, unVertexCount)
+    val vertices
+        get() = rVertexData_internal?.pointer?.getFloatArray(0, unVertexCount)
 
-    fun indexDataToSA() = rIndexData!!.pointer.getShortArray(0, unTriangleCount * 3)
+    val indices
+        get() = rIndexData_internal?.pointer?.getShortArray(0, unTriangleCount * 3)
 
     constructor()
 
-    constructor(rVertexData: RenderModel_Vertex_t.ByReference, unVertexCount: Int, rIndexData: ShortByReference, unTriangleCount: Int, diffuseTextureId: Int) {
-        this.rVertexData = rVertexData
+    constructor(rVertexData: RenderModel_Vertex_t.ByReference, unVertexCount: Int, rIndexData: ShortByReference, unTriangleCount: Int,
+                diffuseTextureId: Int) {
+        this.rVertexData_internal = rVertexData
         this.unVertexCount = unVertexCount
-        this.rIndexData = rIndexData
+        this.rIndexData_internal = rIndexData
         this.unTriangleCount = unTriangleCount
         this.diffuseTextureId = diffuseTextureId
     }
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("rVertexData", "unVertexCount", "rIndexData", "unTriangleCount", "diffuseTextureId")
+    override fun getFieldOrder(): List<String> = Arrays.asList("rVertexData_internal", "unVertexCount", "rIndexData_internal",
+            "unTriangleCount", "diffuseTextureId")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -198,21 +205,27 @@ open class RenderModel_t : Structure {
         constructor() : super()
         constructor(peer: Pointer) : super(peer)
     }
+
     class ByValue : RenderModel_t(), Structure.ByValue
 }
 
 /** A texture map for use on a render model */
 open class RenderModel_ControllerMode_State_t : Structure {
 
-    @JvmField var bScrollWheelVisible = false   // is this controller currently set to be in a scroll wheel mode
+    internal @JvmField var bScrollWheelVisible_internal = 0.b   // is this controller currently set to be in a scroll wheel mode
+    var bScrollWheelVisible
+    set(value) {
+        bScrollWheelVisible_internal = if(value) 1.b else 0.b
+    }
+    get() = bScrollWheelVisible_internal == 1.b
 
     constructor()
 
     constructor(bScrollWheelVisible: Boolean) {
-        this.bScrollWheelVisible = bScrollWheelVisible
+        this.bScrollWheelVisible_internal = if(bScrollWheelVisible) 1.b else 0.b
     }
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("bScrollWheelVisible")
+    override fun getFieldOrder(): List<String> = Arrays.asList("bScrollWheelVisible_internal")
 
     constructor(peer: Pointer) : super(peer) {
         read()

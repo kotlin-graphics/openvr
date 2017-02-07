@@ -701,7 +701,7 @@ fun Int.toEVRApplicationTransitionState() = EVRApplicationTransitionState.values
 
 open class AppOverrideKeys_t : Structure {
 
-    @JvmField var pchKey = ""
+    @JvmField var pchKey = "" // TODO check
     @JvmField var pchValue = ""
 
     constructor()

@@ -119,20 +119,22 @@ open class VROverlayIntersectionParams_t : Structure {
 
     @JvmField var vSource = HmdVector3_t()
     @JvmField var vDirection = HmdVector3_t()
-    @JvmField var eOrigin = ETrackingUniverseOrigin.Seated.i
-    fun eOrigin() = ETrackingUniverseOrigin.of(eOrigin)
+    internal @JvmField var eOrigin_internal = 0
+    var eOrigin
+        set(value) {
+            eOrigin_internal = value.i
+        }
+        get() = ETrackingUniverseOrigin.of(eOrigin_internal)
 
     constructor()
 
-    constructor(vSource: HmdVector3_t, vDirection: HmdVector3_t, eOrigin: Int) {
+    constructor(vSource: HmdVector3_t, vDirection: HmdVector3_t, eOrigin: ETrackingUniverseOrigin) {
         this.vSource = vSource
         this.vDirection = vDirection
-        this.eOrigin = eOrigin
+        this.eOrigin_internal = eOrigin.i
     }
 
-    constructor(vSource: HmdVector3_t, vDirection: HmdVector3_t, eOrigin: ETrackingUniverseOrigin) : this(vSource, vDirection, eOrigin.i)
-
-    override fun getFieldOrder(): List<String> = Arrays.asList("vPoint", "vNormal", "eOrigin")
+    override fun getFieldOrder(): List<String> = Arrays.asList("vPoint", "vNormal", "eOrigin_internal")
 
     constructor(peer: Pointer) : super(peer) {
         read()

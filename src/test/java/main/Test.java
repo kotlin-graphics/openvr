@@ -25,5 +25,7 @@ public class Test {
         System.out.println("resolution: "+w.getValue()+" x "+h.getValue());
 
         IVRCompositor compositor = new IVRCompositor(vr.VR_GetGenericInterface(getIVRCompositor_Version(), error));
+
+        TrackedDevicePose_t a = new TrackedDevicePose_t();
     }
 }
