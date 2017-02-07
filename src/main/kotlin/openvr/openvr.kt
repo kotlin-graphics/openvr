@@ -11,6 +11,7 @@ import com.sun.jna.ptr.IntByReference
 import com.sun.jna.ptr.LongByReference
 import com.sun.jna.ptr.PointerByReference
 import main.BYTES
+import main.b
 import java.nio.ByteBuffer
 
 /**
@@ -471,11 +472,9 @@ open class TrackedDevicePose_t : Structure {
     @JvmField var vAngularVelocity = HmdVector3_t()   // angular velocity in radians/s (?)
     @JvmField var eTrackingResult = 0
     fun eTrackingResult() = ETrackingResult.of(eTrackingResult)
-    @JvmField var bPoseIsValid = false
-    /**
-     * This indicates that there is a device connected for this spot in the pose array.
-     * It could go from true to false if the user unplugs the device.
-     */
+    @JvmField var bPoseIsValid = 0.b
+    /** This indicates that there is a device connected for this spot in the pose array.
+     * It could go from true to false if the user unplugs the device.     */
     @JvmField var bDeviceIsConnected = false
 
     constructor()
@@ -489,7 +488,7 @@ open class TrackedDevicePose_t : Structure {
         this.vVelocity = vVelocity
         this.vAngularVelocity = vAngularVelocity
         this.eTrackingResult = eTrackingResult
-        this.bPoseIsValid = bPoseIsValid
+        this.bPoseIsValid = if(bPoseIsValid) 1.b else 0.b
         this.bDeviceIsConnected = bDeviceIsConnected
     }
 
