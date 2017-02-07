@@ -7,7 +7,9 @@ import com.sun.jna.Structure
 import com.sun.jna.ptr.FloatByReference
 import com.sun.jna.ptr.IntByReference
 import com.sun.jna.ptr.LongByReference
+import main.i
 import java.util.*
+import javax.xml.stream.events.Characters
 
 // ivrsystem.h ====================================================================================================================================================
 
@@ -344,7 +346,7 @@ open class IVRSystem : Structure {
         val propLen = GetStringTrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, bytes, bytes.size, err)
 
         if(err.value == ETrackedPropertyError.Success)
-            ret = String(bytes).filter(Char::isLetterOrDigit)
+            ret = String(bytes).filter{it.isLetterOrDigit() || it == '_' }
         else if(err.value == ETrackedPropertyError.BufferTooSmall) {
             val newBytes = ByteArray(propLen)
             GetStringTrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, newBytes, propLen, err)
