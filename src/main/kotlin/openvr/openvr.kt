@@ -397,17 +397,13 @@ open class Texture_t : Structure {
         this.eColorSpace_internal = eColorSpace.i
     }
 
-    fun put(handle: Int, eType: ETextureType, eColorSpace: EColorSpace) {
-        this.handle = handle
-        this.eType_internal = eType.i
-        this.eColorSpace_internal = eColorSpace.i
-    }
-
     constructor(peer: Pointer) : super(peer) {
         read()
     }
 
-    class ByReference : Texture_t(), Structure.ByReference
+    class ByReference(handle: Int, eType: ETextureType, eColorSpace: EColorSpace) :
+            Texture_t(handle, eType, eColorSpace), Structure.ByReference
+
     class ByValue : Texture_t(), Structure.ByValue
 }
 
