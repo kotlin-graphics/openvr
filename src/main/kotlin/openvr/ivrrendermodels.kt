@@ -178,10 +178,10 @@ open class RenderModel_t : Structure {
     @JvmField var diffuseTextureId = INVALID_TEXTURE_ID
 
     val vertices
-        get() = rVertexData_internal?.pointer?.getFloatArray(0, unVertexCount)
+        get() = rVertexData_internal?.pointer?.getByteArray(0, unVertexCount * RenderModel_Vertex_t.SIZE)
 
     val indices
-        get() = rIndexData_internal?.pointer?.getShortArray(0, unTriangleCount * 3)
+        get() = rIndexData_internal?.pointer?.getByteArray(0, unTriangleCount * 3 * Short.BYTES)
 
     constructor()
 
