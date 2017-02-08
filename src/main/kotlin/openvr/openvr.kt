@@ -401,8 +401,17 @@ open class Texture_t : Structure {
         read()
     }
 
-    class ByReference(handle: Int, eType: ETextureType, eColorSpace: EColorSpace) :
-            Texture_t(handle, eType, eColorSpace), Structure.ByReference
+    class ByReference : Texture_t, Structure.ByReference {
+
+        constructor() : super()
+        constructor(handle: Int, eType: ETextureType, eColorSpace: EColorSpace) : super(handle, eType, eColorSpace)
+
+        fun put(handle: Int, eType: ETextureType, eColorSpace: EColorSpace) {
+            this.handle = handle
+            this.eType_internal = eType.i
+            this.eColorSpace_internal = eColorSpace.i
+        }
+    }
 
     class ByValue : Texture_t(), Structure.ByValue
 }
