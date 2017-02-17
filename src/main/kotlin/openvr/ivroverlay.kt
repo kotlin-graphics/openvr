@@ -119,7 +119,7 @@ open class VROverlayIntersectionParams_t : Structure {
 
     @JvmField var vSource = HmdVector3_t()
     @JvmField var vDirection = HmdVector3_t()
-    internal @JvmField var eOrigin_internal = 0
+    @JvmField var eOrigin_internal = 0
     var eOrigin
         set(value) {
             eOrigin_internal = value.i
@@ -311,7 +311,7 @@ open class IVROverlay : Structure {
     /** Finds an existing overlay with the specified key. */
     fun findOverlay(pchOverlayKey: String, pOverlayHandle: VROverlayHandle_t_ByReference) = EVROverlayError.of(FindOverlay!!.invoke(pchOverlayKey, pOverlayHandle))
 
-    internal @JvmField var FindOverlay: IVROverlay.FindOverlay_callback? = null
+    @JvmField var FindOverlay: IVROverlay.FindOverlay_callback? = null
 
     interface FindOverlay_callback : Callback {
         fun invoke(pchOverlayKey: String, pOverlayHandle: VROverlayHandle_t_ByReference): Int
@@ -321,7 +321,7 @@ open class IVROverlay : Structure {
     fun createOverlay(pchOverlayKey: String, pchOverlayFriendlyName: String, pOverlayHandle: VROverlayHandle_t_ByReference)
             = EVROverlayError.of(CreateOverlay!!.invoke(pchOverlayKey, pchOverlayFriendlyName, pOverlayHandle))
 
-    internal @JvmField var CreateOverlay: IVROverlay.CreateOverlay_callback? = null
+    @JvmField var CreateOverlay: IVROverlay.CreateOverlay_callback? = null
 
     interface CreateOverlay_callback : Callback {
         fun invoke(pchOverlayKey: String, pchOverlayFriendlyName: String, pOverlayHandle: VROverlayHandle_t_ByReference): Int
@@ -330,7 +330,7 @@ open class IVROverlay : Structure {
     /** Destroys the specified overlay. When an application calls VR_Shutdown all overlays created by that app are automatically destroyed. */
     fun destroyOverlay(ulOverlayHandle: VROverlayHandle_t) = EVROverlayError.of(DestroyOverlay!!.invoke(ulOverlayHandle))
 
-    internal @JvmField var DestroyOverlay: IVROverlay.DestroyOverlay_callback? = null
+    @JvmField var DestroyOverlay: IVROverlay.DestroyOverlay_callback? = null
 
     interface DestroyOverlay_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t): Int
@@ -343,7 +343,7 @@ open class IVROverlay : Structure {
      *  This mode does not support mouse input to your overlay. */
     fun setHighQualityOverlay(ulOverlayHandle: VROverlayHandle_t) = EVROverlayError.of(SetHighQualityOverlay!!.invoke(ulOverlayHandle))
 
-    internal @JvmField var SetHighQualityOverlay: IVROverlay.SetHighQualityOverlay_callback? = null
+    @JvmField var SetHighQualityOverlay: IVROverlay.SetHighQualityOverlay_callback? = null
 
     interface SetHighQualityOverlay_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t): Int
@@ -353,7 +353,7 @@ open class IVROverlay : Structure {
      *  Otherwise it will return openvr.k_ulOverlayHandleInvalid. */
     fun getHighQualityOverlay() = GetHighQualityOverlay!!.invoke()
 
-    internal @JvmField var GetHighQualityOverlay: IVROverlay.GetHighQualityOverlay_callback? = null
+    @JvmField var GetHighQualityOverlay: IVROverlay.GetHighQualityOverlay_callback? = null
 
     interface GetHighQualityOverlay_callback : Callback {
         fun invoke(): VROverlayHandle_t
@@ -365,7 +365,7 @@ open class IVROverlay : Structure {
                       pError: EVROverlayError_ByReference? = null)
             = GetOverlayKey!!.invoke(ulOverlayHandle, pchValue, unBufferSize, pError)
 
-    internal @JvmField var GetOverlayKey: IVROverlay.GetOverlayKey_callback? = null
+    @JvmField var GetOverlayKey: IVROverlay.GetOverlayKey_callback? = null
 
     interface GetOverlayKey_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pchValue: String, unBufferSize: Int, pError: EVROverlayError_ByReference? = null): Int
@@ -377,7 +377,7 @@ open class IVROverlay : Structure {
     fun getOverlayName(ulOverlayHandle: VROverlayHandle_t, pchValue: String, unBufferSize: Int, pError: EVROverlayError_ByReference? = null)
             = GetOverlayName!!.invoke(ulOverlayHandle, pchValue, unBufferSize, pError)
 
-    internal @JvmField var GetOverlayName: IVROverlay.GetOverlayName_callback? = null
+    @JvmField var GetOverlayName: IVROverlay.GetOverlayName_callback? = null
 
     interface GetOverlayName_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pchValue: String, unBufferSize: Int, pError: EVROverlayError_ByReference? = null): Int
@@ -388,7 +388,7 @@ open class IVROverlay : Structure {
     fun getOverlayImageData(ulOverlayHandle: VROverlayHandle_t, pvBuffer: Pointer, unBufferSize: Int, punWidth: IntByReference, punHeight: IntByReference)
             = EVROverlayError.of(GetOverlayImageData!!.invoke(ulOverlayHandle, pvBuffer, unBufferSize, punWidth, punHeight))
 
-    internal @JvmField var GetOverlayImageData: IVROverlay.GetOverlayImageData_callback? = null
+    @JvmField var GetOverlayImageData: IVROverlay.GetOverlayImageData_callback? = null
 
     interface GetOverlayImageData_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pvBuffer: Pointer, unBufferSize: Int, punWidth: IntByReference, punHeight: IntByReference): Int
@@ -397,7 +397,7 @@ open class IVROverlay : Structure {
     /** returns a string that corresponds with the specified overlay error. The string will be the name of the error value value for all valid error codes */
     fun getOverlayErrorNameFromEnum(error: EVROverlayError) = GetOverlayErrorNameFromEnum!!.invoke(error.i)
 
-    internal @JvmField var GetOverlayErrorNameFromEnum: IVROverlay.GetOverlayErrorNameFromEnum_callback? = null
+    @JvmField var GetOverlayErrorNameFromEnum: IVROverlay.GetOverlayErrorNameFromEnum_callback? = null
 
     interface GetOverlayErrorNameFromEnum_callback : Callback {
         fun invoke(error: Int): String
@@ -412,7 +412,7 @@ open class IVROverlay : Structure {
      *  the overlay */
     fun setOverlayRenderingPid(ulOverlayHandle: VROverlayHandle_t, unPID: Int) = EVROverlayError.of(SetOverlayRenderingPid!!.invoke(ulOverlayHandle, unPID))
 
-    internal @JvmField var SetOverlayRenderingPid: IVROverlay.SetOverlayRenderingPid_callback? = null
+    @JvmField var SetOverlayRenderingPid: IVROverlay.SetOverlayRenderingPid_callback? = null
 
     interface SetOverlayRenderingPid_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, unPID: Int): Int
@@ -421,7 +421,7 @@ open class IVROverlay : Structure {
     /** Gets the pid that is allowed to render to this overlay */
     fun getOverlayRenderingPid(ulOverlayHandle: VROverlayHandle_t) = GetOverlayRenderingPid!!.invoke(ulOverlayHandle)
 
-    internal @JvmField var GetOverlayRenderingPid: IVROverlay.GetOverlayRenderingPid_callback? = null
+    @JvmField var GetOverlayRenderingPid: IVROverlay.GetOverlayRenderingPid_callback? = null
 
     interface GetOverlayRenderingPid_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t): Int
@@ -431,7 +431,7 @@ open class IVROverlay : Structure {
     fun setOverlayFlag(ulOverlayHandle: VROverlayHandle_t, eOverlayFlag: VROverlayFlags, bEnabled: Boolean)
             = EVROverlayError.of(SetOverlayFlag!!.invoke(ulOverlayHandle, eOverlayFlag.i, bEnabled))
 
-    internal @JvmField var SetOverlayFlag: IVROverlay.SetOverlayFlag_callback? = null
+    @JvmField var SetOverlayFlag: IVROverlay.SetOverlayFlag_callback? = null
 
     interface SetOverlayFlag_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, eOverlayFlag: Int, bEnabled: Boolean): Int
@@ -441,7 +441,7 @@ open class IVROverlay : Structure {
     fun getOverlayFlag(ulOverlayHandle: VROverlayHandle_t, eOverlayFlag: VROverlayFlags, pbEnabled: BooleanByReference)
             = EVROverlayError.of(GetOverlayFlag!!.invoke(ulOverlayHandle, eOverlayFlag.i, pbEnabled))
 
-    internal @JvmField var GetOverlayFlag: IVROverlay.GetOverlayFlag_callback? = null
+    @JvmField var GetOverlayFlag: IVROverlay.GetOverlayFlag_callback? = null
 
     interface GetOverlayFlag_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, eOverlayFlag: Int, pbEnabled: ByteByReference): Int
@@ -451,7 +451,7 @@ open class IVROverlay : Structure {
     fun setOverlayColor(ulOverlayHandle: VROverlayHandle_t, fRed: Float, fGreen: Float, fBlue: Float)
             = EVROverlayError.of(SetOverlayColor!!.invoke(ulOverlayHandle, fRed, fGreen, fBlue))
 
-    internal @JvmField var SetOverlayColor: IVROverlay.SetOverlayColor_callback? = null
+    @JvmField var SetOverlayColor: IVROverlay.SetOverlayColor_callback? = null
 
     interface SetOverlayColor_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, fRed: Float, fGreen: Float, fBlue: Float): Int
@@ -461,7 +461,7 @@ open class IVROverlay : Structure {
     fun getOverlayColor(ulOverlayHandle: VROverlayHandle_t, pfRed: FloatByReference, pfGreen: FloatByReference, pfBlue: FloatByReference)
             = EVROverlayError.of(GetOverlayColor!!.invoke(ulOverlayHandle, pfRed, pfGreen, pfBlue))
 
-    internal @JvmField var GetOverlayColor: IVROverlay.GetOverlayColor_callback? = null
+    @JvmField var GetOverlayColor: IVROverlay.GetOverlayColor_callback? = null
 
     interface GetOverlayColor_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pfRed: FloatByReference, pfGreen: FloatByReference, pfBlue: FloatByReference): Int
@@ -470,7 +470,7 @@ open class IVROverlay : Structure {
     /** Sets the alpha of the overlay quad. Use 1.0 for 100 percent opacity to 0.0 for 0 percent opacity. */
     fun setOverlayAlpha(ulOverlayHandle: VROverlayHandle_t, fAlpha: Float) = EVROverlayError.of(SetOverlayAlpha!!.invoke(ulOverlayHandle, fAlpha))
 
-    internal @JvmField var SetOverlayAlpha: IVROverlay.SetOverlayAlpha_callback? = null
+    @JvmField var SetOverlayAlpha: IVROverlay.SetOverlayAlpha_callback? = null
 
     interface SetOverlayAlpha_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, fAlpha: Float): Int
@@ -479,7 +479,7 @@ open class IVROverlay : Structure {
     /** Gets the alpha of the overlay quad. By default overlays are rendering at 100 percent alpha (1.0). */
     fun getOverlayAlpha(ulOverlayHandle: VROverlayHandle_t, pfAlpha: FloatByReference) = EVROverlayError.of(GetOverlayAlpha!!.invoke(ulOverlayHandle, pfAlpha))
 
-    internal @JvmField var GetOverlayAlpha: IVROverlay.GetOverlayAlpha_callback? = null
+    @JvmField var GetOverlayAlpha: IVROverlay.GetOverlayAlpha_callback? = null
 
     interface GetOverlayAlpha_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pfAlpha: FloatByReference): Int
@@ -490,7 +490,7 @@ open class IVROverlay : Structure {
     fun setOverlayTexelAspect(ulOverlayHandle: VROverlayHandle_t, fTexelAspect: Float)
             = EVROverlayError.of(SetOverlayTexelAspect!!.invoke(ulOverlayHandle, fTexelAspect))
 
-    internal @JvmField var SetOverlayTexelAspect: SetOverlayTexelAspect_callback? = null
+    @JvmField var SetOverlayTexelAspect: SetOverlayTexelAspect_callback? = null
 
     interface SetOverlayTexelAspect_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, fTexelAspect: Float): Int
@@ -500,7 +500,7 @@ open class IVROverlay : Structure {
     fun getOverlayTexelAspect(ulOverlayHandle: VROverlayHandle_t, pfTexelAspect: FloatByReference)
             = EVROverlayError.of(GetOverlayTexelAspect!!.invoke(ulOverlayHandle, pfTexelAspect))
 
-    internal @JvmField var GetOverlayTexelAspect: GetOverlayTexelAspect_callback? = null
+    @JvmField var GetOverlayTexelAspect: GetOverlayTexelAspect_callback? = null
 
     interface GetOverlayTexelAspect_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pfTexelAspect: FloatByReference): Int
@@ -516,7 +516,7 @@ open class IVROverlay : Structure {
      *	Sort order defaults to 0. */
     fun setOverlaySortOrder(ulOverlayHandle: VROverlayHandle_t, unSortOrder: Int) = EVROverlayError.of(SetOverlaySortOrder!!.invoke(ulOverlayHandle, unSortOrder))
 
-    internal @JvmField var SetOverlaySortOrder: SetOverlaySortOrder_callback? = null
+    @JvmField var SetOverlaySortOrder: SetOverlaySortOrder_callback? = null
 
     interface SetOverlaySortOrder_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, unSortOrder: Int): Int
@@ -526,7 +526,7 @@ open class IVROverlay : Structure {
     fun getOverlaySortOrder(ulOverlayHandle: VROverlayHandle_t, punSortOrder: IntByReference)
             = EVROverlayError.of(GetOverlaySortOrder!!.invoke(ulOverlayHandle, punSortOrder))
 
-    internal @JvmField var GetOverlaySortOrder: GetOverlaySortOrder_callback? = null
+    @JvmField var GetOverlaySortOrder: GetOverlaySortOrder_callback? = null
 
     interface GetOverlaySortOrder_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, punSortOrder: IntByReference): Int
@@ -536,7 +536,7 @@ open class IVROverlay : Structure {
     fun setOverlayWidthInMeters(ulOverlayHandle: VROverlayHandle_t, fWidthInMeters: Float)
             = EVROverlayError.of(SetOverlayWidthInMeters!!.invoke(ulOverlayHandle, fWidthInMeters))
 
-    internal @JvmField var SetOverlayWidthInMeters: SetOverlayWidthInMeters_callback? = null
+    @JvmField var SetOverlayWidthInMeters: SetOverlayWidthInMeters_callback? = null
 
     interface SetOverlayWidthInMeters_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, fWidthInMeters: Float): Int
@@ -546,7 +546,7 @@ open class IVROverlay : Structure {
     fun getOverlayWidthInMeters(ulOverlayHandle: VROverlayHandle_t, pfWidthInMeters: FloatByReference)
             = EVROverlayError.of(GetOverlayWidthInMeters!!.invoke(ulOverlayHandle, pfWidthInMeters))
 
-    internal @JvmField var GetOverlayWidthInMeters: GetOverlayWidthInMeters_callback? = null
+    @JvmField var GetOverlayWidthInMeters: GetOverlayWidthInMeters_callback? = null
 
     interface GetOverlayWidthInMeters_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pfWidthInMeters: FloatByReference): Int
@@ -557,7 +557,7 @@ open class IVROverlay : Structure {
     fun setOverlayAutoCurveDistanceRangeInMeters(ulOverlayHandle: VROverlayHandle_t, fMinDistanceInMeters: Float, fMaxDistanceInMeters: Float)
             = EVROverlayError.of(SetOverlayAutoCurveDistanceRangeInMeters!!.invoke(ulOverlayHandle, fMinDistanceInMeters, fMaxDistanceInMeters))
 
-    internal @JvmField var SetOverlayAutoCurveDistanceRangeInMeters: SetOverlayAutoCurveDistanceRangeInMeters_callback? = null
+    @JvmField var SetOverlayAutoCurveDistanceRangeInMeters: SetOverlayAutoCurveDistanceRangeInMeters_callback? = null
 
     interface SetOverlayAutoCurveDistanceRangeInMeters_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, fMinDistanceInMeters: Float, fMaxDistanceInMeters: Float): Int
@@ -569,7 +569,7 @@ open class IVROverlay : Structure {
                                                  pfMaxDistanceInMeters: FloatByReference)
             = EVROverlayError.of(GetOverlayAutoCurveDistanceRangeInMeters!!.invoke(ulOverlayHandle, pfMinDistanceInMeters, pfMaxDistanceInMeters))
 
-    internal @JvmField var GetOverlayAutoCurveDistanceRangeInMeters: GetOverlayAutoCurveDistanceRangeInMeters_callback? = null
+    @JvmField var GetOverlayAutoCurveDistanceRangeInMeters: GetOverlayAutoCurveDistanceRangeInMeters_callback? = null
 
     interface GetOverlayAutoCurveDistanceRangeInMeters_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pfMinDistanceInMeters: FloatByReference, pfMaxDistanceInMeters: FloatByReference): Int
@@ -580,7 +580,7 @@ open class IVROverlay : Structure {
     fun setOverlayTextureColorSpace(ulOverlayHandle: VROverlayHandle_t, eTextureColorSpace: EColorSpace)
             = EVROverlayError.of(SetOverlayTextureColorSpace!!.invoke(ulOverlayHandle, eTextureColorSpace.i))
 
-    internal @JvmField var SetOverlayTextureColorSpace: SetOverlayTextureColorSpace_callback? = null
+    @JvmField var SetOverlayTextureColorSpace: SetOverlayTextureColorSpace_callback? = null
 
     interface SetOverlayTextureColorSpace_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, eTextureColorSpace: Int): Int
@@ -590,7 +590,7 @@ open class IVROverlay : Structure {
     fun getOverlayTextureColorSpace(ulOverlayHandle: VROverlayHandle_t, peTextureColorSpace: EColorSpace_ByReference)
             = EVROverlayError.of(GetOverlayTextureColorSpace!!.invoke(ulOverlayHandle, peTextureColorSpace))
 
-    internal @JvmField var GetOverlayTextureColorSpace: GetOverlayTextureColorSpace_callback? = null
+    @JvmField var GetOverlayTextureColorSpace: GetOverlayTextureColorSpace_callback? = null
 
     interface GetOverlayTextureColorSpace_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, peTextureColorSpace: EColorSpace_ByReference): Int
@@ -600,7 +600,7 @@ open class IVROverlay : Structure {
     fun setOverlayTextureBounds(ulOverlayHandle: VROverlayHandle_t, pOverlayTextureBounds: VRTextureBounds_t.ByReference)
             = EVROverlayError.of(SetOverlayTextureBounds!!.invoke(ulOverlayHandle, pOverlayTextureBounds))
 
-    internal @JvmField var SetOverlayTextureBounds: SetOverlayTextureBounds_callback? = null
+    @JvmField var SetOverlayTextureBounds: SetOverlayTextureBounds_callback? = null
 
     interface SetOverlayTextureBounds_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pOverlayTextureBounds: VRTextureBounds_t.ByReference): Int
@@ -610,7 +610,7 @@ open class IVROverlay : Structure {
     fun getOverlayTextureBounds(ulOverlayHandle: VROverlayHandle_t, pOverlayTextureBounds: VRTextureBounds_t.ByReference)
             = EVROverlayError.of(GetOverlayTextureBounds!!.invoke(ulOverlayHandle, pOverlayTextureBounds))
 
-    internal @JvmField var GetOverlayTextureBounds: GetOverlayTextureBounds_callback? = null
+    @JvmField var GetOverlayTextureBounds: GetOverlayTextureBounds_callback? = null
 
     interface GetOverlayTextureBounds_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pOverlayTextureBounds: VRTextureBounds_t.ByReference): Int
@@ -620,7 +620,7 @@ open class IVROverlay : Structure {
     fun getOverlayTransformType(ulOverlayHandle: VROverlayHandle_t, peTransformType: VROverlayTransformType_ByReference)
             = EVROverlayError.of(GetOverlayTransformType!!.invoke(ulOverlayHandle, peTransformType))
 
-    internal @JvmField var GetOverlayTransformType: GetOverlayTransformType_callback? = null
+    @JvmField var GetOverlayTransformType: GetOverlayTransformType_callback? = null
 
     interface GetOverlayTransformType_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, peTransformType: VROverlayTransformType_ByReference): Int
@@ -631,7 +631,7 @@ open class IVROverlay : Structure {
                                     pmatTrackingOriginToOverlayTransform: HmdMatrix34_t.ByReference)
             = EVROverlayError.of(SetOverlayTransformAbsolute!!.invoke(ulOverlayHandle, eTrackingOrigin.i, pmatTrackingOriginToOverlayTransform))
 
-    internal @JvmField var SetOverlayTransformAbsolute: SetOverlayTransformAbsolute_calback? = null
+    @JvmField var SetOverlayTransformAbsolute: SetOverlayTransformAbsolute_calback? = null
 
     interface SetOverlayTransformAbsolute_calback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, eTrackingOrigin: Int, pmatTrackingOriginToOverlayTransform: HmdMatrix34_t.ByReference): Int
@@ -642,7 +642,7 @@ open class IVROverlay : Structure {
                                     pmatTrackingOriginToOverlayTransform: HmdMatrix34_t.ByReference)
             = EVROverlayError.of(GetOverlayTransformAbsolute!!.invoke(ulOverlayHandle, peTrackingOrigin, pmatTrackingOriginToOverlayTransform))
 
-    internal @JvmField var GetOverlayTransformAbsolute: GetOverlayTransformAbsolute_callback? = null
+    @JvmField var GetOverlayTransformAbsolute: GetOverlayTransformAbsolute_callback? = null
 
     interface GetOverlayTransformAbsolute_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, peTrackingOrigin: ETrackingUniverseOrigin_ByReference,
@@ -654,7 +654,7 @@ open class IVROverlay : Structure {
                                                  pmatTrackedDeviceToOverlayTransform: HmdMatrix34_t.ByReference)
             = EVROverlayError.of(SetOverlayTransformTrackedDeviceRelative!!.invoke(ulOverlayHandle, unTrackedDevice, pmatTrackedDeviceToOverlayTransform))
 
-    internal @JvmField var SetOverlayTransformTrackedDeviceRelative: SetOverlayTransformTrackedDeviceRelative_callback? = null
+    @JvmField var SetOverlayTransformTrackedDeviceRelative: SetOverlayTransformTrackedDeviceRelative_callback? = null
 
     interface SetOverlayTransformTrackedDeviceRelative_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, unTrackedDevice: TrackedDeviceIndex_t, pmatTrackedDeviceToOverlayTransform: HmdMatrix34_t.ByReference): Int
@@ -665,7 +665,7 @@ open class IVROverlay : Structure {
                                                  pmatTrackedDeviceToOverlayTransform: HmdMatrix34_t.ByReference)
             = ETrackedDeviceClass.of(GetOverlayTransformTrackedDeviceRelative!!.invoke(ulOverlayHandle, punTrackedDevice, pmatTrackedDeviceToOverlayTransform))
 
-    internal @JvmField var GetOverlayTransformTrackedDeviceRelative: GetOverlayTransformTrackedDeviceRelative_callback? = null
+    @JvmField var GetOverlayTransformTrackedDeviceRelative: GetOverlayTransformTrackedDeviceRelative_callback? = null
 
     interface GetOverlayTransformTrackedDeviceRelative_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, punTrackedDevice: TrackedDeviceIndex_t_ByReference,
@@ -677,7 +677,7 @@ open class IVROverlay : Structure {
     fun setOverlayTransformTrackedDeviceComponent(ulOverlayHandle: VROverlayHandle_t, unDeviceIndex: TrackedDeviceIndex_t, pchComponentName: String)
             = EVROverlayError.of(SetOverlayTransformTrackedDeviceComponent!!.invoke(ulOverlayHandle, unDeviceIndex, pchComponentName))
 
-    internal @JvmField var SetOverlayTransformTrackedDeviceComponent: SetOverlayTransformTrackedDeviceComponent_callback? = null
+    @JvmField var SetOverlayTransformTrackedDeviceComponent: SetOverlayTransformTrackedDeviceComponent_callback? = null
 
     interface SetOverlayTransformTrackedDeviceComponent_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, unDeviceIndex: TrackedDeviceIndex_t, pchComponentName: String): Int
@@ -688,7 +688,7 @@ open class IVROverlay : Structure {
                                                   unComponentNameSize: Int)
             = EVROverlayError.of(GetOverlayTransformTrackedDeviceComponent!!.invoke(ulOverlayHandle, punDeviceIndex, pchComponentName, unComponentNameSize))
 
-    internal @JvmField var GetOverlayTransformTrackedDeviceComponent: GetOverlayTransformTrackedDeviceComponent_callback? = null
+    @JvmField var GetOverlayTransformTrackedDeviceComponent: GetOverlayTransformTrackedDeviceComponent_callback? = null
 
     interface GetOverlayTransformTrackedDeviceComponent_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, punDeviceIndex: TrackedDeviceIndex_t_ByReference, pchComponentName: String, unComponentNameSize: Int): Int
@@ -697,7 +697,7 @@ open class IVROverlay : Structure {
     /** Shows the VR overlay.  For dashboard overlays, only the Dashboard Manager is allowed to call this. */
     fun showOverlay(ulOverlayHandle: VROverlayHandle_t) = EVROverlayError.of(ShowOverlay!!.invoke(ulOverlayHandle))
 
-    internal @JvmField var ShowOverlay: ShowOverlay_callback? = null
+    @JvmField var ShowOverlay: ShowOverlay_callback? = null
 
     interface ShowOverlay_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t): Int
@@ -706,7 +706,7 @@ open class IVROverlay : Structure {
     /** Hides the VR overlay.  For dashboard overlays, only the Dashboard Manager is allowed to call this. */
     fun hideOverlay(ulOverlayHandle: VROverlayHandle_t) = EVROverlayError.of(HideOverlay!!.invoke(ulOverlayHandle))
 
-    internal @JvmField var HideOverlay: HideOverlay_callback? = null
+    @JvmField var HideOverlay: HideOverlay_callback? = null
 
     interface HideOverlay_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t): Int
@@ -715,7 +715,7 @@ open class IVROverlay : Structure {
     /** Returns true if the overlay is visible. */
     fun isOverlayVisible(ulOverlayHandle: VROverlayHandle_t) = IsOverlayVisible!!.invoke(ulOverlayHandle)
 
-    internal @JvmField var IsOverlayVisible: IsOverlayVisible_callback? = null
+    @JvmField var IsOverlayVisible: IsOverlayVisible_callback? = null
 
     interface IsOverlayVisible_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t): Boolean
@@ -727,7 +727,7 @@ open class IVROverlay : Structure {
                                           pmatTransform: HmdMatrix34_t.ByReference)
             = EVROverlayError.of(GetTransformForOverlayCoordinates!!.invoke(ulOverlayHandle, eTrackingOrigin.i, coordinatesInOverlay, pmatTransform))
 
-    internal @JvmField var GetTransformForOverlayCoordinates: GetTransformForOverlayCoordinates_callback? = null
+    @JvmField var GetTransformForOverlayCoordinates: GetTransformForOverlayCoordinates_callback? = null
 
     interface GetTransformForOverlayCoordinates_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, eTrackingOrigin: Int, coordinatesInOverlay: HmdVector2_t, pmatTransform: HmdMatrix34_t.ByReference): Int
@@ -742,7 +742,7 @@ open class IVROverlay : Structure {
     fun pollNextOverlayEvent(ulOverlayHandle: VROverlayHandle_t, pEvent: VREvent_t.ByReference, uncbVREvent: Int)
             = PollNextOverlayEvent!!.invoke(ulOverlayHandle, pEvent, uncbVREvent)
 
-    internal @JvmField var PollNextOverlayEvent: PollNextOverlayEvent_callback? = null
+    @JvmField var PollNextOverlayEvent: PollNextOverlayEvent_callback? = null
 
     interface PollNextOverlayEvent_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pEvent: VREvent_t.ByReference, uncbVREvent: Int): Boolean
@@ -752,7 +752,7 @@ open class IVROverlay : Structure {
     fun getOverlayInputMethod(ulOverlayHandle: VROverlayHandle_t, peInputMethod: VROverlayInputMethod_ByReference)
             = EVROverlayError.of(GetOverlayInputMethod!!.invoke(ulOverlayHandle, peInputMethod))
 
-    internal @JvmField var GetOverlayInputMethod: GetOverlayInputMethod_callback? = null
+    @JvmField var GetOverlayInputMethod: GetOverlayInputMethod_callback? = null
 
     interface GetOverlayInputMethod_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, peInputMethod: VROverlayInputMethod_ByReference): Int
@@ -762,7 +762,7 @@ open class IVROverlay : Structure {
     fun setOverlayInputMethod(ulOverlayHandle: VROverlayHandle_t, eInputMethod: VROverlayInputMethod)
             = EVROverlayError.of(SetOverlayInputMethod!!.invoke(ulOverlayHandle, eInputMethod.i))
 
-    internal @JvmField var SetOverlayInputMethod: SetOverlayInputMethod_callback? = null
+    @JvmField var SetOverlayInputMethod: SetOverlayInputMethod_callback? = null
 
     interface SetOverlayInputMethod_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, eInputMethod: Int): Int
@@ -773,7 +773,7 @@ open class IVROverlay : Structure {
     fun getOverlayMouseScale(ulOverlayHandle: VROverlayHandle_t, pvecMouseScale: HmdVector2_t.ByReference)
             = EVROverlayError.of(GetOverlayMouseScale!!.invoke(ulOverlayHandle, pvecMouseScale))
 
-    internal @JvmField var GetOverlayMouseScale: GetOverlayMouseScale_callback? = null
+    @JvmField var GetOverlayMouseScale: GetOverlayMouseScale_callback? = null
 
     interface GetOverlayMouseScale_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pvecMouseScale: HmdVector2_t.ByReference): Int
@@ -784,7 +784,7 @@ open class IVROverlay : Structure {
     fun setOverlayMouseScale(ulOverlayHandle: VROverlayHandle_t, pvecMouseScale: HmdVector2_t.ByReference)
             = EVROverlayError.of(SetOverlayMouseScale!!.invoke(ulOverlayHandle, pvecMouseScale))
 
-    internal @JvmField var SetOverlayMouseScale: SetOverlayMouseScale_callback? = null
+    @JvmField var SetOverlayMouseScale: SetOverlayMouseScale_callback? = null
 
     interface SetOverlayMouseScale_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pvecMouseScale: HmdVector2_t.ByReference): Int
@@ -796,7 +796,7 @@ open class IVROverlay : Structure {
                                    pResults: VROverlayIntersectionResults_t.ByReference)
             = ComputeOverlayIntersection!!.invoke(ulOverlayHandle, pParams, pResults)
 
-    internal @JvmField var ComputeOverlayIntersection: ComputeOverlayIntersection_callback? = null
+    @JvmField var ComputeOverlayIntersection: ComputeOverlayIntersection_callback? = null
 
     interface ComputeOverlayIntersection_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pParams: VROverlayIntersectionParams_t.ByReference, pResults: VROverlayIntersectionResults_t.ByReference)
@@ -811,7 +811,7 @@ open class IVROverlay : Structure {
     fun handleControllerOverlayInteractionAsMouse(ulOverlayHandle: VROverlayHandle_t, unControllerDeviceIndex: TrackedDeviceIndex_t)
             = HandleControllerOverlayInteractionAsMouse!!.invoke(ulOverlayHandle, unControllerDeviceIndex)
 
-    internal @JvmField var HandleControllerOverlayInteractionAsMouse: HandleControllerOverlayInteractionAsMouse_callback? = null
+    @JvmField var HandleControllerOverlayInteractionAsMouse: HandleControllerOverlayInteractionAsMouse_callback? = null
 
     interface HandleControllerOverlayInteractionAsMouse_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, unControllerDeviceIndex: TrackedDeviceIndex_t): Boolean
@@ -821,7 +821,7 @@ open class IVROverlay : Structure {
      *  pointer */
     fun isHoverTargetOverlay(ulOverlayHandle: VROverlayHandle_t) = IsHoverTargetOverlay!!.invoke(ulOverlayHandle)
 
-    internal @JvmField var IsHoverTargetOverlay: IsHoverTargetOverlay_callback? = null
+    @JvmField var IsHoverTargetOverlay: IsHoverTargetOverlay_callback? = null
 
     interface IsHoverTargetOverlay_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t): Boolean
@@ -830,7 +830,7 @@ open class IVROverlay : Structure {
     /** Returns the current Gamepad focus overlay */
     fun getGamepadFocusOverlay() = GetGamepadFocusOverlay!!.invoke()
 
-    internal @JvmField var GetGamepadFocusOverlay: GetGamepadFocusOverlay_callback? = null
+    @JvmField var GetGamepadFocusOverlay: GetGamepadFocusOverlay_callback? = null
 
     interface GetGamepadFocusOverlay_callback : Callback {
         fun invoke(): VROverlayHandle_t
@@ -839,7 +839,7 @@ open class IVROverlay : Structure {
     /** Sets the current Gamepad focus overlay */
     fun setGamepadFocusOverlay(ulNewFocusOverlay: VROverlayHandle_t) = EVROverlayError.of(SetGamepadFocusOverlay!!.invoke(ulNewFocusOverlay))
 
-    internal @JvmField var SetGamepadFocusOverlay: SetGamepadFocusOverlay_callback? = null
+    @JvmField var SetGamepadFocusOverlay: SetGamepadFocusOverlay_callback? = null
 
     interface SetGamepadFocusOverlay_callback : Callback {
         fun invoke(ulNewFocusOverlay: VROverlayHandle_t): Int
@@ -850,7 +850,7 @@ open class IVROverlay : Structure {
     fun setOverlayNeighbor(eDirection: EOverlayDirection, ulFrom: VROverlayHandle_t, ulTo: VROverlayHandle_t)
             = EVROverlayError.of(SetOverlayNeighbor!!.invoke(eDirection.i, ulFrom, ulTo))
 
-    internal @JvmField var SetOverlayNeighbor: SetOverlayNeighbor_callback? = null
+    @JvmField var SetOverlayNeighbor: SetOverlayNeighbor_callback? = null
 
     interface SetOverlayNeighbor_callback : Callback {
         fun invoke(eDirection: Int, ulFrom: VROverlayHandle_t, ulTo: VROverlayHandle_t): Int
@@ -860,7 +860,7 @@ open class IVROverlay : Structure {
     fun moveGamepadFocusToNeighbor(eDirection: EOverlayDirection, ulFrom: VROverlayHandle_t)
             = EVROverlayError.of(MoveGamepadFocusToNeighbor!!.invoke(eDirection.i, ulFrom))
 
-    internal @JvmField var MoveGamepadFocusToNeighbor: MoveGamepadFocusToNeighbor_callback? = null
+    @JvmField var MoveGamepadFocusToNeighbor: MoveGamepadFocusToNeighbor_callback? = null
 
     interface MoveGamepadFocusToNeighbor_callback : Callback {
         fun invoke(eDirection: Int, ulFrom: VROverlayHandle_t): Int
@@ -878,7 +878,7 @@ open class IVROverlay : Structure {
     fun setOverlayTexture(ulOverlayHandle: VROverlayHandle_t, pTexture: Texture_t.ByReference)
             = EVROverlayError.of(SetOverlayTexture!!.invoke(ulOverlayHandle, pTexture))
 
-    internal @JvmField var SetOverlayTexture: SetOverlayTexture_callback? = null
+    @JvmField var SetOverlayTexture: SetOverlayTexture_callback? = null
 
     interface SetOverlayTexture_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pTexture: Texture_t.ByReference): Int
@@ -887,7 +887,7 @@ open class IVROverlay : Structure {
     /** Use this to tell the overlay system to release the texture set for this overlay. */
     fun clearOverlayTexture(ulOverlayHandle: VROverlayHandle_t) = EVROverlayError.of(ClearOverlayTexture!!.invoke(ulOverlayHandle))
 
-    internal @JvmField var ClearOverlayTexture: ClearOverlayTexture_callback? = null
+    @JvmField var ClearOverlayTexture: ClearOverlayTexture_callback? = null
 
     interface ClearOverlayTexture_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t): Int
@@ -898,7 +898,7 @@ open class IVROverlay : Structure {
     fun setOverlayRaw(ulOverlayHandle: VROverlayHandle_t, pvBuffer: Pointer, unWidth: Int, unHeight: Int, unDepth: Int)
             = EVROverlayError.of(SetOverlayRaw!!.invoke(ulOverlayHandle, pvBuffer, unWidth, unHeight, unDepth))
 
-    internal @JvmField var SetOverlayRaw: SetOverlayRaw_callback? = null
+    @JvmField var SetOverlayRaw: SetOverlayRaw_callback? = null
 
     interface SetOverlayRaw_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pvBuffer: Pointer, unWidth: Int, unHeight: Int, unDepth: Int): Int
@@ -908,7 +908,7 @@ open class IVROverlay : Structure {
      * This function can only be called by the overlay's renderer process */
     fun setOverlayFromFile(ulOverlayHandle: VROverlayHandle_t, pchFilePath: String) = EVROverlayError.of(SetOverlayFromFile!!.invoke(ulOverlayHandle, pchFilePath))
 
-    internal @JvmField var SetOverlayFromFile: SetOverlayFromFile_callback? = null
+    @JvmField var SetOverlayFromFile: SetOverlayFromFile_callback? = null
 
     interface SetOverlayFromFile_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pchFilePath: String): Int
@@ -930,7 +930,7 @@ open class IVROverlay : Structure {
             = EVROverlayError.of(GetOverlayTexture!!.invoke(ulOverlayHandle, pNativeTextureHandle, pNativeTextureRef, pnWidth,
             pnHeight, pNativeFormat, pAPIType, pColorSpace, pTextureBounds))
 
-    internal @JvmField var GetOverlayTexture: GetOverlayTexture_callback? = null
+    @JvmField var GetOverlayTexture: GetOverlayTexture_callback? = null
 
     interface GetOverlayTexture_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pNativeTextureHandle: PointerByReference, pNativeTextureRef: Pointer,
@@ -943,7 +943,7 @@ open class IVROverlay : Structure {
     fun releaseNativeOverlayHandle(ulOverlayHandle: VROverlayHandle_t, pNativeTextureHandle: Pointer)
             = EVROverlayError.of(ReleaseNativeOverlayHandle!!.invoke(ulOverlayHandle, pNativeTextureHandle))
 
-    internal @JvmField var ReleaseNativeOverlayHandle: ReleaseNativeOverlayHandle_callback? = null
+    @JvmField var ReleaseNativeOverlayHandle: ReleaseNativeOverlayHandle_callback? = null
 
     interface ReleaseNativeOverlayHandle_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pNativeTextureHandle: Pointer): Int
@@ -953,7 +953,7 @@ open class IVROverlay : Structure {
     fun getOverlayTextureSize(ulOverlayHandle: VROverlayHandle_t, pnWidth: IntByReference, pnHeight: IntByReference)
             = EVROverlayError.of(GetOverlayTextureSize!!.invoke(ulOverlayHandle, pnWidth, pnHeight))
 
-    internal @JvmField var GetOverlayTextureSize: GetOverlayTextureSize_callback? = null
+    @JvmField var GetOverlayTextureSize: GetOverlayTextureSize_callback? = null
 
     interface GetOverlayTextureSize_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pWidth: IntByReference, pHeight: IntByReference): Int
@@ -968,7 +968,7 @@ open class IVROverlay : Structure {
                                pThumbnailHandle: VROverlayHandle_t_ByReference)
             = EVROverlayError.of(CreateDashboardOverlay!!.invoke(pchOverlayKey, pchOverlayFriendlyName, pMainHandle, pThumbnailHandle))
 
-    internal @JvmField var CreateDashboardOverlay: CreateDashboardOverlay_callback? = null
+    @JvmField var CreateDashboardOverlay: CreateDashboardOverlay_callback? = null
 
     interface CreateDashboardOverlay_callback : Callback {
         fun invoke(pchOverlayKey: String, pchOverlayFriendlyName: String, pMainHandle: VROverlayHandle_t_ByReference,
@@ -978,7 +978,7 @@ open class IVROverlay : Structure {
     /** Returns true if the dashboard is visible */
     fun isDashboardVisible() = IsDashboardVisible!!.invoke()
 
-    internal @JvmField var IsDashboardVisible: IsDashboardVisible_callback? = null
+    @JvmField var IsDashboardVisible: IsDashboardVisible_callback? = null
 
     interface IsDashboardVisible_callback : Callback {
         fun invoke(): Boolean
@@ -987,7 +987,7 @@ open class IVROverlay : Structure {
     /** returns true if the dashboard is visible and the specified overlay is the active system Overlay */
     fun isActiveDashboardOverlay(ulOverlayHandle: VROverlayHandle_t) = IsActiveDashboardOverlay!!.invoke(ulOverlayHandle)
 
-    internal @JvmField var IsActiveDashboardOverlay: IsActiveDashboardOverlay_callback? = null
+    @JvmField var IsActiveDashboardOverlay: IsActiveDashboardOverlay_callback? = null
 
     interface IsActiveDashboardOverlay_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t): Boolean
@@ -997,7 +997,7 @@ open class IVROverlay : Structure {
     fun setDashboardOverlaySceneProcess(ulOverlayHandle: VROverlayHandle_t, unProcessId: Int)
             = EVROverlayError.of(SetDashboardOverlaySceneProcess!!.invoke(ulOverlayHandle, unProcessId))
 
-    internal @JvmField var SetDashboardOverlaySceneProcess: SetDashboardOverlaySceneProcess_callback? = null
+    @JvmField var SetDashboardOverlaySceneProcess: SetDashboardOverlaySceneProcess_callback? = null
 
     interface SetDashboardOverlaySceneProcess_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, unProcessId: Int): Int
@@ -1007,7 +1007,7 @@ open class IVROverlay : Structure {
     fun getDashboardOverlaySceneProcess(ulOverlayHandle: VROverlayHandle_t, punProcessId: IntByReference)
             = EVROverlayError.of(GetDashboardOverlaySceneProcess!!.invoke(ulOverlayHandle, punProcessId))
 
-    internal @JvmField var GetDashboardOverlaySceneProcess: GetDashboardOverlaySceneProcess_callback? = null
+    @JvmField var GetDashboardOverlaySceneProcess: GetDashboardOverlaySceneProcess_callback? = null
 
     interface GetDashboardOverlaySceneProcess_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, punProcessId: IntByReference): Int
@@ -1016,7 +1016,7 @@ open class IVROverlay : Structure {
     /** Shows the dashboard. */
     fun showDashboard(pchOverlayToShow: String) = ShowDashboard!!.invoke(pchOverlayToShow)
 
-    internal @JvmField var ShowDashboard: ShowDashboard_callback? = null
+    @JvmField var ShowDashboard: ShowDashboard_callback? = null
 
     interface ShowDashboard_callback : Callback {
         fun invoke(pchOverlayToShow: String)
@@ -1025,7 +1025,7 @@ open class IVROverlay : Structure {
     /** Returns the tracked device that has the laser pointer in the dashboard */
     fun getPrimaryDashboardDevice() = GetPrimaryDashboardDevice!!.invoke()
 
-    internal @JvmField var GetPrimaryDashboardDevice: GetPrimaryDashboardDevice_callback? = null
+    @JvmField var GetPrimaryDashboardDevice: GetPrimaryDashboardDevice_callback? = null
 
     interface GetPrimaryDashboardDevice_callback : Callback {
         fun invoke(): TrackedDeviceIndex_t
@@ -1040,7 +1040,7 @@ open class IVROverlay : Structure {
                      pchExistingText: String, bUseMinimalMode: Boolean, uUserValue: Long)
             = EVROverlayError.of(ShowKeyboard!!.invoke(eInputMode.i, eLineInputMode.i, pchDescription, unCharMax, pchExistingText, bUseMinimalMode, uUserValue))
 
-    internal @JvmField var ShowKeyboard: ShowKeyboard_callback? = null
+    @JvmField var ShowKeyboard: ShowKeyboard_callback? = null
 
     interface ShowKeyboard_callback : Callback {
         fun invoke(eInputMode: Int, eLineInputMode: Int, pchDescription: String, unCharMax: Int, pchExistingText: String, bUseMinimalMode: Boolean,
@@ -1053,7 +1053,7 @@ open class IVROverlay : Structure {
             = EVROverlayError.of(ShowKeyboardForOverlay!!.invoke(ulOverlayHandle, eInputMode.i, eLineInputMode.i, pchDescription, unCharMax, pchExistingText,
             bUseMinimalMode, uUserValue))
 
-    internal @JvmField var ShowKeyboardForOverlay: ShowKeyboardForOverlay_callback? = null
+    @JvmField var ShowKeyboardForOverlay: ShowKeyboardForOverlay_callback? = null
 
     interface ShowKeyboardForOverlay_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, eInputMode: Int, eLineInputMode: Int, pchDescription: String, unCharMax: Int, pchExistingText: String,
@@ -1063,7 +1063,7 @@ open class IVROverlay : Structure {
     /** Get the text that was entered into the text input **/
     fun getKeyboardText(pchText: String, cchText: Int) = GetKeyboardText!!.invoke(pchText, cchText)
 
-    internal @JvmField var GetKeyboardText: GetKeyboardText_callback? = null
+    @JvmField var GetKeyboardText: GetKeyboardText_callback? = null
 
     interface GetKeyboardText_callback : Callback {
         fun invoke(pchText: String, cchText: Int): Int
@@ -1072,7 +1072,7 @@ open class IVROverlay : Structure {
     /** Hide the virtual keyboard **/
     fun hideKeyboard() = HideKeyboard!!.invoke()
 
-    internal @JvmField var HideKeyboard: HideKeyboard_callback? = null
+    @JvmField var HideKeyboard: HideKeyboard_callback? = null
 
     interface HideKeyboard_callback : Callback {
         fun invoke()
@@ -1082,7 +1082,7 @@ open class IVROverlay : Structure {
     fun setKeyboardTransformAbsolute(eTrackingOrigin: ETrackingUniverseOrigin, pmatTrackingOriginToKeyboardTransform: HmdMatrix34_t.ByReference)
             = SetKeyboardTransformAbsolute!!.invoke(eTrackingOrigin.i, pmatTrackingOriginToKeyboardTransform)
 
-    internal @JvmField var SetKeyboardTransformAbsolute: SetKeyboardTransformAbsolute_callback? = null
+    @JvmField var SetKeyboardTransformAbsolute: SetKeyboardTransformAbsolute_callback? = null
 
     interface SetKeyboardTransformAbsolute_callback : Callback {
         fun invoke(eTrackingOrigin: Int, pmatTrackingOriginToKeyboardTransform: HmdMatrix34_t.ByReference)
@@ -1092,7 +1092,7 @@ open class IVROverlay : Structure {
     fun setKeyboardPositionForOverlay(ulOverlayHandle: VROverlayHandle_t, avoidRect: HmdRect2_t)
             = SetKeyboardPositionForOverlay!!.invoke(ulOverlayHandle, avoidRect)
 
-    internal @JvmField var SetKeyboardPositionForOverlay: SetKeyboardPositionForOverlay_callback? = null
+    @JvmField var SetKeyboardPositionForOverlay: SetKeyboardPositionForOverlay_callback? = null
 
     interface SetKeyboardPositionForOverlay_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, avoidRect: HmdRect2_t)
@@ -1110,7 +1110,7 @@ open class IVROverlay : Structure {
                                                  unNumMaskPrimitives: Int, unPrimitiveSize: Int = Int.BYTES + Pointer.SIZE) =
             SetOverlayIntersectionMask!!.invoke(ulOverlayHandle, pMaskPrimitives, unNumMaskPrimitives, unPrimitiveSize)
 
-    internal @JvmField var SetOverlayIntersectionMask: SetOverlayIntersectionMask_callback? = null
+    @JvmField var SetOverlayIntersectionMask: SetOverlayIntersectionMask_callback? = null
 
     interface SetOverlayIntersectionMask_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pMaskPrimitives: VROverlayIntersectionMaskPrimitive_t.ByReference,
@@ -1121,7 +1121,7 @@ open class IVROverlay : Structure {
     fun getOverlayFlags(ulOverlayHandle: VROverlayHandle_t, pFlags: IntByReference)
             = EVROverlayError.of(GetOverlayFlags!!.invoke(ulOverlayHandle, pFlags))
 
-    internal @JvmField var GetOverlayFlags: GetOverlayFlags_callback? = null
+    @JvmField var GetOverlayFlags: GetOverlayFlags_callback? = null
 
     interface GetOverlayFlags_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pFlags: IntByReference): Int
@@ -1137,7 +1137,7 @@ open class IVROverlay : Structure {
             VRMessageOverlayResponse.of(ShowMessageOverlay!!.invoke(pchText, pchCaption, pchButton0Text, pchButton1Text,
                     pchButton2Text, pchButton3Text))
 
-    internal @JvmField var ShowMessageOverlay: ShowMessageOverlay_callback? = null
+    @JvmField var ShowMessageOverlay: ShowMessageOverlay_callback? = null
 
     interface ShowMessageOverlay_callback : Callback {
         fun invoke(pchText: String, pchCaption: String, pchButton0Text: String, pchButton1Text: String?, pchButton2Text: String?,

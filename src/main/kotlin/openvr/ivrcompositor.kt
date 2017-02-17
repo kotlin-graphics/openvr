@@ -195,7 +195,7 @@ open class IVRCompositor : Structure {
     /** Sets tracking space returned by WaitGetPoses */
     fun setTrackingSpace(eOrigin: ETrackingUniverseOrigin) = SetTrackingSpace!!.invoke(eOrigin.i)
 
-    internal @JvmField var SetTrackingSpace: SetTrackingSpace_callback? = null
+    @JvmField var SetTrackingSpace: SetTrackingSpace_callback? = null
 
     interface SetTrackingSpace_callback : Callback {
         fun invoke(eOrigin: Int)
@@ -204,7 +204,7 @@ open class IVRCompositor : Structure {
     /** Gets current tracking space returned by WaitGetPoses */
     fun getTrackingSpace() = ETrackingUniverseOrigin.of(GetTrackingSpace!!.invoke())
 
-    internal @JvmField var GetTrackingSpace: GetTrackingSpace_callback? = null
+    @JvmField var GetTrackingSpace: GetTrackingSpace_callback? = null
 
     interface GetTrackingSpace_callback : Callback {
         fun invoke(): Int
@@ -221,9 +221,9 @@ open class IVRCompositor : Structure {
     fun waitGetPoses(pRenderPoseArray: TrackedDevicePose_t.ByReference, unRenderPoseArrayCount: Int, pGamePoseArray: TrackedDevicePose_t.ByReference?,
                      unGamePoseArrayCount: Int) = WaitGetPoses!!.invoke(pRenderPoseArray, unRenderPoseArrayCount, pGamePoseArray, unGamePoseArrayCount)
 
-    internal @JvmField var WaitGetPoses: WaitGetPoses_callback? = null
+    @JvmField var WaitGetPoses: WaitGetPoses_callback? = null
 
-    internal interface WaitGetPoses_callback : Callback {
+    interface WaitGetPoses_callback : Callback {
         fun invoke(pRenderPoseArray: TrackedDevicePose_t.ByReference, unRenderPoseArrayCount: Int, pGamePoseArray: TrackedDevicePose_t.ByReference?,
                    unGamePoseArrayCount: Int): Int
     }
@@ -232,7 +232,7 @@ open class IVRCompositor : Structure {
     fun getLastPoses(pRenderPoseArray: TrackedDevicePose_t.ByReference, unRenderPoseArrayCount: Int, pGamePoseArray: TrackedDevicePose_t.ByReference,
                      unGamePoseArrayCount: Int) = GetLastPoses!!.invoke(pRenderPoseArray, unRenderPoseArrayCount, pGamePoseArray, unGamePoseArrayCount)
 
-    internal @JvmField var GetLastPoses: GetLastPoses_callback? = null
+    @JvmField var GetLastPoses: GetLastPoses_callback? = null
 
     interface GetLastPoses_callback : Callback {
         fun invoke(pRenderPoseArray: TrackedDevicePose_t.ByReference, unRenderPoseArrayCount: Int, pGamePoseArray: TrackedDevicePose_t.ByReference,
@@ -246,7 +246,7 @@ open class IVRCompositor : Structure {
                                          pOutputGamePose: TrackedDevicePose_t.ByReference)
             = EVRCompositorError.of(GetLastPoseForTrackedDeviceIndex!!.invoke(unDeviceIndex, pOutputPose, pOutputGamePose))
 
-    internal @JvmField var GetLastPoseForTrackedDeviceIndex: GetLastPoseForTrackedDeviceIndex_callback? = null
+    @JvmField var GetLastPoseForTrackedDeviceIndex: GetLastPoseForTrackedDeviceIndex_callback? = null
 
     interface GetLastPoseForTrackedDeviceIndex_callback : Callback {
         fun invoke(unDeviceIndex: TrackedDeviceIndex_t, pOutputPose: TrackedDevicePose_t.ByReference, pOutputGamePose: TrackedDevicePose_t.ByReference): Int
@@ -271,7 +271,7 @@ open class IVRCompositor : Structure {
                              nSubmitFlags: EVRSubmitFlags = EVRSubmitFlags.Default)
             = EVRCompositorError.of(Submit!!.invoke(eEye.i, pTexture, pBounds, nSubmitFlags.i))
 
-    internal @JvmField var Submit: Submit_callback? = null
+    @JvmField var Submit: Submit_callback? = null
 
     interface Submit_callback : Callback {
         fun invoke(eEye: Int, pTexture: Texture_t.ByReference, pBounds: VRTextureBounds_t.ByReference?, nSubmitFlags: Int): Int
@@ -280,7 +280,7 @@ open class IVRCompositor : Structure {
     /** Clears the frame that was sent with the last call to Submit. This will cause the compositor to show the grid until Submit is called again. */
     fun clearLastSubmittedFrame() = ClearLastSubmittedFrame!!.invoke()
 
-    internal @JvmField var ClearLastSubmittedFrame: ClearLastSubmittedFrame_callback? = null
+    @JvmField var ClearLastSubmittedFrame: ClearLastSubmittedFrame_callback? = null
 
     interface ClearLastSubmittedFrame_callback : Callback {
         fun invoke()
@@ -293,7 +293,7 @@ open class IVRCompositor : Structure {
      *  eyes, and it is free to start its rendering work.  This should only be called from the same thread you are rendering on. */
     fun postPresentHandoff() = PostPresentHandoff!!.invoke()
 
-    internal @JvmField var PostPresentHandoff: PostPresentHandoff_callback? = null
+    @JvmField var PostPresentHandoff: PostPresentHandoff_callback? = null
 
     interface PostPresentHandoff_callback : Callback {
         fun invoke()
@@ -304,7 +304,7 @@ open class IVRCompositor : Structure {
     @JvmOverloads fun getFrameTiming(pTiming: Compositor_FrameTiming.ByReference, unFramesAgo: Int = 0)
             = GetFrameTiming!!.invoke(pTiming, unFramesAgo)
 
-    internal @JvmField var GetFrameTiming: GetFrameTiming_callback? = null
+    @JvmField var GetFrameTiming: GetFrameTiming_callback? = null
 
     interface GetFrameTiming_callback : Callback {
         fun invoke(pTiming: Compositor_FrameTiming.ByReference, unFramesAgo: Int): Boolean
@@ -316,7 +316,7 @@ open class IVRCompositor : Structure {
      *  filled out. */
     fun getFrameTimings(pTiming: Compositor_FrameTiming.ByReference, nFrames: Int) = GetFrameTimings!!.invoke(pTiming, nFrames)
 
-    internal @JvmField var GetFrameTimings: GetFrameTimings_callback? = null
+    @JvmField var GetFrameTimings: GetFrameTimings_callback? = null
 
     interface GetFrameTimings_callback : Callback {
         fun invoke(pTiming: Compositor_FrameTiming.ByReference, nFrames: Int): Int
@@ -326,7 +326,7 @@ open class IVRCompositor : Structure {
      *  Due to "running start", this value may roll over to the next frame before ever reaching 0.0. */
     fun getFrameTimeRemaining() = GetFrameTimeRemaining!!.invoke()
 
-    internal @JvmField var GetFrameTimeRemaining: GetFrameTimeRemaining_callback? = null
+    @JvmField var GetFrameTimeRemaining: GetFrameTimeRemaining_callback? = null
 
     interface GetFrameTimeRemaining_callback : Callback {
         fun invoke(): Float
@@ -335,7 +335,7 @@ open class IVRCompositor : Structure {
     /** Fills out stats accumulated for the last connected application.  Pass in sizeof( openvr.Compositor_CumulativeStats ) as second parameter. */
     fun getCumulativeStats(pStats: Compositor_CumulativeStats.ByReference, nStatsSizeInBytes: Int) = GetCumulativeStats!!.invoke(pStats, nStatsSizeInBytes)
 
-    internal @JvmField var GetCumulativeStats: GetCumulativeStats_callback? = null
+    @JvmField var GetCumulativeStats: GetCumulativeStats_callback? = null
 
     interface GetCumulativeStats_callback : Callback {
         fun invoke(pStats: Compositor_CumulativeStats.ByReference, nStatsSizeInBytes: Int)
@@ -348,7 +348,7 @@ open class IVRCompositor : Structure {
                                   bBackground: Boolean = false)
             = FadeToColor!!.invoke(fSeconds, fRed, fGreen, fBlue, fAlpha, bBackground)
 
-    internal @JvmField var FadeToColor: FadeToColor_callback? = null
+    @JvmField var FadeToColor: FadeToColor_callback? = null
 
     interface FadeToColor_callback : Callback {
         fun invoke(fSeconds: Float, fRed: Float, fGreen: Float, fBlue: Float, fAlpha: Float, bBackground: Boolean)
@@ -357,7 +357,7 @@ open class IVRCompositor : Structure {
     /** Get current fade color value. */
     @JvmOverloads fun getCurrentFadeColor(bBackground: Boolean = false) = GetCurrentFadeColor!!.invoke(bBackground)
 
-    internal @JvmField var GetCurrentFadeColor: GetCurrentFadeColor_callback? = null
+    @JvmField var GetCurrentFadeColor: GetCurrentFadeColor_callback? = null
 
     interface GetCurrentFadeColor_callback : Callback {
         fun invoke(bBackground: Boolean): HmdColor_t
@@ -366,7 +366,7 @@ open class IVRCompositor : Structure {
     /** Fading the Grid in or out in fSeconds */
     fun fadeGrid(fSeconds: Float, bFadeIn: Boolean) = FadeGrid!!.invoke(fSeconds, bFadeIn)
 
-    internal @JvmField var FadeGrid: FadeGrid_callback? = null
+    @JvmField var FadeGrid: FadeGrid_callback? = null
 
     interface FadeGrid_callback : Callback {
         fun invoke(fSeconds: Float, bFadeIn: Boolean)
@@ -375,7 +375,7 @@ open class IVRCompositor : Structure {
     /** Get current alpha value of grid. */
     fun getCurrentGridAlpha() = GetCurrentGridAlpha!!.invoke()
 
-    internal @JvmField var GetCurrentGridAlpha: GetCurrentGridAlpha_callback? = null
+    @JvmField var GetCurrentGridAlpha: GetCurrentGridAlpha_callback? = null
 
     interface GetCurrentGridAlpha_callback : Callback {
         fun invoke(): Float
@@ -387,7 +387,7 @@ open class IVRCompositor : Structure {
     fun setSkyboxOverride(pTextures: Texture_t.ByReference, unTextureCount: Int)
             = EVRCompositorError.of(SetSkyboxOverride!!.invoke(pTextures, unTextureCount))
 
-    internal @JvmField var SetSkyboxOverride: SetSkyboxOverride_callback? = null
+    @JvmField var SetSkyboxOverride: SetSkyboxOverride_callback? = null
 
     interface SetSkyboxOverride_callback : Callback {
         fun invoke(pTextures: Texture_t.ByReference, unTextureCount: Int): Int
@@ -396,7 +396,7 @@ open class IVRCompositor : Structure {
     /** Resets compositor skybox back to defaults. */
     fun clearSkyboxOverride() = ClearSkyboxOverride!!.invoke()
 
-    internal @JvmField var ClearSkyboxOverride: ClearSkyboxOverride_callback? = null
+    @JvmField var ClearSkyboxOverride: ClearSkyboxOverride_callback? = null
 
     interface ClearSkyboxOverride_callback : Callback {
         fun invoke()
@@ -405,7 +405,7 @@ open class IVRCompositor : Structure {
     /** Brings the compositor window to the front. This is useful for covering any other window that may be on the HMD and is obscuring the compositor window. */
     fun compositorBringToFront() = CompositorBringToFront!!.invoke()
 
-    internal @JvmField var CompositorBringToFront: CompositorBringToFront_callback? = null
+    @JvmField var CompositorBringToFront: CompositorBringToFront_callback? = null
 
     interface CompositorBringToFront_callback : Callback {
         fun invoke()
@@ -414,7 +414,7 @@ open class IVRCompositor : Structure {
     /** Pushes the compositor window to the back. This is useful for allowing other applications to draw directly to the HMD. */
     fun compositorGoToBack() = CompositorGoToBack!!.invoke()
 
-    internal @JvmField var CompositorGoToBack: CompositorGoToBack_callback? = null
+    @JvmField var CompositorGoToBack: CompositorGoToBack_callback? = null
 
     interface CompositorGoToBack_callback : Callback {
         fun invoke()
@@ -424,7 +424,7 @@ open class IVRCompositor : Structure {
      *  manage its own life cycle based on what applications are running. */
     fun compositorQuit() = CompositorQuit!!.invoke()
 
-    internal @JvmField var CompositorQuit: CompositorQuit_callback? = null
+    @JvmField var CompositorQuit: CompositorQuit_callback? = null
 
     interface CompositorQuit_callback : Callback {
         fun invoke()
@@ -433,7 +433,7 @@ open class IVRCompositor : Structure {
     /** Return whether the compositor is fullscreen */
     fun isFullscreen() = IsFullscreen!!.invoke()
 
-    internal @JvmField var IsFullscreen: IsFullscreen_callback? = null
+    @JvmField var IsFullscreen: IsFullscreen_callback? = null
 
     interface IsFullscreen_callback : Callback {
         fun invoke(): Boolean
@@ -442,7 +442,7 @@ open class IVRCompositor : Structure {
     /** Returns the process ID of the process that is currently rendering the scene */
     fun getCurrentSceneFocusProcess() = GetCurrentSceneFocusProcess!!.invoke()
 
-    internal @JvmField var GetCurrentSceneFocusProcess: GetCurrentSceneFocusProcess_callback? = null
+    @JvmField var GetCurrentSceneFocusProcess: GetCurrentSceneFocusProcess_callback? = null
 
     interface GetCurrentSceneFocusProcess_callback : Callback {
         fun invoke(): Int
@@ -452,7 +452,7 @@ open class IVRCompositor : Structure {
      *  Returns 0 when fading out from an app and the app's process Id when fading into an app. */
     fun getLastFrameRenderer() = GetLastFrameRenderer!!.invoke()
 
-    internal @JvmField var GetLastFrameRenderer: GetLastFrameRenderer_callback? = null
+    @JvmField var GetLastFrameRenderer: GetLastFrameRenderer_callback? = null
 
     interface GetLastFrameRenderer_callback : Callback {
         fun invoke(): Int
@@ -461,7 +461,7 @@ open class IVRCompositor : Structure {
     /** Returns true if the current process has the scene focus */
     fun canRenderScene() = CanRenderScene!!.invoke()
 
-    internal @JvmField var CanRenderScene: CanRenderScene_callback? = null
+    @JvmField var CanRenderScene: CanRenderScene_callback? = null
 
     interface CanRenderScene_callback : Callback {
         fun invoke(): Boolean
@@ -470,7 +470,7 @@ open class IVRCompositor : Structure {
     /** Creates a window on the primary monitor to display what is being shown in the headset. */
     fun showMirrorWindow() = ShowMirrorWindow!!.invoke()
 
-    internal @JvmField var ShowMirrorWindow: ShowMirrorWindow_callback? = null
+    @JvmField var ShowMirrorWindow: ShowMirrorWindow_callback? = null
 
     interface ShowMirrorWindow_callback : Callback {
         fun invoke()
@@ -479,7 +479,7 @@ open class IVRCompositor : Structure {
     /** Closes the mirror window. */
     fun hideMirrorWindow() = HideMirrorWindow!!.invoke()
 
-    internal @JvmField var HideMirrorWindow: HideMirrorWindow_callback? = null
+    @JvmField var HideMirrorWindow: HideMirrorWindow_callback? = null
 
     interface HideMirrorWindow_callback : Callback {
         fun invoke()
@@ -488,7 +488,7 @@ open class IVRCompositor : Structure {
     /** Returns true if the mirror window is shown. */
     fun isMirrorWindowVisible() = IsMirrorWindowVisible!!.invoke()
 
-    internal @JvmField var IsMirrorWindowVisible: IsMirrorWindowVisible_callback? = null
+    @JvmField var IsMirrorWindowVisible: IsMirrorWindowVisible_callback? = null
 
     interface IsMirrorWindowVisible_callback : Callback {
         fun invoke(): Boolean
@@ -497,7 +497,7 @@ open class IVRCompositor : Structure {
     /** Writes all images that the compositor knows about (including overlays) to a 'screenshots' folder in the SteamVR runtime root. */
     fun compositorDumpImages() = CompositorDumpImages!!.invoke()
 
-    internal @JvmField var CompositorDumpImages: CompositorDumpImages_callback? = null
+    @JvmField var CompositorDumpImages: CompositorDumpImages_callback? = null
 
     interface CompositorDumpImages_callback : Callback {
         fun invoke()
@@ -506,7 +506,7 @@ open class IVRCompositor : Structure {
     /** Let an app know it should be rendering with low resources. */
     fun shouldAppRenderWithLowResources() = ShouldAppRenderWithLowResources!!.invoke()
 
-    internal @JvmField var ShouldAppRenderWithLowResources: ShouldAppRenderWithLowResources_callback? = null
+    @JvmField var ShouldAppRenderWithLowResources: ShouldAppRenderWithLowResources_callback? = null
 
     interface ShouldAppRenderWithLowResources_callback : Callback {
         fun invoke(): Boolean
@@ -515,7 +515,7 @@ open class IVRCompositor : Structure {
     /** Override interleaved reprojection logic to force on. */
     fun forceInterleavedReprojectionOn(bOverride: Boolean) = ForceInterleavedReprojectionOn!!.invoke(bOverride)
 
-    internal @JvmField var ForceInterleavedReprojectionOn: ForceInterleavedReprojectionOn_callback? = null
+    @JvmField var ForceInterleavedReprojectionOn: ForceInterleavedReprojectionOn_callback? = null
 
     interface ForceInterleavedReprojectionOn_callback : Callback {
         fun invoke(bOverride: Boolean)
@@ -524,7 +524,7 @@ open class IVRCompositor : Structure {
     /** Force reconnecting to the compositor process. */
     fun forceReconnectProcess() = ForceReconnectProcess!!.invoke()
 
-    internal @JvmField var ForceReconnectProcess: ForceReconnectProcess_callback? = null
+    @JvmField var ForceReconnectProcess: ForceReconnectProcess_callback? = null
 
     interface ForceReconnectProcess_callback : Callback {
         fun invoke()
@@ -533,7 +533,7 @@ open class IVRCompositor : Structure {
     /** Temporarily suspends rendering (useful for finer control over scene transitions). */
     fun suspendRendering(bSuspend: Boolean) = SuspendRendering!!.invoke(bSuspend)
 
-    internal @JvmField var SuspendRendering: SuspendRendering_callback? = null
+    @JvmField var SuspendRendering: SuspendRendering_callback? = null
 
     interface SuspendRendering_callback : Callback {
         fun invoke(bSuspend: Boolean)
@@ -544,7 +544,7 @@ open class IVRCompositor : Structure {
     fun getMirrorTextureD3D11(eEye: EVREye, pD3D11DeviceOrResource: Pointer, ppD3D11ShaderResourceView: PointerByReference)
             = EVRCompositorError.of(GetMirrorTextureD3D11!!.invoke(eEye.i, pD3D11DeviceOrResource, ppD3D11ShaderResourceView))
 
-    internal @JvmField var GetMirrorTextureD3D11: GetMirrorTextureD3D11_callback? = null
+    @JvmField var GetMirrorTextureD3D11: GetMirrorTextureD3D11_callback? = null
 
     interface GetMirrorTextureD3D11_callback : Callback {
         fun invoke(eEye: Int, pD3D11DeviceOrResource: Pointer, ppD3D11ShaderResourceView: PointerByReference): Int
@@ -553,7 +553,7 @@ open class IVRCompositor : Structure {
     fun releaseMirrorTextureD3D11(ppD3D11ShaderResourceView: PointerByReference) =
             ReleaseMirrorTextureD3D11!!.invoke(ppD3D11ShaderResourceView)
 
-    internal @JvmField var ReleaseMirrorTextureD3D11: ReleaseMirrorTextureD3D11_callback? = null
+    @JvmField var ReleaseMirrorTextureD3D11: ReleaseMirrorTextureD3D11_callback? = null
 
     interface ReleaseMirrorTextureD3D11_callback : Callback {
         fun invoke(pD3D11ShaderResourceView: PointerByReference)
@@ -563,7 +563,7 @@ open class IVRCompositor : Structure {
     fun getMirrorTextureGL(eEye: EVREye, pglTextureId: glUInt_t_ByReference, pglSharedTextureHandle: glSharedTextureHandle_t_ByReference)
             = GetMirrorTextureGL!!.invoke(eEye.i, pglTextureId, pglSharedTextureHandle)
 
-    internal @JvmField var GetMirrorTextureGL: GetMirrorTextureGL_callback? = null
+    @JvmField var GetMirrorTextureGL: GetMirrorTextureGL_callback? = null
 
     interface GetMirrorTextureGL_callback : Callback {
         fun invoke(eEye: Int, pglTextureId: glUInt_t_ByReference, pglSharedTextureHandle: glSharedTextureHandle_t_ByReference): Int
@@ -573,7 +573,7 @@ open class IVRCompositor : Structure {
     fun releaseSharedGLTexture(glTextureId: glUInt_t, glSharedTextureHandle: glSharedTextureHandle_t) =
             ReleaseSharedGLTexture!!.invoke(glTextureId, glSharedTextureHandle)
 
-    internal @JvmField var ReleaseSharedGLTexture: ReleaseSharedGLTexture_callback? = null
+    @JvmField var ReleaseSharedGLTexture: ReleaseSharedGLTexture_callback? = null
 
     interface ReleaseSharedGLTexture_callback : Callback {
         fun invoke(glTextureId: glUInt_t, glSharedTextureHandle: glSharedTextureHandle_t): Boolean
@@ -581,7 +581,7 @@ open class IVRCompositor : Structure {
 
 
     fun lockGLSharedTextureForAccess(glSharedTextureHandle: glSharedTextureHandle_t) = LockGLSharedTextureForAccess!!.invoke(glSharedTextureHandle)
-    internal @JvmField var LockGLSharedTextureForAccess: LockGLSharedTextureForAccess_callback? = null
+    @JvmField var LockGLSharedTextureForAccess: LockGLSharedTextureForAccess_callback? = null
 
     interface LockGLSharedTextureForAccess_callback : Callback {
         fun invoke(glSharedTextureHandle: glSharedTextureHandle_t)
@@ -589,7 +589,7 @@ open class IVRCompositor : Structure {
 
 
     fun unlockGLSharedTextureForAccess(glSharedTextureHandle: glSharedTextureHandle_t) = UnlockGLSharedTextureForAccess!!.invoke(glSharedTextureHandle)
-    internal @JvmField var UnlockGLSharedTextureForAccess: UnlockGLSharedTextureForAccess_callback? = null
+    @JvmField var UnlockGLSharedTextureForAccess: UnlockGLSharedTextureForAccess_callback? = null
 
     interface UnlockGLSharedTextureForAccess_callback : Callback {
         fun invoke(glSharedTextureHandle: glSharedTextureHandle_t)
@@ -601,7 +601,7 @@ open class IVRCompositor : Structure {
     fun getVulkanInstanceExtensionsRequired(pchValue: String, unBufferSize: Int) =
             GetVulkanInstanceExtensionsRequired!!.invoke(pchValue, unBufferSize)
 
-    internal @JvmField var GetVulkanInstanceExtensionsRequired: GetVulkanInstanceExtensionsRequired_callback? = null
+    @JvmField var GetVulkanInstanceExtensionsRequired: GetVulkanInstanceExtensionsRequired_callback? = null
 
     interface GetVulkanInstanceExtensionsRequired_callback : Callback {
         fun invoke(pchValue: String, unBufferSize: Int): Int
@@ -613,7 +613,7 @@ open class IVRCompositor : Structure {
     fun getVulkanDeviceExtensionsRequired(pPhysicalDevice: VkPhysicalDevice_T.ByReference, pchValue: String, unBufferSize: Int) =
             GetVulkanDeviceExtensionsRequired!!.invoke(pPhysicalDevice, pchValue, unBufferSize)
 
-    internal @JvmField var GetVulkanDeviceExtensionsRequired: GetVulkanDeviceExtensionsRequired_callback? = null
+    @JvmField var GetVulkanDeviceExtensionsRequired: GetVulkanDeviceExtensionsRequired_callback? = null
 
     interface GetVulkanDeviceExtensionsRequired_callback : Callback {
         fun invoke(pPhysicalDevice: VkPhysicalDevice_T.ByReference, pchValue: String, unBufferSize: Int): Int

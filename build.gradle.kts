@@ -22,8 +22,8 @@ repositories {
 
 dependencies {
     compile(kotlinModule("stdlib", "1.1.0-rc-91"))
-    testCompile("io.kotlintest:kotlintest:1.3.6")
-    compile("com.github.elect86:glm:4ce71204e6")
+    testCompile("com.github.elect86:kotlintest:c4b7b397a0d182d1adaf61f71a9423c228dc0106")
+    compile("com.github.elect86:glm:caaf5141fc6a914dda1ed9d6a4443fc33b6d2238")
     compile("net.java.dev.jna", "jna", "4.3.0")
 }
 

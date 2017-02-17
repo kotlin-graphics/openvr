@@ -94,7 +94,7 @@ open class IVRNotifications : Structure {
                            pImage: NotificationBitmap_t.ByReference, /* out */ pNotificationId: VRNotificationId_ByReference)
             = EVRNotificationError.of(CreateNotification!!.invoke(ulOverlayHandle, ulUserValue, type.i, pchText, style.i, pImage, pNotificationId))
 
-    internal @JvmField var CreateNotification: CreateNotification_callback? = null
+    @JvmField var CreateNotification: CreateNotification_callback? = null
 
     interface CreateNotification_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, ulUserValue: Long, type: Int, pchText: String, style: Int, pImage: NotificationBitmap_t.ByReference,
@@ -104,7 +104,7 @@ open class IVRNotifications : Structure {
     /** Destroy a notification, hiding it first if it currently shown to the user. */
     fun removeNotification(notificationId: VRNotificationId) = EVRNotificationError.of(RemoveNotification!!.invoke(notificationId))
 
-    internal @JvmField var RemoveNotification: RemoveNotification_callback? = null
+    @JvmField var RemoveNotification: RemoveNotification_callback? = null
 
     interface RemoveNotification_callback : Callback {
         fun invoke(notificationId: VRNotificationId): Int

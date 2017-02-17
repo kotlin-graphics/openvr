@@ -17,7 +17,7 @@ open class IVRResources : Structure {
      *  Returns the size in bytes of the buffer required to hold the specified resource. */
     fun loadSharedResource(pchResourceName: String, pchBuffer: String, unBufferSize: Int) = LoadSharedResource!!.invoke(pchResourceName, pchBuffer, unBufferSize)
 
-    internal @JvmField var LoadSharedResource: LoadSharedResource_callback? = null
+    @JvmField var LoadSharedResource: LoadSharedResource_callback? = null
 
     interface LoadSharedResource_callback : Callback {
         fun invoke(pchResourceName: String, pchBuffer: String, unBufferLen: Int): Int
@@ -29,7 +29,7 @@ open class IVRResources : Structure {
     fun getResourceFullPath(pchResourceName: String, pchResourceTypeDirectory: String, pchPathBuffer: String, unBufferLen: Int)
             = GetResourceFullPath!!.invoke(pchResourceName, pchResourceTypeDirectory, pchPathBuffer, unBufferLen)
 
-    internal @JvmField var GetResourceFullPath: GetResourceFullPath_callback? = null
+    @JvmField var GetResourceFullPath: GetResourceFullPath_callback? = null
 
     interface GetResourceFullPath_callback : Callback {
         fun invoke(pchResourceName: String, pchResourceTypeDirectory: String, pchPathBuffer: String, unBufferLen: Int): Int

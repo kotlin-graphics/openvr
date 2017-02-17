@@ -8,6 +8,7 @@ import com.sun.jna.ptr.PointerByReference
 import com.sun.jna.ptr.ShortByReference
 import main.BYTES
 import main.b
+import main.i
 import java.util.*
 
 // ivrrendermodels.h ==============================================================================================================================================
@@ -131,9 +132,9 @@ open class RenderModel_TextureMap_t : Structure {
     @JvmField var unWidth = 0.toShort()
     @JvmField var unHeight = 0.toShort()
     // Map texture data. All textures are RGBA with 8 bits per channel per pixel. Data size is width * height * 4ub
-    internal @JvmField var rubTextureMapData_internal: Pointer? = null
+    @JvmField var rubTextureMapData_internal: Pointer? = null
     val textureMapData
-        get() = rubTextureMapData_internal?.getByteArray(0, SIZE)
+        get() = rubTextureMapData_internal?.getByteArray(0, SIZE.i)
 
     val SIZE
         get() = unWidth * unHeight * 4 * Byte.BYTES
@@ -170,9 +171,9 @@ val INVALID_TEXTURE_ID = -1
 /** A texture map for use on a render model */
 open class RenderModel_t : Structure {
 
-    internal @JvmField var rVertexData_internal: RenderModel_Vertex_t.ByReference? = null//   Vertex data for the mesh
+    @JvmField var rVertexData_internal: RenderModel_Vertex_t.ByReference? = null//   Vertex data for the mesh
     @JvmField var unVertexCount = 0                                      // Number of vertices in the vertex data
-    internal @JvmField var rIndexData_internal: ShortByReference? = null                   // Indices into the vertex data for each triangle
+    @JvmField var rIndexData_internal: ShortByReference? = null                   // Indices into the vertex data for each triangle
     @JvmField var unTriangleCount = 0                    //                 Number of triangles in the mesh. Index count is 3 * TriangleCount
     // Session unique texture identifier. Rendermodels which share the same texture will have the same id. <0 == texture not present
     @JvmField var diffuseTextureId = INVALID_TEXTURE_ID
@@ -212,7 +213,7 @@ open class RenderModel_t : Structure {
 /** A texture map for use on a render model */
 open class RenderModel_ControllerMode_State_t : Structure {
 
-    internal @JvmField var bScrollWheelVisible_internal = 0.b   // is this controller currently set to be in a scroll wheel mode
+    @JvmField var bScrollWheelVisible_internal = 0.b   // is this controller currently set to be in a scroll wheel mode
     var bScrollWheelVisible
     set(value) {
         bScrollWheelVisible_internal = if(value) 1.b else 0.b
@@ -248,7 +249,7 @@ open class IVRRenderModels : Structure {
     fun loadRenderModel_Async(pchRenderModelName: String, ppRenderModel: PointerByReference)
             = EVRRenderModelError.of(LoadRenderModel_Async!!.invoke(pchRenderModelName, ppRenderModel))
 
-    internal @JvmField var LoadRenderModel_Async: LoadRenderModel_Async_callback? = null
+    @JvmField var LoadRenderModel_Async: LoadRenderModel_Async_callback? = null
 
     interface LoadRenderModel_Async_callback : Callback {
         fun invoke(pchRenderModelName: String, ppRenderModel: PointerByReference): Int
@@ -258,7 +259,7 @@ open class IVRRenderModels : Structure {
      *   It is safe to call this on a null ptr. */
     fun freeRenderModel(pRenderModel: RenderModel_t.ByReference) = FreeRenderModel!!.invoke(pRenderModel)
 
-    internal @JvmField var FreeRenderModel: FreeRenderModel_callback? = null
+    @JvmField var FreeRenderModel: FreeRenderModel_callback? = null
 
     interface FreeRenderModel_callback : Callback {
         fun invoke(pRenderModel: RenderModel_t.ByReference)
@@ -267,7 +268,7 @@ open class IVRRenderModels : Structure {
     /** Loads and returns a texture for use in the application. */
     fun loadTexture_Async(textureId: TextureID_t, ppTexture: PointerByReference) = EVRRenderModelError.of(LoadTexture_Async!!.invoke(textureId, ppTexture))
 
-    internal @JvmField var LoadTexture_Async: LoadTexture_Async_callback? = null
+    @JvmField var LoadTexture_Async: LoadTexture_Async_callback? = null
 
     interface LoadTexture_Async_callback : Callback {
         fun invoke(textureId: TextureID_t, ppTexture: PointerByReference): Int
@@ -277,7 +278,7 @@ open class IVRRenderModels : Structure {
      *  It is safe to call this on a null ptr. */
     fun freeTexture(pTexture: RenderModel_TextureMap_t.ByReference) = FreeTexture!!.invoke(pTexture)
 
-    internal @JvmField var FreeTexture: FreeTexture_callback? = null
+    @JvmField var FreeTexture: FreeTexture_callback? = null
 
     interface FreeTexture_callback : Callback {
         fun invoke(pTexture: RenderModel_TextureMap_t.ByReference)
@@ -287,7 +288,7 @@ open class IVRRenderModels : Structure {
     fun loadTextureD3D11_Async(textureId: TextureID_t, pD3D11Device: Pointer, ppD3D11Texture2D: PointerByReference)
             = EVRRenderModelError.of(LoadTextureD3D11_Async!!.invoke(textureId, pD3D11Device, ppD3D11Texture2D))
 
-    internal @JvmField var LoadTextureD3D11_Async: LoadTextureD3D11_Async_callback? = null
+    @JvmField var LoadTextureD3D11_Async: LoadTextureD3D11_Async_callback? = null
 
     interface LoadTextureD3D11_Async_callback : Callback {
         fun invoke(textureId: TextureID_t, pD3D11Device: Pointer, ppD3D11Texture2D: PointerByReference): Int
@@ -297,7 +298,7 @@ open class IVRRenderModels : Structure {
     fun loadIntoTextureD3D11_Async(textureId: TextureID_t, pDstTexture: Pointer)
             = EVRRenderModelError.of(LoadIntoTextureD3D11_Async!!.invoke(textureId, pDstTexture))
 
-    internal @JvmField var LoadIntoTextureD3D11_Async: LoadIntoTextureD3D11_Async_callback? = null
+    @JvmField var LoadIntoTextureD3D11_Async: LoadIntoTextureD3D11_Async_callback? = null
 
     interface LoadIntoTextureD3D11_Async_callback : Callback {
         fun invoke(textureId: TextureID_t, pDstTexture: Pointer): Int
@@ -306,7 +307,7 @@ open class IVRRenderModels : Structure {
     /** Use this to free textures created with LoadTextureD3D11_Async instead of calling Release on them. */
     fun freeTextureD3D11(pD3D11Texture2D: Pointer) = FreeTextureD3D11!!.invoke(pD3D11Texture2D)
 
-    internal @JvmField var FreeTextureD3D11: FreeTextureD3D11_callback? = null
+    @JvmField var FreeTextureD3D11: FreeTextureD3D11_callback? = null
 
     interface FreeTextureD3D11_callback : Callback {
         fun invoke(pD3D11Texture2D: Pointer)
@@ -318,7 +319,7 @@ open class IVRRenderModels : Structure {
     fun getRenderModelName(unRenderModelIndex: Int, pchRenderModelName: String, unRenderModelNameLen: Int)
             = GetRenderModelName!!.invoke(unRenderModelIndex, pchRenderModelName, unRenderModelNameLen)
 
-    internal @JvmField var GetRenderModelName: GetRenderModelName_callback? = null
+    @JvmField var GetRenderModelName: GetRenderModelName_callback? = null
 
     interface GetRenderModelName_callback : Callback {
         fun invoke(unRenderModelIndex: Int, pchRenderModelName: String, unRenderModelNameLen: Int): Int
@@ -327,7 +328,7 @@ open class IVRRenderModels : Structure {
     /** Returns the number of available render models. */
     fun getRenderModelCount() = GetRenderModelCount!!.invoke()
 
-    internal @JvmField var GetRenderModelCount: GetRenderModelCount_callback? = null
+    @JvmField var GetRenderModelCount: GetRenderModelCount_callback? = null
 
     interface GetRenderModelCount_callback : Callback {
         fun invoke(): Int
@@ -343,7 +344,7 @@ open class IVRRenderModels : Structure {
      *      Returns 0 if components not supported, >0 otherwise */
     fun getComponentCount(pchRenderModelName: String) = GetComponentCount!!.invoke(pchRenderModelName)
 
-    internal @JvmField var GetComponentCount: GetComponentCount_callback? = null
+    @JvmField var GetComponentCount: GetComponentCount_callback? = null
 
     interface GetComponentCount_callback : Callback {
         fun invoke(pchRenderModelName: String): Int
@@ -355,7 +356,7 @@ open class IVRRenderModels : Structure {
     fun getComponentName(pchRenderModelName: String, unComponentIndex: Int, pchComponentName: String, unComponentNameLen: Int)
             = GetComponentName!!.invoke(pchRenderModelName, unComponentIndex, pchComponentName, unComponentNameLen)
 
-    internal @JvmField var GetComponentName: GetComponentName_callback? = null
+    @JvmField var GetComponentName: GetComponentName_callback? = null
 
     interface GetComponentName_callback : Callback {
         fun invoke(pchRenderModelName: String, unComponentIndex: Int, pchComponentName: String, unComponentNameLen: Int): Int
@@ -367,7 +368,7 @@ open class IVRRenderModels : Structure {
      *      Note: A single component may be associated with multiple buttons. Ex: A trackpad which also provides "D-pad" functionality */
     fun getComponentButtonMask(pchRenderModelName: String, pchComponentName: String) = GetComponentButtonMask!!.invoke(pchRenderModelName, pchComponentName)
 
-    internal @JvmField var GetComponentButtonMask: GetComponentButtonMask_callback? = null
+    @JvmField var GetComponentButtonMask: GetComponentButtonMask_callback? = null
 
     interface GetComponentButtonMask_callback : Callback {
         fun invoke(pchRenderModelName: String, pchComponentName: String): Long
@@ -379,7 +380,7 @@ open class IVRRenderModels : Structure {
     fun getComponentRenderModelName(pchRenderModelName: String, pchComponentName: String, pchComponentRenderModelName: String, unComponentRenderModelNameLen: Int)
             = GetComponentRenderModelName!!.invoke(pchRenderModelName, pchComponentName, pchComponentRenderModelName, unComponentRenderModelNameLen)
 
-    internal @JvmField var GetComponentRenderModelName: GetComponentRenderModelName_callback? = null
+    @JvmField var GetComponentRenderModelName: GetComponentRenderModelName_callback? = null
 
     interface GetComponentRenderModelName_callback : Callback {
         fun invoke(pchRenderModelName: String, pchComponentName: String, pchComponentRenderModelName: String, unComponentRenderModelNameLen: Int): Int
@@ -397,7 +398,7 @@ open class IVRRenderModels : Structure {
                           pState: RenderModel_ControllerMode_State_t.ByReference, pComponentState: RenderModel_ComponentState_t.ByReference)
             = GetComponentState!!.invoke(pchRenderModelName, pchComponentName, pControllerState, pState, pComponentState)
 
-    internal @JvmField var GetComponentState: GetComponentState_callback? = null
+    @JvmField var GetComponentState: GetComponentState_callback? = null
 
     interface GetComponentState_callback : Callback {
         fun invoke(pchRenderModelName: String, pchComponentName: String, pControllerState: VRControllerState_t.ByReference,
@@ -407,7 +408,7 @@ open class IVRRenderModels : Structure {
     /** Returns true if the render model has a component with the specified name */
     fun renderModelHasComponent(pchRenderModelName: String, pchComponentName: String) = RenderModelHasComponent!!.invoke(pchRenderModelName, pchComponentName)
 
-    internal @JvmField var RenderModelHasComponent: RenderModelHasComponent_callback? = null
+    @JvmField var RenderModelHasComponent: RenderModelHasComponent_callback? = null
 
     interface RenderModelHasComponent_callback : Callback {
         fun invoke(pchRenderModelName: String, pchComponentName: String): Boolean
@@ -417,7 +418,7 @@ open class IVRRenderModels : Structure {
     fun getRenderModelThumbnailURL(pchRenderModelName: String, pchThumbnailURL: String, unThumbnailURLLen: Int, peError: EVRRenderModelError_ByReference)
             = GetRenderModelThumbnailURL!!.invoke(pchRenderModelName, pchThumbnailURL, unThumbnailURLLen, peError)
 
-    internal @JvmField var GetRenderModelThumbnailURL: GetRenderModelThumbnailURL_callback? = null
+    @JvmField var GetRenderModelThumbnailURL: GetRenderModelThumbnailURL_callback? = null
 
     interface GetRenderModelThumbnailURL_callback : Callback {
         fun invoke(pchRenderModelName: String, pchThumbnailURL: String, unThumbnailURLLen: Int, peError: EVRRenderModelError_ByReference): Int
@@ -428,7 +429,7 @@ open class IVRRenderModels : Structure {
     fun getRenderModelOriginalPath(pchRenderModelName: String, pchOriginalPath: String, unOriginalPathLen: Int, peError: EVRRenderModelError_ByReference)
             = GetRenderModelOriginalPath!!.invoke(pchRenderModelName, pchOriginalPath, unOriginalPathLen, peError)
 
-    internal @JvmField var GetRenderModelOriginalPath: GetRenderModelOriginalPath_callback? = null
+    @JvmField var GetRenderModelOriginalPath: GetRenderModelOriginalPath_callback? = null
 
     interface GetRenderModelOriginalPath_callback : Callback {
         fun invoke(pchRenderModelName: String, pchOriginalPath: String, unOriginalPathLen: Int, peError: EVRRenderModelError_ByReference): Int
@@ -437,7 +438,7 @@ open class IVRRenderModels : Structure {
     /** Returns a string for a render model error */
     fun getRenderModelErrorNameFromEnum(error: EVRRenderModelError) = GetRenderModelErrorNameFromEnum!!.invoke(error.i)
 
-    internal @JvmField var GetRenderModelErrorNameFromEnum: GetRenderModelErrorNameFromEnum_callback? = null
+    @JvmField var GetRenderModelErrorNameFromEnum: GetRenderModelErrorNameFromEnum_callback? = null
 
     interface GetRenderModelErrorNameFromEnum_callback : Callback {
         fun invoke(error: Int): String

@@ -380,10 +380,10 @@ class EColorSpace_ByReference(@JvmField var value: EColorSpace = EColorSpace.Aut
 open class Texture_t : Structure {
 
     @JvmField var handle = 0  //See ETextureType definition above
-    internal @JvmField var eType_internal = 0
+    @JvmField var eType_internal = 0
     val eType
         get() = ETextureType.of(eType_internal)
-    internal @JvmField var eColorSpace_internal = 0
+    @JvmField var eColorSpace_internal = 0
     val eColorSpace
         get() = EColorSpace.of(eColorSpace_internal)
 
@@ -477,7 +477,7 @@ open class TrackedDevicePose_t : Structure {
     @JvmField var mDeviceToAbsoluteTracking = HmdMatrix34_t()
     @JvmField var vVelocity = HmdVector3_t()          // velocity in tracker space in m/s
     @JvmField var vAngularVelocity = HmdVector3_t()   // angular velocity in radians/s (?)
-    internal @JvmField var eTrackingResult_internal = 0
+    @JvmField var eTrackingResult_internal = 0
     var eTrackingResult
         set(value) {
             eTrackingResult_internal = value.i
@@ -1009,7 +1009,7 @@ fun buttonMaskFromId(id: EVRButtonId) = (1 shl id.i).toLong()
 /** used for controller button events */
 open class VREvent_Controller_t : Structure {
 
-    internal @JvmField var button_internal = 0  // openvr.EVRButtonId value
+    @JvmField var button_internal = 0  // openvr.EVRButtonId value
     var button
         set(value) {
             button_internal = value.i
@@ -1106,7 +1106,7 @@ open class VREvent_Scroll_t : Structure {
 open class VREvent_TouchPadMove_t : Structure {
 
     // true if the users finger is detected on the touch pad
-    internal @JvmField var bFingerDown_internal = 0.b
+    @JvmField var bFingerDown_internal = 0.b
     var bFingerDown
         set(value) {
             bFingerDown_internal = if (value) 1.b else 0.b
@@ -1174,7 +1174,7 @@ open class VREvent_Process_t : Structure {
 
     @JvmField var pid = 0
     @JvmField var oldPid = 0
-    internal @JvmField var bForced_internal = 0.b
+    @JvmField var bForced_internal = 0.b
     var bForced
         set(value) {
             bForced_internal = if (value) 1.b else 0.b
@@ -1223,7 +1223,7 @@ open class VREvent_Overlay_t : Structure {
 /** Used for a few events about overlays */
 open class VREvent_Status_t : Structure {
 
-    internal @JvmField var statusState_internal = 0 // openvr.EVRState value
+    @JvmField var statusState_internal = 0 // openvr.EVRState value
     var statusState
         set(value) {
             statusState_internal = value.i
@@ -1249,7 +1249,7 @@ open class VREvent_Status_t : Structure {
 /** Used for keyboard events **/
 open class VREvent_Keyboard_t : Structure {
 
-    internal @JvmField var cNewInput_internal = ByteArray(8)    // Up to 11 bytes of new input
+    @JvmField var cNewInput_internal = ByteArray(8)    // Up to 11 bytes of new input
     var cNewInput
         set(value) {
             cNewInput_internal = value.take(8).toByteArray()
@@ -1361,7 +1361,7 @@ open class VREvent_PerformanceTest_t : Structure {
 
 open class VREvent_SeatedZeroPoseReset_t : Structure {
 
-    internal @JvmField var bResetBySystemMenu_internal = 0.b
+    @JvmField var bResetBySystemMenu_internal = 0.b
     var bResetBySystemMenu
         set(value) {
             bResetBySystemMenu_internal = if (value) 1.b else 0.b
@@ -1472,7 +1472,7 @@ open class VREvent_EditingCameraSurface_t : Structure {
 
 open class VREvent_MessageOverlay_t : Structure {
 
-    internal @JvmField var unVRMessageOverlayResponse_internal = 0 // vr::VRMessageOverlayResponse enum
+    @JvmField var unVRMessageOverlayResponse_internal = 0 // vr::VRMessageOverlayResponse enum
     var unVRMessageOverlayResponse
         set(value) {
             unVRMessageOverlayResponse_internal = value.i
@@ -1498,7 +1498,7 @@ open class VREvent_MessageOverlay_t : Structure {
 open class VREvent_Property_t : Structure {
 
     @JvmField var container: PropertyContainerHandle_t = 0
-    internal @JvmField var prop_internal = 0
+    @JvmField var prop_internal = 0
     var prop
         set(value) {
             prop_internal = value.i
@@ -1562,7 +1562,7 @@ open class VREvent_Data_t : Union {
 /** An event posted by the server to all running applications */
 open class VREvent_t : Structure {
 
-    internal @JvmField var eventType_internal = 0   // openvr.EVREventType value
+    @JvmField var eventType_internal = 0   // openvr.EVREventType value
     var eventType
         set(value) {
             eventType_internal = value.i
@@ -1735,7 +1735,7 @@ enum class ECollisionBoundsStyle(@JvmField val i: Int) {
 open class Compositor_OverlaySettings : Structure {
 
     @JvmField var size = 0    // sizeof(openvr.Compositor_OverlaySettings)
-    internal @JvmField var curved_internal = 0.b
+    @JvmField var curved_internal = 0.b
     var curved
         set(value) {
             curved_internal = if (value) 1.b else 0.b
@@ -2040,7 +2040,7 @@ val INVALID_TRACKED_CAMERA_HANDLE = 0L
 
 open class CameraVideoStreamFrameHeader_t : Structure {
 
-    internal @JvmField var eFrameType_internal = 0
+    @JvmField var eFrameType_internal = 0
     var eFrameType
         set(value) {
             eFrameType_internal = value.i

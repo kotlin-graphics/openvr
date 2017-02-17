@@ -36,7 +36,7 @@ open class IVRChaperoneSetup : Structure {
     /** Saves the current working copy to disk */
     fun commitWorkingCopy(configFile: EChaperoneConfigFile) = CommitWorkingCopy!!.invoke(configFile.i)
 
-    internal @JvmField var CommitWorkingCopy: CommitWorkingCopy_callback? = null
+    @JvmField var CommitWorkingCopy: CommitWorkingCopy_callback? = null
 
     interface CommitWorkingCopy_callback : Callback {
         fun invoke(configFile: Int): Boolean
@@ -47,7 +47,7 @@ open class IVRChaperoneSetup : Structure {
      *  Only after this should you do gets and sets on the existing data. */
     fun revertWorkingCopy() = RevertWorkingCopy!!.invoke()
 
-    internal @JvmField var RevertWorkingCopy: RevertWorkingCopy_callback? = null
+    @JvmField var RevertWorkingCopy: RevertWorkingCopy_callback? = null
 
     interface RevertWorkingCopy_callback : Callback {
         fun invoke()
@@ -57,7 +57,7 @@ open class IVRChaperoneSetup : Structure {
      *  Tracking space center (0,0,0) is the center of the Play Area. */
     fun getWorkingPlayAreaSize(pSizeX: FloatByReference, pSizeZ: FloatByReference) = GetWorkingPlayAreaSize!!.invoke(pSizeX, pSizeZ)
 
-    internal @JvmField var GetWorkingPlayAreaSize: GetWorkingPlayAreaSize_callback? = null
+    @JvmField var GetWorkingPlayAreaSize: GetWorkingPlayAreaSize_callback? = null
 
     interface GetWorkingPlayAreaSize_callback : Callback {
         fun invoke(pSizeX: FloatByReference, pSizeZ: FloatByReference): Boolean
@@ -71,7 +71,7 @@ open class IVRChaperoneSetup : Structure {
      *  Height of every corner is 0Y (on the floor). **/
     fun getWorkingPlayAreaRect(rect: HmdQuad_t.ByReference) = GetWorkingPlayAreaRect!!.invoke(rect)
 
-    internal @JvmField var GetWorkingPlayAreaRect: GetWorkingPlayAreaRect_callback? = null
+    @JvmField var GetWorkingPlayAreaRect: GetWorkingPlayAreaRect_callback? = null
 
     interface GetWorkingPlayAreaRect_callback : Callback {
         fun invoke(rect: HmdQuad_t.ByReference): Boolean
@@ -82,7 +82,7 @@ open class IVRChaperoneSetup : Structure {
     fun getWorkingCollisionBoundsInfo(pQuadsBuffer: HmdQuad_t.ByReference, punQuadsCount: IntByReference)
             = GetWorkingCollisionBoundsInfo!!.invoke(pQuadsBuffer, punQuadsCount)
 
-    internal @JvmField var GetWorkingCollisionBoundsInfo: GetWorkingCollisionBoundsInfo_callback? = null
+    @JvmField var GetWorkingCollisionBoundsInfo: GetWorkingCollisionBoundsInfo_callback? = null
 
     interface GetWorkingCollisionBoundsInfo_callback : Callback {
         fun invoke(pQuadsBuffer: HmdQuad_t.ByReference, punQuadsCount: IntByReference): Boolean
@@ -92,7 +92,7 @@ open class IVRChaperoneSetup : Structure {
     fun getLiveCollisionBoundsInfo(pQuadsBuffer: HmdQuad_t.ByReference, punQuadsCount: IntByReference)
             = GetLiveCollisionBoundsInfo!!.invoke(pQuadsBuffer, punQuadsCount)
 
-    internal @JvmField var GetLiveCollisionBoundsInfo: GetLiveCollisionBoundsInfo_callback? = null
+    @JvmField var GetLiveCollisionBoundsInfo: GetLiveCollisionBoundsInfo_callback? = null
 
     interface GetLiveCollisionBoundsInfo_callback : Callback {
         fun invoke(pQuadsBuffer: HmdQuad_t.ByReference, punQuadsCount: IntByReference): Boolean
@@ -102,7 +102,7 @@ open class IVRChaperoneSetup : Structure {
     fun getWorkingSeatedZeroPoseToRawTrackingPose(pmatSeatedZeroPoseToRawTrackingPose: HmdMatrix34_t.ByReference)
             = GetWorkingSeatedZeroPoseToRawTrackingPose!!.invoke(pmatSeatedZeroPoseToRawTrackingPose)
 
-    internal @JvmField var GetWorkingSeatedZeroPoseToRawTrackingPose: GetWorkingSeatedZeroPoseToRawTrackingPose_callback? = null
+    @JvmField var GetWorkingSeatedZeroPoseToRawTrackingPose: GetWorkingSeatedZeroPoseToRawTrackingPose_callback? = null
 
     interface GetWorkingSeatedZeroPoseToRawTrackingPose_callback : Callback {
         fun invoke(pmatSeatedZeroPoseToRawTrackingPose: HmdMatrix34_t.ByReference): Boolean
@@ -112,7 +112,7 @@ open class IVRChaperoneSetup : Structure {
     fun getWorkingStandingZeroPoseToRawTrackingPose(pmatStandingZeroPoseToRawTrackingPose: HmdMatrix34_t.ByReference)
             = GetWorkingStandingZeroPoseToRawTrackingPose!!.invoke(pmatStandingZeroPoseToRawTrackingPose)
 
-    internal @JvmField var GetWorkingStandingZeroPoseToRawTrackingPose: GetWorkingStandingZeroPoseToRawTrackingPose_callback? = null
+    @JvmField var GetWorkingStandingZeroPoseToRawTrackingPose: GetWorkingStandingZeroPoseToRawTrackingPose_callback? = null
 
     interface GetWorkingStandingZeroPoseToRawTrackingPose_callback : Callback {
         fun invoke(pmatStandingZeroPoseToRawTrackingPose: HmdMatrix34_t.ByReference): Boolean
@@ -121,7 +121,7 @@ open class IVRChaperoneSetup : Structure {
     /** Sets the Play Area in the working copy. */
     fun setWorkingPlayAreaSize(sizeX: Float, sizeZ: Float) = SetWorkingPlayAreaSize!!.invoke(sizeX, sizeZ)
 
-    internal @JvmField var SetWorkingPlayAreaSize: SetWorkingPlayAreaSize_callback? = null
+    @JvmField var SetWorkingPlayAreaSize: SetWorkingPlayAreaSize_callback? = null
 
     interface SetWorkingPlayAreaSize_callback : Callback {
         fun invoke(sizeX: Float, sizeZ: Float)
@@ -130,7 +130,7 @@ open class IVRChaperoneSetup : Structure {
     /** Sets the Collision Bounds in the working copy. */
     fun setWorkingCollisionBoundsInfo(pQuadsBuffer: HmdQuad_t.ByReference, unQuadsCount: Int) = SetWorkingCollisionBoundsInfo!!.invoke(pQuadsBuffer, unQuadsCount)
 
-    internal @JvmField var SetWorkingCollisionBoundsInfo: SetWorkingCollisionBoundsInfo_callback? = null
+    @JvmField var SetWorkingCollisionBoundsInfo: SetWorkingCollisionBoundsInfo_callback? = null
 
     interface SetWorkingCollisionBoundsInfo_callback : Callback {
         fun invoke(pQuadsBuffer: HmdQuad_t.ByReference, unQuadsCount: Int)
@@ -140,7 +140,7 @@ open class IVRChaperoneSetup : Structure {
     fun setWorkingSeatedZeroPoseToRawTrackingPose(pmatSeatedZeroPoseToRawTrackingPose: HmdMatrix34_t.ByReference)
             = SetWorkingSeatedZeroPoseToRawTrackingPose!!.invoke(pmatSeatedZeroPoseToRawTrackingPose)
 
-    internal @JvmField var SetWorkingSeatedZeroPoseToRawTrackingPose: SetWorkingSeatedZeroPoseToRawTrackingPose_callback? = null
+    @JvmField var SetWorkingSeatedZeroPoseToRawTrackingPose: SetWorkingSeatedZeroPoseToRawTrackingPose_callback? = null
 
     interface SetWorkingSeatedZeroPoseToRawTrackingPose_callback : Callback {
         fun invoke(pMatSeatedZeroPoseToRawTrackingPose: HmdMatrix34_t.ByReference)
@@ -150,7 +150,7 @@ open class IVRChaperoneSetup : Structure {
     fun setWorkingStandingZeroPoseToRawTrackingPose(pmatStandingZeroPoseToRawTrackingPose: HmdMatrix34_t.ByReference)
             = SetWorkingStandingZeroPoseToRawTrackingPose!!.invoke(pmatStandingZeroPoseToRawTrackingPose)
 
-    internal @JvmField var SetWorkingStandingZeroPoseToRawTrackingPose: SetWorkingStandingZeroPoseToRawTrackingPose_callback? = null
+    @JvmField var SetWorkingStandingZeroPoseToRawTrackingPose: SetWorkingStandingZeroPoseToRawTrackingPose_callback? = null
 
     interface SetWorkingStandingZeroPoseToRawTrackingPose_callback : Callback {
         fun invoke(pMatStandingZeroPoseToRawTrackingPose: HmdMatrix34_t.ByReference)
@@ -159,7 +159,7 @@ open class IVRChaperoneSetup : Structure {
     /** Tear everything down and reload it from the file on disk */
     fun reloadFromDisk(configFile: EChaperoneConfigFile) = ReloadFromDisk!!.invoke(configFile.i)
 
-    internal @JvmField var ReloadFromDisk: ReloadFromDisk_callback? = null
+    @JvmField var ReloadFromDisk: ReloadFromDisk_callback? = null
 
     interface ReloadFromDisk_callback : Callback {
         fun invoke(configFile: Int)
@@ -169,7 +169,7 @@ open class IVRChaperoneSetup : Structure {
     fun getLiveSeatedZeroPoseToRawTrackingPose(pmatSeatedZeroPoseToRawTrackingPose: HmdMatrix34_t.ByReference)
             = GetLiveSeatedZeroPoseToRawTrackingPose!!.invoke(pmatSeatedZeroPoseToRawTrackingPose)
 
-    internal @JvmField var GetLiveSeatedZeroPoseToRawTrackingPose: GetLiveSeatedZeroPoseToRawTrackingPose_callback? = null
+    @JvmField var GetLiveSeatedZeroPoseToRawTrackingPose: GetLiveSeatedZeroPoseToRawTrackingPose_callback? = null
 
     interface GetLiveSeatedZeroPoseToRawTrackingPose_callback : Callback {
         fun invoke(pmatSeatedZeroPoseToRawTrackingPose: HmdMatrix34_t.ByReference): Boolean
@@ -179,7 +179,7 @@ open class IVRChaperoneSetup : Structure {
     fun setWorkingCollisionBoundsTagsInfo(pTagsBuffer: ByteByReference, unTagCount: Int) =
             SetWorkingCollisionBoundsTagsInfo!!.invoke(pTagsBuffer, unTagCount)
 
-    internal @JvmField var SetWorkingCollisionBoundsTagsInfo: SetWorkingCollisionBoundsTagsInfo_callback? = null
+    @JvmField var SetWorkingCollisionBoundsTagsInfo: SetWorkingCollisionBoundsTagsInfo_callback? = null
 
     interface SetWorkingCollisionBoundsTagsInfo_callback : Callback {
         fun invoke(pTagsBuffer: ByteByReference, unTagCount: Int)
@@ -189,7 +189,7 @@ open class IVRChaperoneSetup : Structure {
     fun getLiveCollisionBoundsTagsInfo(pTagsBuffer: ByteByReference, punTagCount: IntByReference)
             = GetLiveCollisionBoundsTagsInfo!!.invoke(pTagsBuffer, punTagCount)
 
-    internal @JvmField var GetLiveCollisionBoundsTagsInfo: GetLiveCollisionBoundsTagsInfo_callback? = null
+    @JvmField var GetLiveCollisionBoundsTagsInfo: GetLiveCollisionBoundsTagsInfo_callback? = null
 
     interface GetLiveCollisionBoundsTagsInfo_callback : Callback {
         fun invoke(pTagsBuffer: ByteByReference, punTagCount: IntByReference): Boolean
@@ -197,7 +197,7 @@ open class IVRChaperoneSetup : Structure {
 
 
     fun setWorkingPhysicalBoundsInfo(pQuadsBuffer: HmdQuad_t.ByReference, unQuadsCount: Int) = SetWorkingPhysicalBoundsInfo!!.invoke(pQuadsBuffer, unQuadsCount)
-    internal @JvmField var SetWorkingPhysicalBoundsInfo: SetWorkingPhysicalBoundsInfo_callback? = null
+    @JvmField var SetWorkingPhysicalBoundsInfo: SetWorkingPhysicalBoundsInfo_callback? = null
 
     interface SetWorkingPhysicalBoundsInfo_callback : Callback {
         fun invoke(pQuadsBuffer: HmdQuad_t.ByReference, unQuadsCount: Int): Boolean
@@ -207,7 +207,7 @@ open class IVRChaperoneSetup : Structure {
     fun getLivePhysicalBoundsInfo(pQuadsBuffer: HmdQuad_t.ByReference, punQuadsCount: IntByReference)
             = GetLivePhysicalBoundsInfo!!.invoke(pQuadsBuffer, punQuadsCount)
 
-    internal @JvmField var GetLivePhysicalBoundsInfo: GetLivePhysicalBoundsInfo_callback? = null
+    @JvmField var GetLivePhysicalBoundsInfo: GetLivePhysicalBoundsInfo_callback? = null
 
     interface GetLivePhysicalBoundsInfo_callback : Callback {
         fun invoke(pQuadsBuffer: HmdQuad_t.ByReference, punQuadsCount: IntByReference): Boolean
@@ -215,7 +215,7 @@ open class IVRChaperoneSetup : Structure {
 
 
     fun exportLiveToBuffer(pBuffer: String, pnBufferLength: IntByReference) = ExportLiveToBuffer!!.invoke(pBuffer, pnBufferLength)
-    internal @JvmField var ExportLiveToBuffer: ExportLiveToBuffer_callback? = null
+    @JvmField var ExportLiveToBuffer: ExportLiveToBuffer_callback? = null
 
     interface ExportLiveToBuffer_callback : Callback {
         fun invoke(pBuffer: String, pnBufferLength: IntByReference): Boolean
@@ -223,7 +223,7 @@ open class IVRChaperoneSetup : Structure {
 
 
     fun importFromBufferToWorking(pBuffer: String, nImportFlags: Int) = ImportFromBufferToWorking!!.invoke(pBuffer, nImportFlags)
-    internal @JvmField var ImportFromBufferToWorking: ImportFromBufferToWorking_callback? = null
+    @JvmField var ImportFromBufferToWorking: ImportFromBufferToWorking_callback? = null
 
     interface ImportFromBufferToWorking_callback : Callback {
         fun invoke(pBuffer: String, nImportFlags: Int): Boolean
