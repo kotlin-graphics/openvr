@@ -223,7 +223,7 @@ open class IVRCompositor : Structure {
 
     internal @JvmField var WaitGetPoses: WaitGetPoses_callback? = null
 
-    interface WaitGetPoses_callback : Callback {
+    internal interface WaitGetPoses_callback : Callback {
         fun invoke(pRenderPoseArray: TrackedDevicePose_t.ByReference, unRenderPoseArrayCount: Int, pGamePoseArray: TrackedDevicePose_t.ByReference?,
                    unGamePoseArrayCount: Int): Int
     }
