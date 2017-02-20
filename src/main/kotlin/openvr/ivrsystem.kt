@@ -364,7 +364,7 @@ open class IVRSystem : Structure {
     /** Returns a string property. If the device index is not valid or the property is not a string value this function will return 0.
      *  Otherwise it returns the length of the number of bytes necessary to hold this string including the trailing null.
      *  Strings will always fit in buffers of k_unMaxPropertyStringSize characters. */
-    internal interface GetStringTrackedDeviceProperty_callback : Callback {
+    interface GetStringTrackedDeviceProperty_callback : Callback {
         fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pchValue: ByteArray?, unBufferSize: Int,
                    pError: ETrackedPropertyError_ByReference?): Int
     }
@@ -577,7 +577,7 @@ open class IVRSystem : Structure {
      *  This extends the timeout until the process is killed. */
     fun acknowledgeQuit_Exiting() = AcknowledgeQuit_Exiting!!.invoke()
 
-    internal  var AcknowledgeQuit_Exiting: AcknowledgeQuit_Exiting_callback? = null
+    @JvmField var AcknowledgeQuit_Exiting: AcknowledgeQuit_Exiting_callback? = null
 
     interface AcknowledgeQuit_Exiting_callback : Callback {
         fun invoke()

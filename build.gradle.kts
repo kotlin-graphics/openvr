@@ -18,6 +18,9 @@ apply {
 repositories {
     mavenCentral()
     gradleScriptKotlin()
+//    flatDir {
+//        dirs '../local_lib'
+//    }
 }
 
 dependencies {

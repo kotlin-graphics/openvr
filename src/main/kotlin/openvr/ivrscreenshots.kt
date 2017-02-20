@@ -2,7 +2,6 @@ package openvr
 
 import com.sun.jna.*
 import com.sun.jna.ptr.IntByReference
-import java.lang.Double
 import java.util.*
 
 // ivrscreenshots.h ===============================================================================================================================================
@@ -58,7 +57,7 @@ open class IVRScreenshots : Structure {
      *  Once hooked your application will receive a VREvent_RequestScreenshot event when the user presses the buttons to take a screenshot. */
     fun hookScreenshot(pSupportedTypes: Array<EVRScreenshotType>, numTypes: Int): EVRScreenshotError {
 
-        val pointer = Memory((numTypes * Native.getNativeSize(Double.TYPE)).toLong())
+        val pointer = Memory((numTypes * Native.getNativeSize(java.lang.Double.TYPE)).toLong())
         pointer.read(0, pSupportedTypes.map { it.i }.toIntArray(), 0, numTypes) // TODO probably also the other arrays needs Pointer type
 
         return EVRScreenshotError.of(HookScreenshot!!.invoke(pointer, numTypes))
