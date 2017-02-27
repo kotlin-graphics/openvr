@@ -2,14 +2,11 @@ package openvr
 
 import com.sun.jna.Callback
 import com.sun.jna.Pointer
-import com.sun.jna.StringArray
 import com.sun.jna.Structure
 import com.sun.jna.ptr.FloatByReference
 import com.sun.jna.ptr.IntByReference
 import com.sun.jna.ptr.LongByReference
-import main.i
 import java.util.*
-import javax.xml.stream.events.Characters
 
 // ivrsystem.h ====================================================================================================================================================
 
@@ -462,7 +459,7 @@ open class IVRSystem : Structure {
 
     /** Fills the supplied struct with the current state of the controller and the provided pose with the pose of the controller when the controller state was
      *  updated most recently. Use this form if you need a precise controller pose as input to your application when the user presses or releases a button. */
-    fun GetControllerStateWithPose(eOrigin: ETrackingUniverseOrigin, unControllerDeviceIndex: TrackedDeviceIndex_t,
+    fun getControllerStateWithPose(eOrigin: ETrackingUniverseOrigin, unControllerDeviceIndex: TrackedDeviceIndex_t,
                                    pControllerState: VRControllerState_t.ByReference,
                                    pTrackedDevicePose: TrackedDevicePose_t.ByReference, unControllerStateSize: Int)
             = GetControllerStateWithPose!!.invoke(eOrigin.i, unControllerDeviceIndex, pControllerState, pTrackedDevicePose,
