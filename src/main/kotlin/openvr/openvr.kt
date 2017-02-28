@@ -1003,7 +1003,7 @@ enum class EVRButtonId(@JvmField val i: Int) {
     }
 }
 
-fun buttonMaskFromId(id: EVRButtonId) = (1 shl id.i).toLong()
+fun buttonMaskFromId(id: EVRButtonId) = 1L shl id.i
 
 
 /** used for controller button events */
