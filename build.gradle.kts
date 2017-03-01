@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath(kotlinModule("gradle-plugin", "1.1.0-rc-91"))
+        classpath(kotlinModule("gradle-plugin", "1.1.0"))
     }
 }
 
@@ -24,9 +24,9 @@ repositories {
 }
 
 dependencies {
-    compile(kotlinModule("stdlib", "1.1.0-rc-91"))
-    testCompile("com.github.elect86:kotlintest:c4b7b397a0d182d1adaf61f71a9423c228dc0106")
-    compile("com.github.elect86:glm:caaf5141fc6a914dda1ed9d6a4443fc33b6d2238")
+    compile(kotlinModule("stdlib", "1.1.0"))
+    testCompile("com.github.elect86:kotlintest:d8878d6da0944ec6bcbcdad6a1540bba021d768d")
+    compile("com.github.elect86:glm:05859e02c3529f7a95b4b8cefbeb16f9b5e0b515")
     compile("net.java.dev.jna", "jna", "4.3.0")
 }
 
