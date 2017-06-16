@@ -436,6 +436,9 @@ enum class ETrackingResult(@JvmField val i: Int) {
     }
 }
 
+typealias DriverId_t = Int
+val k_nDriverNone = 0xFFFFFFFF.i
+
 val k_unMaxDriverDebugResponseSize = 32768
 
 /** Used to pass device IDs to API calls */
@@ -653,6 +656,9 @@ enum class ETrackedDeviceProperty(@JvmField val i: Int) {
     DisplayMCImageNumChannels_Int32(2040),
     DisplayMCImageData_Binary(2041),
     SecondsFromPhotonsToVblank_Float(2042),
+    DriverDirectModeSendsVsyncEvents_Bool(2043),
+    DisplayDebugMode_Bool(2044),
+    GraphicsAdapterLuid_Uint64(2045),
 
     // Properties that are unique to TrackedDeviceClass_Controller
     AttachedDeviceId_String(3000),
@@ -673,16 +679,27 @@ enum class ETrackedDeviceProperty(@JvmField val i: Int) {
     TrackingRangeMaximumMeters_Float(4005),
     ModeLabel_String(4006),
 
+
     // Properties that are used for user interface like icons names
-    IconPathName_String(5000), //                      usually a directory named "icons"
-    NamedIconPathDeviceOff_String(5001), //            PNG for static icon), or GIF for animation), 50x32 for headsets and 32x32 for others
-    NamedIconPathDeviceSearching_String(5002), //      PNG for static icon), or GIF for animation), 50x32 for headsets and 32x32 for others
-    NamedIconPathDeviceSearchingAlert_String(5003), // PNG for static icon), or GIF for animation), 50x32 for headsets and 32x32 for others
-    NamedIconPathDeviceReady_String(5004), //          PNG for static icon), or GIF for animation), 50x32 for headsets and 32x32 for others
-    NamedIconPathDeviceReadyAlert_String(5005), //     PNG for static icon), or GIF for animation), 50x32 for headsets and 32x32 for others
-    NamedIconPathDeviceNotReady_String(5006), //       PNG for static icon), or GIF for animation), 50x32 for headsets and 32x32 for others
-    NamedIconPathDeviceStandby_String(5007), //        PNG for static icon), or GIF for animation), 50x32 for headsets and 32x32 for others
-    NamedIconPathDeviceAlertLow_String(5008), //       PNG for static icon), or GIF for animation), 50x32 for headsets and 32x32 for others
+
+    /** DEPRECATED. Value not referenced. Now expected to be part of icon path properties.  */
+    IconPathName_String(5000),
+    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others   */
+    NamedIconPathDeviceOff_String(5001),
+    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others   */
+    NamedIconPathDeviceSearching_String(5002),
+    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others   */
+    NamedIconPathDeviceSearchingAlert_String(5003),
+    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others   */
+    NamedIconPathDeviceReady_String(5004),
+    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others    */
+    NamedIconPathDeviceReadyAlert_String(5005),
+    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others    */
+    NamedIconPathDeviceNotReady_String(5006),
+    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others    */
+    NamedIconPathDeviceStandby_String(5007),
+    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others    */
+    NamedIconPathDeviceAlertLow_String(5008),
 
     // Properties that are used by helpers, but are opaque to applications
     DisplayHiddenArea_Binary_Start(5100),
@@ -920,6 +937,7 @@ enum class EVREventType(@JvmField val i: Int) {
     ModelSkinSettingsHaveChanged(853),
     EnvironmentSettingsHaveChanged(854),
     PowerSettingsHaveChanged(855),
+    EnableHomeAppSettingsHaveChanged(856),
 
     StatusUpdate(900),
 
@@ -1940,6 +1958,8 @@ enum class EVRInitError(@JvmField val i: Int) {
     Init_WatchdogDisabledInSettings(132),
     Init_VRDashboardNotFound(133),
     Init_VRDashboardStartupFailed(134),
+    Init_VRHomeNotFound(135),
+    Init_VRHomeStartupFailed(136),
 
     Driver_Failed(200),
     Driver_Unknown(201),
@@ -1970,6 +1990,7 @@ enum class EVRInitError(@JvmField val i: Int) {
     Compositor_FirmwareRequiresUpdate(402),
     Compositor_OverlayInitFailed(403),
     Compositor_ScreenshotsInitFailed(404),
+    Compositor_UnableToCreateDevice(405),
 
     VendorSpecific_UnableToConnectToOculusRuntime(1000),
 
@@ -2194,6 +2215,7 @@ object COpenVRContext {
     private val m_pVRApplications: IVRApplications? = null
     private val m_pVRTrackedCamera: IVRTrackedCamera? = null
     private val m_pVRScreenshots: IVRScreenshots? = null
+    private val m_pVRDriverManager: IVRDriverManager? = null
 
     private val error = EVRInitError_ByReference(EVRInitError.None)
 
@@ -2209,6 +2231,7 @@ object COpenVRContext {
     fun vrApplications() = m_pVRApplications ?: vrGetGenericInterface(IVRApplications_Version, error)?.let(::IVRApplications)
     fun vrTrackedCamera() = m_pVRTrackedCamera ?: vrGetGenericInterface(IVRTrackedCamera_Version, error)?.let(::IVRTrackedCamera)
     fun vrScreenshots() = m_pVRScreenshots ?: vrGetGenericInterface(IVRScreenshots_Version, error)?.let(::IVRScreenshots)
+    fun vrDriverManager() = m_pVRDriverManager ?: vrGetGenericInterface(IVRDriverManager_Version, error)?.let(::IVRDriverManager)
 }
 
 fun vrSystem() = COpenVRContext.vrSystem()
@@ -2223,6 +2246,7 @@ fun vrSettings() = COpenVRContext.vrSettings()
 fun vrApplications() = COpenVRContext.vrApplications()
 fun vrTrackedCamera() = COpenVRContext.vrTrackedCamera()
 fun vrScreenshots() = COpenVRContext.vrScreenshots()
+fun vrDriverManager() = COpenVRContext.vrDriverManager()
 
 internal external fun VR_InitInternal(peError: EVRInitError_ByReference, eType: Int): Pointer
 internal external fun VR_ShutdownInternal()
