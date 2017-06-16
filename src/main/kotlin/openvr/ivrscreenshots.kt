@@ -41,7 +41,7 @@ open class IVRScreenshots : Structure {
      *  the destination file names will be in %TEMP% and will be copied into Steam's screenshot library for the running application once SubmitScreenshot() is
      *  called.
      *  If Steam is not running, the paths will be in the user's documents folder under Documents\SteamVR\Screenshots.
-     *  Other VR applications can call this to initate a screenshot outside of user control.
+     *  Other VR applications can call this to initiate a screenshot outside of user control.
      *  The destination file names do not need an extension, will be replaced with the correct one for the format which is currently .png. */
     fun requestScreenshot(pOutScreenshotHandle: ScreenshotHandle_t_ByReference, type: EVRScreenshotType, pchPreviewFilename: String, pchVRFilename: String)
             = EVRScreenshotError.of(RequestScreenshot!!.invoke(pOutScreenshotHandle, type.i, pchPreviewFilename, pchVRFilename))
@@ -103,7 +103,7 @@ open class IVRScreenshots : Structure {
 
     /** Tells the compositor to take an internal screenshot of type VRScreenshotType_Stereo. It will take the current submitted scene textures of the running
      *  application and write them into the preview image and a side-by-side file for the VR image.
-     *  This is similiar to request screenshot, but doesn't ever talk to the application, just takes the shot and submits. */
+     *  This is similar to request screenshot, but doesn't ever talk to the application, just takes the shot and submits. */
     fun takeStereoScreenshot(pOutScreenshotHandle: ScreenshotHandle_t_ByReference, pchPreviewFilename: String, pchVRFilename: String)
             = EVRScreenshotError.of(TakeStereoScreenshot!!.invoke(pOutScreenshotHandle, pchPreviewFilename, pchVRFilename))
 
@@ -116,7 +116,7 @@ open class IVRScreenshots : Structure {
     /** Submit the completed screenshot.  If Steam is running this will call into the Steam client and upload the screenshot to the screenshots section of the
      *  library for the running application.  If Steam is not running, this function will display a notification to the user that the screenshot was taken.
      *  The paths should be full paths with extensions.
-     *  File paths should be absolute including exntensions.
+     *  File paths should be absolute including extensions.
      *  screenshotHandle can be k_unScreenshotHandleInvalid if this was a new shot taking by the app to be saved and not initiated by a user (achievement earned
      *  or something) */
     fun submitScreenshot(screenshotHandle: ScreenshotHandle_t, type: EVRScreenshotType, pchSourcePreviewFilename: String, pchSourceVRFilename: String)

@@ -1,6 +1,7 @@
 import openvr.*
 import com.sun.jna.ptr.FloatByReference
 import com.sun.jna.ptr.IntByReference
+import io.kotlintest.matchers.shouldBe
 import io.kotlintest.specs.StringSpec
 
 /**

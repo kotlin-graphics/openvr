@@ -6,9 +6,9 @@ import com.sun.jna.Structure
 import com.sun.jna.ptr.IntByReference
 import com.sun.jna.ptr.PointerByReference
 import com.sun.jna.ptr.ShortByReference
-import main.BYTES
-import main.b
-import main.i
+import glm_.BYTES
+import glm_.b
+import glm_.i
 import java.util.*
 
 // ivrrendermodels.h ==============================================================================================================================================

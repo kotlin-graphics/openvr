@@ -8,7 +8,7 @@ import com.sun.jna.ptr.ByteByReference
 import com.sun.jna.ptr.FloatByReference
 import com.sun.jna.ptr.IntByReference
 import com.sun.jna.ptr.PointerByReference
-import main.BYTES
+import glm_.BYTES
 import java.util.*
 
 // ivroverlay.h ===================================================================================================================================================
@@ -318,8 +318,8 @@ open class IVROverlay : Structure {
     }
 
     /** Creates a new named overlay. All overlays start hidden and with default settings. */
-    fun createOverlay(pchOverlayKey: String, pchOverlayFriendlyName: String, pOverlayHandle: VROverlayHandle_t_ByReference)
-            = EVROverlayError.of(CreateOverlay!!.invoke(pchOverlayKey, pchOverlayFriendlyName, pOverlayHandle))
+    fun createOverlay(pchOverlayKey: String, pchOverlayName: String, pOverlayHandle: VROverlayHandle_t_ByReference)
+            = EVROverlayError.of(CreateOverlay!!.invoke(pchOverlayKey, pchOverlayName, pOverlayHandle))
 
     @JvmField var CreateOverlay: IVROverlay.CreateOverlay_callback? = null
 
@@ -381,6 +381,16 @@ open class IVROverlay : Structure {
 
     interface GetOverlayName_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pchValue: String, unBufferSize: Int, pError: EVROverlayError_ByReference? = null): Int
+    }
+
+    /** set the name to use for this overlay */
+    fun setOverlayName(ulOverlayHandle: VROverlayHandle_t, pchName: String) =
+            EVROverlayError.of(SetOverlayName!!.invoke(ulOverlayHandle, pchName))
+
+    @JvmField var SetOverlayName: IVROverlay.SetOverlayName_callback? = null
+
+    interface SetOverlayName_callback : Callback {
+        fun invoke(ulOverlayHandle: VROverlayHandle_t, pchName: String): Int
     }
 
     /** Gets the raw image data from an overlay. Overlay image data is always returned as RGBA data, 4 bytes per pixel. If the buffer is not large enough,
@@ -616,6 +626,30 @@ open class IVROverlay : Structure {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, pOverlayTextureBounds: VRTextureBounds_t.ByReference): Int
     }
 
+    /** Gets render model to draw behind this overlay */
+    fun getOverlayRenderModel(ulOverlayHandle: VROverlayHandle_t, pchValue: String, unBufferSize: Int, pColor: HmdColor_t.ByReference,
+                              pError: EVROverlayError_ByReference)
+            = GetOverlayRenderModel!!.invoke(ulOverlayHandle, pchValue, unBufferSize, pColor, pError)
+
+    @JvmField var GetOverlayRenderModel: GetOverlayRenderModel_callback? = null
+
+    interface GetOverlayRenderModel_callback : Callback {
+        fun invoke(ulOverlayHandle: VROverlayHandle_t, pchValue: String, unBufferSize: Int, pColor: HmdColor_t.ByReference,
+                   pError: EVROverlayError_ByReference): Int
+    }
+
+    /** Sets render model to draw behind this overlay and the vertex color to use, pass null for pColor to match the
+     *  overlays vertex color.
+     *  The model is scaled by the same amount as the overlay, with a default of 1m.    */
+    fun setOverlayRenderModel(ulOverlayHandle: VROverlayHandle_t, pchRenderModel: String, pColor: HmdColor_t.ByReference)
+            = EVROverlayError.of(SetOverlayRenderModel!!.invoke(ulOverlayHandle, pchRenderModel, pColor))
+
+    @JvmField var SetOverlayRenderModel: SetOverlayRenderModel_callback? = null
+
+    interface SetOverlayRenderModel_callback : Callback {
+        fun invoke(ulOverlayHandle: VROverlayHandle_t, pchRenderModel: String, pColor: HmdColor_t.ByReference): Int
+    }
+
     /** Returns the transform value of this overlay. */
     fun getOverlayTransformType(ulOverlayHandle: VROverlayHandle_t, peTransformType: VROverlayTransformType_ByReference)
             = EVROverlayError.of(GetOverlayTransformType!!.invoke(ulOverlayHandle, peTransformType))
@@ -692,6 +726,33 @@ open class IVROverlay : Structure {
 
     interface GetOverlayTransformTrackedDeviceComponent_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle_t, punDeviceIndex: TrackedDeviceIndex_t_ByReference, pchComponentName: String, unComponentNameSize: Int): Int
+    }
+
+    /** Gets the transform if it is relative to another overlay. Returns an error if the transform is some other type. */
+    fun getOverlayTransformOverlayRelative(ulOverlayHandle: VROverlayHandle_t, ulOverlayHandleParent: VROverlayHandle_t_ByReference,
+                                           pmatParentOverlayToOverlayTransform: HmdMatrix34_t.ByReference) =
+            EVROverlayError.of(GetOverlayTransformOverlayRelative!!.invoke(ulOverlayHandle, ulOverlayHandleParent,
+                    pmatParentOverlayToOverlayTransform))
+
+    @JvmField var GetOverlayTransformOverlayRelative: GetOverlayTransformOverlayRelative_callback? = null
+
+    interface GetOverlayTransformOverlayRelative_callback : Callback {
+        fun invoke(ulOverlayHandle: VROverlayHandle_t, ulOverlayHandleParent: VROverlayHandle_t_ByReference,
+                   pmatParentOverlayToOverlayTransform: HmdMatrix34_t.ByReference): Int
+    }
+
+    /** Sets the transform to relative to the transform of the specified overlay. This overlays visibility will also
+     *  track the parents visibility */
+    fun setOverlayTransformOverlayRelative(ulOverlayHandle: VROverlayHandle_t, ulOverlayHandleParent: VROverlayHandle_t,
+                                           pmatParentOverlayToOverlayTransform: HmdMatrix34_t.ByReference) =
+            EVROverlayError.of(SetOverlayTransformOverlayRelative!!.invoke(ulOverlayHandle, ulOverlayHandleParent,
+                    pmatParentOverlayToOverlayTransform))
+
+    @JvmField var SetOverlayTransformOverlayRelative: SetOverlayTransformOverlayRelative_callback? = null
+
+    interface SetOverlayTransformOverlayRelative_callback : Callback {
+        fun invoke(ulOverlayHandle: VROverlayHandle_t, ulOverlayHandleParent: VROverlayHandle_t,
+                   pmatParentOverlayToOverlayTransform: HmdMatrix34_t.ByReference): Int
     }
 
     /** Shows the VR overlay.  For dashboard overlays, only the Dashboard Manager is allowed to call this. */
@@ -1174,4 +1235,4 @@ open class IVROverlay : Structure {
     class ByValue : IVROverlay(), Structure.ByValue
 }
 
-val IVROverlay_Version = "FnTable:IVROverlay_014"
+val IVROverlay_Version = "FnTable:IVROverlay_016"

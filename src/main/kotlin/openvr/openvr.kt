@@ -10,8 +10,9 @@ import com.sun.jna.ptr.ByteByReference
 import com.sun.jna.ptr.IntByReference
 import com.sun.jna.ptr.LongByReference
 import com.sun.jna.ptr.PointerByReference
-import main.BYTES
-import main.b
+import glm_.BYTES
+import glm_.b
+import glm_.i
 import java.nio.ByteBuffer
 
 /**
@@ -354,7 +355,7 @@ enum class ETextureType(@JvmField val i: Int) {
     DirectX(0), // Handle is an ID3D11Texture
     OpenGL(1), // Handle is an OpenGL texture name or an OpenGL render buffer name, depending on submit flags
     Vulkan(2), // Handle is a pointer to a VRVulkanTextureData_t structure
-    IOSurface(3), // Handle is a macOS cross-process-sharable IOSurface
+    IOSurface(3), // Handle is a macOS cross-process-sharable IOSurfaceRef
     DirectX12(4); // Handle is a pointer to a D3D12TextureData_t structure
 
     companion object {
@@ -442,8 +443,8 @@ typealias TrackedDeviceIndex_t = Int
 typealias TrackedDeviceIndex_t_ByReference = IntByReference
 @JvmField val k_unTrackedDeviceIndex_Hmd = 0
 @JvmField val k_unMaxTrackedDeviceCount = 16
-@JvmField val k_unTrackedDeviceIndexOther = 0xFFFFFFFE.toInt()
-@JvmField val k_unTrackedDeviceIndexInvalid = 0xFFFFFFFF.toInt()
+@JvmField val k_unTrackedDeviceIndexOther = 0xFFFFFFFE.i
+@JvmField val k_unTrackedDeviceIndexInvalid = 0xFFFFFFFF.i
 
 /** Describes what kind of object is being tracked at a given ID */
 enum class ETrackedDeviceClass(@JvmField val i: Int) {
@@ -452,7 +453,9 @@ enum class ETrackedDeviceClass(@JvmField val i: Int) {
     HMD(1), //               Head-Mounted Displays
     Controller(2), //        Tracked controllers
     GenericTracker(3), // Generic trackers, similar to controllers
-    TrackingReference(4); // Camera and base stations that serve as tracking reference points;
+    TrackingReference(4), // Camera and base stations that serve as tracking reference points;
+    /** Accessories that aren't necessarily tracked themselves, but may redirect video output from other tracked devices    */
+    DisplayRedirect(5);
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -604,6 +607,7 @@ enum class ETrackedDeviceProperty(@JvmField val i: Int) {
     Firmware_ForceUpdateRequired_Bool(1032),
     ViveSystemButtonFixRequired_Bool(1033),
     ParentDriver_Uint64(1034),
+    ResourceRoot_String(1035),
 
     // Properties that are unique to TrackedDeviceClass_HMD
     ReportsTimeSinceVSync_Bool(2000),
@@ -648,7 +652,7 @@ enum class ETrackedDeviceProperty(@JvmField val i: Int) {
     DisplayMCImageHeight_Int32(2039),
     DisplayMCImageNumChannels_Int32(2040),
     DisplayMCImageData_Binary(2041),
-    UsesDriverDirectMode_Bool(2042),
+    SecondsFromPhotonsToVblank_Float(2042),
 
     // Properties that are unique to TrackedDeviceClass_Controller
     AttachedDeviceId_String(3000),
@@ -687,6 +691,11 @@ enum class ETrackedDeviceProperty(@JvmField val i: Int) {
     // Properties that are unique to drivers
     UserConfigPath_String(6000),
     InstallPath_String(6001),
+    HasDisplayComponent_Bool(6002),
+    HasControllerComponent_Bool(6003),
+    HasCameraComponent_Bool(6004),
+    HasDriverDirectModeComponent_Bool(6005),
+    HasVirtualDisplayComponent_Bool(6006),
 
     // Vendors are free to expose private debug data in this reserved region
     VendorSpecific_Reserved_Start(10000),
@@ -929,6 +938,8 @@ enum class EVREventType(@JvmField val i: Int) {
     ApplicationListUpdated(1303),
     ApplicationMimeTypeLoad(1304),
     ApplicationTransitionNewAppLaunchComplete(1305),
+    ProcessConnected(1306),
+    ProcessDisconnected(1307),
 
     Compositor_MirrorWindowShown(1400),
     Compositor_MirrorWindowHidden(1401),
@@ -956,13 +967,22 @@ enum class EVREventType(@JvmField val i: Int) {
     }
 }
 
-/** Level of Hmd activity */
+/** Level of Hmd activity
+ *  UserInteraction_Timeout means the device is in the process of timing out.
+ *  InUse = ( k_EDeviceActivityLevel_UserInteraction || k_EDeviceActivityLevel_UserInteraction_Timeout )
+ *  VREvent_TrackedDeviceUserInteractionStarted fires when the devices transitions from Standby -> UserInteraction or
+ *  Idle -> UserInteraction.
+ *  VREvent_TrackedDeviceUserInteractionEnded fires when the devices transitions from UserInteraction_Timeout -> Idle   */
 enum class EDeviceActivityLevel(@JvmField val i: Int) {
 
     Unknown(-1),
+    /** No activity for the last 10 seconds */
     Idle(0),
+    /** Activity (movement or prox sensor) is happening now */
     UserInteraction(1),
+    /** No activity for the last 0.5 seconds    */
     UserInteraction_Timeout(2),
+    /** Idle for at least 5 seconds (configurable in Settings -> Power Management)  */
     Standby(3);
 
     companion object {
@@ -1842,6 +1862,8 @@ enum class EVRApplicationType(@JvmField val i: Int) {
     //                                  interfaces (like openvr.IVRSettings and openvr.IVRApplications) but not hardware.
     VRMonitor(5), //      Reserved for vrmonitor
     SteamWatchdog(6), //  Reserved for Steam
+    /** Start up SteamVR    */
+    Bootstrapper(7),
 
     Max(7);
 
@@ -2136,7 +2158,7 @@ fun vrGetVRInitErrorAsSymbol(error: EVRInitError) = VR_GetVRInitErrorAsSymbol(er
 
 internal external fun VR_GetVRInitErrorAsSymbol(error: Int): String
 
-/** Returns an english string for an EVRInitError. Applications should call VR_GetVRInitErrorAsSymbol instead and use that as a key to look up their own localized
+/** Returns an English string for an EVRInitError. Applications should call VR_GetVRInitErrorAsSymbol instead and use that as a key to look up their own localized
  *  error message. This function may be called outside of VR_Init()/VR_Shutdown(). */
 fun vrGetVRInitErrorAsEnglishDescription(error: EVRInitError) = VR_GetVRInitErrorAsEnglishDescription(error.i)
 
