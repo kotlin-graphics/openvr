@@ -1,4 +1,4 @@
-/.nb-gradle/
+.nb-gradle/
 .gradle/
 .idea/
 build/

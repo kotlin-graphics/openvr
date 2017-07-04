@@ -1,5 +1,9 @@
+/**
+ * Created by GBarbieri on 07.10.2016.
+ */
+
 //@file:JvmName("vr")
-//@file:Suppress("LeakingThis")
+@file:Suppress("LeakingThis")
 
 package openvr
 
@@ -16,9 +20,6 @@ import glm_.b
 import glm_.i
 import java.nio.ByteBuffer
 
-/**
- * Created by GBarbieri on 07.10.2016.
- */
 
 class BooleanByReference(@JvmField var value: Boolean = false) : ByteByReference(if (value) 1 else 0)
 
@@ -446,7 +447,9 @@ val k_unMaxDriverDebugResponseSize = 32768
 typealias TrackedDeviceIndex_t = Int
 typealias TrackedDeviceIndex_t_ByReference = IntByReference
 @JvmField val k_unTrackedDeviceIndex_Hmd = 0
-val k_unMaxTrackedDeviceCount = 16
+object vr {
+    val k_unMaxTrackedDeviceCount = 16
+}
 @JvmField val k_unTrackedDeviceIndexOther = 0xFFFFFFFE.i
 @JvmField val k_unTrackedDeviceIndexInvalid = 0xFFFFFFFF.i
 
@@ -2140,18 +2143,22 @@ fun vrInit(error: EVRInitError_ByReference, applicationType: EVRApplicationType)
 
     Native.register("openvr_api")
 
+    VR_ShutdownInternal()
+
     var pVRSystem: IVRSystem? = null
 
     VR_InitInternal(error, applicationType.i)
 
     if (error.value == EVRInitError.None)
 
+//        for (i in 0 .. 1_000)
+//            if (VR_IsInterfaceVersionValid(IVRSystem_Version)) break
+//            else println("invalid, $i")
+
         if (VR_IsInterfaceVersionValid(IVRSystem_Version))
             pVRSystem = vrSystem()
-        else {
-            VR_ShutdownInternal()
-            error.value = EVRInitError.Init_InterfaceNotFound
-        }
+        else
+            VR_ShutdownInternal().also { error.value = EVRInitError.Init_InterfaceNotFound }
 
     return pVRSystem
 }
