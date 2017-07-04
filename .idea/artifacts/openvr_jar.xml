@@ -3,12 +3,16 @@
     <output-path>$PROJECT_DIR$/classes/artifacts/openvr_jar</output-path>
     <root id="archive" name="openvr.jar">
       <element id="module-output" name="openvr" />
-      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.elect86/kotlin-unsigned/606ec0ea2b11bc604647cc61280f01db399d7191/f54ab79d32cdbf469313dac58901711de808100d/kotlin-unsigned-606ec0ea2b11bc604647cc61280f01db399d7191.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna/4.3.0/f11d386a05132f54a51c99085f016e496f345ea3/jna-4.3.0.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/1.1.0-rc-91/66db2ff28470d1b81deb49fec88d4ad14dc4fe36/kotlin-stdlib-1.1.0-rc-91.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.elect86/glm/caaf5141fc6a914dda1ed9d6a4443fc33b6d2238/b2d863f2d39bf87d6397b6b3cc49639b147a9bc5/glm-caaf5141fc6a914dda1ed9d6a4443fc33b6d2238.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.java.dev.jna/jna/4.4.0/cb208278274bf12ebdb56c61bd7407e6f774d65a/jna-4.4.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.kotlin-graphics/kotlin-unsigned/c721106019796bb1b9aaf471b84c691ef9481cf9/e9be266cb94c8d74009c905312bcc518d1a24f63/kotlin-unsigned-c721106019796bb1b9aaf471b84c691ef9481cf9.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.github.kotlin-graphics/glm/b7b30f24e23586cb1d31f61996968e0c77476d21/e0cc11f631c385c7e6ca84b85cc75c2ab12e752e/glm-b7b30f24e23586cb1d31f61996968e0c77476d21.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains.kotlin/kotlin-stdlib/1.1.2-5/508b8b59843653756aeed058a3a421afa0657bcb/kotlin-stdlib-1.1.2-5.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.jetbrains/annotations/13.0/919f0dfe192fb4e063e7dacadee7f8bb9a2672a9/annotations-13.0.jar" path-in-jar="/" />
-      <element id="dir-copy" path="$PROJECT_DIR$/src/main/resources" />
+      <element id="library" level="project" name="Gradle: com.github.kotlin-graphics:glm:b7b30f24e23586cb1d31f61996968e0c77476d21" />
+      <element id="library" level="project" name="Gradle: com.github.kotlin-graphics:kotlin-unsigned:c721106019796bb1b9aaf471b84c691ef9481cf9" />
+      <element id="library" level="project" name="Gradle: net.java.dev.jna:jna:4.4.0" />
+      <element id="library" level="project" name="Gradle: org.jetbrains.kotlin:kotlin-stdlib:1.1.2-5" />
+      <element id="library" level="project" name="Gradle: org.jetbrains:annotations:13.0" />
     </root>
   </artifact>
 </component>
