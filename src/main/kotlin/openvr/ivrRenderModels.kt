@@ -40,6 +40,8 @@ enum class EVRRenderModelError(@JvmField val i: Int) {
     companion object {
         fun of(i: Int) = values().first { it.i == i }
     }
+
+    fun getName() = vr.renderModels!!.getRenderModelErrorNameFromEnum(this)
 }
 
 class EVRRenderModelError_ByReference(val value: EVRRenderModelError = EVRRenderModelError.None) : IntByReference(value.i)
@@ -435,7 +437,8 @@ open class IVRRenderModels : Structure {
         fun invoke(pchRenderModelName: String, pchOriginalPath: String, unOriginalPathLen: Int, peError: EVRRenderModelError_ByReference): Int
     }
 
-    /** Returns a string for a render model error */
+    /** Returns a string for a render model error
+     *  You can also use EVRRenderModelError.getName()  */
     fun getRenderModelErrorNameFromEnum(error: EVRRenderModelError) = GetRenderModelErrorNameFromEnum!!.invoke(error.i)
 
     @JvmField var GetRenderModelErrorNameFromEnum: GetRenderModelErrorNameFromEnum_callback? = null
