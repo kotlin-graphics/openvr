@@ -1,4 +1,4 @@
-@file:JvmName("vr")
+//@file:JvmName("vr")
 @file:Suppress("LeakingThis")
 
 package openvr
