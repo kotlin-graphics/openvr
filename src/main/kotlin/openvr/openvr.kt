@@ -447,7 +447,6 @@ val k_unMaxDriverDebugResponseSize = 32768
 typealias TrackedDeviceIndex_t = Int
 typealias TrackedDeviceIndex_t_ByReference = IntByReference
 @JvmField val k_unTrackedDeviceIndex_Hmd = 0
-object vr { val k_unMaxTrackedDeviceCount = 16 }
 val k_unMaxTrackedDeviceCount = 16
 @JvmField val k_unTrackedDeviceIndexOther = 0xFFFFFFFE.i
 @JvmField val k_unTrackedDeviceIndexInvalid = 0xFFFFFFFF.i
