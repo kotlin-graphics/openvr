@@ -5,6 +5,7 @@ import openvr.*;
 
 import static openvr.vr.vrCompositor;
 import static openvr.vr.vrInit;
+import static openvr.vr.vrShutdown;
 //import static openvr.IvrCompositorKt.getIVRCompositor_Version;
 
 /**
@@ -31,5 +32,7 @@ public class Test {
         assert (vrCompositor() != null);
 
         TrackedDevicePose_t a = new TrackedDevicePose_t();
+
+        vrShutdown();
     }
 }

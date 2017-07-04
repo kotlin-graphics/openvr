@@ -27,7 +27,7 @@ class Test : StringSpec() {
             (w.value > 0 && h.value > 0) shouldBe true
 
 
-            var m4 = hmd.getProjectionMatrix(EVREye.Left, .1f, 10f)
+            val m4 = hmd.getProjectionMatrix(EVREye.Left, .1f, 10f)
             /** 0.75787073  0           -0.05657852   0
              *  0           0.6820195   -0.0013340205 0
              *  0           0           -1.0101011    -0.10101011
@@ -62,6 +62,8 @@ class Test : StringSpec() {
 //            println()
 //    println("IsDisplayOnDesktop " + IVRSystem.IsDisplayOnDesktop())
 //    040 78880
+
+            vrShutdown()
         }
     }
 }
