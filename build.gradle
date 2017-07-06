@@ -43,10 +43,10 @@ task packageSources(type: Jar, dependsOn: 'classes') {
     classifier = 'sources'
 }
 
-jar {
-    /** This line of code recursively collects and copies all of a project's files and adds them to the JAR itself.
-        One can extend this task, to skip certain files or particular types at will */
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-}
+//jar {
+//    /** This line of code recursively collects and copies all of a project's files and adds them to the JAR itself.
+//        One can extend this task, to skip certain files or particular types at will */
+//    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+//}
 
 artifacts { archives packageSources }
