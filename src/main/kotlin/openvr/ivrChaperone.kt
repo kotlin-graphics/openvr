@@ -11,20 +11,29 @@ import java.util.*
 enum class ChaperoneCalibrationState(@JvmField val i: Int) {
 
     // OK!
-    OK(1), //                                 Chaperone is fully calibrated and working correctly
+    /**  Chaperone is fully calibrated and working correctly     */
+    OK(1),
 
     // Warnings
     Warning(100),
-    Warning_BaseStationMayHaveMoved(101), //  A base station thinks that it might have moved
-    Warning_BaseStationRemoved(102), //       There are less base stations than when calibrated
-    Warning_SeatedBoundsInvalid(103), //      Seated bounds haven't been calibrated for the current tracking center
+    /** A base station thinks that it might have moved  */
+    Warning_BaseStationMayHaveMoved(101),
+    /** There are less base stations than when calibrated   */
+    Warning_BaseStationRemoved(102),
+    /** Seated bounds haven't been calibrated for the current tracking center   */
+    Warning_SeatedBoundsInvalid(103),
 
     // Errors
-    Error(200), //                            The UniverseID is invalid
-    Error_BaseStationUninitialized(201), //    Tracking center hasn't be calibrated for at least one of the base stations
-    Error_BaseStationConflict(202), //        Tracking center is calibrated), but base stations disagree on the tracking space
-    Error_PlayAreaInvalid(203), //            Play Area hasn't been calibrated for the current tracking center
-    Error_CollisionBoundsInvalid(204);     // Collision Bounds haven't been calibrated for the current tracking center
+    /** The UniverseID is invalid   */
+    Error(200),
+    /** Tracking center hasn't be calibrated for at least one of the base stations  */
+    Error_BaseStationUninitialized(201),
+    /** Tracking center is calibrated), but base stations disagree on the tracking space    */
+    Error_BaseStationConflict(202),
+    /** Play Area hasn't been calibrated for the current tracking center    */
+    Error_PlayAreaInvalid(203),
+    /** Collision Bounds haven't been calibrated for the current tracking center    */
+    Error_CollisionBoundsInvalid(204);
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -133,4 +142,4 @@ open class IVRChaperone : Structure {
     class ByValue : IVRChaperone(), Structure.ByValue
 }
 
-val IVRChaperone_Version = "FnTable:IVRChaperone_003";
+val IVRChaperone_Version = "IVRChaperone_003"

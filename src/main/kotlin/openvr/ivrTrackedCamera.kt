@@ -171,4 +171,4 @@ open class IVRTrackedCamera : Structure {
     class ByValue : IVRTrackedCamera(), Structure.ByValue
 }
 
-val IVRTrackedCamera_Version = "FnTable:IVRTrackedCamera_003"
+val IVRTrackedCamera_Version = "IVRTrackedCamera_003"

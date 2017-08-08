@@ -55,4 +55,4 @@ open class IVRExtendedDisplay : Structure {
     class ByValue : IVRExtendedDisplay(), Structure.ByValue
 }
 
-val IVRExtendedDisplay_Version = "FnTable:IVRExtendedDisplay_001"
+val IVRExtendedDisplay_Version = "IVRExtendedDisplay_001"

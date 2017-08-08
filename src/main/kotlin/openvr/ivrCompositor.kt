@@ -640,4 +640,4 @@ open class IVRCompositor : Structure {
     class ByValue : IVRCompositor(), Structure.ByValue
 }
 
-val IVRCompositor_Version = "FnTable:IVRCompositor_020"
+val IVRCompositor_Version = "IVRCompositor_020"

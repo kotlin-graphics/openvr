@@ -148,7 +148,7 @@ open class IVRSettings : Structure {
 }
 
 //-----------------------------------------------------------------------------
-val IVRSettings_Version = "FnTable:IVRSettings_002"
+val IVRSettings_Version = "IVRSettings_002"
 
 //-----------------------------------------------------------------------------
 // steamvr keys
@@ -303,6 +303,7 @@ val k_pch_Power_TurnOffScreensTimeout_Float = "turnOffScreensTimeout"
 val k_pch_Power_TurnOffControllersTimeout_Float = "turnOffControllersTimeout"
 val k_pch_Power_ReturnToWatchdogTimeout_Float = "returnToWatchdogTimeout"
 val k_pch_Power_AutoLaunchSteamVROnButtonPress = "autoLaunchSteamVROnButtonPress"
+val k_pch_Power_PauseCompositorOnStandby_Bool = "pauseCompositorOnStandby"
 
 //-----------------------------------------------------------------------------
 // dashboard keys

@@ -26,7 +26,7 @@ dependencies {
 
     testCompile 'com.github.elect86:kotlintest:43281b7e1b98a12e832397f464a938e97021adde'
 
-    compile "com.github.kotlin-graphics:glm:d7a80cc0d2be9f5844eb6a26ace8fc3775684e4b"
+    compile "com.github.kotlin-graphics:glm:66e6a44a28324c1c56b46bdddb5dbccf53e2ff87"
 
     compile "net.java.dev.jna:jna:4.4.0"
 }

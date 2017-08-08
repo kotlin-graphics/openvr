@@ -11,9 +11,10 @@ import java.util.*
 // ivrchaperonesetup.h ============================================================================================================================================
 
 enum class EChaperoneConfigFile(@JvmField val i: Int) {
-
-    Live(1), //    The live chaperone config, used by most applications and games
-    Temp(2);    //  The temporary chaperone config, used to live-preview collision bounds in room setup
+    /** The live chaperone config, used by most applications and games  */
+    Live(1),
+    /** The temporary chaperone config, used to live-preview collision bounds in room setup */
+    Temp(2);
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -246,4 +247,4 @@ open class IVRChaperoneSetup : Structure {
     class ByValue : IVRChaperoneSetup(), Structure.ByValue
 }
 
-val IVRChaperoneSetup_Version = "FnTable:IVRChaperoneSetup_005"
+val IVRChaperoneSetup_Version = "IVRChaperoneSetup_005"

@@ -141,4 +141,4 @@ open class IVRScreenshots : Structure {
     class ByValue : IVRScreenshots(), Structure.ByValue
 }
 
-val IVRScreenshots_Version = "FnTable:IVRScreenshots_001"
+val IVRScreenshots_Version = "IVRScreenshots_001"

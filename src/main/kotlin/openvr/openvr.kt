@@ -353,12 +353,16 @@ enum class EVREye(@JvmField val i: Int) {
 }
 
 enum class ETextureType(@JvmField val i: Int) {
-
-    DirectX(0), // Handle is an ID3D11Texture
-    OpenGL(1), // Handle is an OpenGL texture name or an OpenGL render buffer name, depending on submit flags
-    Vulkan(2), // Handle is a pointer to a VRVulkanTextureData_t structure
-    IOSurface(3), // Handle is a macOS cross-process-sharable IOSurfaceRef
-    DirectX12(4); // Handle is a pointer to a D3D12TextureData_t structure
+    /** Handle is an ID3D11Texture  */
+    DirectX(0),
+    /** Handle is an OpenGL texture name or an OpenGL render buffer name, depending on submit flags */
+    OpenGL(1),
+    /** Handle is a pointer to a VRVulkanTextureData_t structure    */
+    Vulkan(2),
+    /** Handle is a macOS cross-process-sharable IOSurfaceRef   */
+    IOSurface(3),
+    /** Handle is a pointer to a D3D12TextureData_t structure   */
+    DirectX12(4);
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -368,10 +372,13 @@ enum class ETextureType(@JvmField val i: Int) {
 class ETextureType_ByReference(@JvmField var value: ETextureType = ETextureType.OpenGL) : IntByReference(value.i)
 
 enum class EColorSpace(@JvmField val i: Int) {
-
-    Auto(0), //  Assumes 'gamma' for 8-bit per component formats, otherwise 'linear'.  This mirrors the DXGI formats which have _SRGB variants.
-    Gamma(1), // Texture data can be displayed directly on the display without any conversion (a.k.a. display native format).
-    Linear(2); // Same as gamma but has been converted to a linear representation using DXGI's sRGB conversion algorithm.
+    /** Assumes 'gamma' for 8-bit per component formats, otherwise 'linear'.  This mirrors the DXGI formats which have
+     *  _SRGB variants. */
+    Auto(0),
+    /** Texture data can be displayed directly on the display without any conversion (a.k.a. display native format).    */
+    Gamma(1),
+    /** Same as gamma but has been converted to a linear representation using DXGI's sRGB conversion algorithm. */
+    Linear(2);
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -453,12 +460,16 @@ val k_unTrackedDeviceIndexInvalid = 0xFFFFFFFF.i
 
 /** Describes what kind of object is being tracked at a given ID */
 enum class ETrackedDeviceClass(@JvmField val i: Int) {
-
-    Invalid(0), //           the ID was not valid.
-    HMD(1), //               Head-Mounted Displays
-    Controller(2), //        Tracked controllers
-    GenericTracker(3), // Generic trackers, similar to controllers
-    TrackingReference(4), // Camera and base stations that serve as tracking reference points;
+    /** the ID was not valid.   */
+    Invalid(0),
+    /** Head-Mounted Displays   */
+    HMD(1),
+    /** Tracked controllers */
+    Controller(2),
+    /** Generic trackers, similar to controllers    */
+    GenericTracker(3),
+    /** Camera and base stations that serve as tracking reference points;   */
+    TrackingReference(4),
     /** Accessories that aren't necessarily tracked themselves, but may redirect video output from other tracked devices    */
     DisplayRedirect(5);
 
@@ -469,10 +480,12 @@ enum class ETrackedDeviceClass(@JvmField val i: Int) {
 
 /** Describes what specific role associated with a tracked device */
 enum class ETrackedControllerRole(@JvmField val i: Int) {
-
-    Invalid(0), //    Invalid value for controller value
-    LeftHand(1), //   Tracked device associated with the left hand
-    RightHand(2);//   Tracked device associated with the right hand
+    /** Invalid value for controller value  */
+    Invalid(0),
+    /** Tracked device associated with the left hand    */
+    LeftHand(1),
+    /** Tracked device associated with the right hand   */
+    RightHand(2);
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -531,9 +544,10 @@ open class TrackedDevicePose_t : Structure {
 
 /** Identifies which style of tracking origin the application wants to use for the poses it is requesting */
 enum class ETrackingUniverseOrigin(@JvmField val i: Int) {
-
-    Seated(0), //               Poses are provided relative to the seated zero pose
-    Standing(1), //             Poses are provided relative to the safe bounds configured by the user
+    /** Poses are provided relative to the seated zero pose */
+    Seated(0),
+    /** Poses are provided relative to the safe bounds configured by the user   */
+    Standing(1),
     /** Poses are provided in the coordinate system defined by the driver. It has Y up and is unified for devices of the same driver.
      * You usually don't want this one. */
     RawAndUncalibrated(2);
@@ -589,7 +603,8 @@ enum class ETrackedDeviceProperty(@JvmField val i: Int) {
     ConnectedWirelessDongle_String(1009),
     DeviceIsWireless_Bool(1010),
     DeviceIsCharging_Bool(1011),
-    DeviceBatteryPercentage_Float(1012), // 0 is empty), 1 is full
+    /** 0 is empty), 1 is full  */
+    DeviceBatteryPercentage_Float(1012),
     StatusDisplayTransform_Matrix34(1013),
     Firmware_UpdateAvailable_Bool(1014),
     Firmware_ManualUpdate_Bool(1015),
@@ -661,16 +676,23 @@ enum class ETrackedDeviceProperty(@JvmField val i: Int) {
     DriverDirectModeSendsVsyncEvents_Bool(2043),
     DisplayDebugMode_Bool(2044),
     GraphicsAdapterLuid_Uint64(2045),
+    DriverProvidedChaperonePath_String(2048),
 
     // Properties that are unique to TrackedDeviceClass_Controller
     AttachedDeviceId_String(3000),
     SupportedButtons_Uint64(3001),
-    Axis0Type_Int32(3002), //          Return value is of value openvr.EVRControllerAxisType
-    Axis1Type_Int32(3003), //          Return value is of value openvr.EVRControllerAxisType
-    Axis2Type_Int32(3004), //          Return value is of value openvr.EVRControllerAxisType
-    Axis3Type_Int32(3005), //          Return value is of value openvr.EVRControllerAxisType
-    Axis4Type_Int32(3006), //          Return value is of value openvr.EVRControllerAxisType
-    ControllerRoleHint_Int32(3007), // Return value is of value openvr.ETrackedControllerRole
+    /** Return value is of value openvr.EVRControllerAxisType   */
+    Axis0Type_Int32(3002),
+    /** Return value is of value openvr.EVRControllerAxisType   */
+    Axis1Type_Int32(3003),
+    /** Return value is of value openvr.EVRControllerAxisType   */
+    Axis2Type_Int32(3004),
+    /** Return value is of value openvr.EVRControllerAxisType   */
+    Axis3Type_Int32(3005),
+    /** Return value is of value openvr.EVRControllerAxisType   */
+    Axis4Type_Int32(3006),
+    /** Return value is of value openvr.ETrackedControllerRole  */
+    ControllerRoleHint_Int32(3007),
 
     // Properties that are unique to TrackedDeviceClass_TrackingReference
     FieldOfViewLeftDegrees_Float(4000),
@@ -735,12 +757,14 @@ enum class ETrackedPropertyError(@JvmField val i: Int) {
     WrongDataType(1),
     WrongDeviceClass(2),
     BufferTooSmall(3),
-    UnknownProperty(4), // Driver has not set the property (and may not ever).
+    /** Driver has not set the property (and may not ever). */
+    UnknownProperty(4),
     InvalidDevice(5),
     CouldNotContactServer(6),
     ValueNotProvidedByDevice(7),
     StringExceedsMaximumLength(8),
-    NotYetAvailable(9), // The property value isn't known yet, but is expected soon. Call again later.
+    /** The property value isn't known yet, but is expected soon. Call again later. */
+    NotYetAvailable(9),
     PermissionDenied(10),
     InvalidOperation(11);
 
@@ -781,18 +805,19 @@ open class VRTextureBounds_t : Structure {
 /** Allows the application to control how scene textures are used by the compositor when calling Submit. */
 enum class EVRSubmitFlags(@JvmField val i: Int) {
 
-    // Simple render path. App submits rendered left and right eye images with no lens distortion correction applied.
+    /** Simple render path. App submits rendered left and right eye images with no lens distortion correction applied.  */
     Default(0x00),
 
-    // App submits final left and right eye images with lens distortion already applied (lens distortion makes the images appear
-    // barrel distorted with chromatic aberration correction applied). The app would have used the data returned by
-    // vr::openvr.IVRSystem::ComputeDistortion() to apply the correct distortion to the rendered images before calling Submit().
+    /** App submits final left and right eye images with lens distortion already applied (lens distortion makes the
+     *  images appear barrel distorted with chromatic aberration correction applied). The app would have used the data
+     *  returned by vr::openvr.IVRSystem::ComputeDistortion() to apply the correct distortion to the rendered images
+     *  before calling Submit().    */
     LensDistortionAlreadyApplied(0x01),
 
-    // If the texture pointer passed in is actually a renderbuffer (e.g. for MSAA in OpenGL) then set this flag.
+    /** If the texture pointer passed in is actually a renderbuffer (e.g. for MSAA in OpenGL) then set this flag.   */
     GlRenderBuffer(0x02),
 
-    // Do not use
+    /** Do not use  */
     Reserved(0x04);
 
     companion object {
@@ -858,59 +883,99 @@ enum class EVREventType(@JvmField val i: Int) {
     WatchdogWakeUpRequested(109),
     LensDistortionChanged(110),
     PropertyChanged(111),
+    WirelessDisconnect(112),
+    WirelessReconnect(113),
 
-    ButtonPress(200), //    data is controller
-    ButtonUnpress(201), //  data is controller
-    ButtonTouch(202), //    data is controller
-    ButtonUntouch(203), //  data is controller
+    /** data is controller  */
+    ButtonPress(200),
+    /** data is controller  */
+    ButtonUnpress(201),
+    /** data is controller  */
+    ButtonTouch(202),
+    /** data is controller  */
+    ButtonUntouch(203),
 
-    MouseMove(300), //              data is mouse
-    MouseButtonDown(301), //        data is mouse
-    MouseButtonUp(302), //          data is mouse
-    FocusEnter(303), //             data is overlay
-    FocusLeave(304), //             data is overlay
-    Scroll(305), //                 data is mouse
-    TouchPadMove(306), //           data is mouse
-    OverlayFocusChanged(307), //    data is overlay), global event
+    /** data is mouse   */
+    MouseMove(300),
+    /** data is mouse   */
+    MouseButtonDown(301),
+    /** data is mouse   */
+    MouseButtonUp(302),
+    /** data is overlay */
+    FocusEnter(303),
+    /** data is overlay */
+    FocusLeave(304),
+    /** data is mouse   */
+    Scroll(305),
+    /** data is mouse   */
+    TouchPadMove(306),
+    /** data is overlay), global event  */
+    OverlayFocusChanged(307),
 
-    InputFocusCaptured(400), //                         data is process DEPRECATED
-    InputFocusReleased(401), //                         data is process DEPRECATED
-    SceneFocusLost(402), //                             data is process
-    SceneFocusGained(403), //                           data is process
-    SceneApplicationChanged(404), //                    data is process - The App actually drawing the scene changed (usually to or from the compositor)
-    SceneFocusChanged(405), //                          data is process - New app got access to draw the scene
-    InputFocusChanged(406), //                          data is process
-    SceneApplicationSecondaryRenderingStarted(407), //  data is process
+    /** data is process DEPRECATED  */
+    InputFocusCaptured(400),
+    /** data is process DEPRECATED  */
+    InputFocusReleased(401),
+    /** data is process */
+    SceneFocusLost(402),
+    /** data is process */
+    SceneFocusGained(403),
+    /** data is process - The App actually drawing the scene changed (usually to or from the compositor)    */
+    SceneApplicationChanged(404),
+    /** data is process - New app got access to draw the scene  */
+    SceneFocusChanged(405),
+    /** data is process */
+    InputFocusChanged(406),
+    /** data is process */
+    SceneApplicationSecondaryRenderingStarted(407),
 
-    HideRenderModels(410), // Sent to the scene application to request hiding render models temporarily
-    ShowRenderModels(411), // Sent to the scene application to request restoring render model visibility
+    /** Sent to the scene application to request hiding render models temporarily   */
+    HideRenderModels(410),
+    /** Sent to the scene application to request restoring render model visibility  */
+    ShowRenderModels(411),
 
     OverlayShown(500),
     OverlayHidden(501),
     DashboardActivated(502),
     DashboardDeactivated(503),
-    DashboardThumbSelected(504), //     Sent to the overlay manager - data is overlay
-    DashboardRequested(505), //         Sent to the overlay manager - data is overlay
-    ResetDashboard(506), //             Send to the overlay manager
-    RenderToast(507), //                Send to the dashboard to render a toast - data is the notification ID
-    ImageLoaded(508), //                Sent to overlays when a SetOverlayRaw or SetOverlayFromFile call finishes loading
-    ShowKeyboard(509), //               Sent to keyboard renderer in the dashboard to invoke it
-    HideKeyboard(510), //               Sent to keyboard renderer in the dashboard to hide it
-    OverlayGamepadFocusGained(511), //  Sent to an overlay when IVROverlay::SetFocusOverlay is called on it
-    OverlayGamepadFocusLost(512), //    Send to an overlay when it previously had focus and IVROverlay::SetFocusOverlay is called on something else
+    /** Sent to the overlay manager - data is overlay   */
+    DashboardThumbSelected(504),
+    /** Sent to the overlay manager - data is overlay   */
+    DashboardRequested(505),
+    /** Send to the overlay manager */
+    ResetDashboard(506),
+    /** Send to the dashboard to render a toast - data is the notification ID   */
+    RenderToast(507),
+    /** Sent to overlays when a SetOverlayRaw or SetOverlayFromFile call finishes loading   */
+    ImageLoaded(508),
+    /** Sent to keyboard renderer in the dashboard to invoke it */
+    ShowKeyboard(509),
+    /** Sent to keyboard renderer in the dashboard to hide it   */
+    HideKeyboard(510),
+    /** Sent to an overlay when IVROverlay::SetFocusOverlay is called on it */
+    OverlayGamepadFocusGained(511),
+    /** Send to an overlay when it previously had focus and IVROverlay::SetFocusOverlay is called on something else */
+    OverlayGamepadFocusLost(512),
     OverlaySharedTextureChanged(513),
     DashboardGuideButtonDown(514),
     DashboardGuideButtonUp(515),
-    ScreenshotTriggered(516), //        Screenshot button combo was pressed), Dashboard should request a screenshot
-    ImageFailed(517), //                Sent to overlays when a SetOverlayRaw or SetOverlayfromFail fails to load
+    /** Screenshot button combo was pressed), Dashboard should request a screenshot */
+    ScreenshotTriggered(516),
+    /** Sent to overlays when a SetOverlayRaw or SetOverlayfromFail fails to load   */
+    ImageFailed(517),
     DashboardOverlayCreated(518),
 
     // Screenshot API
-    RequestScreenshot(520), //              Sent by vrclient application to compositor to take a screenshot
-    ScreenshotTaken(521), //                Sent by compositor to the application that the screenshot has been taken
-    ScreenshotFailed(522), //               Sent by compositor to the application that the screenshot failed to be taken
-    SubmitScreenshotToDashboard(523), //    Sent by compositor to the dashboard that a completed screenshot was submitted
-    ScreenshotProgressToDashboard(524), //  Sent by compositor to the dashboard that a completed screenshot was submitted
+    /** Sent by vrclient application to compositor to take a screenshot */
+    RequestScreenshot(520),
+    /** Sent by compositor to the application that the screenshot has been taken    */
+    ScreenshotTaken(521),
+    /** Sent by compositor to the application that the screenshot failed to be taken    */
+    ScreenshotFailed(522),
+    /** Sent by compositor to the dashboard that a completed screenshot was submitted   */
+    SubmitScreenshotToDashboard(523),
+    /** Sent by compositor to the dashboard that a completed screenshot was submitted   */
+    ScreenshotProgressToDashboard(524),
 
     PrimaryDashboardDeviceChanged(525),
 
@@ -919,11 +984,16 @@ enum class EVREventType(@JvmField val i: Int) {
     Notification_BeginInteraction(602),
     Notification_Destroyed(603),
 
-    Quit(700), //                   data is process
-    ProcessQuit(701), //            data is process
-    QuitAborted_UserPrompt(702), // data is process
-    QuitAcknowledged(703), //       data is process
-    DriverRequestedQuit(704), //    The driver has requested that SteamVR shut down
+    /** data is process */
+    Quit(700),
+    /** data is process */
+    ProcessQuit(701),
+    /** data is process */
+    QuitAborted_UserPrompt(702),
+    /** data is process */
+    QuitAcknowledged(703),
+    /** The driver has requested that SteamVR shut down */
+    DriverRequestedQuit(704),
 
     ChaperoneDataHasChanged(800),
     ChaperoneUniverseHasChanged(801),
@@ -950,7 +1020,8 @@ enum class EVREventType(@JvmField val i: Int) {
 
     KeyboardClosed(1200),
     KeyboardCharInput(1201),
-    KeyboardDone(1202), // Sent when DONE button clicked on keyboard
+    /** Sent when DONE button clicked on keyboard   */
+    KeyboardDone(1202),
 
     ApplicationTransitionStarted(1300),
     ApplicationTransitionAborted(1301),
@@ -1676,7 +1747,8 @@ enum class EVRControllerAxisType(@JvmField val i: Int) {
     None(0),
     TrackPad(1),
     Joystick(2),
-    Trigger(3); // Analog trigger data is in the X axis
+    /** Analog trigger data is in the X axis    */
+    Trigger(3);
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -1845,7 +1917,8 @@ enum class EVROverlayError(@JvmField val i: Int) {
     UnknownOverlay(10),
     InvalidHandle(11),
     PermissionDenied(12),
-    OverlayLimitExceeded(13), // No more overlays could be created because the maximum number already exist
+    /** No more overlays could be created because the maximum number already exist  */
+    OverlayLimitExceeded(13),
     WrongVisibilityType(14),
     KeyTooLong(15),
     NameTooLong(16),
@@ -1872,16 +1945,22 @@ class EVROverlayError_ByReference(@JvmField var value: EVROverlayError = EVROver
 
 /** value values to pass in to openvr.VR_Init to identify whether the application will draw a 3D scene.     */
 enum class EVRApplicationType(@JvmField val i: Int) {
-
-    Other(0), //          Some other kind of application that isn't covered by the other entries
-    Scene(1), //          Application will submit 3D frames
-    Overlay(2), //        Application only interacts with overlays
-    Background(3), //     Application should not start SteamVR if it's not already running), and should not
-    //                                  keep it running if everything else quits.
-    Utility(4), //        Init should not try to load any drivers. The application needs access to utility
-    //                                  interfaces (like openvr.IVRSettings and openvr.IVRApplications) but not hardware.
-    VRMonitor(5), //      Reserved for vrmonitor
-    SteamWatchdog(6), //  Reserved for Steam
+    /** Some other kind of application that isn't covered by the other entries  */
+    Other(0),
+    /** Application will submit 3D frames   */
+    Scene(1),
+    /** Application only interacts with overlays    */
+    Overlay(2),
+    /** Application should not start SteamVR if it's not already running), and should not keep it running if everything
+     *  else quits. */
+    Background(3),
+    /** Init should not try to load any drivers. The application needs access to utility interfaces
+     *  (like openvr.IVRSettings and openvr.IVRApplications) but not hardware.  */
+    Utility(4),
+    /** Reserved for vrmonitor  */
+    VRMonitor(5),
+    /** Reserved for Steam  */
+    SteamWatchdog(6),
     /** Start up SteamVR    */
     Bootstrapper(7),
 
@@ -1940,8 +2019,10 @@ enum class EVRInitError(@JvmField val i: Int) {
     Init_NoLogPath(112),
     Init_PathRegistryNotWritable(113),
     Init_AppInfoInitFailed(114),
-    Init_Retry(115), //                 Used internally to cause retries to vrserver
-    Init_InitCanceledByUser(116), //    The calling application should silently exit. The user canceled app startup
+    /** Used internally to cause retries to vrserver    */
+    Init_Retry(115),
+    /** The calling application should silently exit. The user canceled app startup */
+    Init_InitCanceledByUser(116),
     Init_AnotherAppLaunching(117),
     Init_SettingsInitFailed(118),
     Init_ShuttingDown(119),
@@ -2022,7 +2103,8 @@ class EVRInitError_ByReference(@JvmField var value: EVRInitError = EVRInitError.
 enum class EVRScreenshotType(@JvmField val i: Int) {
 
     None(0),
-    Mono(1), // left eye only
+    /** left eye only   */
+    Mono(1),
     Stereo(2),
     Cubemap(3),
     MonoPanorama(4),
@@ -2069,10 +2151,13 @@ enum class EVRTrackedCameraError(@JvmField val i: Int) {
 }
 
 enum class EVRTrackedCameraFrameType(@JvmField val i: Int) {
-
-    Distorted(0), //           This is the camera video frame size in pixels), still distorted.
-    Undistorted(1), //         In pixels), an undistorted inscribed rectangle region without invalid regions. This size is subject to changes shortly.
-    MaximumUndistorted(2), //  In pixels), maximum undistorted with invalid regions. Non zero alpha component identifies valid regions.
+    /** This is the camera video frame size in pixels), still distorted.    */
+    Distorted(0),
+    /** In pixels), an undistorted inscribed rectangle region without invalid regions. This size is subject to changes
+     *  shortly. */
+    Undistorted(1),
+    /** In pixels), maximum undistorted with invalid regions. Non zero alpha component identifies valid regions.    */
+    MaximumUndistorted(2),
     MAX(3);
 
     companion object {
@@ -2141,8 +2226,6 @@ fun vrInit(error: EVRInitError_ByReference, applicationType: EVRApplicationType)
 
     Native.register("openvr_api")
 
-    VR_ShutdownInternal()
-
     var pVRSystem: IVRSystem? = null
 
     VR_InitInternal(error, applicationType.i)
@@ -2207,6 +2290,8 @@ fun vrGetInitToken() = VR_GetInitToken()
 
 internal external fun VR_GetInitToken()
 
+val FnTable_Prefix = "FnTable:"
+
 object COpenVRContext {
 
     private var m_pVRSystem: IVRSystem? = null
@@ -2225,19 +2310,19 @@ object COpenVRContext {
 
     private val error = EVRInitError_ByReference(EVRInitError.None)
 
-    fun vrSystem() = m_pVRSystem ?: vrGetGenericInterface(IVRSystem_Version, error)?.let(::IVRSystem)
-    fun vrChaperone() = m_pVRChaperone ?: vrGetGenericInterface(IVRChaperone_Version, error)?.let(::IVRChaperone)
-    fun vrChaperoneSetup() = m_pVRChaperoneSetup ?: vrGetGenericInterface(IVRChaperoneSetup_Version, error)?.let(::IVRChaperoneSetup)
-    fun vrCompositor() = m_pVRCompositor ?: vrGetGenericInterface(IVRCompositor_Version, error)?.let(::IVRCompositor)
-    fun vrOverlay() = m_pVROverlay ?: vrGetGenericInterface(IVROverlay_Version, error)?.let(::IVROverlay)
-    fun vrResources() = m_pVRResources ?: vrGetGenericInterface(IVRResources_Version, error)?.let(::IVRResources)
-    fun vrRenderModels() = m_pVRRenderModels ?: vrGetGenericInterface(IVRRenderModels_Version, error)?.let(::IVRRenderModels)
-    fun vrExtendedDisplay() = m_pVRExtendedDisplay ?: vrGetGenericInterface(IVRExtendedDisplay_Version, error)?.let(::IVRExtendedDisplay)
-    fun vrSettings() = m_pVRSettings ?: vrGetGenericInterface(IVRSettings_Version, error)?.let(::IVRSettings)
-    fun vrApplications() = m_pVRApplications ?: vrGetGenericInterface(IVRApplications_Version, error)?.let(::IVRApplications)
-    fun vrTrackedCamera() = m_pVRTrackedCamera ?: vrGetGenericInterface(IVRTrackedCamera_Version, error)?.let(::IVRTrackedCamera)
-    fun vrScreenshots() = m_pVRScreenshots ?: vrGetGenericInterface(IVRScreenshots_Version, error)?.let(::IVRScreenshots)
-    fun vrDriverManager() = m_pVRDriverManager ?: vrGetGenericInterface(IVRDriverManager_Version, error)?.let(::IVRDriverManager)
+    fun vrSystem() = m_pVRSystem ?: vrGetGenericInterface(FnTable_Prefix + IVRSystem_Version, error)?.let(::IVRSystem)
+    fun vrChaperone() = m_pVRChaperone ?: vrGetGenericInterface(FnTable_Prefix + IVRChaperone_Version, error)?.let(::IVRChaperone)
+    fun vrChaperoneSetup() = m_pVRChaperoneSetup ?: vrGetGenericInterface(FnTable_Prefix + IVRChaperoneSetup_Version, error)?.let(::IVRChaperoneSetup)
+    fun vrCompositor() = m_pVRCompositor ?: vrGetGenericInterface(FnTable_Prefix + IVRCompositor_Version, error)?.let(::IVRCompositor)
+    fun vrOverlay() = m_pVROverlay ?: vrGetGenericInterface(FnTable_Prefix + IVROverlay_Version, error)?.let(::IVROverlay)
+    fun vrResources() = m_pVRResources ?: vrGetGenericInterface(FnTable_Prefix + IVRResources_Version, error)?.let(::IVRResources)
+    fun vrRenderModels() = m_pVRRenderModels ?: vrGetGenericInterface(FnTable_Prefix + IVRRenderModels_Version, error)?.let(::IVRRenderModels)
+    fun vrExtendedDisplay() = m_pVRExtendedDisplay ?: vrGetGenericInterface(FnTable_Prefix + IVRExtendedDisplay_Version, error)?.let(::IVRExtendedDisplay)
+    fun vrSettings() = m_pVRSettings ?: vrGetGenericInterface(FnTable_Prefix + IVRSettings_Version, error)?.let(::IVRSettings)
+    fun vrApplications() = m_pVRApplications ?: vrGetGenericInterface(FnTable_Prefix + IVRApplications_Version, error)?.let(::IVRApplications)
+    fun vrTrackedCamera() = m_pVRTrackedCamera ?: vrGetGenericInterface(FnTable_Prefix + IVRTrackedCamera_Version, error)?.let(::IVRTrackedCamera)
+    fun vrScreenshots() = m_pVRScreenshots ?: vrGetGenericInterface(FnTable_Prefix + IVRScreenshots_Version, error)?.let(::IVRScreenshots)
+    fun vrDriverManager() = m_pVRDriverManager ?: vrGetGenericInterface(FnTable_Prefix + IVRDriverManager_Version, error)?.let(::IVRDriverManager)
 }
 
 fun vrSystem() = COpenVRContext.vrSystem()

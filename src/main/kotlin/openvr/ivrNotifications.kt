@@ -47,7 +47,8 @@ enum class EVRNotificationType(@JvmField val i: Int) {
     Persistent(1),
 
     /** System notifications are shown no matter what. It is expected), that the ulUserValue is used as ID.
-     *  If there is already a system notification in the queue with that ID it is not accepted into the queue to prevent spamming with system notification */
+     *  If there is already a system notification in the queue with that ID it is not accepted into the queue to
+     *  prevent spamming with system notification */
     Transient_SystemWithUserValue(2);
 
     companion object {
@@ -63,13 +64,16 @@ enum class EVRNotificationStyle(@JvmField val i: Int) {
     /** Used for notifications about overlay-level status. In Steam this is used for events like downloads completing. */
     Application(100),
 
-    /** Used for notifications about contacts that are unknown or not available. In Steam this is used for friend invitations and offline friends. */
+    /** Used for notifications about contacts that are unknown or not available. In Steam this is used for friend
+     * invitations and offline friends. */
     Contact_Disabled(200),
 
-    /** Used for notifications about contacts that are available but inactive. In Steam this is used for friends that are online but not playing a game. */
+    /** Used for notifications about contacts that are available but inactive. In Steam this is used for friends that
+     * are online but not playing a game. */
     Contact_Enabled(201),
 
-    /** Used for notifications about contacts that are available and active. In Steam this is used for friends that are online and currently running a game. */
+    /** Used for notifications about contacts that are available and active. In Steam this is used for friends that
+     * are online and currently running a game. */
     Contact_Active(202);
 
     companion object {

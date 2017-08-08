@@ -27,9 +27,10 @@ val k_unMaxOverlayIntersectionMaskPrimitivesCount = 32
 
 /** Types of input supported by VR Overlays */
 enum class VROverlayInputMethod(@JvmField val i: Int) {
-
-    None(0), //    No input events will be generated automatically for this overlay
-    Mouse(1); //   Tracked controllers will get mouse events automatically
+    /** No input events will be generated automatically for this overlay    */
+    None(0),
+    /** Tracked controllers will get mouse events automatically */
+    Mouse(1);
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -58,41 +59,46 @@ enum class VROverlayFlags(@JvmField val i: Int) {
 
     None(0),
 
-    // The following only take effect when rendered using the high quality render path (see SetHighQualityOverlay).
+    /** The following only take effect when rendered using the high quality render path (see SetHighQualityOverlay).    */
     Curved(1),
     RGSS4X(2),
 
-    // Set this flag on a dashboard overlay to prevent a tab from showing up for that overlay
+    /** Set this flag on a dashboard overlay to prevent a tab from showing up for that overlay  */
     NoDashboardTab(3),
 
-    // Set this flag on a dashboard that is able to deal with gamepad focus events
+    /** Set this flag on a dashboard that is able to deal with gamepad focus events */
     AcceptsGamepadEvents(4),
 
-    // Indicates that the overlay should dim/brighten to show gamepad focus
+    /** Indicates that the overlay should dim/brighten to show gamepad focus    */
     ShowGamepadFocus(5),
 
-    // When in VROverlayInputMethod_Mouse you can optionally enable sending VRScroll_t
+    /** When in VROverlayInputMethod_Mouse you can optionally enable sending VRScroll_t */
     SendVRScrollEvents(6),
     SendVRTouchpadEvents(7),
 
-    // If set this will render a vertical scroll wheel on the primary controller), only needed if not using SendVRScrollEvents but you still want
-    // to represent a scroll wheel
+    /** If set this will render a vertical scroll wheel on the primary controller), only needed if not using
+     *  SendVRScrollEvents but you still want to represent a scroll wheel   */
     ShowTouchPadScrollWheel(8),
 
-    // If this is set ownership and render access to the overlay are transferred to the new scene process on a call to openvr.IVRApplications::LaunchInternalProcess
+    /** If this is set ownership and render access to the overlay are transferred to the new scene process on a call
+     *  to openvr.IVRApplications::LaunchInternalProcess    */
     TransferOwnershipToInternalProcess(9),
 
     // If set), renders 50% of the texture in each eye), side by side
-    SideBySide_Parallel(10), // Texture is left/right
-    SideBySide_Crossed(11), // Texture is crossed and right/left
+    /** Texture is left/right   */
+    SideBySide_Parallel(10),
+    /** Texture is crossed and right/left   */
+    SideBySide_Crossed(11),
+    /** Texture is a panorama   */
+    Panorama(12),
+    /** Texture is a stereo panorama    */
+    StereoPanorama(13),
 
-    Panorama(12), // Texture is a panorama
-    StereoPanorama(13), // Texture is a stereo panorama
-
-    // If this is set on an overlay owned by the scene application that overlay will be sorted with the "Other" overlays on top of all other scene overlays
+    /** If this is set on an overlay owned by the scene application that overlay will be sorted with the "Other"
+     *  overlays on top of all other scene overlays */
     SortWithNonSceneOverlays(14),
 
-    // If set, the overlay will be shown in the dashboard, otherwise it will be hidden.
+    /** If set, the overlay will be shown in the dashboard, otherwise it will be hidden.    */
     VisibleInDashboard(15);
 
     companion object {
@@ -1236,4 +1242,4 @@ open class IVROverlay : Structure {
     class ByValue : IVROverlay(), Structure.ByValue
 }
 
-val IVROverlay_Version = "FnTable:IVROverlay_016"
+val IVROverlay_Version = "IVROverlay_016"

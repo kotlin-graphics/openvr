@@ -38,4 +38,4 @@ open class IVRDriverManager : Structure {
     class ByValue : IVRDriverManager(), Structure.ByValue
 }
 
-val IVRDriverManager_Version = "FnTable:IVRDriverManager_001"
+val IVRDriverManager_Version = "IVRDriverManager_001"

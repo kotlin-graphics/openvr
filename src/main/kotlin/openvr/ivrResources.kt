@@ -47,4 +47,4 @@ open class IVRResources : Structure {
     class ByValue : IVRScreenshots(), Structure.ByValue
 }
 
-val IVRResources_Version = "FnTable:IVRResources_001"
+val IVRResources_Version = "IVRResources_001"

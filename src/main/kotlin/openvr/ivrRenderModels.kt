@@ -462,4 +462,4 @@ open class IVRRenderModels : Structure {
     class ByValue : IVRRenderModels(), Structure.ByValue
 }
 
-val IVRRenderModels_Version = "FnTable:IVRRenderModels_005"
+val IVRRenderModels_Version = "IVRRenderModels_005"

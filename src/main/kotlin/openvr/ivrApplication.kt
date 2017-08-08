@@ -348,7 +348,7 @@ open class IVRApplications : Structure {
     class ByValue : IVRApplications(), Structure.ByValue
 }
 
-val IVRApplications_Version = "FnTable:IVRApplications_006"
+val IVRApplications_Version = "IVRApplications_006"
 
 enum class EVRSettingsError(@JvmField val i: Int) {
 
@@ -357,7 +357,8 @@ enum class EVRSettingsError(@JvmField val i: Int) {
     WriteFailed(2),
     ReadFailed(3),
     JsonParseFailed(4),
-    UnsetSettingHasNoDefault(5); // This will be returned if the setting does not appear in the appropriate default file and has not been set
+    /** This will be returned if the setting does not appear in the appropriate default file and has not been set   */
+    UnsetSettingHasNoDefault(5);
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }

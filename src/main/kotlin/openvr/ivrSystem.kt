@@ -631,31 +631,41 @@ open class IVRSystem : Structure {
     class ByValue : IVRSystem(), Structure.ByValue
 }
 
-val IVRSystem_Version = "FnTable:IVRSystem_016"
+val IVRSystem_Version = "IVRSystem_016"
 
 /** Used for all errors reported by the openvr.IVRApplications interface */
 enum class EVRApplicationError(@JvmField val i: Int) {
 
     None(0),
-
-    AppKeyAlreadyExists(100), // Only one application can use any given key
-    NoManifest(101), //          the running application does not have a manifest
-    NoApplication(102), //       No application is running
+    /** Only one application can use any given key  */
+    AppKeyAlreadyExists(100),
+    /** the running application does not have a manifest    */
+    NoManifest(101),
+    /** No application is running   */
+    NoApplication(102),
     InvalidIndex(103),
-    UnknownApplication(104), //  the application could not be found
-    IPCFailed(105), //           An IPC failure caused the request to fail
+    /** the application could not be found  */
+    UnknownApplication(104),
+    /** An IPC failure caused the request to fail   */
+    IPCFailed(105),
     ApplicationAlreadyRunning(106),
     InvalidManifest(107),
     InvalidApplication(108),
-    LaunchFailed(109), //        the process didn't start
-    ApplicationAlreadyStarting(110), // the system was already starting the same application
-    LaunchInProgress(111), //    The system was already starting a different application
+    /** the process didn't start    */
+    LaunchFailed(109),
+    /** the system was already starting the same application    */
+    ApplicationAlreadyStarting(110),
+    /** The system was already starting a different application */
+    LaunchInProgress(111),
     OldApplicationQuitting(112),
     TransitionAborted(113),
-    IsTemplate(114), // error when you try to call LaunchApplication() on a template value app (use LaunchTemplateApplication)
-
-    BufferTooSmall(200), //      The provided buffer was too small to fit the requested data
-    PropertyNotSet(201), //      The requested property was not set
+    /** error when you try to call LaunchApplication() on a template value app (use LaunchTemplateApplication)  */
+    IsTemplate(114),
+    SteamVRIsExiting(115),
+    /** The provided buffer was too small to fit the requested data */
+    BufferTooSmall(200),
+    /** The requested property was not set  */
+    PropertyNotSet(201),
     UnknownProperty(202),
     InvalidParameter(203);
 
@@ -689,6 +699,7 @@ enum class EVRApplicationProperty(@JvmField val i: Int) {
     IsTemplate_Bool(61),
     IsInstanced_Bool(62),
     IsInternal_Bool(63),
+    WantsCompositorPauseInStandby_Bool(64),
 
     LastLaunchTime_Uint64(70);
 
