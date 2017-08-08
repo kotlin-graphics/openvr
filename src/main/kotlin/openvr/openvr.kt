@@ -18,6 +18,7 @@ import com.sun.jna.ptr.PointerByReference
 import glm_.BYTES
 import glm_.b
 import glm_.i
+import glm_.mat4x4.Mat4
 import java.nio.ByteBuffer
 
 
@@ -77,6 +78,12 @@ open class HmdMatrix34_t : Structure {
     class ByValue : HmdMatrix34_t(), Structure.ByValue
 
     operator fun get(i: Int) = m[i]
+
+    infix fun to(mat4: Mat4) = mat4.put(
+            m[0], m[4], m[8], 0f,
+            m[1], m[5], m[9], 0f,
+            m[2], m[6], m[10], 0f,
+            m[3], m[7], m[11], 1f)
 }
 
 open class HmdMatrix44_t : Structure {
@@ -100,6 +107,12 @@ open class HmdMatrix44_t : Structure {
     class ByValue : HmdMatrix44_t(), Structure.ByValue
 
     operator fun get(i: Int) = m[i]
+
+    infix fun to(mat4: Mat4) = mat4.put(
+            m[0], m[4], m[8], m[12],
+            m[1], m[5], m[9], m[13],
+            m[2], m[6], m[10], m[14],
+            m[3], m[7], m[11], m[15])
 }
 
 open class HmdVector3_t : Structure {
