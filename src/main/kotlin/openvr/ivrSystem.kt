@@ -383,9 +383,7 @@ open class IVRSystem : Structure {
             if (err.value == ETrackedPropertyError.Success)
                 ret = String(newBytes).drop(1)
         }
-        pError?.let {
-            it.value = err.value
-        }
+        pError?.let { it.value = err.value }
         return ret
     }
 
