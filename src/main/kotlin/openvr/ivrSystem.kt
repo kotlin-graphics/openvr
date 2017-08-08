@@ -6,6 +6,7 @@ import com.sun.jna.Structure
 import com.sun.jna.ptr.FloatByReference
 import com.sun.jna.ptr.IntByReference
 import com.sun.jna.ptr.LongByReference
+import glm_.mat4x4.Mat4
 import java.util.*
 
 // ivrsystem.h ====================================================================================================================================================
@@ -27,7 +28,14 @@ open class IVRSystem : Structure {
     }
 
     /** The projection matrix for the specified eye */
-    fun getProjectionMatrix(eEye: EVREye, fNearZ: Float, fFarZ: Float) = GetProjectionMatrix!!.invoke(eEye.i, fNearZ, fFarZ)
+    fun getProjectionMatrix(eEye: EVREye, fNearZ: Float, fFarZ: Float, res: Mat4 = Mat4()): Mat4 {
+        val proj = GetProjectionMatrix!!.invoke(eEye.i, fNearZ, fFarZ)
+        return res.put(
+                proj[0], proj[4], proj[8], proj[12],
+                proj[1], proj[5], proj[9], proj[13],
+                proj[2], proj[6], proj[10], proj[14],
+                proj[3], proj[7], proj[11], proj[15])
+    }
 
     @JvmField var GetProjectionMatrix: GetProjectionMatrix_callback? = null
 
@@ -60,7 +68,14 @@ open class IVRSystem : Structure {
     /** Returns the transform from eye space to the head space. Eye space is the per-eye flavor of head space that provides stereo disparity.
      *  Instead of Model * View * Projection the sequence is Model * View * Eye^-1 * Projection.
      *  Normally View and Eye^-1 will be multiplied together and treated as View in your application.   */
-    fun getEyeToHeadTransform(eEye: EVREye) = GetEyeToHeadTransform!!.invoke(eEye.i)
+    fun getEyeToHeadTransform(eEye: EVREye, res: Mat4 = Mat4()): Mat4 {
+        val m = GetEyeToHeadTransform!!.invoke(eEye.i)
+        return res.put(
+                m[0], m[4], m[8], 0f,
+                m[1], m[5], m[9], 0f,
+                m[2], m[6], m[10], 0f,
+                m[3], m[7], m[11], 1f)
+    }
 
     @JvmField var GetEyeToHeadTransform: GetEyeToHeadTransform_callback? = null
 

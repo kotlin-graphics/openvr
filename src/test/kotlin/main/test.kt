@@ -27,15 +27,15 @@ class Test : StringSpec() {
             (w.value > 0 && h.value > 0) shouldBe true
 
 
-            val m4 = hmd.getProjectionMatrix(EVREye.Left, .1f, 10f)
+            val m = hmd.getProjectionMatrix(EVREye.Left, .1f, 10f)
             /** 0.75787073  0           -0.05657852   0
              *  0           0.6820195   -0.0013340205 0
              *  0           0           -1.0101011    -0.10101011
              *  0           0           -1            0             */
-            (m4[0] != 0f && m4[1] == 0f && m4[2] != 0f && m4[3] == 0f
-                    && m4[4] == 0f && m4[5] != 0f && m4[6] != 0f && m4[7] == 0f
-                    && m4[8] == 0f && m4[9] == 0f && m4[10] != 0f && m4[11] != 0f
-                    && m4[12] == 0f && m4[13] == 0f && m4[14] != 0f && m4[15] == 0f) shouldBe true
+            (m[0, 0] != 0f && m[1, 0] == 0f && m[2, 0] != 0f && m[3, 0] == 0f &&
+                    m[0, 1] == 0f && m[1, 1] != 0f && m[2, 1] != 0f && m[3, 1] == 0f &&
+                    m[0, 2] == 0f && m[1, 2] == 0f && m[2, 2] != 0f && m[3, 2] != 0f &&
+                    m[0, 3] == 0f && m[1, 3] == 0f && m[2, 3] != 0f && m[3, 3] == 0f) shouldBe true
 
 
             val left = FloatByReference()
