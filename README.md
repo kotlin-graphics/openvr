@@ -49,6 +49,8 @@ that returns directly the resulting string, bringing down a lot of boilerplate c
 
 You can find the OpenGL sample (using jogl) [here](https://github.com/java-opengl-labs/jogl-hello-vr)
 
+### Contributions:
+
 Don't hesitate to contribute to the project by submitting [issues](https://github.com/kotlin-graphics/openvr/issues) or [pull requests](https://github.com/kotlin-graphics/openvr/pulls) for bugs and features. Any feedback is welcome at [elect86@gmail.com](mailto://elect86@gmail.com).
 
 
