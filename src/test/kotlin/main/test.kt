@@ -1,12 +1,15 @@
-import openvr.*
 import com.sun.jna.ptr.FloatByReference
 import com.sun.jna.ptr.IntByReference
 import io.kotlintest.matchers.shouldBe
+import io.kotlintest.matchers.shouldNotBe
 import io.kotlintest.specs.StringSpec
+import openvr.*
+
 
 /**
  * Created by GBarbieri on 25.10.2016.
  */
+
 
 
 class Test : StringSpec() {
@@ -17,9 +20,12 @@ class Test : StringSpec() {
 
             val error = EVRInitError_ByReference()
 
-            val hmd = vrInit(error, EVRApplicationType.Scene)!!
+            val hmd = vrInit(error, EVRApplicationType.Scene)
+            vr.compositor shouldNotBe null
 
             error.value shouldBe EVRInitError.None
+
+            if (hmd == null) throw Error()
 
             val w = IntByReference(0)
             val h = IntByReference(0)
@@ -38,14 +44,38 @@ class Test : StringSpec() {
                     m[0, 3] == 0f && m[1, 3] == 0f && m[2, 3] != 0f && m[3, 3] == 0f) shouldBe true
 
 
-            val left = FloatByReference()
+            val left_ = FloatByReference()
             val right = FloatByReference()
             val top = FloatByReference()
             val bottom = FloatByReference()
-            hmd.getProjectionRaw(EVREye.Left, left, right, top, bottom)
+            hmd.getProjectionRaw(EVREye.Left, left_, right, top, bottom)
 //      -1.3941408, 1.2448317, -1.4681898, 1.4642779
-            (left.value < 0 && right.value > 0 && top.value < 0 && bottom.value >= 0) shouldBe true
+            (left_.value < 0 && right.value > 0 && top.value < 0 && bottom.value >= 0) shouldBe true
 
+            class Listener : SteamVRListener(hmd) {
+                override fun trackedDeviceActivated(left: Boolean) = println("activated $left")
+                override fun trackedDeviceDeactivated(left: Boolean) = println("deactivated $left")
+                override fun trackedDeviceRoleChanged(left: Boolean) = println("role changed $left")
+                override fun trackedDeviceUpdated(left: Boolean) = println("updated $left")
+                override fun buttonPress(left: Boolean, button: EVRButtonId) {
+                    println("pressed $button")
+                }
+
+                override fun touchPadMove() {
+                    println("touchPadMove")
+                }
+
+                override fun scroll() {
+                    println("scroll")
+                }
+            }
+
+            val listener = Listener()
+
+            val start = System.nanoTime()
+//            while (System.nanoTime() - start < 50e9) {
+//                listener.poll()
+//            }
 
 //            val dc = hmd.computeDistortion(EVREye.Left, .5f, .5f)
 //            //
