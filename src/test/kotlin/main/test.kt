@@ -26,10 +26,8 @@ class Test : StringSpec() {
 
             if (hmd == null) throw Error()
 
-            val w = IntByReference(0)
-            val h = IntByReference(0)
-            hmd.getRecommendedRenderTargetSize(w, h)
-            (w.value > 0 && h.value > 0) shouldBe true
+            val (w, h) = hmd.recommendedRenderTargetSize
+            (w > 0 && h > 0) shouldBe true
 
 
             val m = hmd.getProjectionMatrix(EVREye.Left, .1f, 10f)
