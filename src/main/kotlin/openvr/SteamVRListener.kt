@@ -1,8 +1,10 @@
 package openvr
 
+import openvr.lib.*
+
 abstract class SteamVRListener(val hmd: IVRSystem) {
 
-    val states = Array(vr.maxTrackedDeviceCount, { VRControllerState_t.ByReference() })
+    val states = Array(k_unMaxTrackedDeviceCount, { VRControllerState_t.ByReference() })
 
     init {
         detectRoles()
@@ -11,7 +13,7 @@ abstract class SteamVRListener(val hmd: IVRSystem) {
     private fun detectRoles() {
         left = -1
         right = -1
-        for (i in 0 until vr.maxTrackedDeviceCount) {
+        for (i in 0 until k_unMaxTrackedDeviceCount) {
             if (hmd.getTrackedDeviceClass(i) == ETrackedDeviceClass.Controller && hmd.getControllerState(i, states[i], states[i].size()))
                 if (left == -1) left = i
                 else right = i

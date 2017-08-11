@@ -1,4 +1,4 @@
-package openvr
+package openvr.lib
 
 import com.sun.jna.Callback
 import com.sun.jna.Pointer
@@ -40,7 +40,7 @@ val VRCompositor_ReprojectionAsync = 0x04
 /** Provides a single frame's timing information to the app */
 open class Compositor_FrameTiming : Structure {
 
-    var m_nSize = 0 // Set to sizeof( openvr.Compositor_FrameTiming )
+    var m_nSize = 0 // Set to sizeof( openvr.lib.Compositor_FrameTiming )
     var m_nFrameIndex = 0
     var m_nNumFramePresents = 0 // number of times this frame was presented
     var m_nNumMisPresented = 0 // number of times this frame was presented on a vsync other than it was originally predicted to
@@ -64,12 +64,12 @@ open class Compositor_FrameTiming : Structure {
     var m_flClientFrameIntervalMs = 0f // time between calls to WaitGetPoses
     var m_flPresentCallCpuMs = 0f // time blocked on call to present (usually 0.0, but can go long)
     var m_flWaitForPresentCpuMs = 0f // time spent spin-waiting for frame index to change (not near-zero indicates wait object failure)
-    var m_flSubmitFrameMs = 0f // time spent in openvr.IVRCompositor::Submit (not near-zero indicates driver issue)
+    var m_flSubmitFrameMs = 0f // time spent in openvr.lib.IVRCompositor::Submit (not near-zero indicates driver issue)
 
     /** The following are all relative to this frame's SystemTimeInSeconds */
     var m_flWaitGetPosesCalledMs = 0f
     var m_flNewPosesReadyMs = 0f
-    var m_flNewFrameReadyMs = 0f // second call to openvr.IVRCompositor::Submit
+    var m_flNewFrameReadyMs = 0f // second call to openvr.lib.IVRCompositor::Submit
     var m_flCompositorUpdateStartMs = 0f
     var m_flCompositorUpdateEndMs = 0f
     var m_flCompositorRenderStartMs = 0f
@@ -241,7 +241,7 @@ open class IVRCompositor : Structure {
     }
 
     /** Interface for accessing last set of poses returned by WaitGetPoses one at a time.
-     *  Returns VRCompositorError_IndexOutOfRange if unDeviceIndex not less than openvr.k_unMaxTrackedDeviceCount otherwise VRCompositorError_None.
+     *  Returns VRCompositorError_IndexOutOfRange if unDeviceIndex not less than openvr.lib.getK_unMaxTrackedDeviceCount otherwise VRCompositorError_None.
      *  It is okay to pass NULL for either pose if you only want one of the values. */
     fun getLastPoseForTrackedDeviceIndex(unDeviceIndex: TrackedDeviceIndex_t, pOutputPose: TrackedDevicePose_t.ByReference,
                                          pOutputGamePose: TrackedDevicePose_t.ByReference)
@@ -301,7 +301,7 @@ open class IVRCompositor : Structure {
     }
 
     /** Returns true if timing data is filled it.  Sets oldest timing info if nFramesAgo is larger than the stored history.
-     *  Be sure to set timing.size = sizeof(openvr.Compositor_FrameTiming) on struct passed in before calling this function. */
+     *  Be sure to set timing.size = sizeof(openvr.lib.Compositor_FrameTiming) on struct passed in before calling this function. */
     @JvmOverloads fun getFrameTiming(pTiming: Compositor_FrameTiming.ByReference, unFramesAgo: Int = 0)
             = GetFrameTiming!!.invoke(pTiming, unFramesAgo)
 
@@ -333,7 +333,7 @@ open class IVRCompositor : Structure {
         fun invoke(): Float
     }
 
-    /** Fills out stats accumulated for the last connected application.  Pass in sizeof( openvr.Compositor_CumulativeStats ) as second parameter. */
+    /** Fills out stats accumulated for the last connected application.  Pass in sizeof( openvr.lib.Compositor_CumulativeStats ) as second parameter. */
     fun getCumulativeStats(pStats: Compositor_CumulativeStats.ByReference, nStatsSizeInBytes: Int) = GetCumulativeStats!!.invoke(pStats, nStatsSizeInBytes)
 
     @JvmField var GetCumulativeStats: GetCumulativeStats_callback? = null

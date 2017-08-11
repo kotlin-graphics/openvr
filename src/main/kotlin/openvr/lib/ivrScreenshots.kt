@@ -1,4 +1,4 @@
-package openvr
+package openvr.lib
 
 import com.sun.jna.*
 import com.sun.jna.ptr.IntByReference

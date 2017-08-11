@@ -1,4 +1,4 @@
-package openvr
+package openvr.lib
 
 import com.sun.jna.Callback
 import com.sun.jna.Pointer
@@ -41,7 +41,7 @@ enum class EVRRenderModelError(@JvmField val i: Int) {
         fun of(i: Int) = values().first { it.i == i }
     }
 
-    fun getName() = vr.renderModels!!.getRenderModelErrorNameFromEnum(this)
+    fun getName() = vrRenderModels!!.getRenderModelErrorNameFromEnum(this)
 }
 
 class EVRRenderModelError_ByReference(val value: EVRRenderModelError = EVRRenderModelError.None) : IntByReference(value.i)

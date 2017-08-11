@@ -5,7 +5,7 @@
 //@file:JvmName("vr")
 @file:Suppress("LeakingThis")
 
-package openvr
+package openvr.lib
 
 import com.sun.jna.Native
 import com.sun.jna.Pointer
@@ -58,7 +58,8 @@ typealias glUInt_t_ByReference = IntByReference
  *  Distance unit is meters     */
 open class HmdMatrix34_t : Structure {
 
-    @JvmField var m = FloatArray(3 * 4)
+    @JvmField
+    var m = FloatArray(3 * 4)
 
     constructor()
 
@@ -88,7 +89,8 @@ open class HmdMatrix34_t : Structure {
 
 open class HmdMatrix44_t : Structure {
 
-    @JvmField var m = FloatArray(4 * 4)
+    @JvmField
+    var m = FloatArray(4 * 4)
 
     constructor()
 
@@ -117,7 +119,8 @@ open class HmdMatrix44_t : Structure {
 
 open class HmdVector3_t : Structure {
 
-    @JvmField var v = FloatArray(3)
+    @JvmField
+    var v = FloatArray(3)
 
     constructor()
 
@@ -148,7 +151,8 @@ open class HmdVector3_t : Structure {
 
 open class HmdVector4_t : Structure {
 
-    @JvmField var v = FloatArray(4)
+    @JvmField
+    var v = FloatArray(4)
 
     constructor()
 
@@ -171,7 +175,8 @@ open class HmdVector4_t : Structure {
 
 open class HmdVector3d_t : Structure {
 
-    @JvmField var v = DoubleArray(3)
+    @JvmField
+    var v = DoubleArray(3)
 
     constructor()
 
@@ -194,7 +199,8 @@ open class HmdVector3d_t : Structure {
 
 open class HmdVector2_t : Structure {
 
-    @JvmField var v = FloatArray(2)
+    @JvmField
+    var v = FloatArray(2)
 
     constructor()
 
@@ -217,10 +223,14 @@ open class HmdVector2_t : Structure {
 
 open class HmdQuaternion_t : Structure {
 
-    @JvmField var w: Double = 0.0
-    @JvmField var x: Double = 0.0
-    @JvmField var y: Double = 0.0
-    @JvmField var z: Double = 0.0
+    @JvmField
+    var w: Double = 0.0
+    @JvmField
+    var x: Double = 0.0
+    @JvmField
+    var y: Double = 0.0
+    @JvmField
+    var z: Double = 0.0
 
     constructor()
 
@@ -251,10 +261,14 @@ open class HmdQuaternion_t : Structure {
 
 open class HmdColor_t : Structure {
 
-    @JvmField var r: Float = 0f
-    @JvmField var g: Float = 0f
-    @JvmField var b: Float = 0f
-    @JvmField var a: Float = 0f
+    @JvmField
+    var r: Float = 0f
+    @JvmField
+    var g: Float = 0f
+    @JvmField
+    var b: Float = 0f
+    @JvmField
+    var a: Float = 0f
 
     constructor()
 
@@ -285,7 +299,8 @@ open class HmdColor_t : Structure {
 
 open class HmdQuad_t : Structure {
 
-    @JvmField var vCorners = arrayOf(HmdVector3_t(), HmdVector3_t(), HmdVector3_t(), HmdVector3_t())
+    @JvmField
+    var vCorners = arrayOf(HmdVector3_t(), HmdVector3_t(), HmdVector3_t(), HmdVector3_t())
 
     constructor()
 
@@ -306,8 +321,10 @@ open class HmdQuad_t : Structure {
 
 open class HmdRect2_t : Structure {
 
-    @JvmField var vTopLeft = HmdVector2_t()
-    @JvmField var vBottomRight = HmdVector2_t()
+    @JvmField
+    var vTopLeft = HmdVector2_t()
+    @JvmField
+    var vBottomRight = HmdVector2_t()
 
     constructor()
 
@@ -330,9 +347,12 @@ open class HmdRect2_t : Structure {
  *  UVs range from 0 to 1 with 0,0 in the upper left corner of the source render target. The 0,0 to 1,1 range covers a single eye.  */
 open class DistortionCoordinates_t : Structure {
 
-    @JvmField var rfRed = FloatArray(2)
-    @JvmField var rfGreen = FloatArray(2)
-    @JvmField var rfBlue = FloatArray(2)
+    @JvmField
+    var rfRed = FloatArray(2)
+    @JvmField
+    var rfGreen = FloatArray(2)
+    @JvmField
+    var rfBlue = FloatArray(2)
 
     constructor()
 
@@ -360,7 +380,9 @@ enum class EVREye(@JvmField val i: Int) {
     Right(1);
 
     companion object {
-        @JvmStatic val MAX = 2
+        @JvmStatic
+        val MAX = 2
+
         fun of(i: Int) = values().first { it.i == i }
     }
 }
@@ -402,11 +424,14 @@ class EColorSpace_ByReference(@JvmField var value: EColorSpace = EColorSpace.Aut
 
 open class Texture_t : Structure {
 
-    @JvmField var handle = 0  //See ETextureType definition above
-    @JvmField var eType_internal = 0
+    @JvmField
+    var handle = 0  //See ETextureType definition above
+    @JvmField
+    var eType_internal = 0
     val eType
         get() = ETextureType.of(eType_internal)
-    @JvmField var eColorSpace_internal = 0
+    @JvmField
+    var eColorSpace_internal = 0
     val eColorSpace
         get() = EColorSpace.of(eColorSpace_internal)
 
@@ -508,16 +533,21 @@ enum class ETrackedControllerRole(@JvmField val i: Int) {
 /** describes a single pose for a tracked object */
 open class TrackedDevicePose_t : Structure {
 
-    @JvmField var mDeviceToAbsoluteTracking = HmdMatrix34_t()
-    @JvmField var vVelocity = HmdVector3_t()          // velocity in tracker space in m/s
-    @JvmField var vAngularVelocity = HmdVector3_t()   // angular velocity in radians/s (?)
-    @JvmField var eTrackingResult_internal = 0
+    @JvmField
+    var mDeviceToAbsoluteTracking = HmdMatrix34_t()
+    @JvmField
+    var vVelocity = HmdVector3_t()          // velocity in tracker space in m/s
+    @JvmField
+    var vAngularVelocity = HmdVector3_t()   // angular velocity in radians/s (?)
+    @JvmField
+    var eTrackingResult_internal = 0
     var eTrackingResult
         set(value) {
             eTrackingResult_internal = value.i
         }
         get() = ETrackingResult.of(eTrackingResult_internal)
-    @JvmField var bPoseIsValid_internal = 0.b
+    @JvmField
+    var bPoseIsValid_internal = 0.b
     var bPoseIsValid
         set(value) {
             bPoseIsValid_internal = if (value) 1.b else 0.b
@@ -525,7 +555,8 @@ open class TrackedDevicePose_t : Structure {
         get() = bPoseIsValid_internal == 1.b
     /** This indicates that there is a device connected for this spot in the pose array.
      * It could go from true to false if the user unplugs the device.     */
-    @JvmField var bDeviceIsConnected_internal = 0.b
+    @JvmField
+    var bDeviceIsConnected_internal = 0.b
     var bDeviceIsConnected
         set(value) {
             bDeviceIsConnected_internal = if (value) 1.b else 0.b
@@ -598,7 +629,7 @@ val k_unOpenVRInternalReserved_End: PropertyTypeTag_t = 10000
 
 
 /** Each entry in this value represents a property that can be retrieved about a tracked device.
- *  Many fields are only valid for one openvr.ETrackedDeviceClass. */
+ *  Many fields are only valid for one openvr.lib.ETrackedDeviceClass. */
 enum class ETrackedDeviceProperty(@JvmField val i: Int) {
 
     Invalid(0),
@@ -694,17 +725,17 @@ enum class ETrackedDeviceProperty(@JvmField val i: Int) {
     // Properties that are unique to TrackedDeviceClass_Controller
     AttachedDeviceId_String(3000),
     SupportedButtons_Uint64(3001),
-    /** Return value is of value openvr.EVRControllerAxisType   */
+    /** Return value is of value openvr.lib.EVRControllerAxisType   */
     Axis0Type_Int32(3002),
-    /** Return value is of value openvr.EVRControllerAxisType   */
+    /** Return value is of value openvr.lib.EVRControllerAxisType   */
     Axis1Type_Int32(3003),
-    /** Return value is of value openvr.EVRControllerAxisType   */
+    /** Return value is of value openvr.lib.EVRControllerAxisType   */
     Axis2Type_Int32(3004),
-    /** Return value is of value openvr.EVRControllerAxisType   */
+    /** Return value is of value openvr.lib.EVRControllerAxisType   */
     Axis3Type_Int32(3005),
-    /** Return value is of value openvr.EVRControllerAxisType   */
+    /** Return value is of value openvr.lib.EVRControllerAxisType   */
     Axis4Type_Int32(3006),
-    /** Return value is of value openvr.ETrackedControllerRole  */
+    /** Return value is of value openvr.lib.ETrackedControllerRole  */
     ControllerRoleHint_Int32(3007),
 
     // Properties that are unique to TrackedDeviceClass_TrackingReference
@@ -791,10 +822,14 @@ class ETrackedPropertyError_ByReference(@JvmField var value: ETrackedPropertyErr
 /** Allows the application to control what part of the provided texture will be used in the frame buffer. */
 open class VRTextureBounds_t : Structure {
 
-    @JvmField var uMin = 0f
-    @JvmField var vMin = 0f
-    @JvmField var uMax = 0f
-    @JvmField var vMax = 0f
+    @JvmField
+    var uMin = 0f
+    @JvmField
+    var vMin = 0f
+    @JvmField
+    var uMax = 0f
+    @JvmField
+    var vMax = 0f
 
     constructor()
 
@@ -823,7 +858,7 @@ enum class EVRSubmitFlags(@JvmField val i: Int) {
 
     /** App submits final left and right eye images with lens distortion already applied (lens distortion makes the
      *  images appear barrel distorted with chromatic aberration correction applied). The app would have used the data
-     *  returned by vr::openvr.IVRSystem::ComputeDistortion() to apply the correct distortion to the rendered images
+     *  returned by vr::openvr.lib.IVRSystem::ComputeDistortion() to apply the correct distortion to the rendered images
      *  before calling Submit().    */
     LensDistortionAlreadyApplied(0x01),
 
@@ -838,7 +873,7 @@ enum class EVRSubmitFlags(@JvmField val i: Int) {
     }
 }
 
-/** Data required for passing Vulkan textures to openvr.IVRCompositor::Submit.
+/** Data required for passing Vulkan textures to openvr.lib.IVRCompositor::Submit.
  * Be sure to call OpenVR_Shutdown before destroying these resources. */
 /*struct VRVulkanTextureData_t
 {
@@ -1133,7 +1168,8 @@ fun buttonMaskFromId(id: EVRButtonId) = 1L shl id.i
 /** used for controller button events */
 open class VREvent_Controller_t : Structure {
 
-    @JvmField var button_internal = 0  // openvr.EVRButtonId value
+    @JvmField
+    var button_internal = 0  // openvr.lib.EVRButtonId value
     var button
         set(value) {
             button_internal = value.i
@@ -1172,9 +1208,12 @@ enum class EVRMouseButton(@JvmField val i: Int) {
 open class VREvent_Mouse_t : Structure {
 
     // coords are in GL space, bottom left of the texture is 0,0
-    @JvmField var x = 0f
-    @JvmField var y = 0f
-    @JvmField var button_internal = 0  // openvr.EVRMouseButton value
+    @JvmField
+    var x = 0f
+    @JvmField
+    var y = 0f
+    @JvmField
+    var button_internal = 0  // openvr.lib.EVRMouseButton value
     var button
         set(value) {
             button_internal = value.i
@@ -1203,9 +1242,12 @@ open class VREvent_Mouse_t : Structure {
 open class VREvent_Scroll_t : Structure {
 
     // movement in fraction of the pad traversed since last delta, 1.0 for a full swipe
-    @JvmField var xdelta = 0f
-    @JvmField var ydelta = 0f
-    @JvmField var repeatCount = 0
+    @JvmField
+    var xdelta = 0f
+    @JvmField
+    var ydelta = 0f
+    @JvmField
+    var repeatCount = 0
 
     constructor()
 
@@ -1230,7 +1272,8 @@ open class VREvent_Scroll_t : Structure {
 open class VREvent_TouchPadMove_t : Structure {
 
     // true if the users finger is detected on the touch pad
-    @JvmField var bFingerDown_internal = 0.b
+    @JvmField
+    var bFingerDown_internal = 0.b
     var bFingerDown
         set(value) {
             bFingerDown_internal = if (value) 1.b else 0.b
@@ -1238,15 +1281,20 @@ open class VREvent_TouchPadMove_t : Structure {
         get() = bFingerDown_internal == 1.b
 
     // How long the finger has been down in seconds
-    @JvmField var flSecondsFingerDown = 0f
+    @JvmField
+    var flSecondsFingerDown = 0f
 
     // These values indicate the starting finger position (so you can do some basic swipe stuff)
-    @JvmField var fValueXFirst = 0f
-    @JvmField var fValueYFirst = 0f
+    @JvmField
+    var fValueXFirst = 0f
+    @JvmField
+    var fValueYFirst = 0f
 
     // This is the raw sampled coordinate without deadzoning
-    @JvmField var fValueXRaw = 0f
-    @JvmField var fValueYRaw = 0f
+    @JvmField
+    var fValueXRaw = 0f
+    @JvmField
+    var fValueYRaw = 0f
 
     constructor()
 
@@ -1273,8 +1321,10 @@ open class VREvent_TouchPadMove_t : Structure {
 /** notification related events. Details will still change at this point */
 open class VREvent_Notification_t : Structure {
 
-    @JvmField var ulUserValue = 0L
-    @JvmField var notificationId = 0
+    @JvmField
+    var ulUserValue = 0L
+    @JvmField
+    var notificationId = 0
 
     constructor()
 
@@ -1296,9 +1346,12 @@ open class VREvent_Notification_t : Structure {
 /** Used for events about processes */
 open class VREvent_Process_t : Structure {
 
-    @JvmField var pid = 0
-    @JvmField var oldPid = 0
-    @JvmField var bForced_internal = 0.b
+    @JvmField
+    var pid = 0
+    @JvmField
+    var oldPid = 0
+    @JvmField
+    var bForced_internal = 0.b
     var bForced
         set(value) {
             bForced_internal = if (value) 1.b else 0.b
@@ -1326,7 +1379,8 @@ open class VREvent_Process_t : Structure {
 /** Used for a few events about overlays */
 open class VREvent_Overlay_t : Structure {
 
-    @JvmField var overlayHandle = 0L
+    @JvmField
+    var overlayHandle = 0L
 
     constructor()
 
@@ -1347,7 +1401,8 @@ open class VREvent_Overlay_t : Structure {
 /** Used for a few events about overlays */
 open class VREvent_Status_t : Structure {
 
-    @JvmField var statusState_internal = 0 // openvr.EVRState value
+    @JvmField
+    var statusState_internal = 0 // openvr.lib.EVRState value
     var statusState
         set(value) {
             statusState_internal = value.i
@@ -1373,13 +1428,15 @@ open class VREvent_Status_t : Structure {
 /** Used for keyboard events **/
 open class VREvent_Keyboard_t : Structure {
 
-    @JvmField var cNewInput_internal = ByteArray(8)    // Up to 11 bytes of new input
+    @JvmField
+    var cNewInput_internal = ByteArray(8)    // Up to 11 bytes of new input
     var cNewInput
         set(value) {
             cNewInput_internal = value.take(8).toByteArray()
         }
         get() = String(cNewInput_internal).take(8) // TODO check \0
-    @JvmField var uUserValue = 0L // Possible flags about the new input
+    @JvmField
+    var uUserValue = 0L // Possible flags about the new input
 
     constructor()
 
@@ -1400,7 +1457,8 @@ open class VREvent_Keyboard_t : Structure {
 
 open class VREvent_Ipd_t : Structure {
 
-    @JvmField var ipdMeters = 0f
+    @JvmField
+    var ipdMeters = 0f
 
     constructor()
 
@@ -1420,8 +1478,10 @@ open class VREvent_Ipd_t : Structure {
 
 open class VREvent_Chaperone_t : Structure {
 
-    @JvmField var m_nPreviousUniverse = 0L
-    @JvmField var m_nCurrentUniverse = 0L
+    @JvmField
+    var m_nPreviousUniverse = 0L
+    @JvmField
+    var m_nCurrentUniverse = 0L
 
     constructor()
 
@@ -1443,8 +1503,10 @@ open class VREvent_Chaperone_t : Structure {
 /** Not actually used for any events */
 open class VREvent_Reserved_t : Structure {
 
-    @JvmField var reserved0 = 0L
-    @JvmField var reserved1 = 0L
+    @JvmField
+    var reserved0 = 0L
+    @JvmField
+    var reserved1 = 0L
 
     constructor()
 
@@ -1465,7 +1527,8 @@ open class VREvent_Reserved_t : Structure {
 
 open class VREvent_PerformanceTest_t : Structure {
 
-    @JvmField var m_nFidelityLevel = 0
+    @JvmField
+    var m_nFidelityLevel = 0
 
     constructor()
 
@@ -1485,7 +1548,8 @@ open class VREvent_PerformanceTest_t : Structure {
 
 open class VREvent_SeatedZeroPoseReset_t : Structure {
 
-    @JvmField var bResetBySystemMenu_internal = 0.b
+    @JvmField
+    var bResetBySystemMenu_internal = 0.b
     var bResetBySystemMenu
         set(value) {
             bResetBySystemMenu_internal = if (value) 1.b else 0.b
@@ -1510,8 +1574,10 @@ open class VREvent_SeatedZeroPoseReset_t : Structure {
 
 open class VREvent_Screenshot_t : Structure {
 
-    @JvmField var handle = 0
-    @JvmField var type = 0
+    @JvmField
+    var handle = 0
+    @JvmField
+    var type = 0
 
     constructor()
 
@@ -1532,7 +1598,8 @@ open class VREvent_Screenshot_t : Structure {
 
 open class VREvent_ScreenshotProgress_t : Structure {
 
-    @JvmField var progress = 0f
+    @JvmField
+    var progress = 0f
 
     constructor()
 
@@ -1552,8 +1619,10 @@ open class VREvent_ScreenshotProgress_t : Structure {
 
 open class VREvent_ApplicationLaunch_t : Structure {
 
-    @JvmField var pid = 0
-    @JvmField var unArgsHandle = 0
+    @JvmField
+    var pid = 0
+    @JvmField
+    var unArgsHandle = 0
 
     constructor()
 
@@ -1574,8 +1643,10 @@ open class VREvent_ApplicationLaunch_t : Structure {
 
 open class VREvent_EditingCameraSurface_t : Structure {
 
-    @JvmField var overlayHandle = 0L
-    @JvmField var nVisualMode = 0
+    @JvmField
+    var overlayHandle = 0L
+    @JvmField
+    var nVisualMode = 0
 
     constructor()
 
@@ -1596,7 +1667,8 @@ open class VREvent_EditingCameraSurface_t : Structure {
 
 open class VREvent_MessageOverlay_t : Structure {
 
-    @JvmField var unVRMessageOverlayResponse_internal = 0 // vr::VRMessageOverlayResponse enum
+    @JvmField
+    var unVRMessageOverlayResponse_internal = 0 // vr::VRMessageOverlayResponse enum
     var unVRMessageOverlayResponse
         set(value) {
             unVRMessageOverlayResponse_internal = value.i
@@ -1621,8 +1693,10 @@ open class VREvent_MessageOverlay_t : Structure {
 
 open class VREvent_Property_t : Structure {
 
-    @JvmField var container: PropertyContainerHandle_t = 0
-    @JvmField var prop_internal = 0
+    @JvmField
+    var container: PropertyContainerHandle_t = 0
+    @JvmField
+    var prop_internal = 0
     var prop
         set(value) {
             prop_internal = value.i
@@ -1650,25 +1724,44 @@ open class VREvent_Property_t : Structure {
 /** If you change this you must manually update openvr_interop.cs.py */
 open class VREvent_Data_t : Union {
 
-    @JvmField var controller = VREvent_Controller_t()
-    @JvmField var mouse = VREvent_Mouse_t()
-    @JvmField var scroll = VREvent_Scroll_t()
-    @JvmField var process = VREvent_Process_t()
-    @JvmField var notification = VREvent_Notification_t()
-    @JvmField var overlay = VREvent_Overlay_t()
-    @JvmField var status = VREvent_Status_t()
-    @JvmField var keyboard = VREvent_Keyboard_t()
-    @JvmField var ipd = VREvent_Ipd_t()
-    @JvmField var chaperone = VREvent_Chaperone_t()
-    @JvmField var performanceTest = VREvent_PerformanceTest_t()
-    @JvmField var touchPadMove = VREvent_TouchPadMove_t()
-    @JvmField var seatedZeroPoseReset = VREvent_SeatedZeroPoseReset_t()
-    @JvmField var screenshot = VREvent_Screenshot_t()
-    @JvmField var screenshotProgress = VREvent_ScreenshotProgress_t()
-    @JvmField var applicationLaunch = VREvent_ApplicationLaunch_t()
-    @JvmField var cameraSurface = VREvent_EditingCameraSurface_t()
-    @JvmField var messageOverlay = VREvent_MessageOverlay_t()
-    @JvmField var property = VREvent_Property_t()
+    @JvmField
+    var controller = VREvent_Controller_t()
+    @JvmField
+    var mouse = VREvent_Mouse_t()
+    @JvmField
+    var scroll = VREvent_Scroll_t()
+    @JvmField
+    var process = VREvent_Process_t()
+    @JvmField
+    var notification = VREvent_Notification_t()
+    @JvmField
+    var overlay = VREvent_Overlay_t()
+    @JvmField
+    var status = VREvent_Status_t()
+    @JvmField
+    var keyboard = VREvent_Keyboard_t()
+    @JvmField
+    var ipd = VREvent_Ipd_t()
+    @JvmField
+    var chaperone = VREvent_Chaperone_t()
+    @JvmField
+    var performanceTest = VREvent_PerformanceTest_t()
+    @JvmField
+    var touchPadMove = VREvent_TouchPadMove_t()
+    @JvmField
+    var seatedZeroPoseReset = VREvent_SeatedZeroPoseReset_t()
+    @JvmField
+    var screenshot = VREvent_Screenshot_t()
+    @JvmField
+    var screenshotProgress = VREvent_ScreenshotProgress_t()
+    @JvmField
+    var applicationLaunch = VREvent_ApplicationLaunch_t()
+    @JvmField
+    var cameraSurface = VREvent_EditingCameraSurface_t()
+    @JvmField
+    var messageOverlay = VREvent_MessageOverlay_t()
+    @JvmField
+    var property = VREvent_Property_t()
 
     constructor() : super()
     constructor(peer: Pointer) : super(peer) {
@@ -1686,16 +1779,20 @@ open class VREvent_Data_t : Union {
 /** An event posted by the server to all running applications */
 open class VREvent_t : Structure {
 
-    @JvmField var eventType_internal = 0   // openvr.EVREventType value
+    @JvmField
+    var eventType_internal = 0   // openvr.lib.EVREventType value
     var eventType
         set(value) {
             eventType_internal = value.i
         }
         get() = EVREventType.of(eventType_internal)
-    @JvmField var trackedDeviceIndex = 0
-    @JvmField var eventAgeSeconds = 0f
+    @JvmField
+    var trackedDeviceIndex = 0
+    @JvmField
+    var eventAgeSeconds = 0f
     // event data must be the end of the struct as its size is variable
-    @JvmField var data = VREvent_Data_t()
+    @JvmField
+    var data = VREvent_Data_t()
 
     constructor()
 
@@ -1722,8 +1819,10 @@ open class VREvent_t : Structure {
  *  If the HMD does not provide a visible area mesh pVertexData will be NULL and unTriangleCount will be 0. */
 open class HiddenAreaMesh_t : Structure {
 
-    @JvmField var pVertexData: HmdVector2_t.ByReference? = null
-    @JvmField var unTriangleCount = 0
+    @JvmField
+    var pVertexData: HmdVector2_t.ByReference? = null
+    @JvmField
+    var unTriangleCount = 0
 
     constructor()
 
@@ -1771,8 +1870,10 @@ enum class EVRControllerAxisType(@JvmField val i: Int) {
 /** contains information about one axis on the controller */
 open class VRControllerAxis_t : Structure {
 
-    @JvmField var x = 0f  // Ranges from -1.0 to 1.0 for joysticks and track pads. Ranges from 0.0 to 1.0 for triggers were 0 is fully released.
-    @JvmField var y = 0f  // Ranges from -1.0 to 1.0 for joysticks and track pads. Is always 0.0 for triggers.
+    @JvmField
+    var x = 0f  // Ranges from -1.0 to 1.0 for joysticks and track pads. Ranges from 0.0 to 1.0 for triggers were 0 is fully released.
+    @JvmField
+    var y = 0f  // Ranges from -1.0 to 1.0 for joysticks and track pads. Is always 0.0 for triggers.
 
     constructor()
 
@@ -1798,14 +1899,18 @@ val k_unControllerStateAxisCount = 5
 open class VRControllerState_t : Structure {
 
     // If packet num matches that on your prior call, then the controller state hasn't been changed since your last call and there is no need to process it.
-    @JvmField var unPacketNum = 0
+    @JvmField
+    var unPacketNum = 0
 
     // bit flags for each of the buttons. Use ButtonMaskFromId to turn an ID into a mask
-    @JvmField var ulButtonPressed = 0L
-    @JvmField var ulButtonTouched = 0L
+    @JvmField
+    var ulButtonPressed = 0L
+    @JvmField
+    var ulButtonTouched = 0L
 
     // Axis data for the controller's analog inputs
-    @JvmField var rAxis = Array(k_unControllerStateAxisCount, { VRControllerAxis_t() })
+    @JvmField
+    var rAxis = Array(k_unControllerStateAxisCount, { VRControllerAxis_t() })
 
     constructor()
 
@@ -1859,30 +1964,44 @@ enum class ECollisionBoundsStyle(@JvmField val i: Int) {
 /** Allows the application to customize how the overlay appears in the compositor */
 open class Compositor_OverlaySettings : Structure {
 
-    @JvmField var size = 0    // sizeof(openvr.Compositor_OverlaySettings)
-    @JvmField var curved_internal = 0.b
+    @JvmField
+    var size = 0    // sizeof(openvr.lib.Compositor_OverlaySettings)
+    @JvmField
+    var curved_internal = 0.b
     var curved
         set(value) {
             curved_internal = if (value) 1.b else 0.b
         }
         get() = curved_internal == 1.b
-    @JvmField var antialias_internal = 0.b
+    @JvmField
+    var antialias_internal = 0.b
     var antialias
         set(value) {
             antialias_internal = if (value) 1.b else 0.b
         }
         get() = antialias_internal == 1.b
-    @JvmField var scale = 0f
-    @JvmField var distance = 0f
-    @JvmField var alpha = 0f
-    @JvmField var uOffset = 0f
-    @JvmField var vOffset = 0f
-    @JvmField var uScale = 0f
-    @JvmField var vScale = 0f
-    @JvmField var gridDivs = 0f
-    @JvmField var gridWidth = 0f
-    @JvmField var gridScale = 0f
-    @JvmField var transform = HmdMatrix44_t()
+    @JvmField
+    var scale = 0f
+    @JvmField
+    var distance = 0f
+    @JvmField
+    var alpha = 0f
+    @JvmField
+    var uOffset = 0f
+    @JvmField
+    var vOffset = 0f
+    @JvmField
+    var uScale = 0f
+    @JvmField
+    var vScale = 0f
+    @JvmField
+    var gridDivs = 0f
+    @JvmField
+    var gridWidth = 0f
+    @JvmField
+    var gridScale = 0f
+    @JvmField
+    var transform = HmdMatrix44_t()
 
     constructor()
 
@@ -1968,7 +2087,7 @@ enum class EVRApplicationType(@JvmField val i: Int) {
      *  else quits. */
     Background(3),
     /** Init should not try to load any drivers. The application needs access to utility interfaces
-     *  (like openvr.IVRSettings and openvr.IVRApplications) but not hardware.  */
+     *  (like openvr.lib.IVRSettings and openvr.lib.IVRApplications) but not hardware.  */
     Utility(4),
     /** Reserved for vrmonitor  */
     VRMonitor(5),
@@ -2183,20 +2302,26 @@ val INVALID_TRACKED_CAMERA_HANDLE = 0L
 
 open class CameraVideoStreamFrameHeader_t : Structure {
 
-    @JvmField var eFrameType_internal = 0
+    @JvmField
+    var eFrameType_internal = 0
     var eFrameType
         set(value) {
             eFrameType_internal = value.i
         }
         get() = EVRTrackedCameraFrameType.of(eFrameType_internal)
 
-    @JvmField var nWidth = 0
-    @JvmField var nHeight = 0
-    @JvmField var nBytesPerPixel = 0
+    @JvmField
+    var nWidth = 0
+    @JvmField
+    var nHeight = 0
+    @JvmField
+    var nBytesPerPixel = 0
 
-    @JvmField var nFrameSequence = 0
+    @JvmField
+    var nFrameSequence = 0
 
-    @JvmField var standingTrackedDevicePose = TrackedDevicePose_t()
+    @JvmField
+    var standingTrackedDevicePose = TrackedDevicePose_t()
 
     constructor()
 
@@ -2235,25 +2360,24 @@ val k_unScreenshotHandleInvalid = 0
  *
  *  This path is to the "root" of the VR API install. That's the directory with the "drivers" directory and a platform (i.e. "win32") directory in it,
  *  not the directory with the DLL itself.   */
-fun vrInit(error: EVRInitError_ByReference, applicationType: EVRApplicationType): IVRSystem? {
+fun vrInit(error: EVRInitError_ByReference?, applicationType: EVRApplicationType): IVRSystem? {
 
-    Native.register("openvr_api")
+    Native.register("openvr_api") // TODO check
 
     var pVRSystem: IVRSystem? = null
 
-    VR_InitInternal(error, applicationType.i)
+    val eError = EVRInitError_ByReference()
+    vrToken = VR_InitInternal(eError, applicationType.i)
+    COpenVRContext.clear()
 
-    if (error.value == EVRInitError.None)
-
-//        for (i in 0 .. 1_000)
-//            if (VR_IsInterfaceVersionValid(IVRSystem_Version)) break
-//            else println("invalid, $i")
-
+    if (eError.value == EVRInitError.None)
         if (VR_IsInterfaceVersionValid(IVRSystem_Version))
-            pVRSystem = vrSystem()
-        else
-            VR_ShutdownInternal().also { error.value = EVRInitError.Init_InterfaceNotFound }
-
+            pVRSystem = vrSystem
+        else {
+            VR_ShutdownInternal()
+            eError.value = EVRInitError.Init_InterfaceNotFound
+        }
+    error?.let { it.value = eError.value }
     return pVRSystem
 }
 
@@ -2301,56 +2425,158 @@ internal external fun VR_IsInterfaceVersionValid(pchInterfaceVersion: String): B
 /** Returns a token that represents whether the VR interface handles need to be reloaded */
 fun vrGetInitToken() = VR_GetInitToken()
 
-internal external fun VR_GetInitToken()
+internal external fun VR_GetInitToken(): Int
 
-val FnTable_Prefix = "FnTable:"
+val FnTable = "FnTable:"
 
 object COpenVRContext {
 
     private var m_pVRSystem: IVRSystem? = null
-    private val m_pVRChaperone: IVRChaperone? = null
-    private val m_pVRChaperoneSetup: IVRChaperoneSetup? = null
-    private val m_pVRCompositor: IVRCompositor? = null
-    private val m_pVROverlay: IVROverlay? = null
-    private val m_pVRResources: IVRResources? = null
-    private val m_pVRRenderModels: IVRRenderModels? = null
-    private val m_pVRExtendedDisplay: IVRExtendedDisplay? = null
-    private val m_pVRSettings: IVRSettings? = null
-    private val m_pVRApplications: IVRApplications? = null
-    private val m_pVRTrackedCamera: IVRTrackedCamera? = null
-    private val m_pVRScreenshots: IVRScreenshots? = null
-    private val m_pVRDriverManager: IVRDriverManager? = null
+    private var m_pVRChaperone: IVRChaperone? = null
+    private var m_pVRChaperoneSetup: IVRChaperoneSetup? = null
+    private var m_pVRCompositor: IVRCompositor? = null
+    private var m_pVROverlay: IVROverlay? = null
+    private var m_pVRResources: IVRResources? = null
+    private var m_pVRRenderModels: IVRRenderModels? = null
+    private var m_pVRExtendedDisplay: IVRExtendedDisplay? = null
+    private var m_pVRSettings: IVRSettings? = null
+    private var m_pVRApplications: IVRApplications? = null
+    private var m_pVRTrackedCamera: IVRTrackedCamera? = null
+    private var m_pVRScreenshots: IVRScreenshots? = null
+    private var m_pVRDriverManager: IVRDriverManager? = null
 
     private val error = EVRInitError_ByReference(EVRInitError.None)
 
-    fun vrSystem() = m_pVRSystem ?: vrGetGenericInterface(FnTable_Prefix + IVRSystem_Version, error)?.let(::IVRSystem)
-    fun vrChaperone() = m_pVRChaperone ?: vrGetGenericInterface(FnTable_Prefix + IVRChaperone_Version, error)?.let(::IVRChaperone)
-    fun vrChaperoneSetup() = m_pVRChaperoneSetup ?: vrGetGenericInterface(FnTable_Prefix + IVRChaperoneSetup_Version, error)?.let(::IVRChaperoneSetup)
-    fun vrCompositor() = m_pVRCompositor ?: vrGetGenericInterface(FnTable_Prefix + IVRCompositor_Version, error)?.let(::IVRCompositor)
-    fun vrOverlay() = m_pVROverlay ?: vrGetGenericInterface(FnTable_Prefix + IVROverlay_Version, error)?.let(::IVROverlay)
-    fun vrResources() = m_pVRResources ?: vrGetGenericInterface(FnTable_Prefix + IVRResources_Version, error)?.let(::IVRResources)
-    fun vrRenderModels() = m_pVRRenderModels ?: vrGetGenericInterface(FnTable_Prefix + IVRRenderModels_Version, error)?.let(::IVRRenderModels)
-    fun vrExtendedDisplay() = m_pVRExtendedDisplay ?: vrGetGenericInterface(FnTable_Prefix + IVRExtendedDisplay_Version, error)?.let(::IVRExtendedDisplay)
-    fun vrSettings() = m_pVRSettings ?: vrGetGenericInterface(FnTable_Prefix + IVRSettings_Version, error)?.let(::IVRSettings)
-    fun vrApplications() = m_pVRApplications ?: vrGetGenericInterface(FnTable_Prefix + IVRApplications_Version, error)?.let(::IVRApplications)
-    fun vrTrackedCamera() = m_pVRTrackedCamera ?: vrGetGenericInterface(FnTable_Prefix + IVRTrackedCamera_Version, error)?.let(::IVRTrackedCamera)
-    fun vrScreenshots() = m_pVRScreenshots ?: vrGetGenericInterface(FnTable_Prefix + IVRScreenshots_Version, error)?.let(::IVRScreenshots)
-    fun vrDriverManager() = m_pVRDriverManager ?: vrGetGenericInterface(FnTable_Prefix + IVRDriverManager_Version, error)?.let(::IVRDriverManager)
+    private fun checkClear() {
+        if (vrToken != VR_GetInitToken()) {
+            clear()
+            vrToken = VR_GetInitToken()
+        }
+    }
+
+    fun vrSystem(): IVRSystem? {
+        checkClear()
+        if (m_pVRSystem == null)
+            m_pVRSystem = vrGetGenericInterface(FnTable + IVRSystem_Version, error)?.let(::IVRSystem)
+        return m_pVRSystem
+    }
+
+    fun vrChaperone(): IVRChaperone? {
+        checkClear()
+        if (m_pVRChaperone == null)
+            m_pVRChaperone = vrGetGenericInterface(FnTable + IVRChaperone_Version, error)?.let(::IVRChaperone)
+        return m_pVRChaperone
+    }
+
+    fun vrChaperoneSetup(): IVRChaperoneSetup? {
+        checkClear()
+        if (m_pVRChaperoneSetup == null)
+            m_pVRChaperoneSetup = vrGetGenericInterface(FnTable + IVRChaperoneSetup_Version, error)?.let(::IVRChaperoneSetup)
+        return m_pVRChaperoneSetup
+    }
+
+    fun vrCompositor(): IVRCompositor? {
+        checkClear()
+        if (m_pVRCompositor == null)
+            m_pVRCompositor = vrGetGenericInterface(FnTable + IVRCompositor_Version, error)?.let(::IVRCompositor)
+        return m_pVRCompositor
+    }
+
+    fun vrOverlay(): IVROverlay? {
+        checkClear()
+        if (m_pVROverlay == null)
+            m_pVROverlay = vrGetGenericInterface(FnTable + IVROverlay_Version, error)?.let(::IVROverlay)
+        return m_pVROverlay
+    }
+
+    fun vrResources(): IVRResources? {
+        checkClear()
+        if (m_pVRResources == null)
+            m_pVRResources = vrGetGenericInterface(FnTable + IVRResources_Version, error)?.let(::IVRResources)
+        return m_pVRResources
+    }
+
+    fun vrRenderModels(): IVRRenderModels? {
+        checkClear()
+        if (m_pVRRenderModels == null)
+            m_pVRRenderModels = vrGetGenericInterface(FnTable + IVRRenderModels_Version, error)?.let(::IVRRenderModels)
+        return m_pVRRenderModels
+    }
+
+    fun vrExtendedDisplay(): IVRExtendedDisplay? {
+        checkClear()
+        if (m_pVRExtendedDisplay == null)
+            m_pVRExtendedDisplay = vrGetGenericInterface(FnTable + IVRExtendedDisplay_Version, error)?.let(::IVRExtendedDisplay)
+        return m_pVRExtendedDisplay
+    }
+
+    fun vrSettings(): IVRSettings? {
+        checkClear()
+        if (m_pVRSettings == null)
+            m_pVRSettings = vrGetGenericInterface(FnTable + IVRSettings_Version, error)?.let(::IVRSettings)
+        return m_pVRSettings
+    }
+
+    fun vrApplications(): IVRApplications? {
+        checkClear()
+        if (m_pVRApplications == null)
+            m_pVRApplications = vrGetGenericInterface(FnTable + IVRApplications_Version, error)?.let(::IVRApplications)
+        return m_pVRApplications
+    }
+
+    fun vrTrackedCamera(): IVRTrackedCamera? {
+        checkClear()
+        if (m_pVRTrackedCamera == null)
+            m_pVRTrackedCamera = vrGetGenericInterface(FnTable + IVRTrackedCamera_Version, error)?.let(::IVRTrackedCamera)
+        return m_pVRTrackedCamera
+    }
+
+    fun vrScreenshots(): IVRScreenshots? {
+        checkClear()
+        if (m_pVRScreenshots == null)
+            m_pVRScreenshots = vrGetGenericInterface(FnTable + IVRScreenshots_Version, error)?.let(::IVRScreenshots)
+        return m_pVRScreenshots
+    }
+
+    fun vrDriverManager(): IVRDriverManager? {
+        checkClear()
+        if (m_pVRDriverManager == null)
+            m_pVRDriverManager = vrGetGenericInterface(FnTable + IVRDriverManager_Version, error)?.let(::IVRDriverManager)
+        return m_pVRDriverManager
+    }
+
+    fun clear() {
+        m_pVRSystem = null
+        m_pVRChaperone = null
+        m_pVRChaperoneSetup = null
+        m_pVRCompositor = null
+        m_pVROverlay = null
+        m_pVRResources = null
+        m_pVRRenderModels = null
+        m_pVRExtendedDisplay = null
+        m_pVRSettings = null
+        m_pVRApplications = null
+        m_pVRTrackedCamera = null
+        m_pVRScreenshots = null
+        m_pVRDriverManager = null
+    }
 }
 
-fun vrSystem() = COpenVRContext.vrSystem()
-fun vrChaperone() = COpenVRContext.vrChaperone()
-fun vrChaperoneSetup() = COpenVRContext.vrChaperoneSetup()
-fun vrCompositor() = COpenVRContext.vrCompositor()
-fun vrOverlay() = COpenVRContext.vrOverlay()
-fun vrResources() = COpenVRContext.vrResources()
-fun vrRenderModels() = COpenVRContext.vrRenderModels()
-fun vrExtendedDisplay() = COpenVRContext.vrExtendedDisplay()
-fun vrSettings() = COpenVRContext.vrSettings()
-fun vrApplications() = COpenVRContext.vrApplications()
-fun vrTrackedCamera() = COpenVRContext.vrTrackedCamera()
-fun vrScreenshots() = COpenVRContext.vrScreenshots()
-fun vrDriverManager() = COpenVRContext.vrDriverManager()
+var vrToken = 0
 
-internal external fun VR_InitInternal(peError: EVRInitError_ByReference, eType: Int): Pointer
+val vrSystem get() = COpenVRContext.vrSystem()
+val vrChaperone get() = COpenVRContext.vrChaperone()
+val vrChaperoneSetup get() = COpenVRContext.vrChaperoneSetup()
+val vrCompositor get() = COpenVRContext.vrCompositor()
+val vrOverlay get() = COpenVRContext.vrOverlay()
+val vrResources get() = COpenVRContext.vrResources()
+val vrRenderModels get() = COpenVRContext.vrRenderModels()
+val vrExtendedDisplay get() = COpenVRContext.vrExtendedDisplay()
+val vrSettings get() = COpenVRContext.vrSettings()
+val vrApplications get() = COpenVRContext.vrApplications()
+val vrTrackedCamera get() = COpenVRContext.vrTrackedCamera()
+val vrScreenshots get() = COpenVRContext.vrScreenshots()
+val vrDriverManager get() = COpenVRContext.vrDriverManager()
+
+internal external fun VR_InitInternal(peError: EVRInitError_ByReference, eType: Int): Int
 internal external fun VR_ShutdownInternal()

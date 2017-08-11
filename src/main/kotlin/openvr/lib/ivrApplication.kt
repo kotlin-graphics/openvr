@@ -1,4 +1,4 @@
-package openvr
+package openvr.lib
 
 import com.sun.jna.Callback
 import com.sun.jna.Pointer
@@ -52,7 +52,7 @@ open class IVRApplications : Structure {
     }
 
     /** Returns the key of the specified application. The index is at least 0 and is less than the return value of GetApplicationCount(). The buffer should be
-     *  at least openvr.k_unMaxApplicationKeyLength in order to fit the key. */
+     *  at least openvr.lib.getK_unMaxApplicationKeyLength in order to fit the key. */
     fun getApplicationKeyByIndex(unApplicationIndex: Int, pchAppKeyBuffer: String, unAppKeyBufferLen: Int)
             = EVRApplicationError.of(GetApplicationKeyByIndex!!.invoke(unApplicationIndex, pchAppKeyBuffer, unAppKeyBufferLen))
 
@@ -62,7 +62,7 @@ open class IVRApplications : Structure {
         fun invoke(unApplicationIndex: Int, pchAppKeyBuffer: String, unAppKeyBufferLen: Int): Int
     }
 
-    /** Returns the key of the application for the specified Process Id. The buffer should be at least openvr.k_unMaxApplicationKeyLength in order to fit the key. */
+    /** Returns the key of the application for the specified Process Id. The buffer should be at least openvr.lib.getK_unMaxApplicationKeyLength in order to fit the key. */
     fun getApplicationKeyByProcessId(unProcessId: Int, pchAppKeyBuffer: String, unAppKeyBufferLen: Int)
             = EVRApplicationError.of(GetApplicationKeyByProcessId!!.invoke(unProcessId, pchAppKeyBuffer, unAppKeyBufferLen))
 
@@ -83,7 +83,7 @@ open class IVRApplications : Structure {
     }
 
     /** Launches an instance of an application of value template, with its app key being pchNewAppKey (which must be unique) and optionally override sections
-     *  from the manifest file via openvr.AppOverrideKeys_t     */
+     *  from the manifest file via openvr.lib.AppOverrideKeys_t     */
     fun launchTemplateApplication(pchTemplateAppKey: String, pchNewAppKey: String, pKeys: AppOverrideKeys_t.ByReference, unKeys: Int)
             = EVRApplicationError.of(LaunchTemplateApplication!!.invoke(pchTemplateAppKey, pchNewAppKey, pKeys, unKeys))
 

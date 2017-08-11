@@ -1,15 +1,14 @@
 import com.sun.jna.ptr.FloatByReference
 import com.sun.jna.ptr.IntByReference
 import io.kotlintest.matchers.shouldBe
-import io.kotlintest.matchers.shouldNotBe
 import io.kotlintest.specs.StringSpec
 import openvr.*
+import openvr.lib.*
 
 
 /**
  * Created by GBarbieri on 25.10.2016.
  */
-
 
 
 class Test : StringSpec() {
@@ -21,7 +20,7 @@ class Test : StringSpec() {
             val error = EVRInitError_ByReference()
 
             val hmd = vrInit(error, EVRApplicationType.Scene)
-            vr.compositor shouldNotBe null
+//            vr.compositor shouldNotBe null
 
             error.value shouldBe EVRInitError.None
 
@@ -52,30 +51,25 @@ class Test : StringSpec() {
 //      -1.3941408, 1.2448317, -1.4681898, 1.4642779
             (left_.value < 0 && right.value > 0 && top.value < 0 && bottom.value >= 0) shouldBe true
 
-            class Listener : SteamVRListener(hmd) {
-                override fun trackedDeviceActivated(left: Boolean) = println("activated $left")
-                override fun trackedDeviceDeactivated(left: Boolean) = println("deactivated $left")
-                override fun trackedDeviceRoleChanged(left: Boolean) = println("role changed $left")
-                override fun trackedDeviceUpdated(left: Boolean) = println("updated $left")
-                override fun buttonPress(left: Boolean, button: EVRButtonId) {
-                    println("pressed $button")
-                }
+            val overlayHandle = VROverlayHandle_t_ByReference()
+            val overlayThumbnailHandle = VROverlayHandle_t_ByReference()
 
-                override fun touchPadMove() {
-                    println("touchPadMove")
-                }
-
-                override fun scroll() {
-                    println("scroll")
-                }
+            vrOverlay?.let {
+                val name = "systemOverlay"
+                val key = "sample.$name"
+                val overlayError = it.createDashboardOverlay(key, name, overlayHandle, overlayThumbnailHandle)
+                overlayError shouldBe EVROverlayError.None
             }
 
-            val listener = Listener()
+            println(vrOverlay!!.setOverlayInputMethod(overlayHandle.value, VROverlayInputMethod.Mouse))
+
+            val listener = Listener(hmd)
 
             val start = System.nanoTime()
-//            while (System.nanoTime() - start < 50e9) {
-//                listener.poll()
-//            }
+            while (System.nanoTime() - start < 15e9)
+                listener.poll()
+
+//            if(vr.compositor == null) throw Error()
 
 //            val dc = hmd.computeDistortion(EVREye.Left, .5f, .5f)
 //            //
@@ -95,5 +89,27 @@ class Test : StringSpec() {
 
             vrShutdown()
         }
+    }
+}
+
+class Listener(hmd: IVRSystem) : SteamVRListener(hmd) {
+    override fun trackedDeviceActivated(left: Boolean) = println("activated $left")
+    override fun trackedDeviceDeactivated(left: Boolean) = println("deactivated $left")
+    override fun trackedDeviceRoleChanged(left: Boolean) = println("role changed $left")
+    override fun trackedDeviceUpdated(left: Boolean) = println("updated $left")
+    override fun buttonPress(left: Boolean, button: EVRButtonId) {
+        println("pressed $button")
+    }
+
+    override fun touchPadMove() {
+        println("touchPadMove")
+    }
+
+    override fun mouseMove() {
+        println("mouseMove")
+    }
+
+    override fun scroll() {
+        println("scroll")
     }
 }
