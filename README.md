@@ -41,6 +41,7 @@ getStringTrackedDeviceProperty(..): String
 ```
 that returns directly the resulting string, bringing down a lot of boilerplate code
 
+- full interoperability with glm, `getProjectionMatrix` returns for example directly a glm `Mat4`
 - array classes `[]` operator, included `RenderModel_Vertex_t`
 - concise enumerators, e.g. `EVRComponentProperty.VRComponentProperty_IsStatic` is `EVRComponentProperty.IsStatic`
 - `SteamVRListener` for event listener. Instantiate a class extending it, call `.poll()` on it at the begin of each frame and override the corresponding methods you are looking for, such as `buttonPress(left: Boolean, button: EVRButtonId)`
