@@ -2,7 +2,7 @@
 //
 //object vr {
 //
-//    @JvmField val maxTrackedDeviceCount = openvr.lib.getK_unMaxTrackedDeviceCount
+//    @JvmField val maxTrackedDeviceCount = openvr.lib.k_unMaxTrackedDeviceCount
 //
 //    fun init(error: EVRInitError_ByReference, applicationType: EVRApplicationType) = openvr.lib.vrInit(error, applicationType)
 //

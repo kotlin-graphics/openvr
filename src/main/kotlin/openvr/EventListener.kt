@@ -2,7 +2,7 @@ package openvr
 
 import openvr.lib.*
 
-abstract class SteamVRListener(val hmd: IVRSystem) {
+abstract class EventListener(val hmd: IVRSystem) {
 
     val states = Array(k_unMaxTrackedDeviceCount, { VRControllerState_t.ByReference() })
 

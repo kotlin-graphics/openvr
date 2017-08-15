@@ -1,5 +1,4 @@
 import com.sun.jna.ptr.FloatByReference
-import com.sun.jna.ptr.IntByReference
 import io.kotlintest.matchers.shouldBe
 import io.kotlintest.specs.StringSpec
 import openvr.*
@@ -26,10 +25,8 @@ class Test : StringSpec() {
 
             if (hmd == null) throw Error()
 
-            val w = IntByReference(0)
-            val h = IntByReference(0)
-            hmd.getRecommendedRenderTargetSize(w, h)
-            (w.value > 0 && h.value > 0) shouldBe true
+            val (w, h) = hmd.recommendedRenderTargetSize
+            (w > 0 && h > 0) shouldBe true
 
 
             val m = hmd.getProjectionMatrix(EVREye.Left, .1f, 10f)
@@ -66,8 +63,12 @@ class Test : StringSpec() {
             val listener = Listener(hmd)
 
             val start = System.nanoTime()
-            while (System.nanoTime() - start < 15e9)
+            val state = VRControllerState_t.ByReference()
+            while (System.nanoTime() - start < 5e9) {
                 listener.poll()
+                hmd.getControllerState(1, state, state.size())
+                println("(${state.rAxis[0].x}, ${state.rAxis[0].y}")
+            }
 
 //            if(vr.compositor == null) throw Error()
 
@@ -92,13 +93,13 @@ class Test : StringSpec() {
     }
 }
 
-class Listener(hmd: IVRSystem) : SteamVRListener(hmd) {
+class Listener(hmd: IVRSystem) : EventListener(hmd) {
     override fun trackedDeviceActivated(left: Boolean) = println("activated $left")
     override fun trackedDeviceDeactivated(left: Boolean) = println("deactivated $left")
     override fun trackedDeviceRoleChanged(left: Boolean) = println("role changed $left")
     override fun trackedDeviceUpdated(left: Boolean) = println("updated $left")
     override fun buttonPress(left: Boolean, button: EVRButtonId) {
-        println("pressed $button")
+        println("pressed $button, id ${event.trackedDeviceIndex}")
     }
 
     override fun touchPadMove() {

@@ -22,5 +22,6 @@ public class Test {
 //        val h = IntByReference(0)
 //        hmd.getRecommendedRenderTargetSize(w, h)
 //        println("resolution: ${w.value} x ${h.value}")
+        int a = openvr.lib.OpenvrKt.k_unMaxTrackedDeviceCount;
     }
 }

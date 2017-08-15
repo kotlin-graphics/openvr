@@ -545,17 +545,17 @@ open class IVRSystem : Structure {
     /** Fills the supplied struct with the current state of the controller and the provided pose with the pose of the controller when the controller state was
      *  updated most recently. Use this form if you need a precise controller pose as input to your application when the user presses or releases a button. */
     fun getControllerStateWithPose(eOrigin: ETrackingUniverseOrigin, unControllerDeviceIndex: TrackedDeviceIndex_t,
-                                   pControllerState: VRControllerState_t.ByReference,
-                                   pTrackedDevicePose: TrackedDevicePose_t.ByReference, unControllerStateSize: Int)
-            = GetControllerStateWithPose!!.invoke(eOrigin.i, unControllerDeviceIndex, pControllerState, pTrackedDevicePose,
-            unControllerStateSize)
+                                   pControllerState: VRControllerState_t.ByReference, unControllerStateSize: Int,
+                                   pTrackedDevicePose: TrackedDevicePose_t.ByReference)
+            = GetControllerStateWithPose!!.invoke(eOrigin.i, unControllerDeviceIndex, pControllerState, unControllerStateSize,
+            pTrackedDevicePose)
 
     @JvmField
     var GetControllerStateWithPose: GetControllerStateWithPose_callback? = null
 
     interface GetControllerStateWithPose_callback : Callback {
         fun invoke(eOrigin: Int, unControllerDeviceIndex: TrackedDeviceIndex_t, pControllerState: VRControllerState_t.ByReference,
-                   pTrackedDevicePose: TrackedDevicePose_t.ByReference, unControllerStateSize: Int): Boolean
+                   unControllerStateSize: Int, pTrackedDevicePose: TrackedDevicePose_t.ByReference): Boolean
     }
 
     /** Trigger a single haptic pulse on a controller. After this call the application may not trigger another haptic pulse on this controller and axis

@@ -19,6 +19,8 @@ import glm_.BYTES
 import glm_.b
 import glm_.i
 import glm_.mat4x4.Mat4
+import glm_.s
+import glm_.vec3.Vec3
 import java.nio.ByteBuffer
 
 
@@ -122,6 +124,16 @@ open class HmdVector3_t : Structure {
     @JvmField
     var v = FloatArray(3)
 
+    var x
+        get() = v[0]
+        set(value) = v.set(0, value)
+    var y
+        get() = v[1]
+        set(value) = v.set(1, value)
+    var z
+        get() = v[2]
+        set(value) = v.set(2, value)
+
     constructor()
 
     override fun getFieldOrder(): List<String> = listOf("v")
@@ -143,7 +155,7 @@ open class HmdVector3_t : Structure {
     }
 
     companion object {
-        val SIZE = 3 * Float.BYTES
+        val SIZE = Vec3.size
     }
 
     operator fun get(i: Int) = v[i]
@@ -153,6 +165,19 @@ open class HmdVector4_t : Structure {
 
     @JvmField
     var v = FloatArray(4)
+
+    var x
+        get() = v[0]
+        set(value) = v.set(0, value)
+    var y
+        get() = v[1]
+        set(value) = v.set(1, value)
+    var z
+        get() = v[2]
+        set(value) = v.set(2, value)
+    var w
+        get() = v[3]
+        set(value) = v.set(3, value)
 
     constructor()
 
@@ -178,6 +203,16 @@ open class HmdVector3d_t : Structure {
     @JvmField
     var v = DoubleArray(3)
 
+    var x
+        get() = v[0]
+        set(value) = v.set(0, value)
+    var y
+        get() = v[1]
+        set(value) = v.set(1, value)
+    var z
+        get() = v[2]
+        set(value) = v.set(2, value)
+
     constructor()
 
     override fun getFieldOrder(): List<String> = listOf("v")
@@ -202,6 +237,13 @@ open class HmdVector2_t : Structure {
     @JvmField
     var v = FloatArray(2)
 
+    var x
+        get() = v[0]
+        set(value) = v.set(0, value)
+    var y
+        get() = v[1]
+        set(value) = v.set(1, value)
+
     constructor()
 
     override fun getFieldOrder(): List<String> = listOf("v")
@@ -224,13 +266,13 @@ open class HmdVector2_t : Structure {
 open class HmdQuaternion_t : Structure {
 
     @JvmField
-    var w: Double = 0.0
+    var w = 0.0
     @JvmField
-    var x: Double = 0.0
+    var x = 0.0
     @JvmField
-    var y: Double = 0.0
+    var y = 0.0
     @JvmField
-    var z: Double = 0.0
+    var z = 0.0
 
     constructor()
 
@@ -443,6 +485,7 @@ open class Texture_t : Structure {
         this.handle = handle
         this.eType_internal = eType.i
         this.eColorSpace_internal = eColorSpace.i
+        write()
     }
 
     constructor(peer: Pointer) : super(peer) {
@@ -484,16 +527,22 @@ enum class ETrackingResult(@JvmField val i: Int) {
 }
 
 typealias DriverId_t = Int
+@JvmField
 val k_nDriverNone = 0xFFFFFFFF.i
 
+@JvmField
 val k_unMaxDriverDebugResponseSize = 32768
 
 /** Used to pass device IDs to API calls */
 typealias TrackedDeviceIndex_t = Int
 typealias TrackedDeviceIndex_t_ByReference = IntByReference
+@JvmField
 val k_unTrackedDeviceIndex_Hmd = 0
+@JvmField
 val k_unMaxTrackedDeviceCount = 16
+@JvmField
 val k_unTrackedDeviceIndexOther = 0xFFFFFFFE.i
+@JvmField
 val k_unTrackedDeviceIndexInvalid = 0xFFFFFFFF.i
 
 /** Describes what kind of object is being tracked at a given ID */
@@ -607,24 +656,38 @@ class ETrackingUniverseOrigin_ByReference(@JvmField var value: ETrackingUniverse
 typealias PropertyContainerHandle_t = Long
 typealias PropertyTypeTag_t = Int
 
+@JvmField
 val k_ulInvalidPropertyContainer: PropertyContainerHandle_t = 0
+@JvmField
 val k_unInvalidPropertyTag: PropertyTypeTag_t = 0
 
 // Use these tags to set/get common types as struct properties
+@JvmField
 val k_unFloatPropertyTag: PropertyTypeTag_t = 1
+@JvmField
 val k_unInt32PropertyTag: PropertyTypeTag_t = 2
+@JvmField
 val k_unUint64PropertyTag: PropertyTypeTag_t = 3
+@JvmField
 val k_unBoolPropertyTag: PropertyTypeTag_t = 4
+@JvmField
 val k_unStringPropertyTag: PropertyTypeTag_t = 5
 
+@JvmField
 val k_unHmdMatrix34PropertyTag: PropertyTypeTag_t = 20
+@JvmField
 val k_unHmdMatrix44PropertyTag: PropertyTypeTag_t = 21
+@JvmField
 val k_unHmdVector3PropertyTag: PropertyTypeTag_t = 22
+@JvmField
 val k_unHmdVector4PropertyTag: PropertyTypeTag_t = 23
 
+@JvmField
 val k_unHiddenAreaPropertyTag: PropertyTypeTag_t = 30
 
+@JvmField
 val k_unOpenVRInternalReserved_Start: PropertyTypeTag_t = 1000
+@JvmField
 val k_unOpenVRInternalReserved_End: PropertyTypeTag_t = 10000
 
 
@@ -792,6 +855,7 @@ enum class ETrackedDeviceProperty(@JvmField val i: Int) {
 }
 
 /** No string property will ever be longer than this length */
+@JvmField
 val k_unMaxPropertyStringSize = 32 * 1024
 
 /** Used to return errors that occur when reading properties. */
@@ -1160,6 +1224,8 @@ enum class EVRButtonId(@JvmField val i: Int) {
     companion object {
         fun of(i: Int) = values().first { it.i == i }
     }
+
+    val mask get() = 1L shl i
 }
 
 fun buttonMaskFromId(id: EVRButtonId) = 1L shl id.i
@@ -1912,6 +1978,12 @@ open class VRControllerState_t : Structure {
     @JvmField
     var rAxis = Array(k_unControllerStateAxisCount, { VRControllerAxis_t() })
 
+    val axis0 get() = rAxis[0]
+    val axis1 get() = rAxis[1]
+    val axis2 get() = rAxis[2]
+    val axis3 get() = rAxis[3]
+    val axis4 get() = rAxis[4]
+
     constructor()
 
     override fun getFieldOrder(): List<String> = listOf("unPacketNum", "ulButtonPressed", "ulButtonTouched", "rAxis")
@@ -2039,6 +2111,7 @@ open class Compositor_OverlaySettings : Structure {
 typealias VROverlayHandle_t = Long
 typealias VROverlayHandle_t_ByReference = LongByReference
 
+@JvmField
 val k_ulOverlayHandleInvalid = 0L
 
 /** Errors that can occur around VR overlays */
@@ -2298,6 +2371,7 @@ enum class EVRTrackedCameraFrameType(@JvmField val i: Int) {
 }
 
 typealias TrackedCameraHandle_t = Long
+@JvmField
 val INVALID_TRACKED_CAMERA_HANDLE = 0L
 
 open class CameraVideoStreamFrameHeader_t : Structure {
@@ -2350,6 +2424,7 @@ open class CameraVideoStreamFrameHeader_t : Structure {
 // Screenshot types
 typealias ScreenshotHandle_t = Int
 typealias ScreenshotHandle_t_ByReference = IntByReference
+@JvmField
 val k_unScreenshotHandleInvalid = 0
 
 
@@ -2427,6 +2502,7 @@ fun vrGetInitToken() = VR_GetInitToken()
 
 internal external fun VR_GetInitToken(): Int
 
+@JvmField
 val FnTable = "FnTable:"
 
 object COpenVRContext {
