@@ -467,7 +467,7 @@ class EColorSpace_ByReference(@JvmField var value: EColorSpace = EColorSpace.Aut
 open class Texture_t : Structure {
 
     @JvmField
-    var handle = 0  //See ETextureType definition above
+    var handle = 0L  //See ETextureType definition above
     @JvmField
     var eType_internal = 0
     val eType
@@ -481,7 +481,7 @@ open class Texture_t : Structure {
 
     override fun getFieldOrder(): List<String> = listOf("handle", "eType_internal", "eColorSpace_internal")
 
-    constructor(handle: Int, eType: ETextureType, eColorSpace: EColorSpace) {
+    constructor(handle: Long, eType: ETextureType, eColorSpace: EColorSpace) {
         this.handle = handle
         this.eType_internal = eType.i
         this.eColorSpace_internal = eColorSpace.i
@@ -495,9 +495,9 @@ open class Texture_t : Structure {
     class ByReference : Texture_t, Structure.ByReference {
 
         constructor() : super()
-        constructor(handle: Int, eType: ETextureType, eColorSpace: EColorSpace) : super(handle, eType, eColorSpace)
+        constructor(handle: Long, eType: ETextureType, eColorSpace: EColorSpace) : super(handle, eType, eColorSpace)
 
-        fun put(handle: Int, eType: ETextureType, eColorSpace: EColorSpace) {
+        fun put(handle: Long, eType: ETextureType, eColorSpace: EColorSpace) {
             this.handle = handle
             this.eType_internal = eType.i
             this.eColorSpace_internal = eColorSpace.i
