@@ -26,12 +26,17 @@ object Controller {
 
     private val _transform = Utils.RigidTransform()
 
+    var touchpadMoveCallback: ((Boolean, Vec2) -> Unit)? = null
+    var hairTriggerMoveCallback: ((Boolean, Float) -> Unit)? = null
+
     class Device(val index: Int) {
 
-        var frameCount = -1
+        var _frameCount = -1
 
         var valid = false
             private set
+
+        var left = true
 
         val connected get() = update().run { _pose.bDeviceIsConnected }
         val hasTracking get() = update().run { _pose.bPoseIsValid }
@@ -42,7 +47,6 @@ object Controller {
         /*  These values are only accurate for the last controller state change (e.g. trigger release),
             and by definition, will always lag behind the predicted visual poses that drive SteamVR_TrackedObjects
             since they are sync'd to the input timestamp that caused them to update.    */
-
         val transform get() = update().run { _transform put _pose.mDeviceToAbsoluteTracking }
         val velocity get() = update().run { _velocity.put(_pose.vVelocity.x, _pose.vVelocity.y, -_pose.vVelocity.z) }
         val angularVelocity get() = update().run { _angularVelocity.put(-_pose.vAngularVelocity.x, -_pose.vAngularVelocity.y, _pose.vAngularVelocity.z) }
@@ -56,33 +60,42 @@ object Controller {
         private val _prevState = VRControllerState_t.ByReference()
         private val _pose = TrackedDevicePose_t.ByReference()
         private var prevFrameCount = -1
+        private val prevTouchpadPos = Vec2()
+        /** amount touchpad position must be increased or released on a single axes to change state   */
+        var touchpadDelta = 0.1f
 
-        fun update() {
+        fun update(frameCount: Int = _frameCount) {
             if (frameCount != prevFrameCount) {
                 prevFrameCount = frameCount
                 vrSystem?.let {
                     valid = it.getControllerStateWithPose(Render.trackingSpace, index, _state, _state.size(), _pose)
-                    updateHairTrigger()
+                    if (ButtonMask.SteamVR_Touchpad.touch)
+                        touchpadMoveCallback?.let {
+                            if (prevTouchpadPos.x - _state.axis0.pos.x >= touchpadDelta || prevTouchpadPos.y - _state.axis0.pos.y >= touchpadDelta) {
+                                it.invoke(left, _state.axis0.pos)
+                                prevTouchpadPos put _state.axis0.pos
+                            }
+                        }
                 }
+                updateHairTrigger()
             }
         }
 
-        fun press(buttonMask: ButtonMask) = update().run { _state.ulButtonPressed has buttonMask }
-        fun pressDown(buttonMask: ButtonMask) = update().run { _state.ulButtonPressed has buttonMask && _prevState.ulButtonPressed has buttonMask }
-        fun pressUp(buttonMask: ButtonMask) = update().run { _state.ulButtonPressed hasnt buttonMask && _prevState.ulButtonPressed hasnt buttonMask }
+        val ButtonMask.press get() = update().let { _state.ulButtonPressed has this }
+        val ButtonMask.pressDown get() = update().let { _state.ulButtonPressed has this && _prevState.ulButtonPressed hasnt this }
+        val ButtonMask.pressUp get() = update().let { _state.ulButtonPressed hasnt this && _prevState.ulButtonPressed has this }
 
-        fun press(buttonId: EVRButtonId) = update().run { _state.ulButtonPressed has buttonId }
-        fun pressDown(buttonId: EVRButtonId) = update().run { _state.ulButtonPressed has buttonId && _prevState.ulButtonPressed has buttonId }
-        fun pressUp(buttonId: EVRButtonId) = update().run { _state.ulButtonPressed hasnt buttonId && _prevState.ulButtonPressed hasnt buttonId }
+        val EVRButtonId.press get() = update().let { _state.ulButtonPressed has this }
+        val EVRButtonId.pressDown get() = update().let { _state.ulButtonPressed has this && _prevState.ulButtonPressed hasnt this }
+        val EVRButtonId.pressUp get() = update().let { _state.ulButtonPressed hasnt this && _prevState.ulButtonPressed has this }
 
-        fun touch(buttonMask: ButtonMask) = update().run { _state.ulButtonTouched has buttonMask }
-        fun touchDown(buttonMask: ButtonMask) = update().run { _state.ulButtonTouched has buttonMask && _prevState.ulButtonTouched has buttonMask }
-        fun touchUp(buttonMask: ButtonMask) = update().run { _state.ulButtonTouched hasnt buttonMask && _prevState.ulButtonTouched hasnt buttonMask }
+        val ButtonMask.touch get() = update().let { _state.ulButtonTouched has this }
+        val ButtonMask.touchDown get() = update().let { _state.ulButtonTouched has this && _prevState.ulButtonTouched hasnt this }
+        val ButtonMask.touchUp get() = update().let { _state.ulButtonTouched hasnt this && _prevState.ulButtonTouched has this }
 
-        fun touch(buttonId: EVRButtonId) = update().run { _state.ulButtonTouched has buttonId }
-        fun touchDown(buttonId: EVRButtonId) = update().run { _state.ulButtonTouched has buttonId && _prevState.ulButtonTouched has buttonId }
-        fun touchUp(buttonId: EVRButtonId) = update().run { _state.ulButtonTouched hasnt buttonId && _prevState.ulButtonTouched hasnt buttonId }
-
+        val EVRButtonId.touch get() = update().let { _state.ulButtonTouched has this }
+        val EVRButtonId.touchDown get() = update().let { _state.ulButtonTouched has this && _prevState.ulButtonTouched hasnt this }
+        val EVRButtonId.touchUp get() = update().let { _state.ulButtonTouched hasnt this && _prevState.ulButtonTouched has this }
 
         val _axis = Vec2()
         fun axis(buttonId: EVRButtonId = EVRButtonId.SteamVR_Touchpad): Vec2 {
@@ -120,9 +133,9 @@ object Controller {
             hairTriggerLimit = if (hairTriggerState) glm.max(hairTriggerLimit, value) else glm.min(hairTriggerLimit, value)
         }
 
-        val hairTrigger get() = update().run { hairTriggerState }
-        val hairTriggerDown get() = update().run { hairTriggerState && !hairTriggerPrevState }
-        val hairTriggerUp get() = update().run { !hairTriggerState && hairTriggerPrevState }
+        val hairTrigger get() = update().let { hairTriggerState }
+        val hairTriggerDown get() = update().let { hairTriggerState && !hairTriggerPrevState }
+        val hairTriggerUp get() = update().let { !hairTriggerState && hairTriggerPrevState }
 
         private infix fun Long.has(buttonMask: ButtonMask) = (this and buttonMask.i) != 0L
         private infix fun Long.hasnt(buttonMask: ButtonMask) = (this and buttonMask.i) == 0L
@@ -132,8 +145,9 @@ object Controller {
 
     val devices = Array(k_unMaxTrackedDeviceCount, { Device(it) })
 
-    fun update() {
-        for (i in 0 until k_unMaxTrackedDeviceCount) devices[i].update()
+    /** updates the controllers scanning [0, k_unMaxTrackedDeviceCount) */
+    fun update(frameCount: Int) {
+        for (i in 0 until k_unMaxTrackedDeviceCount) devices[i].update(frameCount)
     }
 
     /** This helper can be used in a variety of ways.  Beware that indices may change as new devices are dynamically
@@ -155,7 +169,7 @@ object Controller {
         var result = -1
 
         val invXform =
-                if (relativeTo in 0 until k_unMaxTrackedDeviceCount)
+                if (relativeTo < k_unMaxTrackedDeviceCount)
                     devices[relativeTo].transform.inverse_()
                 else
                     _transform.apply { pos put 0; rot.put(1f, 0f, 0f, 0f) }

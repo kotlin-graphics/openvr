@@ -20,6 +20,7 @@ import glm_.b
 import glm_.i
 import glm_.mat4x4.Mat4
 import glm_.s
+import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import java.nio.ByteBuffer
 
@@ -1021,8 +1022,10 @@ enum class EVREventType(@JvmField val i: Int) {
     Scroll(305),
     /** data is mouse   */
     TouchPadMove(306),
-    /** data is overlay), global event  */
+    /** data is overlay, global event  */
     OverlayFocusChanged(307),
+    /** JVM openvr custom   */
+    HairTriggerMove(308),
 
     /** data is process DEPRECATED  */
     InputFocusCaptured(400),
@@ -1941,6 +1944,9 @@ open class VRControllerAxis_t : Structure {
     @JvmField
     var y = 0f  // Ranges from -1.0 to 1.0 for joysticks and track pads. Is always 0.0 for triggers.
 
+    val pos = Vec2()
+        get() = field.put(x, y)
+
     constructor()
 
     override fun getFieldOrder(): List<String> = listOf("x", "y")
@@ -1964,7 +1970,8 @@ val k_unControllerStateAxisCount = 5
 /** Holds all the state of a controller at one moment in time. */
 open class VRControllerState_t : Structure {
 
-    // If packet num matches that on your prior call, then the controller state hasn't been changed since your last call and there is no need to process it.
+    /** If packet num matches that on your prior call, then the controller state hasn't been changed since your last
+     *  call and there is no need to process it.    */
     @JvmField
     var unPacketNum = 0
 

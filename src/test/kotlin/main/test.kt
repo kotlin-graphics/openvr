@@ -1,8 +1,10 @@
 import com.sun.jna.ptr.FloatByReference
+import glm_.vec2.Vec2
 import io.kotlintest.matchers.shouldBe
 import io.kotlintest.specs.StringSpec
 import openvr.*
 import openvr.lib.*
+import openvr.plugin.Controller
 
 
 /**
@@ -58,16 +60,16 @@ class Test : StringSpec() {
                 overlayError shouldBe EVROverlayError.None
             }
 
-            println(vrOverlay!!.setOverlayInputMethod(overlayHandle.value, VROverlayInputMethod.Mouse))
-
             val listener = Listener(hmd)
 
             val start = System.nanoTime()
-            val state = VRControllerState_t.ByReference()
-            while (System.nanoTime() - start < 5e9) {
+            while (System.nanoTime() - start < 50e9) {
                 listener.poll()
-                hmd.getControllerState(1, state, state.size())
-                println("(${state.rAxis[0].x}, ${state.rAxis[0].y}")
+//                hmd.getControllerState(1, state, state.size())
+//                println("(${state.rAxis[0].x}, ${state.rAxis[0].y}")
+//                val leftMost = Controller.deviceIndex(Controller.DeviceRelation.Leftmost)
+//                val rightMost = Controller.deviceIndex(Controller.DeviceRelation.Rightmost)
+//                println("most $leftMost, $rightMost")
             }
 
 //            if(vr.compositor == null) throw Error()
@@ -94,7 +96,7 @@ class Test : StringSpec() {
 }
 
 class Listener(hmd: IVRSystem) : EventListener(hmd) {
-    override fun trackedDeviceActivated(left: Boolean) = println("activated $left")
+    override fun trackedDeviceActivated(left: Boolean) = println("activated $left, index ${event.trackedDeviceIndex}")
     override fun trackedDeviceDeactivated(left: Boolean) = println("deactivated $left")
     override fun trackedDeviceRoleChanged(left: Boolean) = println("role changed $left")
     override fun trackedDeviceUpdated(left: Boolean) = println("updated $left")
@@ -102,8 +104,12 @@ class Listener(hmd: IVRSystem) : EventListener(hmd) {
         println("pressed $button, id ${event.trackedDeviceIndex}")
     }
 
-    override fun touchPadMove() {
-        println("touchPadMove")
+    override fun touchpadMove(left: Boolean, pos: Vec2) {
+        println("touchPadMove, left controller: $left, pos $pos")
+    }
+
+    override fun triggerMove(left: Boolean, state: Boolean, limit: Float, value: Float) {
+        println("triggerMove, left $left, state $state, limit $limit, value $value")
     }
 
     override fun mouseMove() {
