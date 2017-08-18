@@ -352,16 +352,30 @@ open class IVRRenderModels : Structure {
         fun invoke(pchRenderModelName: String): Int
     }
 
+    /** Wrapper: returns a string property. If the device index is not valid or the property is not a string value this function will
+     *  return an empty String. */
+    fun getComponentName(pchRenderModelName: String, unComponentIndex: Int): String {
+
+        var ret = ""
+        val bytes = ByteArray(k_unMaxPropertyStringSize)
+
+        val propLen = GetComponentName!!.invoke(pchRenderModelName, unComponentIndex, bytes, bytes.size)
+
+        if(propLen > 0){
+            ret = String(bytes).filter { it.isLetterOrDigit() || it == '_' }
+        }
+
+        return ret
+    }
+
+    @JvmField
+    var GetComponentName: GetComponentName_callback? = null
+
     /** Use this to get the names of available components.  Index does not correlate to a tracked device index, but is only used for iterating over all available
      *  components.  If the index is out of range, this function will return 0.
      *  Otherwise, it will return the size of the buffer required for the name. */
-    fun getComponentName(pchRenderModelName: String, unComponentIndex: Int, pchComponentName: String, unComponentNameLen: Int)
-            = GetComponentName!!.invoke(pchRenderModelName, unComponentIndex, pchComponentName, unComponentNameLen)
-
-    @JvmField var GetComponentName: GetComponentName_callback? = null
-
     interface GetComponentName_callback : Callback {
-        fun invoke(pchRenderModelName: String, unComponentIndex: Int, pchComponentName: String, unComponentNameLen: Int): Int
+        fun invoke(pchRenderModelName: String, unComponentIndex: Int, pchComponentName: ByteArray?, unComponentNameLen: Int): Int
     }
 
     /** Get the button mask for all buttons associated with this component
