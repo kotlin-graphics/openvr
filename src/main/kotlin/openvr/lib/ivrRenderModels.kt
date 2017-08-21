@@ -390,16 +390,30 @@ open class IVRRenderModels : Structure {
         fun invoke(pchRenderModelName: String, pchComponentName: String): Long
     }
 
-    /** Use this to get the render model name for the specified rendermode/component combination, to be passed to LoadRenderModel.
-     *  If the component name is out of range, this function will return 0.
-     *  Otherwise, it will return the size of the buffer required for the name. */
-    fun getComponentRenderModelName(pchRenderModelName: String, pchComponentName: String, pchComponentRenderModelName: String, unComponentRenderModelNameLen: Int)
-            = GetComponentRenderModelName!!.invoke(pchRenderModelName, pchComponentName, pchComponentRenderModelName, unComponentRenderModelNameLen)
+    /** Wrapper: returns a string property. If the component name is out of range or the property is not a string value this function will
+     *  return an empty String. */
+    fun getComponentRenderModelName(pchRenderModelName: String, pchComponentName: String) : String {
+
+        var ret = ""
+        val bytes = ByteArray(k_unMaxPropertyStringSize)
+
+        val propLen = GetComponentRenderModelName!!.invoke(pchRenderModelName, pchComponentName, bytes, bytes.size)
+
+        if(propLen > 0){
+
+            ret = String(bytes).trim()
+        }
+
+        return ret
+    }
 
     @JvmField var GetComponentRenderModelName: GetComponentRenderModelName_callback? = null
 
+    /** Use this to get the render model name for the specified rendermode/component combination, to be passed to LoadRenderModel.
+     *  If the component name is out of range, this function will return 0.
+     *  Otherwise, it will return the size of the buffer required for the name. */
     interface GetComponentRenderModelName_callback : Callback {
-        fun invoke(pchRenderModelName: String, pchComponentName: String, pchComponentRenderModelName: String, unComponentRenderModelNameLen: Int): Int
+        fun invoke(pchRenderModelName: String, pchComponentName: String, pchComponentRenderModelName: ByteArray?, unComponentRenderModelNameLen: Int): Int
     }
 
     /** Use this to query information about the component, as a function of the controller state.
