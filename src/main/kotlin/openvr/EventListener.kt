@@ -33,7 +33,7 @@ open class EventListener(val hmd: IVRSystem) {
         println("new roles, left: $left, right: $right")
     }
 
-    val event = VREvent_t.ByReference()
+    protected val event = VREvent_t.ByReference()
     var frameCount = 0
 
     fun poll() {
