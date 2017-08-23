@@ -357,7 +357,7 @@ open class IVRRenderModels : Structure {
     fun getComponentName(pchRenderModelName: String, unComponentIndex: Int): String {
 
         var ret = ""
-        val bytes = ByteArray(k_unMaxPropertyStringSize)
+        val bytes = ByteArray(k_unMaxPropertyStringSize) // TODO optimize?
 
         val propLen = GetComponentName!!.invoke(pchRenderModelName, unComponentIndex, bytes, bytes.size)
 
@@ -395,7 +395,7 @@ open class IVRRenderModels : Structure {
     fun getComponentRenderModelName(pchRenderModelName: String, pchComponentName: String) : String {
 
         var ret = ""
-        val bytes = ByteArray(k_unMaxPropertyStringSize)
+        val bytes = ByteArray(k_unMaxPropertyStringSize) // TODO optimize?
 
         val propLen = GetComponentRenderModelName!!.invoke(pchRenderModelName, pchComponentName, bytes, bytes.size)
 
