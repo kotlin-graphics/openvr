@@ -63,7 +63,7 @@ class Test : StringSpec() {
             val listener = Listener(hmd)
 
             val start = System.nanoTime()
-            while (System.nanoTime() - start < 50e9) {
+            while (System.nanoTime() - start < 5e9) {
                 listener.poll()
 //                hmd.getControllerState(1, state, state.size())
 //                println("(${state.rAxis[0].x}, ${state.rAxis[0].y}")

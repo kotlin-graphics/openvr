@@ -197,6 +197,7 @@ val k_pch_SteamVR_CycleBackgroundImageTimeSec_Int32 = "CycleBackgroundImageTimeS
 val k_pch_SteamVR_RetailDemo_Bool = "retailDemo"
 val k_pch_SteamVR_IpdOffset_Float = "ipdOffset"
 val k_pch_SteamVR_AllowSupersampleFiltering_Bool = "allowSupersampleFiltering"
+val k_pch_SteamVR_EnableLinuxVulkanAsync_Bool = "enableLinuxVulkanAsync"
 
 
 //-----------------------------------------------------------------------------

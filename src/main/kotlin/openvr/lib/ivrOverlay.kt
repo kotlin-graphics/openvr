@@ -1309,6 +1309,16 @@ open class IVROverlay : Structure {
                    pchButton3Text: String?): Int
     }
 
+    /** If the calling process owns the overlay and it's open, this will close it. **/
+    fun closeMessageOverlay() = CloseMessageOverlay!!.invoke()
+
+    @JvmField
+    var CloseMessageOverlay: CloseMessageOverlay_callback? = null
+
+    interface CloseMessageOverlay_callback : Callback {
+        fun invoke()
+    }
+
     constructor()
 
     override fun getFieldOrder(): List<String> = Arrays.asList("FindOverlay", "CreateOverlay", "DestroyOverlay",
@@ -1330,7 +1340,7 @@ open class IVROverlay : Structure {
             "IsDashboardVisible", "IsActiveDashboardOverlay", "SetDashboardOverlaySceneProcess", "GetDashboardOverlaySceneProcess",
             "ShowDashboard", "GetPrimaryDashboardDevice", "ShowKeyboard", "ShowKeyboardForOverlay", "GetKeyboardText", "HideKeyboard",
             "SetKeyboardTransformAbsolute", "SetKeyboardPositionForOverlay", "SetOverlayIntersectionMask", "GetOverlayFlags",
-            "ShowMessageOverlay")
+            "ShowMessageOverlay", "CloseMessageOverlay")
 
     constructor(peer: Pointer) : super(peer) {
         read()

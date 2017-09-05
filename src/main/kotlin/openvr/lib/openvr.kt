@@ -19,11 +19,11 @@ import glm_.BYTES
 import glm_.b
 import glm_.i
 import glm_.mat4x4.Mat4
-import glm_.s
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import java.nio.ByteBuffer
 
+val version = "1.0.10"
 
 class BooleanByReference(@JvmField var value: Boolean = false) : ByteByReference(if (value) 1 else 0)
 
@@ -42,7 +42,19 @@ open class VkPhysicalDevice_T : Structure {
     class ByReference : VkPhysicalDevice_T(), Structure.ByReference
     class ByValue : VkPhysicalDevice_T(), Structure.ByValue
 }
-//struct VkInstance_T;
+open class VkInstance_T : Structure {
+
+    constructor()
+
+    override fun getFieldOrder(): List<String> = listOf("")
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : VkPhysicalDevice_T(), Structure.ByReference
+    class ByValue : VkPhysicalDevice_T(), Structure.ByValue
+}
 //struct VkQueue_T;
 // Forward declarations to avoid requiring d3d12.h
 //struct ID3D12Resource;
@@ -915,23 +927,45 @@ open class VRTextureBounds_t : Structure {
     class ByValue : VRTextureBounds_t(), Structure.ByValue
 }
 
+/** Allows specifying pose used to render provided scene texture (if different from value returned by WaitGetPoses).    */
+open class VRTextureWithPose_t : Texture_t {
+
+    /** Actual pose used to render scene textures.  */
+    @JvmField
+    var mDeviceToAbsoluteTracking = HmdMatrix34_t()
+
+    constructor()
+
+    override fun getFieldOrder(): List<String> = listOf("mDeviceToAbsoluteTracking")
+
+    constructor(mDeviceToAbsoluteTracking: HmdMatrix34_t) {
+        this.mDeviceToAbsoluteTracking = mDeviceToAbsoluteTracking
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : VRTextureWithPose_t(), Structure.ByReference
+    class ByValue : VRTextureWithPose_t(), Structure.ByValue
+}
+
 /** Allows the application to control how scene textures are used by the compositor when calling Submit. */
 enum class EVRSubmitFlags(@JvmField val i: Int) {
 
     /** Simple render path. App submits rendered left and right eye images with no lens distortion correction applied.  */
     Default(0x00),
-
     /** App submits final left and right eye images with lens distortion already applied (lens distortion makes the
      *  images appear barrel distorted with chromatic aberration correction applied). The app would have used the data
      *  returned by vr::openvr.lib.IVRSystem::ComputeDistortion() to apply the correct distortion to the rendered images
      *  before calling Submit().    */
     LensDistortionAlreadyApplied(0x01),
-
     /** If the texture pointer passed in is actually a renderbuffer (e.g. for MSAA in OpenGL) then set this flag.   */
     GlRenderBuffer(0x02),
-
     /** Do not use  */
-    Reserved(0x04);
+    Reserved(0x04),
+    /** Set to indicate that pTexture is a pointer to a VRTextureWithPose_t.    */
+    TextureWithPose(0x08);
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -1163,6 +1197,7 @@ enum class EVREventType(@JvmField val i: Int) {
     PerformanceTest_FidelityLevel(1602),
 
     MessageOverlay_Closed(1650),
+    MessageOverlayCloseRequested(1651),
 
     // Vendors are free to expose private events in this reserved region
     VendorSpecific_Reserved_Start(10000),
@@ -2255,6 +2290,9 @@ enum class EVRInitError(@JvmField val i: Int) {
     Init_VRDashboardStartupFailed(134),
     Init_VRHomeNotFound(135),
     Init_VRHomeStartupFailed(136),
+    Init_RebootingBusy(137),
+    Init_FirmwareUpdateBusy(138),
+    Init_FirmwareRecoveryBusy(139),
 
     Driver_Failed(200),
     Driver_Unknown(201),
@@ -2437,19 +2475,22 @@ val k_unScreenshotHandleInvalid = 0
 
 // ================================================================================================================================================================
 
-/** Finds the active installation of the VR API and initializes it. The provided path must be absolute or relative to the current working directory. These are
- *  the local install versions of the equivalent functions in steamvr.h and will work without a local Steam install.
+/** Finds the active installation of the VR API and initializes it. The provided path must be absolute or relative to
+ *  the current working directory. These are the local install versions of the equivalent functions in steamvr.h and
+ *  will work without a local Steam install.
  *
- *  This path is to the "root" of the VR API install. That's the directory with the "drivers" directory and a platform (i.e. "win32") directory in it,
- *  not the directory with the DLL itself.   */
-fun vrInit(error: EVRInitError_ByReference?, applicationType: EVRApplicationType): IVRSystem? {
+ *  This path is to the "root" of the VR API install. That's the directory with the "drivers" directory and a platform
+ *  (i.e. "win32") directory in it, not the directory with the DLL itself.
+ *
+ *  startupInfo is reserved for future use.    */
+fun vrInit(error: EVRInitError_ByReference?, applicationType: EVRApplicationType, startupInfo: String? = null): IVRSystem? {
 
     Native.register("openvr_api") // TODO check
 
     var pVRSystem: IVRSystem? = null
 
     val eError = EVRInitError_ByReference()
-    vrToken = VR_InitInternal(eError, applicationType.i)
+    vrToken = VR_InitInternal2(eError, applicationType.i, startupInfo)
     COpenVRContext.clear()
 
     if (eError.value == EVRInitError.None)
@@ -2459,7 +2500,7 @@ fun vrInit(error: EVRInitError_ByReference?, applicationType: EVRApplicationType
             VR_ShutdownInternal()
             eError.value = EVRInitError.Init_InterfaceNotFound
         }
-    error?.let { it.value = eError.value }
+    error?.value = eError.value
     return pVRSystem
 }
 
@@ -2487,13 +2528,14 @@ fun vrGetVRInitErrorAsSymbol(error: EVRInitError) = VR_GetVRInitErrorAsSymbol(er
 
 internal external fun VR_GetVRInitErrorAsSymbol(error: Int): String
 
-/** Returns an English string for an EVRInitError. Applications should call VR_GetVRInitErrorAsSymbol instead and use that as a key to look up their own localized
- *  error message. This function may be called outside of VR_Init()/VR_Shutdown(). */
+/** Returns an English string for an EVRInitError. Applications should call VR_GetVRInitErrorAsSymbol instead and use that
+ *  as a key to look up their own localized error message. This function may be called outside of VR_Init()/VR_Shutdown(). */
 fun vrGetVRInitErrorAsEnglishDescription(error: EVRInitError) = VR_GetVRInitErrorAsEnglishDescription(error.i)
 
 internal external fun VR_GetVRInitErrorAsEnglishDescription(error: Int): String
 
-/** Returns the interface of the specified version. This method must be called after VR_Init. The pointer returned is valid until VR_Shutdown is called.     */
+/** Returns the interface of the specified version. This method must be called after VR_Init. The pointer returned is
+ * valid until VR_Shutdown is called.   */
 fun vrGetGenericInterface(pchInterfaceVersion: String, peError: EVRInitError_ByReference) =
         VR_GetGenericInterface(pchInterfaceVersion, peError)
 
@@ -2509,7 +2551,6 @@ fun vrGetInitToken() = VR_GetInitToken()
 
 internal external fun VR_GetInitToken(): Int
 
-@JvmField
 val FnTable = "FnTable:"
 
 object COpenVRContext {
@@ -2661,5 +2702,5 @@ val vrTrackedCamera get() = COpenVRContext.vrTrackedCamera()
 val vrScreenshots get() = COpenVRContext.vrScreenshots()
 val vrDriverManager get() = COpenVRContext.vrDriverManager()
 
-internal external fun VR_InitInternal(peError: EVRInitError_ByReference, eType: Int): Int
+internal external fun VR_InitInternal2(peError: EVRInitError_ByReference, eType: Int, pStartupInfo: String? = null): Int
 internal external fun VR_ShutdownInternal()
