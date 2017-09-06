@@ -16,7 +16,8 @@ More information on OpenVR and SteamVR can be found on http://steamvr.com
 
 ## Binding Features:
 
-- original comments preserved and properly written
+- using jna in direct mapping (~ jni performances)
+- original comments preserved and properly formatted
 - every struct method is offered also much more user friendly offering also full interoperability with glm, `getProjectionMatrix` returns, for example, directly a glm `Mat4`
 ```kotlin
 IVRSystem.GetProjectionMatrix(eEye: Int, fNearZ: Float, fFarZ: Float): HmdMatrix44_t.ByValue
