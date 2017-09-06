@@ -1,4 +1,4 @@
-# JVM OpenVR Binding (synchronized with 1.09)
+# JVM OpenVR Binding (synchronized with 1.0.10)
 
 OpenVR SDK
 ---
