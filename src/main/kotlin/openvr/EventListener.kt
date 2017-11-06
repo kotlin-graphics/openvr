@@ -47,6 +47,7 @@ open class EventListener(val hmd: IVRSystem) {
     }
 
     private fun process() {
+        if(event.eventType_internal == 10005) return // bug https://github.com/ValveSoftware/openvr/issues/420
         when (event.eventType) {
             EVREventType.TrackedDeviceActivated -> updateRoles().also { trackedDeviceActivated(event.trackedDeviceIndex == left) }
             EVREventType.TrackedDeviceDeactivated -> updateRoles().also { trackedDeviceDeactivated(event.trackedDeviceIndex == left) }

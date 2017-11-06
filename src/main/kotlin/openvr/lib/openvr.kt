@@ -42,6 +42,7 @@ open class VkPhysicalDevice_T : Structure {
     class ByReference : VkPhysicalDevice_T(), Structure.ByReference
     class ByValue : VkPhysicalDevice_T(), Structure.ByValue
 }
+
 open class VkInstance_T : Structure {
 
     constructor()
