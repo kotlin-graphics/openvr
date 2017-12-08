@@ -4,8 +4,8 @@ import glm_.glm
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import openvr.lib.*
-import openvr.lib.TrackedDevicePose_t
-import openvr.lib.VRControllerState_t
+import openvr.lib.TrackedDevicePose
+import openvr.lib.VRControllerState
 
 
 object Controller {
@@ -56,9 +56,9 @@ object Controller {
 
         private val _velocity = Vec3()
         private val _angularVelocity = Vec3()
-        private val _state = VRControllerState_t.ByReference()
-        private val _prevState = VRControllerState_t.ByReference()
-        private val _pose = TrackedDevicePose_t.ByReference()
+        private val _state = VRControllerState.ByReference()
+        private val _prevState = VRControllerState.ByReference()
+        private val _pose = TrackedDevicePose.ByReference()
         private var prevFrameCount = -1
         private val prevTouchpadPos = Vec2()
         /** amount touchpad position must be increased or released on a single axes to change state   */
@@ -143,11 +143,11 @@ object Controller {
         private infix fun Long.hasnt(buttonId: EVRButtonId) = (this and buttonId.mask) == 0L
     }
 
-    val devices = Array(k_unMaxTrackedDeviceCount, { Device(it) })
+    val devices = Array(maxTrackedDeviceCount, { Device(it) })
 
-    /** updates the controllers scanning [0, k_unMaxTrackedDeviceCount) */
+    /** updates the controllers scanning [0, maxTrackedDeviceCount) */
     fun update(frameCount: Int) {
-        for (i in 0 until k_unMaxTrackedDeviceCount) devices[i].update(frameCount)
+        for (i in 0 until maxTrackedDeviceCount) devices[i].update(frameCount)
     }
 
     /** This helper can be used in a variety of ways.  Beware that indices may change as new devices are dynamically
@@ -164,12 +164,12 @@ object Controller {
 
     /** @return use -1 for absolute tracking space  */
     fun deviceIndex(relation: DeviceRelation, deviceClass: ETrackedDeviceClass = ETrackedDeviceClass.Controller,
-                    relativeTo: Int = k_unTrackedDeviceIndex_Hmd): Int {
+                    relativeTo: Int = trackedDeviceIndex_Hmd): Int {
 
         var result = -1
 
         val invXform =
-                if (relativeTo < k_unMaxTrackedDeviceCount)
+                if (relativeTo < maxTrackedDeviceCount)
                     devices[relativeTo].transform.inverse_()
                 else
                     _transform.apply { pos put 0; rot.put(1f, 0f, 0f, 0f) }
@@ -177,7 +177,7 @@ object Controller {
         val system = vrSystem ?: return result
 
         var best = -Float.MAX_VALUE
-        for (i in 0 until k_unMaxTrackedDeviceCount) {
+        for (i in 0 until maxTrackedDeviceCount) {
             if (i == relativeTo || system.getTrackedDeviceClass(i) != deviceClass) continue
             if (!devices[i].connected) continue
             if (relation == DeviceRelation.First) return i
@@ -187,7 +187,7 @@ object Controller {
                 DeviceRelation.FarthestRight -> pos.x
                 DeviceRelation.FarthestLeft -> -pos.x
                 else -> {
-                    val dir = Vec3(pos.x, 0f, pos.z).normalize_()
+                    val dir = Vec3(pos.x, 0f, pos.z).normalizeAssign()
                     val dot = dir dot Vec3(0, 0, -1)// TODO check and maybe implement in glm Vector3.forward)
                     val cross = dir cross Vec3(0, 0, -1) // Vector3.forward)
                     if (relation == DeviceRelation.Leftmost)

@@ -72,12 +72,12 @@ open class IVRChaperone : Structure {
      * It's a rectangle.
      * 2 sides are parallel to the X axis and 2 sides are parallel to the Z axis.
      * Height of every corner is 0Y (on the floor). **/
-    fun getPlayAreaRect(rect: HmdQuad_t.ByReference) = GetPlayAreaRect!!.invoke(rect)
+    fun getPlayAreaRect(rect: HmdQuad.ByReference) = GetPlayAreaRect!!.invoke(rect)
 
     @JvmField var GetPlayAreaRect: GetPlayAreaRect_callback? = null
 
     interface GetPlayAreaRect_callback : Callback {
-        fun invoke(rect: HmdQuad_t.ByReference): Boolean
+        fun invoke(rect: HmdQuad.ByReference): Boolean
     }
 
     /** Reload Chaperone data from the .vrchap file on disk. */
@@ -90,24 +90,24 @@ open class IVRChaperone : Structure {
     }
 
     /** Optionally give the chaperone system a hit about the color and brightness in the scene **/
-    fun setSceneColor(color: HmdColor_t) = SetSceneColor!!.invoke(color)
+    fun setSceneColor(color: HmdColor) = SetSceneColor!!.invoke(color)
 
     @JvmField var SetSceneColor: SetSceneColor_callback? = null
 
     interface SetSceneColor_callback : Callback {
-        fun invoke(color: HmdColor_t)
+        fun invoke(color: HmdColor)
     }
 
     /** Get the current chaperone bounds draw color and brightness **/
-    fun getBoundsColor(pOutputColorArray: HmdColor_t.ByReference, nNumOutputColors: Int, flCollisionBoundsFadeDistance: Float,
-                       pOutputCameraColor: HmdColor_t.ByReference)
+    fun getBoundsColor(pOutputColorArray: HmdColor.ByReference, nNumOutputColors: Int, flCollisionBoundsFadeDistance: Float,
+                       pOutputCameraColor: HmdColor.ByReference)
             = GetBoundsColor!!.invoke(pOutputColorArray, nNumOutputColors, flCollisionBoundsFadeDistance, pOutputCameraColor)
 
     @JvmField var GetBoundsColor: GetBoundsColor_callback? = null
 
     interface GetBoundsColor_callback : Callback {
-        fun invoke(pOutputColorArray: HmdColor_t.ByReference, nNumOutputColors: Int, flCollisionBoundsFadeDistance: Float,
-                   pOutputCameraColor: HmdColor_t.ByReference)
+        fun invoke(pOutputColorArray: HmdColor.ByReference, nNumOutputColors: Int, flCollisionBoundsFadeDistance: Float,
+                   pOutputCameraColor: HmdColor.ByReference)
     }
 
     /** Determine whether the bounds are showing right now **/

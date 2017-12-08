@@ -31,7 +31,7 @@
 ////        IVRCompositor compositor = new IVRCompositor(vr.VR_GetGenericInterface("ciao", error));
 //        assert (vrCompositor() != null);
 //
-//        TrackedDevicePose_t a = new TrackedDevicePose_t();
+//        TrackedDevicePose a = new TrackedDevicePose();
 //
 //        vrShutdown();
 //    }

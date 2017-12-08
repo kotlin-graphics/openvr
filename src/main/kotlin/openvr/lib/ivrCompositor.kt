@@ -29,6 +29,16 @@ enum class EVRCompositorError(@JvmField val i: Int) {
     }
 }
 
+/** Timing mode passed to SetExplicitTimingMode(); see that function for documentation */
+enum class EVRCompositorTimingMode {
+    Implicit, RuntimePerformsPostPresentHandoff, ApplicationPerformsPostPresentHandoff;
+
+    val i = ordinal
+    companion object {
+        fun of(i: Int) = values().first { it.i == i }
+    }
+}
+
 val VRCompositor_ReprojectionReason_Cpu = 0x01
 val VRCompositor_ReprojectionReason_Gpu = 0x02
 /**
@@ -74,7 +84,7 @@ open class Compositor_FrameTiming : Structure {
     var m_flCompositorUpdateEndMs = 0f
     var m_flCompositorRenderStartMs = 0f
 
-    var m_HmdPose = TrackedDevicePose_t() // pose used by app to render this frame
+    var m_HmdPose = TrackedDevicePose() // pose used by app to render this frame
 
     constructor()
 
@@ -84,7 +94,7 @@ open class Compositor_FrameTiming : Structure {
                 m_flCompositorIdleCpuMs: Float, m_flClientFrameIntervalMs: Float, m_flPresentCallCpuMs: Float,
                 m_flWaitForPresentCpuMs: Float, m_flSubmitFrameMs: Float, m_flWaitGetPosesCalledMs: Float, m_flNewPosesReadyMs: Float,
                 m_flNewFrameReadyMs: Float, m_flCompositorUpdateStartMs: Float, m_flCompositorUpdateEndMs: Float,
-                m_flCompositorRenderStartMs: Float, m_HmdPose: TrackedDevicePose_t) {
+                m_flCompositorRenderStartMs: Float, m_HmdPose: TrackedDevicePose) {
         this.m_nSize = m_nSize
         this.m_nFrameIndex = m_nFrameIndex
         this.m_nNumFramePresents = m_nNumFramePresents
@@ -221,41 +231,41 @@ open class IVRCompositor : Structure {
      *  Return codes:
      *      - IsNotSceneApplication (make sure to call VR_Init with VRApplicaiton_Scene)
      *      - DoNotHaveFocus (some other app has taken focus - this will throttle the call to 10hz to reduce the impact on that app)    */
-    fun waitGetPoses(pRenderPoseArray: TrackedDevicePose_t.ByReference, unRenderPoseArrayCount: Int, pGamePoseArray: TrackedDevicePose_t.ByReference?,
+    fun waitGetPoses(pRenderPoseArray: TrackedDevicePose.ByReference, unRenderPoseArrayCount: Int, pGamePoseArray: TrackedDevicePose.ByReference?,
                      unGamePoseArrayCount: Int) = WaitGetPoses!!.invoke(pRenderPoseArray, unRenderPoseArrayCount, pGamePoseArray, unGamePoseArrayCount)
 
     @JvmField
     var WaitGetPoses: WaitGetPoses_callback? = null
 
     interface WaitGetPoses_callback : Callback {
-        fun invoke(pRenderPoseArray: TrackedDevicePose_t.ByReference, unRenderPoseArrayCount: Int, pGamePoseArray: TrackedDevicePose_t.ByReference?,
+        fun invoke(pRenderPoseArray: TrackedDevicePose.ByReference, unRenderPoseArrayCount: Int, pGamePoseArray: TrackedDevicePose.ByReference?,
                    unGamePoseArrayCount: Int): Int
     }
 
     /** Get the last set of poses returned by WaitGetPoses. */
-    fun getLastPoses(pRenderPoseArray: TrackedDevicePose_t.ByReference, unRenderPoseArrayCount: Int, pGamePoseArray: TrackedDevicePose_t.ByReference,
+    fun getLastPoses(pRenderPoseArray: TrackedDevicePose.ByReference, unRenderPoseArrayCount: Int, pGamePoseArray: TrackedDevicePose.ByReference,
                      unGamePoseArrayCount: Int) = GetLastPoses!!.invoke(pRenderPoseArray, unRenderPoseArrayCount, pGamePoseArray, unGamePoseArrayCount)
 
     @JvmField
     var GetLastPoses: GetLastPoses_callback? = null
 
     interface GetLastPoses_callback : Callback {
-        fun invoke(pRenderPoseArray: TrackedDevicePose_t.ByReference, unRenderPoseArrayCount: Int, pGamePoseArray: TrackedDevicePose_t.ByReference,
+        fun invoke(pRenderPoseArray: TrackedDevicePose.ByReference, unRenderPoseArrayCount: Int, pGamePoseArray: TrackedDevicePose.ByReference,
                    unGamePoseArrayCount: Int): Int
     }
 
     /** Interface for accessing last set of poses returned by WaitGetPoses one at a time.
      *  Returns VRCompositorError_IndexOutOfRange if unDeviceIndex not less than openvr.lib.getK_unMaxTrackedDeviceCount otherwise VRCompositorError_None.
      *  It is okay to pass NULL for either pose if you only want one of the values. */
-    fun getLastPoseForTrackedDeviceIndex(unDeviceIndex: TrackedDeviceIndex_t, pOutputPose: TrackedDevicePose_t.ByReference,
-                                         pOutputGamePose: TrackedDevicePose_t.ByReference)
+    fun getLastPoseForTrackedDeviceIndex(unDeviceIndex: TrackedDeviceIndex_t, pOutputPose: TrackedDevicePose.ByReference,
+                                         pOutputGamePose: TrackedDevicePose.ByReference)
             = EVRCompositorError.of(GetLastPoseForTrackedDeviceIndex!!.invoke(unDeviceIndex, pOutputPose, pOutputGamePose))
 
     @JvmField
     var GetLastPoseForTrackedDeviceIndex: GetLastPoseForTrackedDeviceIndex_callback? = null
 
     interface GetLastPoseForTrackedDeviceIndex_callback : Callback {
-        fun invoke(unDeviceIndex: TrackedDeviceIndex_t, pOutputPose: TrackedDevicePose_t.ByReference, pOutputGamePose: TrackedDevicePose_t.ByReference): Int
+        fun invoke(unDeviceIndex: TrackedDeviceIndex_t, pOutputPose: TrackedDevicePose.ByReference, pOutputGamePose: TrackedDevicePose.ByReference): Int
     }
 
     /** Updated scene texture to display. If pBounds is NULL the entire texture will be used.  If called from an OpenGL app, consider adding a glFlush after
@@ -274,7 +284,7 @@ open class IVRCompositor : Structure {
      *      - AlreadySubmitted (app has submitted two left textures or two right textures in a single frame - i.e. before calling
      *          WaitGetPoses again) */
     @JvmOverloads
-    fun submit(eEye: EVREye, pTexture: Texture_t.ByReference, pBounds: VRTextureBounds_t.ByReference? = null,
+    fun submit(eEye: EVREye, pTexture: Texture.ByReference, pBounds: VRTextureBounds.ByReference? = null,
                nSubmitFlags: EVRSubmitFlags = EVRSubmitFlags.Default)
             = EVRCompositorError.of(Submit!!.invoke(eEye.i, pTexture, pBounds, nSubmitFlags.i))
 
@@ -282,7 +292,7 @@ open class IVRCompositor : Structure {
     var Submit: Submit_callback? = null
 
     interface Submit_callback : Callback {
-        fun invoke(eEye: Int, pTexture: Texture_t.ByReference, pBounds: VRTextureBounds_t.ByReference?, nSubmitFlags: Int): Int
+        fun invoke(eEye: Int, pTexture: Texture.ByReference, pBounds: VRTextureBounds.ByReference?, nSubmitFlags: Int): Int
     }
 
     /** Clears the frame that was sent with the last call to Submit. This will cause the compositor to show the grid until Submit is called again. */
@@ -379,7 +389,7 @@ open class IVRCompositor : Structure {
     var GetCurrentFadeColor: GetCurrentFadeColor_callback? = null
 
     interface GetCurrentFadeColor_callback : Callback {
-        fun invoke(bBackground: Boolean): HmdColor_t
+        fun invoke(bBackground: Boolean): HmdColor
     }
 
     /** Fading the Grid in or out in fSeconds */
@@ -405,14 +415,14 @@ open class IVRCompositor : Structure {
     /** Override the skybox used in the compositor (e.g. for during level loads when the app can't feed scene images fast enough)
      *  Order is Front, Back, Left, Right, Top, Bottom.  If only a single texture is passed, it is assumed in lat-long format.
      *  If two are passed, it is assumed a lat-long stereo pair. */
-    fun setSkyboxOverride(pTextures: Texture_t.ByReference, unTextureCount: Int)
+    fun setSkyboxOverride(pTextures: Texture.ByReference, unTextureCount: Int)
             = EVRCompositorError.of(SetSkyboxOverride!!.invoke(pTextures, unTextureCount))
 
     @JvmField
     var SetSkyboxOverride: SetSkyboxOverride_callback? = null
 
     interface SetSkyboxOverride_callback : Callback {
-        fun invoke(pTextures: Texture_t.ByReference, unTextureCount: Int): Int
+        fun invoke(pTextures: Texture.ByReference, unTextureCount: Int): Int
     }
 
     /** Resets compositor skybox back to defaults. */
@@ -600,43 +610,43 @@ open class IVRCompositor : Structure {
     }
 
     /** Access to mirror textures from OpenGL. */
-    fun getMirrorTextureGL(eEye: EVREye, pglTextureId: glUInt_t_ByReference, pglSharedTextureHandle: glSharedTextureHandle_t_ByReference)
+    fun getMirrorTextureGL(eEye: EVREye, pglTextureId: glUInt_ByReference, pglSharedTextureHandle: glSharedTextureHandle_ByReference)
             = GetMirrorTextureGL!!.invoke(eEye.i, pglTextureId, pglSharedTextureHandle)
 
     @JvmField
     var GetMirrorTextureGL: GetMirrorTextureGL_callback? = null
 
     interface GetMirrorTextureGL_callback : Callback {
-        fun invoke(eEye: Int, pglTextureId: glUInt_t_ByReference, pglSharedTextureHandle: glSharedTextureHandle_t_ByReference): Int
+        fun invoke(eEye: Int, pglTextureId: glUInt_ByReference, pglSharedTextureHandle: glSharedTextureHandle_ByReference): Int
     }
 
 
-    fun releaseSharedGLTexture(glTextureId: glUInt_t, glSharedTextureHandle: glSharedTextureHandle_t) =
+    fun releaseSharedGLTexture(glTextureId: glUInt, glSharedTextureHandle: glSharedTextureHandle) =
             ReleaseSharedGLTexture!!.invoke(glTextureId, glSharedTextureHandle)
 
     @JvmField
     var ReleaseSharedGLTexture: ReleaseSharedGLTexture_callback? = null
 
     interface ReleaseSharedGLTexture_callback : Callback {
-        fun invoke(glTextureId: glUInt_t, glSharedTextureHandle: glSharedTextureHandle_t): Boolean
+        fun invoke(glTextureId: glUInt, glSharedTextureHandle: glSharedTextureHandle): Boolean
     }
 
 
-    fun lockGLSharedTextureForAccess(glSharedTextureHandle: glSharedTextureHandle_t) = LockGLSharedTextureForAccess!!.invoke(glSharedTextureHandle)
+    fun lockGLSharedTextureForAccess(glSharedTextureHandle: glSharedTextureHandle) = LockGLSharedTextureForAccess!!.invoke(glSharedTextureHandle)
     @JvmField
     var LockGLSharedTextureForAccess: LockGLSharedTextureForAccess_callback? = null
 
     interface LockGLSharedTextureForAccess_callback : Callback {
-        fun invoke(glSharedTextureHandle: glSharedTextureHandle_t)
+        fun invoke(glSharedTextureHandle: glSharedTextureHandle)
     }
 
 
-    fun unlockGLSharedTextureForAccess(glSharedTextureHandle: glSharedTextureHandle_t) = UnlockGLSharedTextureForAccess!!.invoke(glSharedTextureHandle)
+    fun unlockGLSharedTextureForAccess(glSharedTextureHandle: glSharedTextureHandle) = UnlockGLSharedTextureForAccess!!.invoke(glSharedTextureHandle)
     @JvmField
     var UnlockGLSharedTextureForAccess: UnlockGLSharedTextureForAccess_callback? = null
 
     interface UnlockGLSharedTextureForAccess_callback : Callback {
-        fun invoke(glSharedTextureHandle: glSharedTextureHandle_t)
+        fun invoke(glSharedTextureHandle: glSharedTextureHandle)
     }
 
     /** [Vulkan Only]
@@ -655,14 +665,14 @@ open class IVRCompositor : Structure {
     /** [Vulkan only]
      *   return 0. Otherwise it returns the length of the number of bytes necessary to hold this string including the trailing
      *   null.  The string will be a space separated list of required device extensions to enable in VkCreateDevice */
-    fun getVulkanDeviceExtensionsRequired(pPhysicalDevice: VkPhysicalDevice_T.ByReference, pchValue: String, unBufferSize: Int) =
+    fun getVulkanDeviceExtensionsRequired(pPhysicalDevice: VkPhysicalDevice.ByReference, pchValue: String, unBufferSize: Int) =
             GetVulkanDeviceExtensionsRequired!!.invoke(pPhysicalDevice, pchValue, unBufferSize)
 
     @JvmField
     var GetVulkanDeviceExtensionsRequired: GetVulkanDeviceExtensionsRequired_callback? = null
 
     interface GetVulkanDeviceExtensionsRequired_callback : Callback {
-        fun invoke(pPhysicalDevice: VkPhysicalDevice_T.ByReference, pchValue: String, unBufferSize: Int): Int
+        fun invoke(pPhysicalDevice: VkPhysicalDevice.ByReference, pchValue: String, unBufferSize: Int): Int
     }
 
     /** [ Vulkan/D3D12 Only ]
@@ -679,17 +689,17 @@ open class IVRCompositor : Structure {
      *  Vulkan/D3D12 as it is for D3D11, resulting in a more accurate GPU time measurement for the frame.
      *
      *  Avoiding WaitGetPoses accessing the Vulkan queue can be achieved using SetExplicitTimingMode as well.
-     *  If this is desired, the application *MUST* call PostPresentHandoff itself prior to WaitGetPoses.
-     *  If SetExplicitTimingMode is true and the application calls PostPresentHandoff, then WaitGetPoses is guaranteed
+     *  If this is desired, the application should set the timing mode to Explicit_ApplicationPerformsPostPresentHandoff
+     *  and *MUST* call PostPresentHandoff itself. If these conditions are met, then WaitGetPoses is guaranteed
      *  not to access the queue.  Note that PostPresentHandoff and SubmitExplicitTimingData will access the queue, so
      *  only WaitGetPoses becomes safe for accessing the queue from another thread. */
-    fun setExplicitTimingMode(bExplicitTimingMode: Boolean) = SetExplicitTimingMode!!.invoke(bExplicitTimingMode)
+    fun setExplicitTimingMode(timingMode: EVRCompositorTimingMode) = SetExplicitTimingMode!!.invoke(timingMode.i)
 
     @JvmField
     var SetExplicitTimingMode: SetExplicitTimingMode_callback? = null
 
     interface SetExplicitTimingMode_callback : Callback {
-        fun invoke(bExplicitTimingMode: Boolean)
+        fun invoke(bExplicitTimingMode: Int)
     }
 
     /** [ Vulkan/D3D12 Only ]
@@ -729,4 +739,4 @@ open class IVRCompositor : Structure {
     class ByValue : IVRCompositor(), Structure.ByValue
 }
 
-val IVRCompositor_Version = "IVRCompositor_021"
+val IVRCompositor_Version = "IVRCompositor_022"

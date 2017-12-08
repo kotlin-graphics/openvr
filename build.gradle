@@ -7,7 +7,7 @@ group = 'com.github.kotlin-graphics'
 
 buildscript {
 
-    ext.kotlinVersion = '1.2.0-rc-39'
+    ext.kotlinVersion = '1.2.0'
 
     repositories {
         jcenter()   // shadow
@@ -30,7 +30,7 @@ dependencies {
 
     testCompile 'io.kotlintest:kotlintest:2.0.7'
 
-    compile "com.github.kotlin-graphics:glm:dc299f80f3dca9d3e8b793641da03db1702df58c"
+    compile "com.github.kotlin-graphics:glm:70b4eb23b05153de66137bb3dba0446eb77654f0"
 
     compile "net.java.dev.jna:jna:4.5.0"
 }

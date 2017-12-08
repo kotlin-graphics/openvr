@@ -18,12 +18,12 @@ open class IVRDriverManager : Structure {
     }
 
     /** Returns the length of the number of bytes necessary to hold this string including the trailing null.    */
-    fun getDriverName(nDriver: DriverId_t, pchValue: String, unBufferSize: Int) = GetDriverName!!.invoke(nDriver, pchValue, unBufferSize)
+    fun getDriverName(nDriver: DriverId, pchValue: String, unBufferSize: Int) = GetDriverName!!.invoke(nDriver, pchValue, unBufferSize)
 
     @JvmField var GetDriverName: GetDriverName_callback? = null
 
     interface GetDriverName_callback : Callback {
-        fun invoke(nDriver: DriverId_t, pchValue: String, unBufferSize: Int): Int
+        fun invoke(nDriver: DriverId, pchValue: String, unBufferSize: Int): Int
     }
 
     constructor()

@@ -4,7 +4,6 @@ import io.kotlintest.matchers.shouldBe
 import io.kotlintest.specs.StringSpec
 import openvr.*
 import openvr.lib.*
-import openvr.plugin.Controller
 
 
 /**
@@ -50,8 +49,8 @@ class Test : StringSpec() {
 //      -1.3941408, 1.2448317, -1.4681898, 1.4642779
             (left_.value < 0 && right.value > 0 && top.value < 0 && bottom.value >= 0) shouldBe true
 
-            val overlayHandle = VROverlayHandle_t_ByReference()
-            val overlayThumbnailHandle = VROverlayHandle_t_ByReference()
+            val overlayHandle = VROverlayHandle_ByReference()
+            val overlayThumbnailHandle = VROverlayHandle_ByReference()
 
             vrOverlay?.let {
                 val name = "systemOverlay"

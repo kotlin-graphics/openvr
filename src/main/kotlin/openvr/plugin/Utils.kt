@@ -3,8 +3,8 @@ package openvr.plugin
 import glm_.mat4x4.Mat4
 import glm_.quat.Quat
 import glm_.vec3.Vec3
-import openvr.lib.HmdMatrix34_t
-import openvr.lib.HmdMatrix44_t
+import openvr.lib.HmdMat34
+import openvr.lib.HmdMat44
 
 object Utils {
 
@@ -20,7 +20,7 @@ object Utils {
             this.rot put rot
         }
 
-        constructor(pose: HmdMatrix34_t) {
+        constructor(pose: HmdMat34) {
 
             val m = Mat4()
 
@@ -43,7 +43,7 @@ object Utils {
             rot put m.toQuat()
         }
 
-        constructor(pose: HmdMatrix44_t) {
+        constructor(pose: HmdMat44) {
 
             val m = Mat4()
 
@@ -71,10 +71,10 @@ object Utils {
             rot put m.toQuat()
         }
 
-        fun toHmdMatrix44(): HmdMatrix44_t {
+        fun toHmdMatrix44(): HmdMat44 {
             TODO()
 //            val m = Matrix4x4.TRS(pos, rot, Vector3.one)
-//            var pose = new HmdMatrix44_t ()
+//            var pose = new HmdMat44 ()
 //
 //            pose.m0 = m[0, 0]
 //            pose.m1 = m[0, 1]
@@ -99,10 +99,10 @@ object Utils {
 //            return pose
         }
 
-        fun toHmdMatrix34(): HmdMatrix34_t {
+        fun toHmdMatrix34(): HmdMat34 {
             TODO()
 //            var m = Matrix4x4.TRS(pos, rot, Vector3.one)
-//            var pose = new HmdMatrix34_t ()
+//            var pose = new HmdMat34 ()
 //
 //            pose.m0 = m[0, 0]
 //            pose.m1 = m[0, 1]
@@ -127,7 +127,7 @@ object Utils {
         operator fun times(b: RigidTransform) = RigidTransform(pos + rot * b.pos, rot * b.rot)
         fun inverse_(): RigidTransform {
             rot.inverse_()
-            pos put (rot * pos).negate_()
+            pos put (rot * pos).negateAssign()
             return this
         }
 
@@ -139,7 +139,7 @@ object Utils {
             return this
         }
 
-        infix fun put(pose: HmdMatrix34_t): RigidTransform {
+        infix fun put(pose: HmdMat34): RigidTransform {
 
             val m = Mat4()
 
@@ -164,7 +164,7 @@ object Utils {
             return this
         }
 
-        infix fun put(pose: HmdMatrix44_t): RigidTransform {
+        infix fun put(pose: HmdMat44): RigidTransform {
 
             val m = Mat4()
 

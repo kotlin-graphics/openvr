@@ -6,17 +6,17 @@
 //
 //abstract class ControllersListener {
 //
-//    var leftIndex = k_unTrackedDeviceIndexInvalid
-//    var rightIndex = k_unTrackedDeviceIndexInvalid
+//    var leftIndex = trackedDeviceIndexInvalid
+//    var rightIndex = trackedDeviceIndexInvalid
 //
-//    val leftState = VRControllerState_t.ByReference()
-//    val rightState = VRControllerState_t.ByReference()
+//    val leftState = VRControllerState.ByReference()
+//    val rightState = VRControllerState.ByReference()
 //
 //    fun init() {
 //
 //        // Process SteamVR controller state
 //        var firstFound = false
-//        repeat(k_unMaxTrackedDeviceCount) {
+//        repeat(maxTrackedDeviceCount) {
 //            if (vrSystem()!!.getTrackedDeviceClass(it) == ETrackedDeviceClass.Controller) {
 //                val state =
 //                        if (firstFound) {
@@ -32,7 +32,7 @@
 //        updateStates()
 //    }
 //
-//    fun update(event: VREvent_t) = when (event.eventType) {
+//    fun update(event: VREvent) = when (event.eventType) {
 //
 //        EVREventType.TrackedDeviceActivated -> {
 //
@@ -47,9 +47,9 @@
 //        EVREventType.TrackedDeviceDeactivated -> {
 //
 //            if (event.trackedDeviceIndex == leftIndex)
-//                leftIndex = k_unTrackedDeviceIndexInvalid
+//                leftIndex = trackedDeviceIndexInvalid
 //            else if (event.trackedDeviceIndex == rightIndex)
-//                rightIndex = k_unTrackedDeviceIndexInvalid
+//                rightIndex = trackedDeviceIndexInvalid
 //
 //            trackedDeviceDeactivated(event)
 //        }
@@ -77,16 +77,16 @@
 //        }
 //    }
 //
-//    abstract fun trackedDeviceActivated(event: VREvent_t)
-//    abstract fun trackedDeviceDeactivated(event: VREvent_t)
+//    abstract fun trackedDeviceActivated(event: VREvent)
+//    abstract fun trackedDeviceDeactivated(event: VREvent)
 //
-//    abstract fun trackedDeviceRoleChanged(event: VREvent_t)
-//    abstract fun propertyChanged(event: VREvent_t)
+//    abstract fun trackedDeviceRoleChanged(event: VREvent)
+//    abstract fun propertyChanged(event: VREvent)
 //
 //    fun updateStates() {
-//        if (leftIndex != k_unTrackedDeviceIndexInvalid)
+//        if (leftIndex != trackedDeviceIndexInvalid)
 //            vrSystem()!!.getControllerState(leftIndex, leftState, leftState.size())
-//        if (rightIndex != k_unTrackedDeviceIndexInvalid)
+//        if (rightIndex != trackedDeviceIndexInvalid)
 //            vrSystem()!!.getControllerState(rightIndex, rightState, rightState.size())
 //    }
 //}

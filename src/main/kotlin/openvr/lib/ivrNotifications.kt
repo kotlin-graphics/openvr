@@ -94,14 +94,14 @@ open class IVRNotifications : Structure {
      *  An overlay handle is required to create a notification, as otherwise it would be impossible for a user to act on it.
      *  To create a two-line notification, use a line break ('\n') to split the text into two lines.
      *  The pImage argument may be NULL, in which case the specified overlay's icon will be used instead. */
-    fun createNotification(ulOverlayHandle: VROverlayHandle_t, ulUserValue: Long, type: EVRNotificationType, pchText: String, style: EVRNotificationStyle,
+    fun createNotification(ulOverlayHandle: VROverlayHandle, ulUserValue: Long, type: EVRNotificationType, pchText: String, style: EVRNotificationStyle,
                            pImage: NotificationBitmap_t.ByReference, /* out */ pNotificationId: VRNotificationId_ByReference)
             = EVRNotificationError.of(CreateNotification!!.invoke(ulOverlayHandle, ulUserValue, type.i, pchText, style.i, pImage, pNotificationId))
 
     @JvmField var CreateNotification: CreateNotification_callback? = null
 
     interface CreateNotification_callback : Callback {
-        fun invoke(ulOverlayHandle: VROverlayHandle_t, ulUserValue: Long, type: Int, pchText: String, style: Int, pImage: NotificationBitmap_t.ByReference,
+        fun invoke(ulOverlayHandle: VROverlayHandle, ulUserValue: Long, type: Int, pchText: String, style: Int, pImage: NotificationBitmap_t.ByReference,
                 /* out */ pNotificationId: VRNotificationId_ByReference): Int
     }
 

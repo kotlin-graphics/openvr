@@ -29,7 +29,7 @@ class BooleanByReference(@JvmField var value: Boolean = false) : ByteByReference
 
 // Forward declarations to avoid requiring vulkan.h
 //struct VkDevice_T;
-open class VkPhysicalDevice_T : Structure {
+open class VkPhysicalDevice : Structure {
 
     constructor()
 
@@ -39,11 +39,11 @@ open class VkPhysicalDevice_T : Structure {
         read()
     }
 
-    class ByReference : VkPhysicalDevice_T(), Structure.ByReference
-    class ByValue : VkPhysicalDevice_T(), Structure.ByValue
+    class ByReference : VkPhysicalDevice(), Structure.ByReference
+    class ByValue : VkPhysicalDevice(), Structure.ByValue
 }
 
-open class VkInstance_T : Structure {
+open class VkInstance : Structure {
 
     constructor()
 
@@ -53,26 +53,26 @@ open class VkInstance_T : Structure {
         read()
     }
 
-    class ByReference : VkPhysicalDevice_T(), Structure.ByReference
-    class ByValue : VkPhysicalDevice_T(), Structure.ByValue
+    class ByReference : VkPhysicalDevice(), Structure.ByReference
+    class ByValue : VkPhysicalDevice(), Structure.ByValue
 }
 //struct VkQueue_T;
 // Forward declarations to avoid requiring d3d12.h
 //struct ID3D12Resource;
 //struct ID3D12CommandQueue;
 
-typealias glSharedTextureHandle_t = Pointer
-typealias glSharedTextureHandle_t_ByReference = PointerByReference
-typealias glInt_t = Int
-typealias glUInt_t = Int
-typealias glUInt_t_ByReference = IntByReference
+typealias glSharedTextureHandle = Pointer
+typealias glSharedTextureHandle_ByReference = PointerByReference
+typealias glInt = Int
+typealias glUInt = Int
+typealias glUInt_ByReference = IntByReference
 
 /** right-handed system
  *  +y is up
  *  +x is to the right
  *  -z is going away from you
  *  Distance unit is meters     */
-open class HmdMatrix34_t : Structure {
+open class HmdMat34 : Structure {
 
     @JvmField
     var m = FloatArray(3 * 4)
@@ -91,8 +91,8 @@ open class HmdMatrix34_t : Structure {
         read()
     }
 
-    class ByReference : HmdMatrix34_t(), Structure.ByReference
-    class ByValue : HmdMatrix34_t(), Structure.ByValue
+    class ByReference : HmdMat34(), Structure.ByReference
+    class ByValue : HmdMat34(), Structure.ByValue
 
     operator fun get(i: Int) = m[i]
 
@@ -103,7 +103,7 @@ open class HmdMatrix34_t : Structure {
             m[3], m[7], m[11], 1f)
 }
 
-open class HmdMatrix44_t : Structure {
+open class HmdMat44 : Structure {
 
     @JvmField
     var m = FloatArray(4 * 4)
@@ -121,8 +121,8 @@ open class HmdMatrix44_t : Structure {
         read()
     }
 
-    class ByReference : HmdMatrix44_t(), Structure.ByReference
-    class ByValue : HmdMatrix44_t(), Structure.ByValue
+    class ByReference : HmdMat44(), Structure.ByReference
+    class ByValue : HmdMat44(), Structure.ByValue
 
     operator fun get(i: Int) = m[i]
 
@@ -133,7 +133,7 @@ open class HmdMatrix44_t : Structure {
             m[3], m[7], m[11], m[15])
 }
 
-open class HmdVector3_t : Structure {
+open class HmdVec3 : Structure {
 
     @JvmField
     var v = FloatArray(3)
@@ -161,8 +161,8 @@ open class HmdVector3_t : Structure {
         read()
     }
 
-    class ByReference : HmdVector3_t(), Structure.ByReference
-    class ByValue : HmdVector3_t(), Structure.ByValue
+    class ByReference : HmdVec3(), Structure.ByReference
+    class ByValue : HmdVec3(), Structure.ByValue
 
     fun toDbb(bb: ByteBuffer, offset: Int) {
         for (i in 0..2) bb.putFloat(offset + i * Float.BYTES, v[i])
@@ -175,7 +175,7 @@ open class HmdVector3_t : Structure {
     operator fun get(i: Int) = v[i]
 }
 
-open class HmdVector4_t : Structure {
+open class HmdVec4 : Structure {
 
     @JvmField
     var v = FloatArray(4)
@@ -206,13 +206,13 @@ open class HmdVector4_t : Structure {
         read()
     }
 
-    class ByReference : HmdVector4_t(), Structure.ByReference
-    class ByValue : HmdVector4_t(), Structure.ByValue
+    class ByReference : HmdVec4(), Structure.ByReference
+    class ByValue : HmdVec4(), Structure.ByValue
 
     operator fun get(i: Int) = v[i]
 }
 
-open class HmdVector3d_t : Structure {
+open class HmdVec3d : Structure {
 
     @JvmField
     var v = DoubleArray(3)
@@ -240,13 +240,13 @@ open class HmdVector3d_t : Structure {
         read()
     }
 
-    class ByReference : HmdVector3d_t(), Structure.ByReference
-    class ByValue : HmdVector3d_t(), Structure.ByValue
+    class ByReference : HmdVec3d(), Structure.ByReference
+    class ByValue : HmdVec3d(), Structure.ByValue
 
     operator fun get(i: Int) = v[i]
 }
 
-open class HmdVector2_t : Structure {
+open class HmdVec2 : Structure {
 
     @JvmField
     var v = FloatArray(2)
@@ -271,13 +271,13 @@ open class HmdVector2_t : Structure {
         read()
     }
 
-    class ByReference : HmdVector2_t(), Structure.ByReference
-    class ByValue : HmdVector2_t(), Structure.ByValue
+    class ByReference : HmdVec2(), Structure.ByReference
+    class ByValue : HmdVec2(), Structure.ByValue
 
     operator fun get(i: Int) = v[i]
 }
 
-open class HmdQuaternion_t : Structure {
+open class HmdQuat : Structure {
 
     @JvmField
     var w = 0.0
@@ -303,8 +303,8 @@ open class HmdQuaternion_t : Structure {
         read()
     }
 
-    class ByReference : HmdQuaternion_t(), Structure.ByReference
-    class ByValue : HmdQuaternion_t(), Structure.ByValue
+    class ByReference : HmdQuat(), Structure.ByReference
+    class ByValue : HmdQuat(), Structure.ByValue
 
     operator fun get(i: Int) = when (i) {
         0 -> x
@@ -315,7 +315,7 @@ open class HmdQuaternion_t : Structure {
     }
 }
 
-open class HmdColor_t : Structure {
+open class HmdColor : Structure {
 
     @JvmField
     var r: Float = 0f
@@ -341,8 +341,8 @@ open class HmdColor_t : Structure {
         read()
     }
 
-    class ByReference : HmdColor_t(), Structure.ByReference
-    class ByValue : HmdColor_t(), Structure.ByValue
+    class ByReference : HmdColor(), Structure.ByReference
+    class ByValue : HmdColor(), Structure.ByValue
 
     operator fun get(i: Int) = when (i) {
         0 -> r
@@ -353,16 +353,16 @@ open class HmdColor_t : Structure {
     }
 }
 
-open class HmdQuad_t : Structure {
+open class HmdQuad : Structure {
 
     @JvmField
-    var vCorners = arrayOf(HmdVector3_t(), HmdVector3_t(), HmdVector3_t(), HmdVector3_t())
+    var vCorners = arrayOf(HmdVec3(), HmdVec3(), HmdVec3(), HmdVec3())
 
     constructor()
 
     override fun getFieldOrder(): List<String> = listOf("vCorners")
 
-    constructor(vCorners: Array<HmdVector3_t>) {
+    constructor(vCorners: Array<HmdVec3>) {
         if (vCorners.size != this.vCorners.size) throw IllegalArgumentException("Wrong array size!")
         this.vCorners = vCorners
     }
@@ -371,22 +371,22 @@ open class HmdQuad_t : Structure {
         read()
     }
 
-    class ByReference : HmdQuad_t(), Structure.ByReference
-    class ByValue : HmdQuad_t(), Structure.ByValue
+    class ByReference : HmdQuad(), Structure.ByReference
+    class ByValue : HmdQuad(), Structure.ByValue
 }
 
-open class HmdRect2_t : Structure {
+open class HmdRect2 : Structure {
 
     @JvmField
-    var vTopLeft = HmdVector2_t()
+    var vTopLeft = HmdVec2()
     @JvmField
-    var vBottomRight = HmdVector2_t()
+    var vBottomRight = HmdVec2()
 
     constructor()
 
     override fun getFieldOrder(): List<String> = listOf("vTopLeft", "vBottomRight")
 
-    constructor(vTopLeft: HmdVector2_t, vBottomRight: HmdVector2_t) {
+    constructor(vTopLeft: HmdVec2, vBottomRight: HmdVec2) {
         this.vTopLeft = vTopLeft
         this.vBottomRight = vBottomRight
     }
@@ -395,13 +395,13 @@ open class HmdRect2_t : Structure {
         read()
     }
 
-    class ByReference : HmdRect2_t(), Structure.ByReference
-    class ByValue : HmdRect2_t(), Structure.ByValue
+    class ByReference : HmdRect2(), Structure.ByReference
+    class ByValue : HmdRect2(), Structure.ByValue
 }
 
 /** Used to return the post-distortion UVs for each color channel.
  *  UVs range from 0 to 1 with 0,0 in the upper left corner of the source render target. The 0,0 to 1,1 range covers a single eye.  */
-open class DistortionCoordinates_t : Structure {
+open class DistortionCoordinates : Structure {
 
     @JvmField
     var rfRed = FloatArray(2)
@@ -427,8 +427,8 @@ open class DistortionCoordinates_t : Structure {
         read()
     }
 
-    class ByReference : DistortionCoordinates_t(), Structure.ByReference
-    class ByValue : DistortionCoordinates_t(), Structure.ByValue
+    class ByReference : DistortionCoordinates(), Structure.ByReference
+    class ByValue : DistortionCoordinates(), Structure.ByValue
 }
 
 enum class EVREye(@JvmField val i: Int) {
@@ -478,7 +478,7 @@ enum class EColorSpace(@JvmField val i: Int) {
 
 class EColorSpace_ByReference(@JvmField var value: EColorSpace = EColorSpace.Auto) : IntByReference(value.i)
 
-open class Texture_t : Structure {
+open class Texture : Structure {
 
     @JvmField
     var handle = 0L  //See ETextureType definition above
@@ -506,7 +506,7 @@ open class Texture_t : Structure {
         read()
     }
 
-    class ByReference : Texture_t, Structure.ByReference {
+    class ByReference : Texture, Structure.ByReference {
 
         constructor() : super()
         constructor(handle: Long, eType: ETextureType, eColorSpace: EColorSpace) : super(handle, eType, eColorSpace)
@@ -518,11 +518,11 @@ open class Texture_t : Structure {
         }
     }
 
-    class ByValue : Texture_t(), Structure.ByValue
+    class ByValue : Texture(), Structure.ByValue
 }
 
 // Handle to a shared texture (HANDLE on Windows obtained using OpenSharedResource).
-typealias SharedTextureHandle_t = Long
+typealias SharedTextureHandle = Long
 val INVALID_SHARED_TEXTURE_HANDLE = 0L
 
 enum class ETrackingResult(@JvmField val i: Int) {
@@ -540,24 +540,18 @@ enum class ETrackingResult(@JvmField val i: Int) {
     }
 }
 
-typealias DriverId_t = Int
-@JvmField
-val k_nDriverNone = 0xFFFFFFFF.i
+typealias DriverId = Int
+val driverNone = 0xFFFFFFFF.i
 
-@JvmField
-val k_unMaxDriverDebugResponseSize = 32768
+val maxDriverDebugResponseSize = 32768
 
 /** Used to pass device IDs to API calls */
 typealias TrackedDeviceIndex_t = Int
 typealias TrackedDeviceIndex_t_ByReference = IntByReference
-@JvmField
-val k_unTrackedDeviceIndex_Hmd = 0
-@JvmField
-val k_unMaxTrackedDeviceCount = 16
-@JvmField
-val k_unTrackedDeviceIndexOther = 0xFFFFFFFE.i
-@JvmField
-val k_unTrackedDeviceIndexInvalid = 0xFFFFFFFF.i
+val trackedDeviceIndex_Hmd = 0
+val maxTrackedDeviceCount = 64
+val trackedDeviceIndexOther = 0xFFFFFFFE.i
+val trackedDeviceIndexInvalid = 0xFFFFFFFF.i
 
 /** Describes what kind of object is being tracked at a given ID */
 enum class ETrackedDeviceClass(@JvmField val i: Int) {
@@ -594,14 +588,14 @@ enum class ETrackedControllerRole(@JvmField val i: Int) {
 }
 
 /** describes a single pose for a tracked object */
-open class TrackedDevicePose_t : Structure {
+open class TrackedDevicePose : Structure {
 
     @JvmField
-    var mDeviceToAbsoluteTracking = HmdMatrix34_t()
+    var mDeviceToAbsoluteTracking = HmdMat34()
     @JvmField
-    var vVelocity = HmdVector3_t()          // velocity in tracker space in m/s
+    var vVelocity = HmdVec3()          // velocity in tracker space in m/s
     @JvmField
-    var vAngularVelocity = HmdVector3_t()   // angular velocity in radians/s (?)
+    var vAngularVelocity = HmdVec3()   // angular velocity in radians/s (?)
     @JvmField
     var eTrackingResult_internal = 0
     var eTrackingResult
@@ -631,7 +625,7 @@ open class TrackedDevicePose_t : Structure {
     override fun getFieldOrder(): List<String> = listOf("mDeviceToAbsoluteTracking", "vVelocity", "vAngularVelocity",
             "eTrackingResult_internal", "bPoseIsValid_internal", "bDeviceIsConnected_internal")
 
-    constructor(mDeviceToAbsoluteTracking: HmdMatrix34_t, vVelocity: HmdVector3_t, vAngularVelocity: HmdVector3_t,
+    constructor(mDeviceToAbsoluteTracking: HmdMat34, vVelocity: HmdVec3, vAngularVelocity: HmdVec3,
                 eTrackingResult: ETrackingResult, bPoseIsValid: Boolean, bDeviceIsConnected: Boolean) {
         this.mDeviceToAbsoluteTracking = mDeviceToAbsoluteTracking
         this.vVelocity = vVelocity
@@ -645,8 +639,8 @@ open class TrackedDevicePose_t : Structure {
         read()
     }
 
-    class ByReference : TrackedDevicePose_t(), Structure.ByReference
-    class ByValue : TrackedDevicePose_t(), Structure.ByValue
+    class ByReference : TrackedDevicePose(), Structure.ByReference
+    class ByValue : TrackedDevicePose(), Structure.ByValue
 }
 
 /** Identifies which style of tracking origin the application wants to use for the poses it is requesting */
@@ -667,42 +661,32 @@ enum class ETrackingUniverseOrigin(@JvmField val i: Int) {
 class ETrackingUniverseOrigin_ByReference(@JvmField var value: ETrackingUniverseOrigin = ETrackingUniverseOrigin.Seated) : IntByReference(value.i)
 
 // Refers to a single container of properties
-typealias PropertyContainerHandle_t = Long
-typealias PropertyTypeTag_t = Int
+typealias PropertyContainerHandle = Long
+typealias PropertyTypeTag = Int
 
-@JvmField
-val k_ulInvalidPropertyContainer: PropertyContainerHandle_t = 0
-@JvmField
-val k_unInvalidPropertyTag: PropertyTypeTag_t = 0
+val invalidPropertyContainer: PropertyContainerHandle = 0
+val invalidPropertyTag: PropertyTypeTag = 0
 
 // Use these tags to set/get common types as struct properties
-@JvmField
-val k_unFloatPropertyTag: PropertyTypeTag_t = 1
-@JvmField
-val k_unInt32PropertyTag: PropertyTypeTag_t = 2
-@JvmField
-val k_unUint64PropertyTag: PropertyTypeTag_t = 3
-@JvmField
-val k_unBoolPropertyTag: PropertyTypeTag_t = 4
-@JvmField
-val k_unStringPropertyTag: PropertyTypeTag_t = 5
+val floatPropertyTag: PropertyTypeTag = 1
+val int32PropertyTag: PropertyTypeTag = 2
+val uint64PropertyTag: PropertyTypeTag = 3
+val boolPropertyTag: PropertyTypeTag = 4
+val stringPropertyTag: PropertyTypeTag = 5
 
-@JvmField
-val k_unHmdMatrix34PropertyTag: PropertyTypeTag_t = 20
-@JvmField
-val k_unHmdMatrix44PropertyTag: PropertyTypeTag_t = 21
-@JvmField
-val k_unHmdVector3PropertyTag: PropertyTypeTag_t = 22
-@JvmField
-val k_unHmdVector4PropertyTag: PropertyTypeTag_t = 23
+val hmdMatrix34PropertyTag: PropertyTypeTag = 20
+val hmdMatrix44PropertyTag: PropertyTypeTag = 21
+val hmdVector3PropertyTag: PropertyTypeTag = 22
+val hmdVector4PropertyTag: PropertyTypeTag = 23
 
-@JvmField
-val k_unHiddenAreaPropertyTag: PropertyTypeTag_t = 30
+val hiddenAreaPropertyTag: PropertyTypeTag = 30
+val pathHandleInfoTag = 31
+val actionPropertyTag = 32
+val inputValuePropertyTag = 33
+val wildcardPropertyTag = 34
 
-@JvmField
-val k_unOpenVRInternalReserved_Start: PropertyTypeTag_t = 1000
-@JvmField
-val k_unOpenVRInternalReserved_End: PropertyTypeTag_t = 10000
+val openVRInternalReserved_Start: PropertyTypeTag = 1000
+val openVRInternalReserved_End: PropertyTypeTag = 10000
 
 
 /** Each entry in this value represents a property that can be retrieved about a tracked device.
@@ -749,6 +733,9 @@ enum class ETrackedDeviceProperty(@JvmField val i: Int) {
     ViveSystemButtonFixRequired_Bool(1033),
     ParentDriver_Uint64(1034),
     ResourceRoot_String(1035),
+    RegisteredDeviceType_String(1036),
+    /** input profile to use for this device in the input system. Will default to tracking system name if this isn't provided */
+    InputProfileName_String(1037),
 
     // Properties that are unique to TrackedDeviceClass_HMD
     ReportsTimeSinceVSync_Bool(2000),
@@ -798,6 +785,17 @@ enum class ETrackedDeviceProperty(@JvmField val i: Int) {
     DisplayDebugMode_Bool(2044),
     GraphicsAdapterLuid_Uint64(2045),
     DriverProvidedChaperonePath_String(2048),
+    /** expected number of sensors or basestations to reserve UI space for */
+    ExpectedTrackingReferenceCount_Int32(2049),
+    /** expected number of tracked controllers to reserve UI space for */
+    ExpectedControllerCount_Int32(2050),
+    /** placeholder icon for "left" controller if not yet detected/loaded */
+    NamedIconPathControllerLeftDeviceOff_String(2051),
+    /** placeholder icon for "right" controller if not yet detected/loaded */
+    NamedIconPathControllerRightDeviceOff_String(2052),
+    /** placeholder icon for sensor/base if not yet detected/loaded */
+    NamedIconPathTrackingReferenceDeviceOff_String(2053),
+    DoNotApplyPrediction_Bool(2054),
 
     // Properties that are unique to TrackedDeviceClass_Controller
     AttachedDeviceId_String(3000),
@@ -849,6 +847,7 @@ enum class ETrackedDeviceProperty(@JvmField val i: Int) {
     // Properties that are used by helpers, but are opaque to applications
     DisplayHiddenArea_Binary_Start(5100),
     DisplayHiddenArea_Binary_End(5150),
+    ParentContainer(5151),
 
     // Properties that are unique to drivers
     UserConfigPath_String(6000),
@@ -869,8 +868,7 @@ enum class ETrackedDeviceProperty(@JvmField val i: Int) {
 }
 
 /** No string property will ever be longer than this length */
-@JvmField
-val k_unMaxPropertyStringSize = 32 * 1024
+val maxPropertyStringSize = 32 * 1024
 
 /** Used to return errors that occur when reading properties. */
 enum class ETrackedPropertyError(@JvmField val i: Int) {
@@ -888,7 +886,8 @@ enum class ETrackedPropertyError(@JvmField val i: Int) {
     /** The property value isn't known yet, but is expected soon. Call again later. */
     NotYetAvailable(9),
     PermissionDenied(10),
-    InvalidOperation(11);
+    InvalidOperation(11),
+    CannotWriteToWildcards(12);
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -898,7 +897,7 @@ enum class ETrackedPropertyError(@JvmField val i: Int) {
 class ETrackedPropertyError_ByReference(@JvmField var value: ETrackedPropertyError = ETrackedPropertyError.Success) : IntByReference(value.i)
 
 /** Allows the application to control what part of the provided texture will be used in the frame buffer. */
-open class VRTextureBounds_t : Structure {
+open class VRTextureBounds : Structure {
 
     @JvmField
     var uMin = 0f
@@ -924,22 +923,22 @@ open class VRTextureBounds_t : Structure {
         read()
     }
 
-    class ByReference : VRTextureBounds_t(), Structure.ByReference
-    class ByValue : VRTextureBounds_t(), Structure.ByValue
+    class ByReference : VRTextureBounds(), Structure.ByReference
+    class ByValue : VRTextureBounds(), Structure.ByValue
 }
 
 /** Allows specifying pose used to render provided scene texture (if different from value returned by WaitGetPoses).    */
-open class VRTextureWithPose_t : Texture_t {
+open class VRTextureWithPose : Texture {
 
     /** Actual pose used to render scene textures.  */
     @JvmField
-    var mDeviceToAbsoluteTracking = HmdMatrix34_t()
+    var mDeviceToAbsoluteTracking = HmdMat34()
 
     constructor()
 
     override fun getFieldOrder(): List<String> = listOf("mDeviceToAbsoluteTracking")
 
-    constructor(mDeviceToAbsoluteTracking: HmdMatrix34_t) {
+    constructor(mDeviceToAbsoluteTracking: HmdMat34) {
         this.mDeviceToAbsoluteTracking = mDeviceToAbsoluteTracking
     }
 
@@ -947,8 +946,8 @@ open class VRTextureWithPose_t : Texture_t {
         read()
     }
 
-    class ByReference : VRTextureWithPose_t(), Structure.ByReference
-    class ByValue : VRTextureWithPose_t(), Structure.ByValue
+    class ByReference : VRTextureWithPose(), Structure.ByReference
+    class ByValue : VRTextureWithPose(), Structure.ByValue
 }
 
 /** Allows the application to control how scene textures are used by the compositor when calling Submit. */
@@ -965,7 +964,7 @@ enum class EVRSubmitFlags(@JvmField val i: Int) {
     GlRenderBuffer(0x02),
     /** Do not use  */
     Reserved(0x04),
-    /** Set to indicate that pTexture is a pointer to a VRTextureWithPose_t.    */
+    /** Set to indicate that pTexture is a pointer to a VRTextureWithPose.    */
     TextureWithPose(0x08);
 
     companion object {
@@ -979,8 +978,8 @@ enum class EVRSubmitFlags(@JvmField val i: Int) {
 {
     uint64_t m_nImage; // VkImage
     VkDevice_T *m_pDevice;
-    VkPhysicalDevice_T *m_pPhysicalDevice;
-    VkInstance_T *m_pInstance;
+    VkPhysicalDevice *m_pPhysicalDevice;
+    VkInstance *m_pInstance;
     VkQueue_T *m_pQueue;
     uint32_t m_nQueueFamilyIndex;
     uint32_t m_nWidth, m_nHeight, m_nFormat, m_nSampleCount;
@@ -1042,6 +1041,22 @@ enum class EVREventType(@JvmField val i: Int) {
     ButtonTouch(202),
     /** data is controller  */
     ButtonUntouch(203),
+    /** data is dualAnalog */
+    DualAnalog_Press(250),
+    /** data is dualAnalog */
+    DualAnalog_Unpress(251),
+    /** data is dualAnalog */
+    DualAnalog_Touch(252),
+    /** data is dualAnalog */
+    DualAnalog_Untouch(253),
+    /** data is dualAnalog */
+    DualAnalog_Move(254),
+    /** data is dualAnalog */
+    DualAnalog_ModeSwitch1(255),
+    /** data is dualAnalog */
+    DualAnalog_ModeSwitch2(256),
+    /** data is dualAnalog */
+    DualAnalog_Cancel(257),
 
     /** data is mouse   */
     MouseMove(300),
@@ -1083,6 +1098,9 @@ enum class EVREventType(@JvmField val i: Int) {
     HideRenderModels(410),
     /** Sent to the scene application to request restoring render model visibility  */
     ShowRenderModels(411),
+
+    ConsoleOpened(420),
+    ConsoleClosed(421),
 
     OverlayShown(500),
     OverlayHidden(501),
@@ -1160,6 +1178,14 @@ enum class EVREventType(@JvmField val i: Int) {
     EnvironmentSettingsHaveChanged(854),
     PowerSettingsHaveChanged(855),
     EnableHomeAppSettingsHaveChanged(856),
+    SteamVRSectionSettingChanged(857),
+    LighthouseSectionSettingChanged(858),
+    NullSectionSettingChanged(859),
+    UserInterfaceSectionSettingChanged(860),
+    NotificationsSectionSettingChanged(861),
+    KeyboardSectionSettingChanged(862),
+    PerfSectionSettingChanged(863),
+    DashboardSectionSettingChanged(864),
 
     StatusUpdate(900),
 
@@ -1271,7 +1297,7 @@ fun buttonMaskFromId(id: EVRButtonId) = 1L shl id.i
 
 
 /** used for controller button events */
-open class VREvent_Controller_t : Structure {
+open class VREvent_Controller : Structure {
 
     @JvmField
     var button_internal = 0  // openvr.lib.EVRButtonId value
@@ -1293,8 +1319,8 @@ open class VREvent_Controller_t : Structure {
         read()
     }
 
-    class ByReference : VREvent_Controller_t(), Structure.ByReference
-    class ByValue : VREvent_Controller_t(), Structure.ByValue
+    class ByReference : VREvent_Controller(), Structure.ByReference
+    class ByValue : VREvent_Controller(), Structure.ByValue
 }
 
 /** used for simulated mouse events in overlay space */
@@ -1310,7 +1336,7 @@ enum class EVRMouseButton(@JvmField val i: Int) {
 }
 
 /** used for simulated mouse events in overlay space */
-open class VREvent_Mouse_t : Structure {
+open class VREvent_Mouse : Structure {
 
     // coords are in GL space, bottom left of the texture is 0,0
     @JvmField
@@ -1339,12 +1365,12 @@ open class VREvent_Mouse_t : Structure {
         read()
     }
 
-    class ByReference : VREvent_Mouse_t(), Structure.ByReference
-    class ByValue : VREvent_Mouse_t(), Structure.ByValue
+    class ByReference : VREvent_Mouse(), Structure.ByReference
+    class ByValue : VREvent_Mouse(), Structure.ByValue
 }
 
 /** used for simulated mouse wheel scroll in overlay space */
-open class VREvent_Scroll_t : Structure {
+open class VREvent_Scroll : Structure {
 
     // movement in fraction of the pad traversed since last delta, 1.0 for a full swipe
     @JvmField
@@ -1368,15 +1394,16 @@ open class VREvent_Scroll_t : Structure {
         read()
     }
 
-    class ByReference : VREvent_Scroll_t(), Structure.ByReference
-    class ByValue : VREvent_Scroll_t(), Structure.ByValue
+    class ByReference : VREvent_Scroll(), Structure.ByReference
+    class ByValue : VREvent_Scroll(), Structure.ByValue
 }
 
 /** when in mouse input mode you can receive data from the touchpad, these events are only sent if the users finger
- *  is on the touchpad (or just released from it) */
-open class VREvent_TouchPadMove_t : Structure {
+ *  is on the touchpad (or just released from it). These events are sent to overlays with the
+ *  VROverlayFlags_SendVRTouchpadEvents flag set. */
+open class VREvent_TouchPadMove : Structure {
 
-    // true if the users finger is detected on the touch pad
+    /** true if the users finger is detected on the touch pad */
     @JvmField
     var bFingerDown_internal = 0.b
     var bFingerDown
@@ -1385,17 +1412,17 @@ open class VREvent_TouchPadMove_t : Structure {
         }
         get() = bFingerDown_internal == 1.b
 
-    // How long the finger has been down in seconds
+    /** How long the finger has been down in seconds */
     @JvmField
     var flSecondsFingerDown = 0f
 
-    // These values indicate the starting finger position (so you can do some basic swipe stuff)
+    /** These values indicate the starting finger position (so you can do some basic swipe stuff) */
     @JvmField
     var fValueXFirst = 0f
     @JvmField
     var fValueYFirst = 0f
 
-    // This is the raw sampled coordinate without deadzoning
+    /** This is the raw sampled coordinate without deadzoning */
     @JvmField
     var fValueXRaw = 0f
     @JvmField
@@ -1419,12 +1446,64 @@ open class VREvent_TouchPadMove_t : Structure {
         read()
     }
 
-    class ByReference : VREvent_TouchPadMove_t(), Structure.ByReference
-    class ByValue : VREvent_TouchPadMove_t(), Structure.ByValue
+    class ByReference : VREvent_TouchPadMove(), Structure.ByReference
+    class ByValue : VREvent_TouchPadMove(), Structure.ByValue
+}
+
+enum class EDualAnalogWhich {
+    Left, Right;
+
+    val i = ordinal
+
+    companion object {
+        fun of(i: Int) = values().first { it.i == i }
+    }
+}
+
+open class VREvent_DualAnalog : Structure {
+
+    /** coordinates are -1..1 analog values */
+    @JvmField
+    var x = 0f
+    @JvmField
+    var y = 0f
+
+    /** transformed by the center and radius numbers provided by the overlay */
+    @JvmField
+    var transformedX = 0f
+    @JvmField
+    var transformedY = 0f
+
+    @JvmField
+    var which_internal = 0
+    var which
+        get() = EDualAnalogWhich.of(which_internal)
+        set(value) {
+            which_internal = value.i
+        }
+
+    constructor()
+
+    override fun getFieldOrder(): List<String> = listOf("x", "y", "transformedX", "transformedY", "which_internal")
+
+    constructor(x: Float, y: Float, transformedX: Float, transformedY: Float, which: EDualAnalogWhich) {
+        this.x = x
+        this.y = y
+        this.transformedX = transformedX
+        this.transformedY = transformedY
+        this.which = which
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : VREvent_DualAnalog(), Structure.ByReference
+    class ByValue : VREvent_DualAnalog(), Structure.ByValue
 }
 
 /** notification related events. Details will still change at this point */
-open class VREvent_Notification_t : Structure {
+open class VREvent_Notification : Structure {
 
     @JvmField
     var ulUserValue = 0L
@@ -1444,12 +1523,12 @@ open class VREvent_Notification_t : Structure {
         read()
     }
 
-    class ByReference : VREvent_Notification_t(), Structure.ByReference
-    class ByValue : VREvent_Notification_t(), Structure.ByValue
+    class ByReference : VREvent_Notification(), Structure.ByReference
+    class ByValue : VREvent_Notification(), Structure.ByValue
 }
 
 /** Used for events about processes */
-open class VREvent_Process_t : Structure {
+open class VREvent_Process : Structure {
 
     @JvmField
     var pid = 0
@@ -1477,12 +1556,12 @@ open class VREvent_Process_t : Structure {
         read()
     }
 
-    class ByReference : VREvent_Process_t(), Structure.ByReference
-    class ByValue : VREvent_Process_t(), Structure.ByValue
+    class ByReference : VREvent_Process(), Structure.ByReference
+    class ByValue : VREvent_Process(), Structure.ByValue
 }
 
 /** Used for a few events about overlays */
-open class VREvent_Overlay_t : Structure {
+open class VREvent_Overlay : Structure {
 
     @JvmField
     var overlayHandle = 0L
@@ -1499,12 +1578,12 @@ open class VREvent_Overlay_t : Structure {
         read()
     }
 
-    class ByReference : VREvent_Overlay_t(), Structure.ByReference
-    class ByValue : VREvent_Overlay_t(), Structure.ByValue
+    class ByReference : VREvent_Overlay(), Structure.ByReference
+    class ByValue : VREvent_Overlay(), Structure.ByValue
 }
 
 /** Used for a few events about overlays */
-open class VREvent_Status_t : Structure {
+open class VREvent_Status : Structure {
 
     @JvmField
     var statusState_internal = 0 // openvr.lib.EVRState value
@@ -1526,12 +1605,12 @@ open class VREvent_Status_t : Structure {
         read()
     }
 
-    class ByReference : VREvent_Status_t(), Structure.ByReference
-    class ByValue : VREvent_Status_t(), Structure.ByValue
+    class ByReference : VREvent_Status(), Structure.ByReference
+    class ByValue : VREvent_Status(), Structure.ByValue
 }
 
 /** Used for keyboard events **/
-open class VREvent_Keyboard_t : Structure {
+open class VREvent_Keyboard : Structure {
 
     @JvmField
     var cNewInput_internal = ByteArray(8)    // Up to 11 bytes of new input
@@ -1556,11 +1635,11 @@ open class VREvent_Keyboard_t : Structure {
         read()
     }
 
-    class ByReference : VREvent_Keyboard_t(), Structure.ByReference
-    class ByValue : VREvent_Keyboard_t(), Structure.ByValue
+    class ByReference : VREvent_Keyboard(), Structure.ByReference
+    class ByValue : VREvent_Keyboard(), Structure.ByValue
 }
 
-open class VREvent_Ipd_t : Structure {
+open class VREvent_Ipd : Structure {
 
     @JvmField
     var ipdMeters = 0f
@@ -1577,11 +1656,11 @@ open class VREvent_Ipd_t : Structure {
         read()
     }
 
-    class ByReference : VREvent_Ipd_t(), Structure.ByReference
-    class ByValue : VREvent_Ipd_t(), Structure.ByValue
+    class ByReference : VREvent_Ipd(), Structure.ByReference
+    class ByValue : VREvent_Ipd(), Structure.ByValue
 }
 
-open class VREvent_Chaperone_t : Structure {
+open class VREvent_Chaperone : Structure {
 
     @JvmField
     var m_nPreviousUniverse = 0L
@@ -1601,12 +1680,12 @@ open class VREvent_Chaperone_t : Structure {
         read()
     }
 
-    class ByReference : VREvent_Chaperone_t(), Structure.ByReference
-    class ByValue : VREvent_Chaperone_t(), Structure.ByValue
+    class ByReference : VREvent_Chaperone(), Structure.ByReference
+    class ByValue : VREvent_Chaperone(), Structure.ByValue
 }
 
 /** Not actually used for any events */
-open class VREvent_Reserved_t : Structure {
+open class VREvent_Reserved : Structure {
 
     @JvmField
     var reserved0 = 0L
@@ -1626,11 +1705,11 @@ open class VREvent_Reserved_t : Structure {
         read()
     }
 
-    class ByReference : VREvent_Reserved_t(), Structure.ByReference
-    class ByValue : VREvent_Reserved_t(), Structure.ByValue
+    class ByReference : VREvent_Reserved(), Structure.ByReference
+    class ByValue : VREvent_Reserved(), Structure.ByValue
 }
 
-open class VREvent_PerformanceTest_t : Structure {
+open class VREvent_PerformanceTest : Structure {
 
     @JvmField
     var m_nFidelityLevel = 0
@@ -1647,11 +1726,11 @@ open class VREvent_PerformanceTest_t : Structure {
         read()
     }
 
-    class ByReference : VREvent_PerformanceTest_t(), Structure.ByReference
-    class ByValue : VREvent_PerformanceTest_t(), Structure.ByValue
+    class ByReference : VREvent_PerformanceTest(), Structure.ByReference
+    class ByValue : VREvent_PerformanceTest(), Structure.ByValue
 }
 
-open class VREvent_SeatedZeroPoseReset_t : Structure {
+open class VREvent_SeatedZeroPoseReset : Structure {
 
     @JvmField
     var bResetBySystemMenu_internal = 0.b
@@ -1673,11 +1752,11 @@ open class VREvent_SeatedZeroPoseReset_t : Structure {
         read()
     }
 
-    class ByReference : VREvent_SeatedZeroPoseReset_t(), Structure.ByReference
-    class ByValue : VREvent_SeatedZeroPoseReset_t(), Structure.ByValue
+    class ByReference : VREvent_SeatedZeroPoseReset(), Structure.ByReference
+    class ByValue : VREvent_SeatedZeroPoseReset(), Structure.ByValue
 }
 
-open class VREvent_Screenshot_t : Structure {
+open class VREvent_Screenshot : Structure {
 
     @JvmField
     var handle = 0
@@ -1697,11 +1776,11 @@ open class VREvent_Screenshot_t : Structure {
 
     override fun getFieldOrder(): List<String> = listOf("handle", "type")
 
-    class ByReference : VREvent_Screenshot_t(), Structure.ByReference
-    class ByValue : VREvent_Screenshot_t(), Structure.ByValue
+    class ByReference : VREvent_Screenshot(), Structure.ByReference
+    class ByValue : VREvent_Screenshot(), Structure.ByValue
 }
 
-open class VREvent_ScreenshotProgress_t : Structure {
+open class VREvent_ScreenshotProgress : Structure {
 
     @JvmField
     var progress = 0f
@@ -1718,11 +1797,11 @@ open class VREvent_ScreenshotProgress_t : Structure {
 
     override fun getFieldOrder(): List<String> = listOf("progress")
 
-    class ByReference : VREvent_ScreenshotProgress_t(), Structure.ByReference
-    class ByValue : VREvent_ScreenshotProgress_t(), Structure.ByValue
+    class ByReference : VREvent_ScreenshotProgress(), Structure.ByReference
+    class ByValue : VREvent_ScreenshotProgress(), Structure.ByValue
 }
 
-open class VREvent_ApplicationLaunch_t : Structure {
+open class VREvent_ApplicationLaunch : Structure {
 
     @JvmField
     var pid = 0
@@ -1742,11 +1821,11 @@ open class VREvent_ApplicationLaunch_t : Structure {
 
     override fun getFieldOrder(): List<String> = listOf("pid", "unArgsHandle")
 
-    class ByReference : VREvent_ApplicationLaunch_t(), Structure.ByReference
-    class ByValue : VREvent_ApplicationLaunch_t(), Structure.ByValue
+    class ByReference : VREvent_ApplicationLaunch(), Structure.ByReference
+    class ByValue : VREvent_ApplicationLaunch(), Structure.ByValue
 }
 
-open class VREvent_EditingCameraSurface_t : Structure {
+open class VREvent_EditingCameraSurface : Structure {
 
     @JvmField
     var overlayHandle = 0L
@@ -1766,11 +1845,11 @@ open class VREvent_EditingCameraSurface_t : Structure {
 
     override fun getFieldOrder(): List<String> = listOf("overlayHandle", "nVisualMode")
 
-    class ByReference : VREvent_EditingCameraSurface_t(), Structure.ByReference
-    class ByValue : VREvent_EditingCameraSurface_t(), Structure.ByValue
+    class ByReference : VREvent_EditingCameraSurface(), Structure.ByReference
+    class ByValue : VREvent_EditingCameraSurface(), Structure.ByValue
 }
 
-open class VREvent_MessageOverlay_t : Structure {
+open class VREvent_MessageOverlay : Structure {
 
     @JvmField
     var unVRMessageOverlayResponse_internal = 0 // vr::VRMessageOverlayResponse enum
@@ -1792,14 +1871,14 @@ open class VREvent_MessageOverlay_t : Structure {
 
     override fun getFieldOrder(): List<String> = listOf("unVRMessageOverlayResponse_internal")
 
-    class ByReference : VREvent_MessageOverlay_t(), Structure.ByReference
-    class ByValue : VREvent_MessageOverlay_t(), Structure.ByValue
+    class ByReference : VREvent_MessageOverlay(), Structure.ByReference
+    class ByValue : VREvent_MessageOverlay(), Structure.ByValue
 }
 
-open class VREvent_Property_t : Structure {
+open class VREvent_Property : Structure {
 
     @JvmField
-    var container: PropertyContainerHandle_t = 0
+    var container: PropertyContainerHandle = 0
     @JvmField
     var prop_internal = 0
     var prop
@@ -1810,7 +1889,7 @@ open class VREvent_Property_t : Structure {
 
     constructor()
 
-    constructor(container: PropertyContainerHandle_t, prop: ETrackedDeviceProperty) {
+    constructor(container: PropertyContainerHandle, prop: ETrackedDeviceProperty) {
         this.container = container
         this.prop_internal = prop.i
         write() // TODO?
@@ -1822,67 +1901,69 @@ open class VREvent_Property_t : Structure {
 
     override fun getFieldOrder(): List<String> = listOf("container", "prop_internal")
 
-    class ByReference : VREvent_Property_t(), Structure.ByReference
-    class ByValue : VREvent_Property_t(), Structure.ByValue
+    class ByReference : VREvent_Property(), Structure.ByReference
+    class ByValue : VREvent_Property(), Structure.ByValue
 }
 
 /** If you change this you must manually update openvr_interop.cs.py */
-open class VREvent_Data_t : Union {
+open class VREvent_Data : Union {
 
     @JvmField
-    var controller = VREvent_Controller_t()
+    var controller = VREvent_Controller()
     @JvmField
-    var mouse = VREvent_Mouse_t()
+    var mouse = VREvent_Mouse()
     @JvmField
-    var scroll = VREvent_Scroll_t()
+    var scroll = VREvent_Scroll()
     @JvmField
-    var process = VREvent_Process_t()
+    var process = VREvent_Process()
     @JvmField
-    var notification = VREvent_Notification_t()
+    var notification = VREvent_Notification()
     @JvmField
-    var overlay = VREvent_Overlay_t()
+    var overlay = VREvent_Overlay()
     @JvmField
-    var status = VREvent_Status_t()
+    var status = VREvent_Status()
     @JvmField
-    var keyboard = VREvent_Keyboard_t()
+    var keyboard = VREvent_Keyboard()
     @JvmField
-    var ipd = VREvent_Ipd_t()
+    var ipd = VREvent_Ipd()
     @JvmField
-    var chaperone = VREvent_Chaperone_t()
+    var chaperone = VREvent_Chaperone()
     @JvmField
-    var performanceTest = VREvent_PerformanceTest_t()
+    var performanceTest = VREvent_PerformanceTest()
     @JvmField
-    var touchPadMove = VREvent_TouchPadMove_t()
+    var touchPadMove = VREvent_TouchPadMove()
     @JvmField
-    var seatedZeroPoseReset = VREvent_SeatedZeroPoseReset_t()
+    var seatedZeroPoseReset = VREvent_SeatedZeroPoseReset()
     @JvmField
-    var screenshot = VREvent_Screenshot_t()
+    var screenshot = VREvent_Screenshot()
     @JvmField
-    var screenshotProgress = VREvent_ScreenshotProgress_t()
+    var screenshotProgress = VREvent_ScreenshotProgress()
     @JvmField
-    var applicationLaunch = VREvent_ApplicationLaunch_t()
+    var applicationLaunch = VREvent_ApplicationLaunch()
     @JvmField
-    var cameraSurface = VREvent_EditingCameraSurface_t()
+    var cameraSurface = VREvent_EditingCameraSurface()
     @JvmField
-    var messageOverlay = VREvent_MessageOverlay_t()
+    var messageOverlay = VREvent_MessageOverlay()
     @JvmField
-    var property = VREvent_Property_t()
+    var property = VREvent_Property()
+    @JvmField
+    var dualAnalog = VREvent_DualAnalog()
 
     constructor() : super()
     constructor(peer: Pointer) : super(peer) {
         read()
     }
 
-    class ByReference : VREvent_Data_t(), Structure.ByReference
-    class ByValue : VREvent_Data_t(), Structure.ByValue
+    class ByReference : VREvent_Data(), Structure.ByReference
+    class ByValue : VREvent_Data(), Structure.ByValue
 
     override fun getFieldOrder(): List<String> = listOf("controller", "mouse", "scroll", "process", "notification", "overlay", "status",
             "keyboard", "ipd", "chaperone", "performanceTest", "touchPadMove", "seatedZeroPoseReset", "screenshot", "screenshotProgress",
-            "applicationLaunch", "cameraSurface", "messageOverlay", "property")
+            "applicationLaunch", "cameraSurface", "messageOverlay", "property", "dualAnalog")
 }
 
 /** An event posted by the server to all running applications */
-open class VREvent_t : Structure {
+open class VREvent : Structure {
 
     @JvmField
     var eventType_internal = 0   // openvr.lib.EVREventType value
@@ -1897,13 +1978,13 @@ open class VREvent_t : Structure {
     var eventAgeSeconds = 0f
     // event data must be the end of the struct as its size is variable
     @JvmField
-    var data = VREvent_Data_t()
+    var data = VREvent_Data()
 
     constructor()
 
     override fun getFieldOrder(): List<String> = listOf("eventType_internal", "trackedDeviceIndex", "eventAgeSeconds", "data")
 
-    constructor(eventType: EVREventType, trackedDeviceIndex: Int, eventAgeSeconds: Float, data: VREvent_Data_t) {
+    constructor(eventType: EVREventType, trackedDeviceIndex: Int, eventAgeSeconds: Float, data: VREvent_Data) {
         this.eventType_internal = eventType.i
         this.trackedDeviceIndex = trackedDeviceIndex
         this.eventAgeSeconds = eventAgeSeconds
@@ -1914,18 +1995,18 @@ open class VREvent_t : Structure {
         read()
     }
 
-    class ByReference : VREvent_t(), Structure.ByReference
+    class ByReference : VREvent(), Structure.ByReference
 
-    class ByValue : VREvent_t(), Structure.ByValue
+    class ByValue : VREvent(), Structure.ByValue
 }
 
 /** The mesh to draw into the stencil (or depth) buffer to perform early stencil (or depth) kills of pixels that will never appear on the HMD.
  *  This mesh draws on all the pixels that will be hidden after distortion. *
  *  If the HMD does not provide a visible area mesh pVertexData will be NULL and unTriangleCount will be 0. */
-open class HiddenAreaMesh_t : Structure {
+open class HiddenAreaMesh : Structure {
 
     @JvmField
-    var pVertexData: HmdVector2_t.ByReference? = null
+    var pVertexData: HmdVec2.ByReference? = null
     @JvmField
     var unTriangleCount = 0
 
@@ -1933,7 +2014,7 @@ open class HiddenAreaMesh_t : Structure {
 
     override fun getFieldOrder(): List<String> = listOf("pVertexData", "unTriangleCount")
 
-    constructor(pVertexData: HmdVector2_t.ByReference, unTriangleCount: Int) {
+    constructor(pVertexData: HmdVec2.ByReference, unTriangleCount: Int) {
         this.pVertexData = pVertexData
         this.unTriangleCount = unTriangleCount
     }
@@ -1942,8 +2023,8 @@ open class HiddenAreaMesh_t : Structure {
         read()
     }
 
-    class ByReference : HiddenAreaMesh_t(), Structure.ByReference
-    class ByValue : HiddenAreaMesh_t(), Structure.ByValue
+    class ByReference : HiddenAreaMesh(), Structure.ByReference
+    class ByValue : HiddenAreaMesh(), Structure.ByValue
 }
 
 enum class EHiddenAreaMeshType(@JvmField val i: Int) {
@@ -1973,7 +2054,7 @@ enum class EVRControllerAxisType(@JvmField val i: Int) {
 }
 
 /** contains information about one axis on the controller */
-open class VRControllerAxis_t : Structure {
+open class VRControllerAxis : Structure {
 
     @JvmField
     var x = 0f  // Ranges from -1.0 to 1.0 for joysticks and track pads. Ranges from 0.0 to 1.0 for triggers were 0 is fully released.
@@ -1996,15 +2077,15 @@ open class VRControllerAxis_t : Structure {
         read()
     }
 
-    class ByReference : VRControllerAxis_t(), Structure.ByReference
-    class ByValue : VRControllerAxis_t(), Structure.ByValue
+    class ByReference : VRControllerAxis(), Structure.ByReference
+    class ByValue : VRControllerAxis(), Structure.ByValue
 }
 
 /** the number of axes in the controller state */
-val k_unControllerStateAxisCount = 5
+val controllerStateAxisCount = 5
 
 /** Holds all the state of a controller at one moment in time. */
-open class VRControllerState_t : Structure {
+open class VRControllerState : Structure {
 
     /** If packet num matches that on your prior call, then the controller state hasn't been changed since your last
      *  call and there is no need to process it.    */
@@ -2019,7 +2100,7 @@ open class VRControllerState_t : Structure {
 
     // Axis data for the controller's analog inputs
     @JvmField
-    var rAxis = Array(k_unControllerStateAxisCount, { VRControllerAxis_t() })
+    var rAxis = Array(controllerStateAxisCount, { VRControllerAxis() })
 
     val axis0 get() = rAxis[0]
     val axis1 get() = rAxis[1]
@@ -2031,7 +2112,7 @@ open class VRControllerState_t : Structure {
 
     override fun getFieldOrder(): List<String> = listOf("unPacketNum", "ulButtonPressed", "ulButtonTouched", "rAxis")
 
-    constructor(unPacketNum: Int, ulButtonPressed: Long, ulButtonTouched: Long, rAxis: Array<VRControllerAxis_t>) {
+    constructor(unPacketNum: Int, ulButtonPressed: Long, ulButtonTouched: Long, rAxis: Array<VRControllerAxis>) {
         this.unPacketNum = unPacketNum
         this.ulButtonPressed = ulButtonPressed
         this.ulButtonTouched = ulButtonTouched
@@ -2043,11 +2124,11 @@ open class VRControllerState_t : Structure {
         read()
     }
 
-    class ByReference : VRControllerState_t(), Structure.ByReference
-    class ByValue : VRControllerState_t(), Structure.ByValue
+    class ByReference : VRControllerState(), Structure.ByReference
+    class ByValue : VRControllerState(), Structure.ByValue
 }
 
-typealias VRControllerState001_t = VRControllerState_t
+typealias VRControllerState001 = VRControllerState
 
 /** determines how to provide output to the application of various event processing functions. */
 enum class EVRControllerEventOutputType(@JvmField val i: Int) {
@@ -2116,13 +2197,13 @@ open class Compositor_OverlaySettings : Structure {
     @JvmField
     var gridScale = 0f
     @JvmField
-    var transform = HmdMatrix44_t()
+    var transform = HmdMat44()
 
     constructor()
 
     constructor(size: Int, curved: Boolean, antialias: Boolean, scale: Float, distance: Float, alpha: Float, uOffset: Float,
                 vOffset: Float, uScale: Float, vScale: Float, gridDivs: Float, gridWidth: Float, gridScale: Float,
-                transform: HmdMatrix44_t) {
+                transform: HmdMat44) {
         this.size = size
         this.curved_internal = if (curved) 1.b else 0.b
         this.antialias_internal = if (antialias) 1.b else 0.b
@@ -2151,11 +2232,10 @@ open class Compositor_OverlaySettings : Structure {
 }
 
 /** used to refer to a single VR overlay */
-typealias VROverlayHandle_t = Long
-typealias VROverlayHandle_t_ByReference = LongByReference
+typealias VROverlayHandle = Long
+typealias VROverlayHandle_ByReference = LongByReference
 
-@JvmField
-val k_ulOverlayHandleInvalid = 0L
+val overlayHandleInvalid = 0L
 
 /** Errors that can occur around VR overlays */
 enum class EVROverlayError(@JvmField val i: Int) {
@@ -2295,6 +2375,8 @@ enum class EVRInitError(@JvmField val i: Int) {
     Init_FirmwareUpdateBusy(138),
     Init_FirmwareRecoveryBusy(139),
 
+    Init_USBServiceBusy(140),
+
     Driver_Failed(200),
     Driver_Unknown(201),
     Driver_HmdUnknown(202),
@@ -2327,6 +2409,7 @@ enum class EVRInitError(@JvmField val i: Int) {
     Compositor_UnableToCreateDevice(405),
 
     VendorSpecific_UnableToConnectToOculusRuntime(1000),
+    VendorSpecific_WindowsNotInDevMode(1001),
 
     VendorSpecific_HmdFound_CantOpenDevice(1101),
     VendorSpecific_HmdFound_UnableToRequestConfigStart(1102),
@@ -2416,11 +2499,10 @@ enum class EVRTrackedCameraFrameType(@JvmField val i: Int) {
     }
 }
 
-typealias TrackedCameraHandle_t = Long
-@JvmField
+typealias TrackedCameraHandle = Long
 val INVALID_TRACKED_CAMERA_HANDLE = 0L
 
-open class CameraVideoStreamFrameHeader_t : Structure {
+open class CameraVideoStreamFrameHeader : Structure {
 
     @JvmField
     var eFrameType_internal = 0
@@ -2441,12 +2523,12 @@ open class CameraVideoStreamFrameHeader_t : Structure {
     var nFrameSequence = 0
 
     @JvmField
-    var standingTrackedDevicePose = TrackedDevicePose_t()
+    var standingTrackedDevicePose = TrackedDevicePose()
 
     constructor()
 
     constructor(eFrameType: EVRTrackedCameraFrameType, nWidth: Int, nHeight: Int, nBytesPerPixel: Int, nFrameSequence: Int,
-                standingTrackedDevicePose: TrackedDevicePose_t) {
+                standingTrackedDevicePose: TrackedDevicePose) {
 
         this.eFrameType_internal = eFrameType.i
         this.nWidth = nWidth
@@ -2463,16 +2545,53 @@ open class CameraVideoStreamFrameHeader_t : Structure {
     override fun getFieldOrder(): List<String> = listOf("eFrameType_internal", "nWidth", "nHeight", "nBytesPerPixel", "nFrameSequence",
             "standingTrackedDevicePose")
 
-    class ByReference : CameraVideoStreamFrameHeader_t(), Structure.ByReference
-    class ByValue : CameraVideoStreamFrameHeader_t(), Structure.ByValue
+    class ByReference : CameraVideoStreamFrameHeader(), Structure.ByReference
+    class ByValue : CameraVideoStreamFrameHeader(), Structure.ByValue
 }
 
 // Screenshot types
-typealias ScreenshotHandle_t = Int
-typealias ScreenshotHandle_t_ByReference = IntByReference
-@JvmField
-val k_unScreenshotHandleInvalid = 0
+typealias ScreenshotHandle = Int
+typealias ScreenshotHandle_ByReference = IntByReference
+val screenshotHandleInvalid = 0
 
+/** Frame timing data provided by direct mode drivers. */
+open class DriverDirectMode_FrameTiming : Structure {
+
+    /** Set to sizeof( DriverDirectMode_FrameTiming ) */
+    @JvmField
+    var size = 0
+    /** number of times frame was presented */
+    @JvmField
+    var numFramePresents = 0
+    /** number of times frame was presented on a vsync other than it was originally predicted to */
+    @JvmField
+    var numMisPresented = 0
+    /** number of additional times previous frame was scanned out (i.e. compositor missed vsync) */
+    @JvmField
+    var numDroppedFrames = 0
+    @JvmField
+    var reprojectionFlags = 0
+
+    constructor()
+
+    constructor(size: Int, numFramePresents: Int, numMisPresented: Int, numDroppedFrames: Int, reprojectionFlags: Int) {
+
+        this.size = size
+        this.numFramePresents = numFramePresents
+        this.numMisPresented = numMisPresented
+        this.numDroppedFrames = numDroppedFrames
+        this.reprojectionFlags = reprojectionFlags
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    override fun getFieldOrder(): List<String> = listOf("size", "numFramePresents", "numMisPresented", "numDroppedFrames", "reprojectionFlags")
+
+    class ByReference : DriverDirectMode_FrameTiming(), Structure.ByReference
+    class ByValue : DriverDirectMode_FrameTiming(), Structure.ByValue
+}
 
 // ================================================================================================================================================================
 

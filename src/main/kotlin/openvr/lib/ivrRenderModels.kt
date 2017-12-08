@@ -64,13 +64,13 @@ enum class EVRComponentProperty(@JvmField val i: Int) {
 /** Describes state information about a render-model component, including transforms and other dynamic properties */
 open class RenderModel_ComponentState_t : Structure {
 
-    @JvmField var mTrackingToComponentRenderModel = HmdMatrix34_t()  // Transform required when drawing the component render model
-    @JvmField var mTrackingToComponentLocal = HmdMatrix34_t()        // Transform available for attaching to a local component coordinate system (-Z out from surface )
+    @JvmField var mTrackingToComponentRenderModel = HmdMat34()  // Transform required when drawing the component render model
+    @JvmField var mTrackingToComponentLocal = HmdMat34()        // Transform available for attaching to a local component coordinate system (-Z out from surface )
     @JvmField var uProperties: VRComponentProperties = 0
 
     constructor()
 
-    constructor(mTrackingToComponentRenderModel: HmdMatrix34_t, mTrackingToComponentLocal: HmdMatrix34_t, uProperties: Int) {
+    constructor(mTrackingToComponentRenderModel: HmdMat34, mTrackingToComponentLocal: HmdMat34, uProperties: Int) {
         this.mTrackingToComponentRenderModel = mTrackingToComponentRenderModel
         this.mTrackingToComponentLocal = mTrackingToComponentLocal
         this.uProperties = uProperties
@@ -89,8 +89,8 @@ open class RenderModel_ComponentState_t : Structure {
 /** A single vertex in a render model */
 open class RenderModel_Vertex_t : Structure {
 
-    @JvmField var vPosition = HmdVector3_t()  // position in meters in device space
-    @JvmField var vNormal = HmdVector3_t()
+    @JvmField var vPosition = HmdVec3()  // position in meters in device space
+    @JvmField var vNormal = HmdVec3()
     @JvmField var rfTextureCoord = floatArrayOf(0f, 0f)
 
     operator fun get(i: Int) = when (i) {
@@ -102,7 +102,7 @@ open class RenderModel_Vertex_t : Structure {
 
     constructor()
 
-    constructor(vPosition: HmdVector3_t, vNormal: HmdVector3_t, rfTextureCoord: FloatArray) {
+    constructor(vPosition: HmdVec3, vNormal: HmdVec3, rfTextureCoord: FloatArray) {
         this.vPosition = vPosition
         this.vNormal = vNormal
         // TODO check all size checks, necessary/dangerous?
@@ -120,10 +120,10 @@ open class RenderModel_Vertex_t : Structure {
     class ByValue : RenderModel_Vertex_t(), Structure.ByValue
 
     companion object {
-        @JvmStatic val SIZE = 2 * HmdVector3_t.SIZE + 2 * Float.BYTES
+        @JvmStatic val SIZE = 2 * HmdVec3.SIZE + 2 * Float.BYTES
         @JvmStatic val POSITION_OFFSET = 0
-        @JvmStatic val NORMAL_OFFSET = HmdVector3_t.SIZE
-        @JvmStatic val TEX_COORD_OFFSET = HmdVector3_t.SIZE * 2
+        @JvmStatic val NORMAL_OFFSET = HmdVec3.SIZE
+        @JvmStatic val TEX_COORD_OFFSET = HmdVec3.SIZE * 2
     }
 }
 
@@ -357,7 +357,7 @@ open class IVRRenderModels : Structure {
     fun getComponentName(pchRenderModelName: String, unComponentIndex: Int): String {
 
         var ret = ""
-        val bytes = ByteArray(k_unMaxPropertyStringSize) // TODO optimize?
+        val bytes = ByteArray(maxPropertyStringSize) // TODO optimize?
 
         val propLen = GetComponentName!!.invoke(pchRenderModelName, unComponentIndex, bytes, bytes.size)
 
@@ -395,7 +395,7 @@ open class IVRRenderModels : Structure {
     fun getComponentRenderModelName(pchRenderModelName: String, pchComponentName: String) : String {
 
         var ret = ""
-        val bytes = ByteArray(k_unMaxPropertyStringSize) // TODO optimize?
+        val bytes = ByteArray(maxPropertyStringSize) // TODO optimize?
 
         val propLen = GetComponentRenderModelName!!.invoke(pchRenderModelName, pchComponentName, bytes, bytes.size)
 
@@ -419,19 +419,19 @@ open class IVRRenderModels : Structure {
     /** Use this to query information about the component, as a function of the controller state.
      *
      *  For dynamic controller components (ex: trigger) values will reflect component motions
-     *  For static components this will return a consistent value independent of the VRControllerState_t
+     *  For static components this will return a consistent value independent of the VRControllerState
      *
      *  If the pchRenderModelName or pchComponentName is invalid, this will return false (and transforms will be set to identity).
      *  Otherwise, return true
      *  Note: For dynamic objects, visibility may be dynamic. (I.e., true/false will be returned based on controller state and controller mode state ) */
-    fun getComponentState(pchRenderModelName: String, pchComponentName: String, pControllerState: VRControllerState_t.ByReference,
+    fun getComponentState(pchRenderModelName: String, pchComponentName: String, pControllerState: VRControllerState.ByReference,
                           pState: RenderModel_ControllerMode_State_t.ByReference, pComponentState: RenderModel_ComponentState_t.ByReference)
             = GetComponentState!!.invoke(pchRenderModelName, pchComponentName, pControllerState, pState, pComponentState)
 
     @JvmField var GetComponentState: GetComponentState_callback? = null
 
     interface GetComponentState_callback : Callback {
-        fun invoke(pchRenderModelName: String, pchComponentName: String, pControllerState: VRControllerState_t.ByReference,
+        fun invoke(pchRenderModelName: String, pchComponentName: String, pControllerState: VRControllerState.ByReference,
                    pState: RenderModel_ControllerMode_State_t.ByReference, pComponentState: RenderModel_ComponentState_t.ByReference): Boolean
     }
 

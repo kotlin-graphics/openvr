@@ -70,53 +70,53 @@ open class IVRChaperoneSetup : Structure {
      *  It's a rectangle.
      *  2 sides are parallel to the X axis and 2 sides are parallel to the Z axis.
      *  Height of every corner is 0Y (on the floor). **/
-    fun getWorkingPlayAreaRect(rect: HmdQuad_t.ByReference) = GetWorkingPlayAreaRect!!.invoke(rect)
+    fun getWorkingPlayAreaRect(rect: HmdQuad.ByReference) = GetWorkingPlayAreaRect!!.invoke(rect)
 
     @JvmField var GetWorkingPlayAreaRect: GetWorkingPlayAreaRect_callback? = null
 
     interface GetWorkingPlayAreaRect_callback : Callback {
-        fun invoke(rect: HmdQuad_t.ByReference): Boolean
+        fun invoke(rect: HmdQuad.ByReference): Boolean
     }
 
     /** Returns the number of Quads if the buffer points to null. Otherwise it returns Quads
      * into the buffer up to the max specified from the working copy. */
-    fun getWorkingCollisionBoundsInfo(pQuadsBuffer: HmdQuad_t.ByReference, punQuadsCount: IntByReference)
+    fun getWorkingCollisionBoundsInfo(pQuadsBuffer: HmdQuad.ByReference, punQuadsCount: IntByReference)
             = GetWorkingCollisionBoundsInfo!!.invoke(pQuadsBuffer, punQuadsCount)
 
     @JvmField var GetWorkingCollisionBoundsInfo: GetWorkingCollisionBoundsInfo_callback? = null
 
     interface GetWorkingCollisionBoundsInfo_callback : Callback {
-        fun invoke(pQuadsBuffer: HmdQuad_t.ByReference, punQuadsCount: IntByReference): Boolean
+        fun invoke(pQuadsBuffer: HmdQuad.ByReference, punQuadsCount: IntByReference): Boolean
     }
 
     /** Returns the number of Quads if the buffer points to null. Otherwise it returns Quads into the buffer up to the max specified. */
-    fun getLiveCollisionBoundsInfo(pQuadsBuffer: HmdQuad_t.ByReference, punQuadsCount: IntByReference)
+    fun getLiveCollisionBoundsInfo(pQuadsBuffer: HmdQuad.ByReference, punQuadsCount: IntByReference)
             = GetLiveCollisionBoundsInfo!!.invoke(pQuadsBuffer, punQuadsCount)
 
     @JvmField var GetLiveCollisionBoundsInfo: GetLiveCollisionBoundsInfo_callback? = null
 
     interface GetLiveCollisionBoundsInfo_callback : Callback {
-        fun invoke(pQuadsBuffer: HmdQuad_t.ByReference, punQuadsCount: IntByReference): Boolean
+        fun invoke(pQuadsBuffer: HmdQuad.ByReference, punQuadsCount: IntByReference): Boolean
     }
 
     /** Returns the preferred seated position from the working copy. */
-    fun getWorkingSeatedZeroPoseToRawTrackingPose(pmatSeatedZeroPoseToRawTrackingPose: HmdMatrix34_t.ByReference)
+    fun getWorkingSeatedZeroPoseToRawTrackingPose(pmatSeatedZeroPoseToRawTrackingPose: HmdMat34.ByReference)
             = GetWorkingSeatedZeroPoseToRawTrackingPose!!.invoke(pmatSeatedZeroPoseToRawTrackingPose)
 
     @JvmField var GetWorkingSeatedZeroPoseToRawTrackingPose: GetWorkingSeatedZeroPoseToRawTrackingPose_callback? = null
 
     interface GetWorkingSeatedZeroPoseToRawTrackingPose_callback : Callback {
-        fun invoke(pmatSeatedZeroPoseToRawTrackingPose: HmdMatrix34_t.ByReference): Boolean
+        fun invoke(pmatSeatedZeroPoseToRawTrackingPose: HmdMat34.ByReference): Boolean
     }
 
     /** Returns the standing origin from the working copy. */
-    fun getWorkingStandingZeroPoseToRawTrackingPose(pmatStandingZeroPoseToRawTrackingPose: HmdMatrix34_t.ByReference)
+    fun getWorkingStandingZeroPoseToRawTrackingPose(pmatStandingZeroPoseToRawTrackingPose: HmdMat34.ByReference)
             = GetWorkingStandingZeroPoseToRawTrackingPose!!.invoke(pmatStandingZeroPoseToRawTrackingPose)
 
     @JvmField var GetWorkingStandingZeroPoseToRawTrackingPose: GetWorkingStandingZeroPoseToRawTrackingPose_callback? = null
 
     interface GetWorkingStandingZeroPoseToRawTrackingPose_callback : Callback {
-        fun invoke(pmatStandingZeroPoseToRawTrackingPose: HmdMatrix34_t.ByReference): Boolean
+        fun invoke(pmatStandingZeroPoseToRawTrackingPose: HmdMat34.ByReference): Boolean
     }
 
     /** Sets the Play Area in the working copy. */
@@ -129,32 +129,32 @@ open class IVRChaperoneSetup : Structure {
     }
 
     /** Sets the Collision Bounds in the working copy. */
-    fun setWorkingCollisionBoundsInfo(pQuadsBuffer: HmdQuad_t.ByReference, unQuadsCount: Int) = SetWorkingCollisionBoundsInfo!!.invoke(pQuadsBuffer, unQuadsCount)
+    fun setWorkingCollisionBoundsInfo(pQuadsBuffer: HmdQuad.ByReference, unQuadsCount: Int) = SetWorkingCollisionBoundsInfo!!.invoke(pQuadsBuffer, unQuadsCount)
 
     @JvmField var SetWorkingCollisionBoundsInfo: SetWorkingCollisionBoundsInfo_callback? = null
 
     interface SetWorkingCollisionBoundsInfo_callback : Callback {
-        fun invoke(pQuadsBuffer: HmdQuad_t.ByReference, unQuadsCount: Int)
+        fun invoke(pQuadsBuffer: HmdQuad.ByReference, unQuadsCount: Int)
     }
 
     /** Sets the preferred seated position in the working copy. */
-    fun setWorkingSeatedZeroPoseToRawTrackingPose(pmatSeatedZeroPoseToRawTrackingPose: HmdMatrix34_t.ByReference)
+    fun setWorkingSeatedZeroPoseToRawTrackingPose(pmatSeatedZeroPoseToRawTrackingPose: HmdMat34.ByReference)
             = SetWorkingSeatedZeroPoseToRawTrackingPose!!.invoke(pmatSeatedZeroPoseToRawTrackingPose)
 
     @JvmField var SetWorkingSeatedZeroPoseToRawTrackingPose: SetWorkingSeatedZeroPoseToRawTrackingPose_callback? = null
 
     interface SetWorkingSeatedZeroPoseToRawTrackingPose_callback : Callback {
-        fun invoke(pMatSeatedZeroPoseToRawTrackingPose: HmdMatrix34_t.ByReference)
+        fun invoke(pMatSeatedZeroPoseToRawTrackingPose: HmdMat34.ByReference)
     }
 
     /** Sets the preferred standing position in the working copy. */
-    fun setWorkingStandingZeroPoseToRawTrackingPose(pmatStandingZeroPoseToRawTrackingPose: HmdMatrix34_t.ByReference)
+    fun setWorkingStandingZeroPoseToRawTrackingPose(pmatStandingZeroPoseToRawTrackingPose: HmdMat34.ByReference)
             = SetWorkingStandingZeroPoseToRawTrackingPose!!.invoke(pmatStandingZeroPoseToRawTrackingPose)
 
     @JvmField var SetWorkingStandingZeroPoseToRawTrackingPose: SetWorkingStandingZeroPoseToRawTrackingPose_callback? = null
 
     interface SetWorkingStandingZeroPoseToRawTrackingPose_callback : Callback {
-        fun invoke(pMatStandingZeroPoseToRawTrackingPose: HmdMatrix34_t.ByReference)
+        fun invoke(pMatStandingZeroPoseToRawTrackingPose: HmdMat34.ByReference)
     }
 
     /** Tear everything down and reload it from the file on disk */
@@ -167,13 +167,13 @@ open class IVRChaperoneSetup : Structure {
     }
 
     /** Returns the preferred seated position. */
-    fun getLiveSeatedZeroPoseToRawTrackingPose(pmatSeatedZeroPoseToRawTrackingPose: HmdMatrix34_t.ByReference)
+    fun getLiveSeatedZeroPoseToRawTrackingPose(pmatSeatedZeroPoseToRawTrackingPose: HmdMat34.ByReference)
             = GetLiveSeatedZeroPoseToRawTrackingPose!!.invoke(pmatSeatedZeroPoseToRawTrackingPose)
 
     @JvmField var GetLiveSeatedZeroPoseToRawTrackingPose: GetLiveSeatedZeroPoseToRawTrackingPose_callback? = null
 
     interface GetLiveSeatedZeroPoseToRawTrackingPose_callback : Callback {
-        fun invoke(pmatSeatedZeroPoseToRawTrackingPose: HmdMatrix34_t.ByReference): Boolean
+        fun invoke(pmatSeatedZeroPoseToRawTrackingPose: HmdMat34.ByReference): Boolean
     }
 
 
@@ -197,21 +197,21 @@ open class IVRChaperoneSetup : Structure {
     }
 
 
-    fun setWorkingPhysicalBoundsInfo(pQuadsBuffer: HmdQuad_t.ByReference, unQuadsCount: Int) = SetWorkingPhysicalBoundsInfo!!.invoke(pQuadsBuffer, unQuadsCount)
+    fun setWorkingPhysicalBoundsInfo(pQuadsBuffer: HmdQuad.ByReference, unQuadsCount: Int) = SetWorkingPhysicalBoundsInfo!!.invoke(pQuadsBuffer, unQuadsCount)
     @JvmField var SetWorkingPhysicalBoundsInfo: SetWorkingPhysicalBoundsInfo_callback? = null
 
     interface SetWorkingPhysicalBoundsInfo_callback : Callback {
-        fun invoke(pQuadsBuffer: HmdQuad_t.ByReference, unQuadsCount: Int): Boolean
+        fun invoke(pQuadsBuffer: HmdQuad.ByReference, unQuadsCount: Int): Boolean
     }
 
 
-    fun getLivePhysicalBoundsInfo(pQuadsBuffer: HmdQuad_t.ByReference, punQuadsCount: IntByReference)
+    fun getLivePhysicalBoundsInfo(pQuadsBuffer: HmdQuad.ByReference, punQuadsCount: IntByReference)
             = GetLivePhysicalBoundsInfo!!.invoke(pQuadsBuffer, punQuadsCount)
 
     @JvmField var GetLivePhysicalBoundsInfo: GetLivePhysicalBoundsInfo_callback? = null
 
     interface GetLivePhysicalBoundsInfo_callback : Callback {
-        fun invoke(pQuadsBuffer: HmdQuad_t.ByReference, punQuadsCount: IntByReference): Boolean
+        fun invoke(pQuadsBuffer: HmdQuad.ByReference, punQuadsCount: IntByReference): Boolean
     }
 
 

@@ -48,7 +48,7 @@ open class IVRSystem : Structure {
     var GetProjectionMatrix: GetProjectionMatrix_callback? = null
 
     interface GetProjectionMatrix_callback : Callback {
-        fun invoke(eEye: Int, fNearZ: Float, fFarZ: Float): HmdMatrix44_t.ByValue
+        fun invoke(eEye: Int, fNearZ: Float, fFarZ: Float): HmdMat44.ByValue
     }
 
     /** The components necessary to build your own projection matrix in case your application is doing something fancy like infinite Z  */
@@ -65,14 +65,14 @@ open class IVRSystem : Structure {
     /** Gets the result of the distortion function for the specified eye and input UVs.
      *  UVs go from 0,0 in the upper left of that eye's viewport and 1,1 in the lower right of that eye's viewport.
      *  Returns true for success. Otherwise, returns false, and distortion coordinates are not suitable.    */
-    fun computeDistortion(eEye: EVREye, fU: Float, fV: Float, pDistortionCoordinates_t: DistortionCoordinates_t.ByReference)
-            = ComputeDistortion!!.invoke(eEye.i, fU, fV, pDistortionCoordinates_t)
+    fun computeDistortion(eEye: EVREye, fU: Float, fV: Float, distortionCoordinates: DistortionCoordinates.ByReference)
+            = ComputeDistortion!!.invoke(eEye.i, fU, fV, distortionCoordinates)
 
     @JvmField
     var ComputeDistortion: ComputeDistortion_callback? = null
 
     interface ComputeDistortion_callback : Callback {
-        fun invoke(eEye: Int, fU: Float, fV: Float, pDistortionCoordinates_t: DistortionCoordinates_t.ByReference): Boolean
+        fun invoke(eEye: Int, fU: Float, fV: Float, pDistortionCoordinates_t: DistortionCoordinates.ByReference): Boolean
     }
 
     /** Returns the transform from eye space to the head space. Eye space is the per-eye flavor of head space that provides stereo
@@ -92,7 +92,7 @@ open class IVRSystem : Structure {
     var GetEyeToHeadTransform: GetEyeToHeadTransform_callback? = null
 
     interface GetEyeToHeadTransform_callback : Callback {
-        fun invoke(eEye: Int): HmdMatrix34_t.ByValue
+        fun invoke(eEye: Int): HmdMat34.ByValue
     }
 
     /** Returns the number of elapsed seconds since the last recorded vsync event. This will come from a vsync timer event in the timer
@@ -147,14 +147,14 @@ open class IVRSystem : Structure {
      *  create the VkInstance with extensions returned by IVRCompositor::GetVulkanInstanceExtensionsRequired enabled.
      *  [macOS Only]
      *  Returns an id<MTLDevice> that should be used by the application.    */
-    fun getOutputDevice_callback(pnDevice: LongByReference, textureType: ETextureType, pInstance: VkInstance_T? = null) =
+    fun getOutputDevice_callback(pnDevice: LongByReference, textureType: ETextureType, pInstance: VkInstance? = null) =
             GetOutputDevice!!.invoke(pnDevice, textureType.i, pInstance)
 
     @JvmField
     var GetOutputDevice: GetOutputDevice_callback? = null
 
     interface GetOutputDevice_callback : Callback {
-        fun invoke(pnDevice: LongByReference, textureType: Int, pInstance: VkInstance_T? = null)
+        fun invoke(pnDevice: LongByReference, textureType: Int, pInstance: VkInstance? = null)
     }
 
     // ------------------------------------
@@ -201,7 +201,7 @@ open class IVRSystem : Structure {
      *  TrackingUniverseRawAndUncalibrated should probably not be used unless the application is the Chaperone calibration tool itself,
      *  but will provide poses relative to the hardware-specific coordinate system in the driver.     */
     fun getDeviceToAbsoluteTrackingPose(eOrigin: ETrackingUniverseOrigin, fPredictedSecondsToPhotonsFromNow: Float,
-                                        pTrackedDevicePoseArray: TrackedDevicePose_t.ByReference, unTrackedDevicePoseArrayCount: Int)
+                                        pTrackedDevicePoseArray: TrackedDevicePose.ByReference, unTrackedDevicePoseArrayCount: Int)
             = GetDeviceToAbsoluteTrackingPose!!.invoke(eOrigin.i, fPredictedSecondsToPhotonsFromNow, pTrackedDevicePoseArray,
             unTrackedDevicePoseArrayCount)
 
@@ -209,7 +209,7 @@ open class IVRSystem : Structure {
     var GetDeviceToAbsoluteTrackingPose: GetDeviceToAbsoluteTrackingPose_callback? = null
 
     interface GetDeviceToAbsoluteTrackingPose_callback : Callback {
-        fun invoke(eOrigin: Int, fPredictedSecondsToPhotonsFromNow: Float, pTrackedDevicePoseArray: TrackedDevicePose_t.ByReference,
+        fun invoke(eOrigin: Int, fPredictedSecondsToPhotonsFromNow: Float, pTrackedDevicePoseArray: TrackedDevicePose.ByReference,
                    unTrackedDevicePoseArrayCount: Int)
     }
 
@@ -242,7 +242,7 @@ open class IVRSystem : Structure {
     var GetSeatedZeroPoseToStandingAbsoluteTrackingPose: GetSeatedZeroPoseToStandingAbsoluteTrackingPose_callback? = null
 
     interface GetSeatedZeroPoseToStandingAbsoluteTrackingPose_callback : Callback {
-        fun invoke(): HmdMatrix34_t.ByValue
+        fun invoke(): HmdMat34.ByValue
     }
 
     /** Returns the transform from the tracking origin to the standing absolute tracking system. This allows applications to convert
@@ -253,7 +253,7 @@ open class IVRSystem : Structure {
     var GetRawZeroPoseToStandingAbsoluteTrackingPose: GetRawZeroPoseToStandingAbsoluteTrackingPose_callback? = null
 
     interface GetRawZeroPoseToStandingAbsoluteTrackingPose_callback : Callback {
-        fun invoke(): HmdMatrix34_t.ByValue
+        fun invoke(): HmdMat34.ByValue
     }
 
     /** Get a sorted array of device indices of a given class of tracked devices (e.g. controllers).  Devices are sorted right to left
@@ -263,7 +263,7 @@ open class IVRSystem : Structure {
     fun getSortedTrackedDeviceIndicesOfClass(eTrackedDeviceClass: ETrackedDeviceClass,
                                              punTrackedDeviceIndexArray: TrackedDeviceIndex_t_ByReference,
                                              unTrackedDeviceIndexArrayCount: Int,
-                                             unRelativeToTrackedDeviceIndex: TrackedDeviceIndex_t = k_unTrackedDeviceIndex_Hmd)
+                                             unRelativeToTrackedDeviceIndex: TrackedDeviceIndex_t = trackedDeviceIndex_Hmd)
             = GetSortedTrackedDeviceIndicesOfClass!!.invoke(eTrackedDeviceClass.i, punTrackedDeviceIndexArray, unTrackedDeviceIndexArrayCount,
             unRelativeToTrackedDeviceIndex)
 
@@ -287,14 +287,14 @@ open class IVRSystem : Structure {
 
     /** Convenience utility to apply the specified transform to the specified pose.
      *  This properly transforms all pose components, including velocity and angular velocity     */
-    fun invokeTransform(pOutputPose: TrackedDevicePose_t.ByReference, pTrackedDevicePose: TrackedDevicePose_t.ByReference, pTransform: HmdMatrix34_t.ByReference)
+    fun invokeTransform(pOutputPose: TrackedDevicePose.ByReference, pTrackedDevicePose: TrackedDevicePose.ByReference, pTransform: HmdMat34.ByReference)
             = ApplyTransform!!.invoke(pOutputPose, pTrackedDevicePose, pTransform)
 
     @JvmField
     var ApplyTransform: ApplyTransform_callback? = null
 
     interface ApplyTransform_callback : Callback {
-        fun invoke(pOutputPose: TrackedDevicePose_t.ByReference, pTrackedDevicePose: TrackedDevicePose_t.ByReference, pTransform: HmdMatrix34_t.ByReference)
+        fun invoke(pOutputPose: TrackedDevicePose.ByReference, pTrackedDevicePose: TrackedDevicePose.ByReference, pTransform: HmdMat34.ByReference)
     }
 
     /** Returns the device index associated with a specific role, for example the left hand or the right hand. */
@@ -410,7 +410,7 @@ open class IVRSystem : Structure {
     var GetMatrix34TrackedDeviceProperty: GetMatrix34TrackedDeviceProperty_callback? = null
 
     interface GetMatrix34TrackedDeviceProperty_callback : Callback {
-        fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pError: ETrackedPropertyError_ByReference?): HmdMatrix34_t.ByValue
+        fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pError: ETrackedPropertyError_ByReference?): HmdMat34.ByValue
     }
 
     /** Wrapper: returns a string property. If the device index is not valid or the property is not a string value this function will
@@ -442,7 +442,7 @@ open class IVRSystem : Structure {
 
     /** Returns a string property. If the device index is not valid or the property is not a string value this function will return 0.
      *  Otherwise it returns the length of the number of bytes necessary to hold this string including the trailing null.
-     *  Strings will always fit in buffers of k_unMaxPropertyStringSize characters. */
+     *  Strings will always fit in buffers of maxPropertyStringSize characters. */
     interface GetStringTrackedDeviceProperty_callback : Callback {
         fun invoke(unDeviceIndex: TrackedDeviceIndex_t, prop: Int, pchValue: ByteArray?, unBufferSize: Int,
                    pError: ETrackedPropertyError_ByReference?): Int
@@ -464,29 +464,29 @@ open class IVRSystem : Structure {
     // ------------------------------------
 
     /** Returns true and fills the event with the next event on the queue if there is one. If there are no events this method returns
-     *  false. uncbVREvent should be the size in bytes of the openvr.lib.VREvent_t struct */
-    fun pollNextEvent(pEvent: VREvent_t.ByReference, uncbVREvent: Int) = PollNextEvent!!.invoke(pEvent, uncbVREvent)
+     *  false. uncbVREvent should be the size in bytes of the openvr.lib.VREvent struct */
+    fun pollNextEvent(pEvent: VREvent.ByReference, uncbVREvent: Int) = PollNextEvent!!.invoke(pEvent, uncbVREvent)
 
     @JvmField
     var PollNextEvent: PollNextEvent_callback? = null
 
     interface PollNextEvent_callback : Callback {
-        fun invoke(pEvent: VREvent_t.ByReference, uncbVREvent: Int): Boolean
+        fun invoke(pEvent: VREvent.ByReference, uncbVREvent: Int): Boolean
     }
 
     /** Returns true and fills the event with the next event on the queue if there is one. If there are no events this method returns false. Fills in the pose
      *  of the associated tracked device in the provided pose struct.
      *  This pose will always be older than the call to this function and should not be used to render the device.
-     *  uncbVREvent should be the size in bytes of the openvr.lib.VREvent_t struct */
-    fun pollNextEventWithPose(eOrigin: ETrackingUniverseOrigin, pEvent: VREvent_t.ByReference, uncbVREvent: Int,
-                              pTrackedDevicePose: TrackedDevicePose_t.ByReference)
+     *  uncbVREvent should be the size in bytes of the openvr.lib.VREvent struct */
+    fun pollNextEventWithPose(eOrigin: ETrackingUniverseOrigin, pEvent: VREvent.ByReference, uncbVREvent: Int,
+                              pTrackedDevicePose: TrackedDevicePose.ByReference)
             = PollNextEventWithPose!!.invoke(eOrigin.i, pEvent, uncbVREvent, pTrackedDevicePose)
 
     @JvmField
     var PollNextEventWithPose: PollNextEventWithPose_callback? = null
 
     interface PollNextEventWithPose_callback : Callback {
-        fun invoke(eOrigin: Int, pEvent: VREvent_t.ByReference, uncbVREvent: Int, pTrackedDevicePose: TrackedDevicePose_t.ByReference): Boolean
+        fun invoke(eOrigin: Int, pEvent: VREvent.ByReference, uncbVREvent: Int, pTrackedDevicePose: TrackedDevicePose.ByReference): Boolean
     }
 
     /** returns the name of an EVREvent value value */
@@ -514,8 +514,8 @@ open class IVRSystem : Structure {
      *  per-eye.
      *  Setting the bInverse argument to true will produce the visible area mesh that is commonly used in place of full-screen quads.
      *  The visible area mesh covers all of the pixels the hidden area mesh does not cover.
-     *  Setting the bLineLoop argument will return a line loop of vertices in HiddenAreaMesh_t->pVertexData with
-     *  HiddenAreaMesh_t->unTriangleCount set to the number of vertices.
+     *  Setting the bLineLoop argument will return a line loop of vertices in HiddenAreaMesh->pVertexData with
+     *  HiddenAreaMesh->unTriangleCount set to the number of vertices.
      */
     @JvmOverloads
     fun GetHiddenAreaMesh(eEye: EVREye, type: EHiddenAreaMeshType = EHiddenAreaMeshType.Standard)
@@ -525,7 +525,7 @@ open class IVRSystem : Structure {
     var GetHiddenAreaMesh: GetHiddenAreaMesh_callback? = null
 
     interface GetHiddenAreaMesh_callback : Callback {
-        fun invoke(eEye: Int, type: EHiddenAreaMeshType): HiddenAreaMesh_t.ByValue
+        fun invoke(eEye: Int, type: EHiddenAreaMeshType): HiddenAreaMesh.ByValue
     }
 
 
@@ -534,7 +534,7 @@ open class IVRSystem : Structure {
     // ------------------------------------
 
     /** Fills the supplied struct with the current state of the controller. Returns false if the controller index is invalid. */
-    fun getControllerState(unControllerDeviceIndex: TrackedDeviceIndex_t, pControllerState: VRControllerState_t.ByReference,
+    fun getControllerState(unControllerDeviceIndex: TrackedDeviceIndex_t, pControllerState: VRControllerState.ByReference,
                            unControllerStateSize: Int)
             = GetControllerState!!.invoke(unControllerDeviceIndex, pControllerState, unControllerStateSize)
 
@@ -542,15 +542,15 @@ open class IVRSystem : Structure {
     var GetControllerState: GetControllerState_callback? = null
 
     interface GetControllerState_callback : Callback {
-        fun invoke(unControllerDeviceIndex: TrackedDeviceIndex_t, pControllerState: VRControllerState_t.ByReference,
+        fun invoke(unControllerDeviceIndex: TrackedDeviceIndex_t, pControllerState: VRControllerState.ByReference,
                    unControllerStateSize: Int): Boolean
     }
 
     /** Fills the supplied struct with the current state of the controller and the provided pose with the pose of the controller when the controller state was
      *  updated most recently. Use this form if you need a precise controller pose as input to your application when the user presses or releases a button. */
     fun getControllerStateWithPose(eOrigin: ETrackingUniverseOrigin, unControllerDeviceIndex: TrackedDeviceIndex_t,
-                                   pControllerState: VRControllerState_t.ByReference, unControllerStateSize: Int,
-                                   pTrackedDevicePose: TrackedDevicePose_t.ByReference)
+                                   pControllerState: VRControllerState.ByReference, unControllerStateSize: Int,
+                                   pTrackedDevicePose: TrackedDevicePose.ByReference)
             = GetControllerStateWithPose!!.invoke(eOrigin.i, unControllerDeviceIndex, pControllerState, unControllerStateSize,
             pTrackedDevicePose)
 
@@ -558,8 +558,8 @@ open class IVRSystem : Structure {
     var GetControllerStateWithPose: GetControllerStateWithPose_callback? = null
 
     interface GetControllerStateWithPose_callback : Callback {
-        fun invoke(eOrigin: Int, unControllerDeviceIndex: TrackedDeviceIndex_t, pControllerState: VRControllerState_t.ByReference,
-                   unControllerStateSize: Int, pTrackedDevicePose: TrackedDevicePose_t.ByReference): Boolean
+        fun invoke(eOrigin: Int, unControllerDeviceIndex: TrackedDeviceIndex_t, pControllerState: VRControllerState.ByReference,
+                   unControllerStateSize: Int, pTrackedDevicePose: TrackedDevicePose.ByReference): Boolean
     }
 
     /** Trigger a single haptic pulse on a controller. After this call the application may not trigger another haptic pulse on this controller and axis
@@ -776,6 +776,8 @@ enum class EVRApplicationProperty(@JvmField val i: Int) {
     NewsURL_String(51),
     ImagePath_String(52),
     Source_String(53),
+    ActionManifestPath_String(54),
+    ActionBindingPath_String(55),
 
     IsDashboardOverlay_Bool(60),
     IsTemplate_Bool(61),

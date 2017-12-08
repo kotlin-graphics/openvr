@@ -9,12 +9,12 @@ import openvr.plugin.Utils
 
 open class EventListener(val hmd: IVRSystem) {
 
-    val states = Array(k_unMaxTrackedDeviceCount, { VRControllerState_t.ByReference() })
+    val states = Array(maxTrackedDeviceCount, { VRControllerState.ByReference() })
 
     var left = -1
     var right = -1
 
-    val devices = Array(k_unMaxTrackedDeviceCount, { Device(it) })
+    val devices = Array(maxTrackedDeviceCount, { Device(it) })
 
     init {
         updateRoles()
@@ -23,7 +23,7 @@ open class EventListener(val hmd: IVRSystem) {
     private fun updateRoles() {
         left = -1
         right = -1
-        for (i in 0 until k_unMaxTrackedDeviceCount) {
+        for (i in 0 until maxTrackedDeviceCount) {
             if (hmd.getTrackedDeviceClass(i) == ETrackedDeviceClass.Controller && hmd.getControllerState(i, states[i], states[i].size()))
                 if (left == -1) left = i
                 else right = i
@@ -33,7 +33,7 @@ open class EventListener(val hmd: IVRSystem) {
         println("new roles, left: $left, right: $right")
     }
 
-    val event = VREvent_t.ByReference()
+    val event = VREvent.ByReference()
     var frameCount = 0
 
     fun poll() {
@@ -63,10 +63,10 @@ open class EventListener(val hmd: IVRSystem) {
             EVREventType.PropertyChanged -> propertyChanged()
             EVREventType.WirelessDisconnect -> wirelessDisconnect()
             EVREventType.WirelessReconnect -> wirelessReconnect()
-            EVREventType.ButtonPress -> buttonPress(event.trackedDeviceIndex == left, VREvent_Controller_t(event.data.pointer).button)
-            EVREventType.ButtonUnpress -> buttonUnpress(event.trackedDeviceIndex == left, VREvent_Controller_t(event.data.pointer).button)
-            EVREventType.ButtonTouch -> buttonTouch(event.trackedDeviceIndex == left, VREvent_Controller_t(event.data.pointer).button)
-            EVREventType.ButtonUntouch -> buttonUntouch(event.trackedDeviceIndex == left, VREvent_Controller_t(event.data.pointer).button)
+            EVREventType.ButtonPress -> buttonPress(event.trackedDeviceIndex == left, VREvent_Controller(event.data.pointer).button)
+            EVREventType.ButtonUnpress -> buttonUnpress(event.trackedDeviceIndex == left, VREvent_Controller(event.data.pointer).button)
+            EVREventType.ButtonTouch -> buttonTouch(event.trackedDeviceIndex == left, VREvent_Controller(event.data.pointer).button)
+            EVREventType.ButtonUntouch -> buttonUntouch(event.trackedDeviceIndex == left, VREvent_Controller(event.data.pointer).button)
             EVREventType.MouseMove -> mouseMove()
             EVREventType.MouseButtonDown -> mouseButtonDown()
             EVREventType.MouseButtonUp -> mouseButtonUp()
@@ -74,7 +74,7 @@ open class EventListener(val hmd: IVRSystem) {
             EVREventType.FocusLeave -> focusLeave()
             EVREventType.Scroll -> scroll()
             EVREventType.TouchPadMove -> {
-                val state = VRControllerState_t.ByReference()
+                val state = VRControllerState.ByReference()
                 touchpadMove(event.trackedDeviceIndex == left,
                         if (hmd.getControllerState(event.trackedDeviceIndex, state, state.size())) Vec2()
                         else state.axis0.pos)
@@ -345,9 +345,9 @@ open class EventListener(val hmd: IVRSystem) {
 
         private val _velocity = Vec3()
         private val _angularVelocity = Vec3()
-        private val _state = VRControllerState_t.ByReference()
-        private val _prevState = VRControllerState_t.ByReference()
-        private val _pose = TrackedDevicePose_t.ByReference()
+        private val _state = VRControllerState.ByReference()
+        private val _prevState = VRControllerState.ByReference()
+        private val _pose = TrackedDevicePose.ByReference()
         private var prevFrameCount = -1
         private val prevTouchpadPos = Vec2()
         val touchpadMode get() = if (left) leftTouchpadMode else rightTouchpadMode
