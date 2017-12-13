@@ -1,9 +1,15 @@
 # JVM OpenVR Binding (synchronized with 1.0.10)
 
+[![Build Status](https://travis-ci.org/kotlin-graphics/openvr.svg?branch=master)](https://travis-ci.org/kotlin-graphics/openvr) 
+[![License](https://img.shields.io/badge/License-BSD%203--Clause-orange.svg)](https://github.com/kotlin-graphics/openvr/blob/master/LICENSE.txt)
+![](https://reposs.herokuapp.com/?path=kotlin-graphics/openvr&color=yellow) 
+[![Release](https://jitpack.io/v/kotlin-graphics/openvr.svg)](https://jitpack.io/#kotlin-graphics/openvr) 
+[![Slack Status](http://slack.kotlinlang.org/badge.svg)](http://slack.kotlinlang.org/)
+
 OpenVR SDK
 ---
 
-This is the jvm port of OpenVR, which is an API and runtime that allows access to VR hardware from multiple 
+This is the jvm port of [OpenVR](https://github.com/ValveSoftware/openvr), which is an API and runtime that allows access to VR hardware from multiple 
 vendors without requiring that applications have specific knowledge of the 
 hardware they are targeting. This repository is an SDK that contains the API 
 and samples. The runtime is under SteamVR in Tools on Steam. 
