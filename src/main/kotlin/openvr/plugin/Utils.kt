@@ -126,7 +126,7 @@ object Utils {
         override fun hashCode() = pos.hashCode() xor rot.hashCode()
         operator fun times(b: RigidTransform) = RigidTransform(pos + rot * b.pos, rot * b.rot)
         fun inverse_(): RigidTransform {
-            rot.inverse_()
+            rot.inverseAssign()
             pos put (rot * pos).negateAssign()
             return this
         }

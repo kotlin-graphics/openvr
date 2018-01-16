@@ -70,7 +70,7 @@ typealias glUInt_ByReference = IntByReference
 /** right-handed system
  *  +y is up
  *  +x is to the right
- *  -z is going away from you
+ *  -z is forward
  *  Distance unit is meters     */
 open class HmdMat34 : Structure {
 
@@ -523,6 +523,7 @@ open class Texture : Structure {
 
 // Handle to a shared texture (HANDLE on Windows obtained using OpenSharedResource).
 typealias SharedTextureHandle = Long
+
 val INVALID_SHARED_TEXTURE_HANDLE = 0L
 
 enum class ETrackingResult(@JvmField val i: Int) {
@@ -541,13 +542,16 @@ enum class ETrackingResult(@JvmField val i: Int) {
 }
 
 typealias DriverId = Int
+
 val driverNone = 0xFFFFFFFF.i
 
 val maxDriverDebugResponseSize = 32768
 
-/** Used to pass device IDs to API calls */
-typealias TrackedDeviceIndex_t = Int
+        /** Used to pass device IDs to API calls */
+typealias TrackedDeviceIndex = Int
+
 typealias TrackedDeviceIndex_t_ByReference = IntByReference
+
 val trackedDeviceIndex_Hmd = 0
 val maxTrackedDeviceCount = 64
 val trackedDeviceIndexOther = 0xFFFFFFFE.i
@@ -662,6 +666,7 @@ class ETrackingUniverseOrigin_ByReference(@JvmField var value: ETrackingUniverse
 
 // Refers to a single container of properties
 typealias PropertyContainerHandle = Long
+
 typealias PropertyTypeTag = Int
 
 val invalidPropertyContainer: PropertyContainerHandle = 0
@@ -684,6 +689,7 @@ val pathHandleInfoTag = 31
 val actionPropertyTag = 32
 val inputValuePropertyTag = 33
 val wildcardPropertyTag = 34
+val hapticVibrationPropertyTag = 35
 
 val openVRInternalReserved_Start: PropertyTypeTag = 1000
 val openVRInternalReserved_End: PropertyTypeTag = 10000
@@ -735,7 +741,7 @@ enum class ETrackedDeviceProperty(@JvmField val i: Int) {
     ResourceRoot_String(1035),
     RegisteredDeviceType_String(1036),
     /** input profile to use for this device in the input system. Will default to tracking system name if this isn't provided */
-    InputProfileName_String(1037),
+    InputProfilePath_String(1037),
 
     // Properties that are unique to TrackedDeviceClass_HMD
     ReportsTimeSinceVSync_Bool(2000),
@@ -796,6 +802,10 @@ enum class ETrackedDeviceProperty(@JvmField val i: Int) {
     /** placeholder icon for sensor/base if not yet detected/loaded */
     NamedIconPathTrackingReferenceDeviceOff_String(2053),
     DoNotApplyPrediction_Bool(2054),
+    CameraToHeadTransforms_Matrix34_Array(2055),
+    DriverIsDrawingControllers_Bool(2057),
+    DriverRequestsApplicationPause_Bool(2058),
+    DriverRequestsReducedRendering_Bool(2059),
 
     // Properties that are unique to TrackedDeviceClass_Controller
     AttachedDeviceId_String(3000),
@@ -858,9 +868,15 @@ enum class ETrackedDeviceProperty(@JvmField val i: Int) {
     HasDriverDirectModeComponent_Bool(6005),
     HasVirtualDisplayComponent_Bool(6006),
 
+    // Properties that are set internally based on other information provided by drivers
+    ControllerType_String(7000),
+    LegacyInputProfile_String(7001),
+
     // Vendors are free to expose private debug data in this reserved region
     VendorSpecific_Reserved_Start(10000),
-    VendorSpecific_Reserved_End(10999);
+    VendorSpecific_Reserved_End(10999),
+
+    TrackedDeviceProperty_Max(1000000);
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -932,22 +948,83 @@ open class VRTextureWithPose : Texture {
 
     /** Actual pose used to render scene textures.  */
     @JvmField
-    var mDeviceToAbsoluteTracking = HmdMat34()
+    var deviceToAbsoluteTracking = HmdMat34()
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("mDeviceToAbsoluteTracking")
+    override fun getFieldOrder(): List<String> = listOf("deviceToAbsoluteTracking")
 
-    constructor(mDeviceToAbsoluteTracking: HmdMat34) {
-        this.mDeviceToAbsoluteTracking = mDeviceToAbsoluteTracking
+    constructor(deviceToAbsoluteTracking: HmdMat34) {
+        this.deviceToAbsoluteTracking = deviceToAbsoluteTracking
+    }
+
+    constructor(peer: Pointer) : super(peer)    // TODO clean other constructor from read() when extending an openvr class
+
+    class ByReference : VRTextureWithPose(), Structure.ByReference
+    class ByValue : VRTextureWithPose(), Structure.ByValue
+}
+
+open class VRTextureDepthInfo : Structure {
+
+    @JvmField
+    var handle = Pointer(0) // See ETextureType definition above
+    @JvmField
+    var projection = HmdMat44()
+    @JvmField
+    var range = HmdVec2() // 0..1
+
+    constructor()
+
+    override fun getFieldOrder(): List<String> = listOf("handle, projection, range")
+
+    constructor(handle: Pointer, projection: HmdMat44, range: HmdVec2) {
+        this.handle = handle
+        this.projection = projection
+        this.range = range
     }
 
     constructor(peer: Pointer) : super(peer) {
         read()
     }
 
-    class ByReference : VRTextureWithPose(), Structure.ByReference
-    class ByValue : VRTextureWithPose(), Structure.ByValue
+    class ByReference : VRTextureDepthInfo(), Structure.ByReference
+    class ByValue : VRTextureDepthInfo(), Structure.ByValue
+}
+
+open class VRTextureWithDepth : Texture {
+    @JvmField
+    var depth = VRTextureDepthInfo()
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<String> = listOf("depth")
+
+    constructor(depth: VRTextureDepthInfo) {
+        this.depth = depth
+    }
+
+    constructor(peer: Pointer) : super(peer)
+
+    class ByReference : VRTextureWithDepth(), Structure.ByReference
+    class ByValue : VRTextureWithDepth(), Structure.ByValue
+}
+
+open class VRTextureWithPoseAndDepth : VRTextureWithPose {
+    @JvmField
+    var depth = VRTextureDepthInfo()
+
+    constructor() : super()
+
+    override fun getFieldOrder(): List<String> = listOf("depth")
+
+    constructor(depth: VRTextureDepthInfo) {
+        this.depth = depth
+    }
+
+    constructor(peer: Pointer) : super(peer)
+
+    class ByReference : VRTextureWithPoseAndDepth(), Structure.ByReference
+    class ByValue : VRTextureWithPoseAndDepth(), Structure.ByValue
 }
 
 /** Allows the application to control how scene textures are used by the compositor when calling Submit. */
@@ -964,8 +1041,12 @@ enum class EVRSubmitFlags(@JvmField val i: Int) {
     GlRenderBuffer(0x02),
     /** Do not use  */
     Reserved(0x04),
-    /** Set to indicate that pTexture is a pointer to a VRTextureWithPose.    */
-    TextureWithPose(0x08);
+    /** Set to indicate that pTexture is a pointer to a VRTextureWithPose.
+     *  This flag can be combined with Submit_TextureWithDepth to pass a VRTextureWithPoseAndDepth. */
+    TextureWithPose(0x08),
+    /** Set to indicate that pTexture is a pointer to a VRTextureWithDepth.
+     *  This flag can be combined with Submit_TextureWithPose to pass a VRTextureWithPoseAndDepth.  */
+    TextureWithDepth(0x10);
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -1186,8 +1267,11 @@ enum class EVREventType(@JvmField val i: Int) {
     KeyboardSectionSettingChanged(862),
     PerfSectionSettingChanged(863),
     DashboardSectionSettingChanged(864),
+    WebInterfaceSectionSettingChanged(865),
 
     StatusUpdate(900),
+
+    WebInterface_InstallDriverCompleted(950),
 
     MCImageUpdated(1000),
 
@@ -1225,6 +1309,8 @@ enum class EVREventType(@JvmField val i: Int) {
 
     MessageOverlay_Closed(1650),
     MessageOverlayCloseRequested(1651),
+    /** data is hapticVibration */
+    Input_HapticVibration(1700),
 
     // Vendors are free to expose private events in this reserved region
     VendorSpecific_Reserved_Start(10000),
@@ -1500,6 +1586,38 @@ open class VREvent_DualAnalog : Structure {
 
     class ByReference : VREvent_DualAnalog(), Structure.ByReference
     class ByValue : VREvent_DualAnalog(), Structure.ByValue
+}
+
+open class VREvent_HapticVibration : Structure {
+
+    /** property container handle of the device with the haptic component */
+    @JvmField
+    var containerHandle = 0L
+    /** Which haptic component needs to vibrate */
+    @JvmField
+    var componentHandle = 0L
+    var durationSeconds = 0f
+    var frequency = 0f
+    var amplitude = 0f
+
+    constructor()
+
+    override fun getFieldOrder(): List<String> = listOf("containerHandle", "componentHandle", "durationSeconds", "frequency", "amplitude")
+
+    constructor(containerHandle: Long, componentHandle: Long, durationSeconds: Float, frequency: Float, amplitude: Float) {
+        this.containerHandle = containerHandle
+        this.componentHandle = componentHandle
+        this.durationSeconds = durationSeconds
+        this.frequency = frequency
+        this.amplitude = amplitude
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : VREvent_HapticVibration(), Structure.ByReference
+    class ByValue : VREvent_HapticVibration(), Structure.ByValue
 }
 
 /** notification related events. Details will still change at this point */
@@ -1948,6 +2066,8 @@ open class VREvent_Data : Union {
     var property = VREvent_Property()
     @JvmField
     var dualAnalog = VREvent_DualAnalog()
+    @JvmField
+    var hapticVibration = VREvent_HapticVibration()
 
     constructor() : super()
     constructor(peer: Pointer) : super(peer) {
@@ -1957,9 +2077,9 @@ open class VREvent_Data : Union {
     class ByReference : VREvent_Data(), Structure.ByReference
     class ByValue : VREvent_Data(), Structure.ByValue
 
-    override fun getFieldOrder(): List<String> = listOf("controller", "mouse", "scroll", "process", "notification", "overlay", "status",
-            "keyboard", "ipd", "chaperone", "performanceTest", "touchPadMove", "seatedZeroPoseReset", "screenshot", "screenshotProgress",
-            "applicationLaunch", "cameraSurface", "messageOverlay", "property", "dualAnalog")
+    override fun getFieldOrder(): List<String> = listOf("controller", "mouse", "scroll", "process", "notification", "overlay",
+            "status", "keyboard", "ipd", "chaperone", "performanceTest", "touchPadMove", "seatedZeroPoseReset", "screenshot",
+            "screenshotProgress", "applicationLaunch", "cameraSurface", "messageOverlay", "property", "dualAnalog", "hapticVibration")
 }
 
 /** An event posted by the server to all running applications */
@@ -1998,6 +2118,21 @@ open class VREvent : Structure {
     class ByReference : VREvent(), Structure.ByReference
 
     class ByValue : VREvent(), Structure.ByValue
+}
+
+enum class EVRInputError {
+    None,
+    NameNotFound,
+    WrongType,
+    InvalidHandle,
+    InvalidParam,
+    NoSteam,
+    MaxCapacityReached,
+    IPCError,
+    NoActiveActionSet,
+    InvalidDevice;
+
+    val i = ordinal
 }
 
 /** The mesh to draw into the stencil (or depth) buffer to perform early stencil (or depth) kills of pixels that will never appear on the HMD.
@@ -2231,8 +2366,9 @@ open class Compositor_OverlaySettings : Structure {
     class ByValue : Compositor_OverlaySettings(), Structure.ByValue
 }
 
-/** used to refer to a single VR overlay */
+        /** used to refer to a single VR overlay */
 typealias VROverlayHandle = Long
+
 typealias VROverlayHandle_ByReference = LongByReference
 
 val overlayHandleInvalid = 0L
@@ -2262,7 +2398,10 @@ enum class EVROverlayError(@JvmField val i: Int) {
     KeyboardAlreadyInUse(26),
     NoNeighbor(27),
     TooManyMaskPrimitives(29),
-    BadMaskPrimitive(30);
+    BadMaskPrimitive(30),
+    TextureAlreadyLocked(31),
+    TextureLockCapacityReached(32),
+    TextureNotLocked(33);
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -2500,6 +2639,7 @@ enum class EVRTrackedCameraFrameType(@JvmField val i: Int) {
 }
 
 typealias TrackedCameraHandle = Long
+
 val INVALID_TRACKED_CAMERA_HANDLE = 0L
 
 open class CameraVideoStreamFrameHeader : Structure {
@@ -2551,7 +2691,9 @@ open class CameraVideoStreamFrameHeader : Structure {
 
 // Screenshot types
 typealias ScreenshotHandle = Int
+
 typealias ScreenshotHandle_ByReference = IntByReference
+
 val screenshotHandleInvalid = 0
 
 /** Frame timing data provided by direct mode drivers. */

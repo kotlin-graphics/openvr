@@ -257,7 +257,7 @@ open class IVRCompositor : Structure {
     /** Interface for accessing last set of poses returned by WaitGetPoses one at a time.
      *  Returns VRCompositorError_IndexOutOfRange if unDeviceIndex not less than openvr.lib.getK_unMaxTrackedDeviceCount otherwise VRCompositorError_None.
      *  It is okay to pass NULL for either pose if you only want one of the values. */
-    fun getLastPoseForTrackedDeviceIndex(unDeviceIndex: TrackedDeviceIndex_t, pOutputPose: TrackedDevicePose.ByReference,
+    fun getLastPoseForTrackedDeviceIndex(unDeviceIndex: TrackedDeviceIndex, pOutputPose: TrackedDevicePose.ByReference,
                                          pOutputGamePose: TrackedDevicePose.ByReference)
             = EVRCompositorError.of(GetLastPoseForTrackedDeviceIndex!!.invoke(unDeviceIndex, pOutputPose, pOutputGamePose))
 
@@ -265,7 +265,7 @@ open class IVRCompositor : Structure {
     var GetLastPoseForTrackedDeviceIndex: GetLastPoseForTrackedDeviceIndex_callback? = null
 
     interface GetLastPoseForTrackedDeviceIndex_callback : Callback {
-        fun invoke(unDeviceIndex: TrackedDeviceIndex_t, pOutputPose: TrackedDevicePose.ByReference, pOutputGamePose: TrackedDevicePose.ByReference): Int
+        fun invoke(unDeviceIndex: TrackedDeviceIndex, pOutputPose: TrackedDevicePose.ByReference, pOutputGamePose: TrackedDevicePose.ByReference): Int
     }
 
     /** Updated scene texture to display. If pBounds is NULL the entire texture will be used.  If called from an OpenGL app, consider adding a glFlush after

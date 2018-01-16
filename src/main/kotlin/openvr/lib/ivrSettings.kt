@@ -198,7 +198,9 @@ val SteamVR_RetailDemo_Bool = "retailDemo"
 val SteamVR_IpdOffset_Float = "ipdOffset"
 val SteamVR_AllowSupersampleFiltering_Bool = "allowSupersampleFiltering"
 val SteamVR_EnableLinuxVulkanAsync_Bool = "enableLinuxVulkanAsync"
+val SteamVR_AllowDisplayLockedMode_Bool = "allowDisplayLockedMode"
 val SteamVR_HaveStartedTutorialForNativeChaperoneDriver_Bool = "haveStartedTutorialForNativeChaperoneDriver"
+val SteamVR_ForceWindows32bitVRMonitor = "forceWindows32BitVRMonitor"
 
 
 //-----------------------------------------------------------------------------
@@ -206,6 +208,7 @@ val SteamVR_HaveStartedTutorialForNativeChaperoneDriver_Bool = "haveStartedTutor
 
 val Lighthouse_Section = "driver_lighthouse"
 val Lighthouse_DisableIMU_Bool = "disableimu"
+val DisableIMUExceptHMD_Bool = "disableimuexcepthmd"
 val Lighthouse_UseDisambiguation_String = "usedisambiguation"
 val Lighthouse_DisambiguationDebug_Int32 = "disambiguationdebug"
 val Lighthouse_PrimaryBasestation_Int32 = "primarybasestation"

@@ -23,45 +23,45 @@ open class IVRTrackedCamera : Structure {
 
     /** For convenience, same as tracked property request Prop_HasCamera_Bool */
     // TODO check automatic conversion *Boolean -> *Byte
-    fun hasCamera(nDeviceIndex: TrackedDeviceIndex_t, pHasCamera: BooleanByReference) = EVRTrackedCameraError.of(HasCamera!!.invoke(nDeviceIndex, pHasCamera))
+    fun hasCamera(nDeviceIndex: TrackedDeviceIndex, pHasCamera: BooleanByReference) = EVRTrackedCameraError.of(HasCamera!!.invoke(nDeviceIndex, pHasCamera))
 
     @JvmField var HasCamera: HasCamera_callback? = null
 
     interface HasCamera_callback : Callback {
-        fun invoke(nDeviceIndex: TrackedDeviceIndex_t, pHasCamera: ByteByReference): Int
+        fun invoke(nDeviceIndex: TrackedDeviceIndex, pHasCamera: ByteByReference): Int
     }
 
     /** Gets size of the image frame. */
-    fun getCameraFrameSize(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: EVRTrackedCameraFrameType, pnWidth: IntByReference, pnHeight: IntByReference,
+    fun getCameraFrameSize(nDeviceIndex: TrackedDeviceIndex, eFrameType: EVRTrackedCameraFrameType, pnWidth: IntByReference, pnHeight: IntByReference,
                            pnFrameBufferSize: IntByReference)
             = EVRTrackedCameraError.of(GetCameraFrameSize!!.invoke(nDeviceIndex, eFrameType.i, pnWidth, pnHeight, pnFrameBufferSize))
 
     @JvmField var GetCameraFrameSize: GetCameraFrameSize_callback? = null
 
     interface GetCameraFrameSize_callback : Callback {
-        fun invoke(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: Int, pnWidth: IntByReference, pnHeight: IntByReference, pnFrameBufferSize: IntByReference): Int
+        fun invoke(nDeviceIndex: TrackedDeviceIndex, eFrameType: Int, pnWidth: IntByReference, pnHeight: IntByReference, pnFrameBufferSize: IntByReference): Int
     }
 
 
-    fun GetCameraIntrinsics(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: EVRTrackedCameraFrameType, pFocalLength: HmdVec2.ByReference,
+    fun GetCameraIntrinsics(nDeviceIndex: TrackedDeviceIndex, eFrameType: EVRTrackedCameraFrameType, pFocalLength: HmdVec2.ByReference,
                             pCenter: HmdVec2.ByReference)
             = EVRTrackedCameraError.of(GetCameraIntrinsics!!.invoke(nDeviceIndex, eFrameType.i, pFocalLength, pCenter))
 
     @JvmField var GetCameraIntrinsics: GetCameraIntrinsics_callback? = null
 
     interface GetCameraIntrinsics_callback : Callback {
-        fun invoke(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: Int, pFocalLength: HmdVec2.ByReference, pCenter: HmdVec2.ByReference): Int
+        fun invoke(nDeviceIndex: TrackedDeviceIndex, eFrameType: Int, pFocalLength: HmdVec2.ByReference, pCenter: HmdVec2.ByReference): Int
     }
 
 
-    fun getCameraProjection(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: EVRTrackedCameraFrameType, flZNear: Float, flZFar: Float,
+    fun getCameraProjection(nDeviceIndex: TrackedDeviceIndex, eFrameType: EVRTrackedCameraFrameType, flZNear: Float, flZFar: Float,
                             pProjection: HmdMat44.ByReference)
             = EVRTrackedCameraError.of(GetCameraProjection!!.invoke(nDeviceIndex, eFrameType.i, flZNear, flZFar, pProjection))
 
     @JvmField var GetCameraProjection: GetCameraProjection_callback? = null
 
     interface GetCameraProjection_callback : Callback {
-        fun invoke(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: Int, flZNear: Float, flZFar: Float, pProjection: HmdMat44.ByReference): Int
+        fun invoke(nDeviceIndex: TrackedDeviceIndex, eFrameType: Int, flZNear: Float, flZFar: Float, pProjection: HmdMat44.ByReference): Int
     }
 
     /** Acquiring streaming service permits video streaming for the caller. Releasing hints the system that video services do not need to be maintained for this
@@ -69,13 +69,13 @@ open class IVRTrackedCamera : Structure {
      *  If the camera has not already been activated, a one time spin up may incur some auto exposure as well as initial streaming frame delays.
      *  The camera should be considered a global resource accessible for shared consumption but not exclusive to any caller.
      *  The camera may go inactive due to lack of active consumers or headset idleness. */
-    fun acquireVideoStreamingService(nDeviceIndex: TrackedDeviceIndex_t, pHandle: TrackedCameraHandle)
+    fun acquireVideoStreamingService(nDeviceIndex: TrackedDeviceIndex, pHandle: TrackedCameraHandle)
             = EVRTrackedCameraError.of(AcquireVideoStreamingService!!.invoke(nDeviceIndex, pHandle))
 
     @JvmField var AcquireVideoStreamingService: AcquireVideoStreamingService_callback? = null
 
     interface AcquireVideoStreamingService_callback : Callback {
-        fun invoke(nDeviceIndex: TrackedDeviceIndex_t, pHandle: TrackedCameraHandle): Int
+        fun invoke(nDeviceIndex: TrackedDeviceIndex, pHandle: TrackedCameraHandle): Int
     }
 
     fun releaseVideoStreamingService(hTrackedCamera: TrackedCameraHandle) = EVRTrackedCameraError.of(ReleaseVideoStreamingService!!.invoke(hTrackedCamera))
@@ -103,14 +103,14 @@ open class IVRTrackedCamera : Structure {
     }
 
     /** Gets size of the image frame. */
-    fun getVideoStreamTextureSize(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: EVRTrackedCameraFrameType, pTextureBounds: VRTextureBounds.ByReference,
+    fun getVideoStreamTextureSize(nDeviceIndex: TrackedDeviceIndex, eFrameType: EVRTrackedCameraFrameType, pTextureBounds: VRTextureBounds.ByReference,
                                   pnWidth: IntByReference, pnHeight: IntByReference)
             = EVRTrackedCameraError.of(GetVideoStreamTextureSize!!.invoke(nDeviceIndex, eFrameType.i, pTextureBounds, pnWidth, pnHeight))
 
     @JvmField var GetVideoStreamTextureSize: GetVideoStreamTextureSize_callback? = null
 
     interface GetVideoStreamTextureSize_callback : Callback {
-        fun invoke(nDeviceIndex: TrackedDeviceIndex_t, eFrameType: Int, pTextureBounds: VRTextureBounds.ByReference, pnWidth: IntByReference,
+        fun invoke(nDeviceIndex: TrackedDeviceIndex, eFrameType: Int, pTextureBounds: VRTextureBounds.ByReference, pnWidth: IntByReference,
                    pnHeight: IntByReference): Int
     }
 

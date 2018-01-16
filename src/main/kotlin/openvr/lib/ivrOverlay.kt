@@ -745,7 +745,7 @@ open class IVROverlay : Structure {
     }
 
     /** Sets the transform to relative to the transform of the specified tracked device. */
-    fun setOverlayTransformTrackedDeviceRelative(ulOverlayHandle: VROverlayHandle, unTrackedDevice: TrackedDeviceIndex_t,
+    fun setOverlayTransformTrackedDeviceRelative(ulOverlayHandle: VROverlayHandle, unTrackedDevice: TrackedDeviceIndex,
                                                  pmatTrackedDeviceToOverlayTransform: HmdMat34.ByReference)
             = EVROverlayError.of(SetOverlayTransformTrackedDeviceRelative!!.invoke(ulOverlayHandle, unTrackedDevice, pmatTrackedDeviceToOverlayTransform))
 
@@ -753,7 +753,7 @@ open class IVROverlay : Structure {
     var SetOverlayTransformTrackedDeviceRelative: SetOverlayTransformTrackedDeviceRelative_callback? = null
 
     interface SetOverlayTransformTrackedDeviceRelative_callback : Callback {
-        fun invoke(ulOverlayHandle: VROverlayHandle, unTrackedDevice: TrackedDeviceIndex_t, pmatTrackedDeviceToOverlayTransform: HmdMat34.ByReference): Int
+        fun invoke(ulOverlayHandle: VROverlayHandle, unTrackedDevice: TrackedDeviceIndex, pmatTrackedDeviceToOverlayTransform: HmdMat34.ByReference): Int
     }
 
     /** Gets the transform if it is relative to a tracked device. Returns an error if the transform is some other value. */
@@ -771,14 +771,14 @@ open class IVROverlay : Structure {
 
     /** Sets the transform to draw the overlay on a rendermodel component mesh instead of a quad. This will only draw when the system is drawing the device.
      *  Overlays with this transform value cannot receive mouse events. */
-    fun setOverlayTransformTrackedDeviceComponent(ulOverlayHandle: VROverlayHandle, unDeviceIndex: TrackedDeviceIndex_t, pchComponentName: String)
+    fun setOverlayTransformTrackedDeviceComponent(ulOverlayHandle: VROverlayHandle, unDeviceIndex: TrackedDeviceIndex, pchComponentName: String)
             = EVROverlayError.of(SetOverlayTransformTrackedDeviceComponent!!.invoke(ulOverlayHandle, unDeviceIndex, pchComponentName))
 
     @JvmField
     var SetOverlayTransformTrackedDeviceComponent: SetOverlayTransformTrackedDeviceComponent_callback? = null
 
     interface SetOverlayTransformTrackedDeviceComponent_callback : Callback {
-        fun invoke(ulOverlayHandle: VROverlayHandle, unDeviceIndex: TrackedDeviceIndex_t, pchComponentName: String): Int
+        fun invoke(ulOverlayHandle: VROverlayHandle, unDeviceIndex: TrackedDeviceIndex, pchComponentName: String): Int
     }
 
     /** Gets the transform information when the overlay is rendering on a component. */
@@ -939,21 +939,6 @@ open class IVROverlay : Structure {
     interface ComputeOverlayIntersection_callback : Callback {
         fun invoke(ulOverlayHandle: VROverlayHandle, pParams: VROverlayIntersectionParams_t.ByReference, pResults: VROverlayIntersectionResults_t.ByReference)
                 : Boolean
-    }
-
-    /** Processes mouse input from the specified controller as though it were a mouse pointed at a compositor overlay with the specified settings.
-     *  The controller is treated like a laser pointer on the -z axis. The point where the laser pointer would intersect with the overlay is the mouse position,
-     *  the trigger is left mouse, and the track pad is right mouse.
-     *
-     *  Return true if the controller is pointed at the overlay and an event was generated. */
-    fun handleControllerOverlayInteractionAsMouse(ulOverlayHandle: VROverlayHandle, unControllerDeviceIndex: TrackedDeviceIndex_t)
-            = HandleControllerOverlayInteractionAsMouse!!.invoke(ulOverlayHandle, unControllerDeviceIndex)
-
-    @JvmField
-    var HandleControllerOverlayInteractionAsMouse: HandleControllerOverlayInteractionAsMouse_callback? = null
-
-    interface HandleControllerOverlayInteractionAsMouse_callback : Callback {
-        fun invoke(ulOverlayHandle: VROverlayHandle, unControllerDeviceIndex: TrackedDeviceIndex_t): Boolean
     }
 
     /** Returns true if the specified overlay is the hover target. An overlay is the hover target when it is the last overlay "moused over" by the virtual mouse
@@ -1208,7 +1193,7 @@ open class IVROverlay : Structure {
     var GetPrimaryDashboardDevice: GetPrimaryDashboardDevice_callback? = null
 
     interface GetPrimaryDashboardDevice_callback : Callback {
-        fun invoke(): TrackedDeviceIndex_t
+        fun invoke(): TrackedDeviceIndex
     }
 
     // ---------------------------------------------
@@ -1360,14 +1345,14 @@ open class IVROverlay : Structure {
             "GetOverlayTransformOverlayRelative", "SetOverlayTransformOverlayRelative", "ShowOverlay", "HideOverlay",
             "IsOverlayVisible", "GetTransformForOverlayCoordinates", "PollNextOverlayEvent", "GetOverlayInputMethod",
             "SetOverlayInputMethod", "GetOverlayMouseScale", "SetOverlayMouseScale", "ComputeOverlayIntersection",
-            "HandleControllerOverlayInteractionAsMouse", "IsHoverTargetOverlay", "GetGamepadFocusOverlay", "SetGamepadFocusOverlay",
-            "SetOverlayNeighbor", "MoveGamepadFocusToNeighbor", "SetOverlayDualAnalogTransform", "GetOverlayDualAnalogTransform",
-            "SetOverlayTexture", "ClearOverlayTexture", "SetOverlayRaw", "SetOverlayFromFile", "GetOverlayTexture",
-            "ReleaseNativeOverlayHandle", "GetOverlayTextureSize", "CreateDashboardOverlay", "IsDashboardVisible",
-            "IsActiveDashboardOverlay", "SetDashboardOverlaySceneProcess", "GetDashboardOverlaySceneProcess", "ShowDashboard",
-            "GetPrimaryDashboardDevice", "ShowKeyboard", "ShowKeyboardForOverlay", "GetKeyboardText", "HideKeyboard",
-            "SetKeyboardTransformAbsolute", "SetKeyboardPositionForOverlay", "SetOverlayIntersectionMask", "GetOverlayFlags",
-            "ShowMessageOverlay", "CloseMessageOverlay")
+            "IsHoverTargetOverlay", "GetGamepadFocusOverlay", "SetGamepadFocusOverlay", "SetOverlayNeighbor",
+            "MoveGamepadFocusToNeighbor", "SetOverlayDualAnalogTransform", "GetOverlayDualAnalogTransform", "SetOverlayTexture",
+            "ClearOverlayTexture", "SetOverlayRaw", "SetOverlayFromFile", "GetOverlayTexture", "ReleaseNativeOverlayHandle",
+            "GetOverlayTextureSize", "CreateDashboardOverlay", "IsDashboardVisible", "IsActiveDashboardOverlay",
+            "SetDashboardOverlaySceneProcess", "GetDashboardOverlaySceneProcess", "ShowDashboard", "GetPrimaryDashboardDevice",
+            "ShowKeyboard", "ShowKeyboardForOverlay", "GetKeyboardText", "HideKeyboard", "SetKeyboardTransformAbsolute",
+            "SetKeyboardPositionForOverlay", "SetOverlayIntersectionMask", "GetOverlayFlags", "ShowMessageOverlay",
+            "CloseMessageOverlay")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -1377,4 +1362,4 @@ open class IVROverlay : Structure {
     class ByValue : IVROverlay(), Structure.ByValue
 }
 
-val IVROverlay_Version = "IVROverlay_017"
+val IVROverlay_Version = "IVROverlay_018"

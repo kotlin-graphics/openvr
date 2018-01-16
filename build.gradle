@@ -7,7 +7,7 @@ group = 'com.github.kotlin-graphics'
 
 buildscript {
 
-    ext.kotlinVersion = '1.2.0'
+    ext.kotlinVersion = '1.2.20-eap-71'
 
     repositories {
         jcenter()   // shadow
@@ -18,7 +18,7 @@ buildscript {
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
     }
 }
 
@@ -30,7 +30,7 @@ dependencies {
 
     testCompile 'io.kotlintest:kotlintest:2.0.7'
 
-    compile "com.github.kotlin-graphics:glm:70b4eb23b05153de66137bb3dba0446eb77654f0"
+    compile "com.github.kotlin-graphics:glm:513efb138ce49ef1a6b0a87810c47c7548e7d1f6"
 
     compile "net.java.dev.jna:jna:4.5.0"
 }
@@ -42,15 +42,17 @@ repositories {
     maven { url 'https://jitpack.io' }
 }
 
-task packageSources(type: Jar, dependsOn: 'classes') {
-    from sourceSets.main.allSource
+task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
+    from sourceSets.main.allSource
 }
 
-//jar {
-//    /** This line of code recursively collects and copies all of a project's files and adds them to the JAR itself.
-//        One can extend this task, to skip certain files or particular types at will */
-//    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-//}
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
 
-artifacts { archives packageSources }
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
