@@ -2750,7 +2750,12 @@ open class DriverDirectMode_FrameTiming : Structure {
  *  startupInfo is reserved for future use.    */
 fun vrInit(error: EVRInitError_ByReference?, applicationType: EVRApplicationType, startupInfo: String? = null): IVRSystem? {
 
-    Native.register("openvr_api") // TODO check
+    try{
+        Native.register("openvr_api")
+    } catch (exc: Exception) {
+        println(exc)
+        println(exc.message)
+    }
 
     var pVRSystem: IVRSystem? = null
 
