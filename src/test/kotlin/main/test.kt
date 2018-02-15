@@ -17,7 +17,7 @@ class Test : StringSpec() {
 
         "simple test" {
 
-            if(false) {
+            if(true) {
 
                 val error = EVRInitError_ByReference()
 

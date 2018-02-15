@@ -413,7 +413,7 @@ open class IVRSystem : Structure {
      *  If bufferSize is greater than the returned size and buffer is non-NULL, buffer is filled with the contents of array of properties. */
     fun getArrayTrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: ETrackedDeviceProperty, propType: PropertyTypeTag,
                                       buffer: Pointer, bufferSize: Int,
-                                      error: ETrackedPropertyError_ByReference = ETrackedPropertyError_ByReference(ETrackedPropertyError.Success) ) =
+                                      error: ETrackedPropertyError_ByReference = ETrackedPropertyError_ByReference(ETrackedPropertyError.Success)) =
             GetArrayTrackedDeviceProperty!!.invoke(deviceIndex, prop.i, propType, buffer, bufferSize, error)
 
     @JvmField

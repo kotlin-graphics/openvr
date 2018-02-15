@@ -1596,8 +1596,11 @@ open class VREvent_HapticVibration : Structure {
     /** Which haptic component needs to vibrate */
     @JvmField
     var componentHandle = 0L
+    @JvmField
     var durationSeconds = 0f
+    @JvmField
     var frequency = 0f
+    @JvmField
     var amplitude = 0f
 
     constructor()
