@@ -547,7 +547,7 @@ val driverNone = 0xFFFFFFFF.i
 
 val maxDriverDebugResponseSize = 32768
 
-        /** Used to pass device IDs to API calls */
+/** Used to pass device IDs to API calls */
 typealias TrackedDeviceIndex = Int
 
 typealias TrackedDeviceIndex_ByReference = IntByReference
@@ -595,48 +595,50 @@ enum class ETrackedControllerRole(@JvmField val i: Int) {
 open class TrackedDevicePose : Structure {
 
     @JvmField
-    var mDeviceToAbsoluteTracking = HmdMat34()
+    var deviceToAbsoluteTracking = HmdMat34()
+    /** velocity in tracker space in m/s    */
     @JvmField
-    var vVelocity = HmdVec3()          // velocity in tracker space in m/s
+    var velocity = HmdVec3()
+    /** angular velocity in radians/s (?)   */
     @JvmField
-    var vAngularVelocity = HmdVec3()   // angular velocity in radians/s (?)
+    var angularVelocity = HmdVec3()
     @JvmField
-    var eTrackingResult_internal = 0
-    var eTrackingResult
+    var eTrackingResult = 0
+    var trackingResult
         set(value) {
-            eTrackingResult_internal = value.i
+            eTrackingResult = value.i
         }
-        get() = ETrackingResult.of(eTrackingResult_internal)
+        get() = ETrackingResult.of(eTrackingResult)
     @JvmField
-    var bPoseIsValid_internal = 0.b
-    var bPoseIsValid
+    var bPoseIsValid = 0.b
+    var poseIsValid
         set(value) {
-            bPoseIsValid_internal = if (value) 1.b else 0.b
+            bPoseIsValid = if (value) 1.b else 0.b
         }
-        get() = bPoseIsValid_internal == 1.b
+        get() = bPoseIsValid == 1.b
     /** This indicates that there is a device connected for this spot in the pose array.
      * It could go from true to false if the user unplugs the device.     */
     @JvmField
-    var bDeviceIsConnected_internal = 0.b
-    var bDeviceIsConnected
+    var bDeviceIsConnected = 0.b
+    var deviceIsConnected
         set(value) {
-            bDeviceIsConnected_internal = if (value) 1.b else 0.b
+            bDeviceIsConnected = if (value) 1.b else 0.b
         }
-        get() = bDeviceIsConnected_internal == 1.b
+        get() = bDeviceIsConnected == 1.b
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("mDeviceToAbsoluteTracking", "vVelocity", "vAngularVelocity",
-            "eTrackingResult_internal", "bPoseIsValid_internal", "bDeviceIsConnected_internal")
+    override fun getFieldOrder(): List<String> = listOf("deviceToAbsoluteTracking", "velocity", "angularVelocity",
+            "eTrackingResult", "bPoseIsValid", "bDeviceIsConnected")
 
     constructor(mDeviceToAbsoluteTracking: HmdMat34, vVelocity: HmdVec3, vAngularVelocity: HmdVec3,
                 eTrackingResult: ETrackingResult, bPoseIsValid: Boolean, bDeviceIsConnected: Boolean) {
-        this.mDeviceToAbsoluteTracking = mDeviceToAbsoluteTracking
-        this.vVelocity = vVelocity
-        this.vAngularVelocity = vAngularVelocity
-        this.eTrackingResult_internal = eTrackingResult.i
-        this.bPoseIsValid_internal = if (bPoseIsValid) 1.b else 0.b
-        this.bDeviceIsConnected_internal = if (bDeviceIsConnected) 1.b else 0.b
+        this.deviceToAbsoluteTracking = mDeviceToAbsoluteTracking
+        this.velocity = vVelocity
+        this.angularVelocity = vAngularVelocity
+        this.eTrackingResult = eTrackingResult.i
+        this.bPoseIsValid = if (bPoseIsValid) 1.b else 0.b
+        this.bDeviceIsConnected = if (bDeviceIsConnected) 1.b else 0.b
     }
 
     constructor(peer: Pointer) : super(peer) {
@@ -2369,7 +2371,7 @@ open class Compositor_OverlaySettings : Structure {
     class ByValue : Compositor_OverlaySettings(), Structure.ByValue
 }
 
-        /** used to refer to a single VR overlay */
+/** used to refer to a single VR overlay */
 typealias VROverlayHandle = Long
 
 typealias VROverlayHandle_ByReference = LongByReference
@@ -2750,7 +2752,7 @@ open class DriverDirectMode_FrameTiming : Structure {
  *  startupInfo is reserved for future use.    */
 fun vrInit(error: EVRInitError_ByReference?, applicationType: EVRApplicationType, startupInfo: String? = null): IVRSystem? {
 
-    try{
+    try {
         Native.register("openvr_api")
     } catch (exc: Exception) {
         println(exc)

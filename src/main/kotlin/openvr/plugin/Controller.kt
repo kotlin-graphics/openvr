@@ -38,18 +38,18 @@ object Controller {
 
         var left = true
 
-        val connected get() = update().run { _pose.bDeviceIsConnected }
-        val hasTracking get() = update().run { _pose.bPoseIsValid }
-        val outOfRange get() = update().run { _pose.eTrackingResult == ETrackingResult.Running_OutOfRange || _pose.eTrackingResult == ETrackingResult.Calibrating_OutOfRange }
-        val calibrating get() = update().run { _pose.eTrackingResult == ETrackingResult.Calibrating_InProgress || _pose.eTrackingResult == ETrackingResult.Calibrating_OutOfRange }
-        val uninitialized get() = update().run { _pose.eTrackingResult == ETrackingResult.Uninitialized }
+        val connected get() = update().run { _pose.deviceIsConnected }
+        val hasTracking get() = update().run { _pose.poseIsValid }
+        val outOfRange get() = update().run { _pose.trackingResult == ETrackingResult.Running_OutOfRange || _pose.trackingResult == ETrackingResult.Calibrating_OutOfRange }
+        val calibrating get() = update().run { _pose.trackingResult == ETrackingResult.Calibrating_InProgress || _pose.trackingResult == ETrackingResult.Calibrating_OutOfRange }
+        val uninitialized get() = update().run { _pose.trackingResult == ETrackingResult.Uninitialized }
 
         /*  These values are only accurate for the last controller state change (e.g. trigger release),
             and by definition, will always lag behind the predicted visual poses that drive SteamVR_TrackedObjects
             since they are sync'd to the input timestamp that caused them to update.    */
-        val transform get() = update().run { _transform put _pose.mDeviceToAbsoluteTracking }
-        val velocity get() = update().run { _velocity.put(_pose.vVelocity.x, _pose.vVelocity.y, -_pose.vVelocity.z) }
-        val angularVelocity get() = update().run { _angularVelocity.put(-_pose.vAngularVelocity.x, -_pose.vAngularVelocity.y, _pose.vAngularVelocity.z) }
+        val transform get() = update().run { _transform put _pose.deviceToAbsoluteTracking }
+        val velocity get() = update().run { _velocity.put(_pose.velocity.x, _pose.velocity.y, -_pose.velocity.z) }
+        val angularVelocity get() = update().run { _angularVelocity.put(-_pose.angularVelocity.x, -_pose.angularVelocity.y, _pose.angularVelocity.z) }
         val state get() = update().run { _state }
         val prevState get() = update().run { _prevState }
         val pose get() = update().run { _pose }

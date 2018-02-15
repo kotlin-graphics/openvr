@@ -196,7 +196,7 @@ open class IVRSystem : Structure {
      *  This is roughly analogous to the inverse of the view matrix in most applications, though many games will need to do some
      *  additional rotation or translation on top of the rotation and translation provided by the head pose.
      *
-     *  For devices where bPoseIsValid is true the application can use the pose to position the device in question. The provided array
+     *  For devices where poseIsValid is true the application can use the pose to position the device in question. The provided array
      *  can be any size up to openvr.lib.getK_unMaxTrackedDeviceCount.
      *
      *  Seated experiences should call this method with TrackingUniverseSeated and receive poses relative to the seated zero pose.
