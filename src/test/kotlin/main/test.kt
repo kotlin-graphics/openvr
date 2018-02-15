@@ -17,7 +17,7 @@ class Test : StringSpec() {
 
         "simple test" {
             println(System.getProperty("TRAVIS"))
-            if (System.getProperty("TRAVIS") != "true")
+            if (System.getProperty("TRAVIS") != "TRUE")
                 simpleTest()
         }
     }

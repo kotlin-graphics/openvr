@@ -181,7 +181,7 @@ object Controller {
             if (i == relativeTo || system.getTrackedDeviceClass(i) != deviceClass) continue
             if (!devices[i].connected) continue
             if (relation == DeviceRelation.First) return i
-            var score = 0f
+            var score: Float
             val pos = invXform * devices[i].transform.pos
             score = when (relation) {
                 DeviceRelation.FarthestRight -> pos.x

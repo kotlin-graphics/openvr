@@ -6,6 +6,7 @@ import com.sun.jna.Structure
 import com.sun.jna.ptr.ByteByReference
 import com.sun.jna.ptr.FloatByReference
 import com.sun.jna.ptr.IntByReference
+import glm_.vec2.Vec2
 import java.util.*
 
 // ivrchaperonesetup.h ============================================================================================================================================
@@ -35,7 +36,7 @@ enum class EChaperoneImportFlags(@JvmField val i: Int) {
 open class IVRChaperoneSetup : Structure {
 
     /** Saves the current working copy to disk */
-    fun commitWorkingCopy(configFile: EChaperoneConfigFile) = CommitWorkingCopy!!.invoke(configFile.i)
+    infix fun commitWorkingCopy(configFile: EChaperoneConfigFile) = CommitWorkingCopy!!.invoke(configFile.i)
 
     @JvmField var CommitWorkingCopy: CommitWorkingCopy_callback? = null
 
@@ -56,7 +57,11 @@ open class IVRChaperoneSetup : Structure {
 
     /** Returns the width and depth of the Play Area (formerly named Soft Bounds) in X and Z from the working copy.
      *  Tracking space center (0,0,0) is the center of the Play Area. */
-    fun getWorkingPlayAreaSize(pSizeX: FloatByReference, pSizeZ: FloatByReference) = GetWorkingPlayAreaSize!!.invoke(pSizeX, pSizeZ)
+    infix fun getWorkingPlayAreaSize(area: Vec2): Boolean {
+        val sizeX = FloatByReference()
+        val sizeZ = FloatByReference ()
+        return GetWorkingPlayAreaSize!!.invoke(sizeX, sizeZ).also { area.put(sizeX.value, sizeZ.value) }
+    }
 
     @JvmField var GetWorkingPlayAreaSize: GetWorkingPlayAreaSize_callback? = null
 
@@ -70,7 +75,7 @@ open class IVRChaperoneSetup : Structure {
      *  It's a rectangle.
      *  2 sides are parallel to the X axis and 2 sides are parallel to the Z axis.
      *  Height of every corner is 0Y (on the floor). **/
-    fun getWorkingPlayAreaRect(rect: HmdQuad.ByReference) = GetWorkingPlayAreaRect!!.invoke(rect)
+    infix fun getWorkingPlayAreaRect(rect: HmdQuad.ByReference) = GetWorkingPlayAreaRect!!.invoke(rect)
 
     @JvmField var GetWorkingPlayAreaRect: GetWorkingPlayAreaRect_callback? = null
 
@@ -80,8 +85,7 @@ open class IVRChaperoneSetup : Structure {
 
     /** Returns the number of Quads if the buffer points to null. Otherwise it returns Quads
      * into the buffer up to the max specified from the working copy. */
-    fun getWorkingCollisionBoundsInfo(pQuadsBuffer: HmdQuad.ByReference, punQuadsCount: IntByReference)
-            = GetWorkingCollisionBoundsInfo!!.invoke(pQuadsBuffer, punQuadsCount)
+    fun getWorkingCollisionBoundsInfo(quadsBuffer: HmdQuad.ByReference, quadsCount: IntByReference) = GetWorkingCollisionBoundsInfo!!.invoke(quadsBuffer, quadsCount)
 
     @JvmField var GetWorkingCollisionBoundsInfo: GetWorkingCollisionBoundsInfo_callback? = null
 
@@ -90,8 +94,7 @@ open class IVRChaperoneSetup : Structure {
     }
 
     /** Returns the number of Quads if the buffer points to null. Otherwise it returns Quads into the buffer up to the max specified. */
-    fun getLiveCollisionBoundsInfo(pQuadsBuffer: HmdQuad.ByReference, punQuadsCount: IntByReference)
-            = GetLiveCollisionBoundsInfo!!.invoke(pQuadsBuffer, punQuadsCount)
+    fun getLiveCollisionBoundsInfo(quadsBuffer: HmdQuad.ByReference, quadsCount: IntByReference) = GetLiveCollisionBoundsInfo!!.invoke(quadsBuffer, quadsCount)
 
     @JvmField var GetLiveCollisionBoundsInfo: GetLiveCollisionBoundsInfo_callback? = null
 
@@ -100,8 +103,7 @@ open class IVRChaperoneSetup : Structure {
     }
 
     /** Returns the preferred seated position from the working copy. */
-    fun getWorkingSeatedZeroPoseToRawTrackingPose(pmatSeatedZeroPoseToRawTrackingPose: HmdMat34.ByReference)
-            = GetWorkingSeatedZeroPoseToRawTrackingPose!!.invoke(pmatSeatedZeroPoseToRawTrackingPose)
+    infix fun getWorkingSeatedZeroPoseToRawTrackingPose(matSeatedZeroPoseToRawTrackingPose: HmdMat34.ByReference) = GetWorkingSeatedZeroPoseToRawTrackingPose!!.invoke(matSeatedZeroPoseToRawTrackingPose)
 
     @JvmField var GetWorkingSeatedZeroPoseToRawTrackingPose: GetWorkingSeatedZeroPoseToRawTrackingPose_callback? = null
 
@@ -110,8 +112,7 @@ open class IVRChaperoneSetup : Structure {
     }
 
     /** Returns the standing origin from the working copy. */
-    fun getWorkingStandingZeroPoseToRawTrackingPose(pmatStandingZeroPoseToRawTrackingPose: HmdMat34.ByReference)
-            = GetWorkingStandingZeroPoseToRawTrackingPose!!.invoke(pmatStandingZeroPoseToRawTrackingPose)
+    infix fun getWorkingStandingZeroPoseToRawTrackingPose(matStandingZeroPoseToRawTrackingPose: HmdMat34.ByReference) = GetWorkingStandingZeroPoseToRawTrackingPose!!.invoke(matStandingZeroPoseToRawTrackingPose)
 
     @JvmField var GetWorkingStandingZeroPoseToRawTrackingPose: GetWorkingStandingZeroPoseToRawTrackingPose_callback? = null
 
