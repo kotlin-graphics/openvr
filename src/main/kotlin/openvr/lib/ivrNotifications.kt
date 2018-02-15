@@ -46,7 +46,7 @@ enum class EVRNotificationType(@JvmField val i: Int) {
      *  They are used for things like phone calls and alarms that require user interaction. */
     Persistent(1),
 
-    /** System notifications are shown no matter what. It is expected), that the ulUserValue is used as ID.
+    /** System notifications are shown no matter what. It is expected), that the ::userValue is used as ID.
      *  If there is already a system notification in the queue with that ID it is not accepted into the queue to
      *  prevent spamming with system notification */
     Transient_SystemWithUserValue(2);

@@ -1495,41 +1495,41 @@ open class VREvent_TouchPadMove : Structure {
 
     /** true if the users finger is detected on the touch pad */
     @JvmField
-    var bFingerDown_internal = 0.b
-    var bFingerDown
+    var bFingerDown = 0.b
+    var fingerDown
         set(value) {
-            bFingerDown_internal = if (value) 1.b else 0.b
+            bFingerDown = if (value) 1.b else 0.b
         }
-        get() = bFingerDown_internal == 1.b
+        get() = bFingerDown == 1.b
 
     /** How long the finger has been down in seconds */
     @JvmField
-    var flSecondsFingerDown = 0f
+    var secondsFingerDown = 0f
 
     /** These values indicate the starting finger position (so you can do some basic swipe stuff) */
     @JvmField
-    var fValueXFirst = 0f
+    var valueXFirst = 0f
     @JvmField
-    var fValueYFirst = 0f
+    var valueYFirst = 0f
 
     /** This is the raw sampled coordinate without deadzoning */
     @JvmField
-    var fValueXRaw = 0f
+    var valueXRaw = 0f
     @JvmField
-    var fValueYRaw = 0f
+    var valueYRaw = 0f
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("bFingerDown_internal", "flSecondsFingerDown", "fValueXFirst", "fValueYFirst",
-            "fValueXRaw", "fValueYRaw")
+    override fun getFieldOrder(): List<String> = listOf("bFingerDown", "secondsFingerDown", "valueXFirst", "valueYFirst",
+            "valueXRaw", "valueYRaw")
 
-    constructor(bFingerDown: Boolean, flSecondsFingerDown: Float, fValueXFirst: Float, fValueYFirst: Float, fValueXRaw: Float, fValueYRaw: Float) {
-        this.bFingerDown_internal = if (bFingerDown) 1.b else 0.b
-        this.flSecondsFingerDown = flSecondsFingerDown
-        this.fValueXFirst = fValueXFirst
-        this.fValueYFirst = fValueYFirst
-        this.fValueXRaw = fValueXRaw
-        this.fValueYRaw = fValueYRaw
+    constructor(fingerDown: Boolean, secondsFingerDown: Float, valueXFirst: Float, valueYFirst: Float, valueXRaw: Float, valueYRaw: Float) {
+        this.bFingerDown = if (fingerDown) 1.b else 0.b
+        this.secondsFingerDown = secondsFingerDown
+        this.valueXFirst = valueXFirst
+        this.valueYFirst = valueYFirst
+        this.valueXRaw = valueXRaw
+        this.valueYRaw = valueYRaw
     }
 
     constructor(peer: Pointer) : super(peer) {
@@ -1565,16 +1565,16 @@ open class VREvent_DualAnalog : Structure {
     var transformedY = 0f
 
     @JvmField
-    var which_internal = 0
+    var _which = 0
     var which
-        get() = EDualAnalogWhich.of(which_internal)
+        get() = EDualAnalogWhich.of(_which)
         set(value) {
-            which_internal = value.i
+            _which = value.i
         }
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("x", "y", "transformedX", "transformedY", "which_internal")
+    override fun getFieldOrder(): List<String> = listOf("x", "y", "transformedX", "transformedY", "_which")
 
     constructor(x: Float, y: Float, transformedX: Float, transformedY: Float, which: EDualAnalogWhich) {
         this.x = x
@@ -1631,16 +1631,16 @@ open class VREvent_HapticVibration : Structure {
 open class VREvent_Notification : Structure {
 
     @JvmField
-    var ulUserValue = 0L
+    var userValue = 0L
     @JvmField
     var notificationId = 0
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("ulUserValue", "notificationId")
+    override fun getFieldOrder(): List<String> = listOf("userValue", "notificationId")
 
-    constructor(ulUserValue: Long, notificationId: Int) {
-        this.ulUserValue = ulUserValue
+    constructor(userValue: Long, notificationId: Int) {
+        this.userValue = userValue
         this.notificationId = notificationId
     }
 
@@ -1660,21 +1660,21 @@ open class VREvent_Process : Structure {
     @JvmField
     var oldPid = 0
     @JvmField
-    var bForced_internal = 0.b
-    var bForced
+    var bForced = 0.b
+    var forced
         set(value) {
-            bForced_internal = if (value) 1.b else 0.b
+            bForced = if (value) 1.b else 0.b
         }
-        get() = bForced_internal == 1.b
+        get() = bForced == 1.b
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("pid", "oldPid", "bForced_internal")
+    override fun getFieldOrder(): List<String> = listOf("pid", "oldPid", "bForced")
 
-    constructor(pid: Int, oldPid: Int, bForced: Boolean) {
+    constructor(pid: Int, oldPid: Int, forced: Boolean) {
         this.pid = pid
         this.oldPid = oldPid
-        this.bForced_internal = if (bForced) 1.b else 0.b
+        this.bForced = if (forced) 1.b else 0.b
     }
 
     constructor(peer: Pointer) : super(peer) {
@@ -1710,20 +1710,21 @@ open class VREvent_Overlay : Structure {
 /** Used for a few events about overlays */
 open class VREvent_Status : Structure {
 
+    /** EVRState value   */
     @JvmField
-    var statusState_internal = 0 // openvr.lib.EVRState value
+    var _statusState = 0
     var statusState
         set(value) {
-            statusState_internal = value.i
+            _statusState = value.i
         }
-        get() = EVRState.of(statusState_internal)
+        get() = EVRState.of(_statusState)
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("statusState_internal")
+    override fun getFieldOrder(): List<String> = listOf("_statusState")
 
     constructor(statusState: EVRState) {
-        this.statusState_internal = statusState.i
+        this._statusState = statusState.i
     }
 
     constructor(peer: Pointer) : super(peer) {
@@ -1738,22 +1739,22 @@ open class VREvent_Status : Structure {
 open class VREvent_Keyboard : Structure {
 
     @JvmField
-    var cNewInput_internal = ByteArray(8)    // Up to 11 bytes of new input
-    var cNewInput
+    var cNewInput = ByteArray(8)    // Up to 11 bytes of new input
+    var newInput
         set(value) {
-            cNewInput_internal = value.take(8).toByteArray()
+            cNewInput = value.take(8).toByteArray()
         }
-        get() = String(cNewInput_internal).take(8) // TODO check \0
+        get() = String(cNewInput).take(8) // TODO check \0
     @JvmField
-    var uUserValue = 0L // Possible flags about the new input
+    var userValue = 0L // Possible flags about the new input
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("cNewInput_internal", "uUserValue")
+    override fun getFieldOrder(): List<String> = listOf("cNewInput", "userValue")
 
-    constructor(cNewInput: String, uUserValue: Long) {
-        this.cNewInput_internal = cNewInput.take(8).toByteArray()
-        this.uUserValue = uUserValue
+    constructor(newInput: String, userValue: Long) {
+        this.cNewInput = newInput.take(8).toByteArray()
+        this.userValue = userValue
     }
 
     constructor(peer: Pointer) : super(peer) {
@@ -1788,17 +1789,17 @@ open class VREvent_Ipd : Structure {
 open class VREvent_Chaperone : Structure {
 
     @JvmField
-    var m_nPreviousUniverse = 0L
+    var previousUniverse = 0L
     @JvmField
-    var m_nCurrentUniverse = 0L
+    var currentUniverse = 0L
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("m_nPreviousUniverse", "m_nCurrentUniverse")
+    override fun getFieldOrder(): List<String> = listOf("previousUniverse", "currentUniverse")
 
-    constructor(m_nPreviousUniverse: Long, m_nCurrentUniverse: Long) {
-        this.m_nPreviousUniverse = m_nPreviousUniverse
-        this.m_nCurrentUniverse = m_nCurrentUniverse
+    constructor(previousUniverse: Long, currentUniverse: Long) {
+        this.previousUniverse = previousUniverse
+        this.currentUniverse = currentUniverse
     }
 
     constructor(peer: Pointer) : super(peer) {
@@ -1837,14 +1838,14 @@ open class VREvent_Reserved : Structure {
 open class VREvent_PerformanceTest : Structure {
 
     @JvmField
-    var m_nFidelityLevel = 0
+    var fidelityLevel = 0
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("m_nFidelityLevel")
+    override fun getFieldOrder(): List<String> = listOf("fidelityLevel")
 
     constructor(m_nFidelityLevel: Int) {
-        this.m_nFidelityLevel = m_nFidelityLevel
+        this.fidelityLevel = m_nFidelityLevel
     }
 
     constructor(peer: Pointer) : super(peer) {
@@ -1858,19 +1859,19 @@ open class VREvent_PerformanceTest : Structure {
 open class VREvent_SeatedZeroPoseReset : Structure {
 
     @JvmField
-    var bResetBySystemMenu_internal = 0.b
-    var bResetBySystemMenu
+    var bResetBySystemMenu = 0.b
+    var resetBySystemMenu
         set(value) {
-            bResetBySystemMenu_internal = if (value) 1.b else 0.b
+            bResetBySystemMenu = if (value) 1.b else 0.b
         }
-        get() = bResetBySystemMenu_internal == 1.b
+        get() = bResetBySystemMenu == 1.b
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("bResetBySystemMenu_internal")
+    override fun getFieldOrder(): List<String> = listOf("bResetBySystemMenu")
 
-    constructor(bResetBySystemMenu: Boolean) {
-        this.bResetBySystemMenu_internal = if (bResetBySystemMenu) 1.b else 0.b
+    constructor(resetBySystemMenu: Boolean) {
+        this.bResetBySystemMenu = if (resetBySystemMenu) 1.b else 0.b
     }
 
     constructor(peer: Pointer) : super(peer) {
@@ -1931,20 +1932,20 @@ open class VREvent_ApplicationLaunch : Structure {
     @JvmField
     var pid = 0
     @JvmField
-    var unArgsHandle = 0
+    var argsHandle = 0
 
     constructor()
 
-    constructor(pid: Int, unArgsHandle: Int) {
+    constructor(pid: Int, argsHandle: Int) {
         this.pid = pid
-        this.unArgsHandle = unArgsHandle
+        this.argsHandle = argsHandle
     }
 
     constructor(peer: Pointer) : super(peer) {
         read()
     }
 
-    override fun getFieldOrder(): List<String> = listOf("pid", "unArgsHandle")
+    override fun getFieldOrder(): List<String> = listOf("pid", "argsHandle")
 
     class ByReference : VREvent_ApplicationLaunch(), Structure.ByReference
     class ByValue : VREvent_ApplicationLaunch(), Structure.ByValue
@@ -1955,20 +1956,20 @@ open class VREvent_EditingCameraSurface : Structure {
     @JvmField
     var overlayHandle = 0L
     @JvmField
-    var nVisualMode = 0
+    var visualMode = 0
 
     constructor()
 
-    constructor(overlayHandle: Long, nVisualMode: Int) {
+    constructor(overlayHandle: Long, visualMode: Int) {
         this.overlayHandle = overlayHandle
-        this.nVisualMode = nVisualMode
+        this.visualMode = visualMode
     }
 
     constructor(peer: Pointer) : super(peer) {
         read()
     }
 
-    override fun getFieldOrder(): List<String> = listOf("overlayHandle", "nVisualMode")
+    override fun getFieldOrder(): List<String> = listOf("overlayHandle", "visualMode")
 
     class ByReference : VREvent_EditingCameraSurface(), Structure.ByReference
     class ByValue : VREvent_EditingCameraSurface(), Structure.ByValue
@@ -1978,7 +1979,7 @@ open class VREvent_MessageOverlay : Structure {
 
     @JvmField
     var unVRMessageOverlayResponse_internal = 0 // vr::VRMessageOverlayResponse enum
-    var unVRMessageOverlayResponse
+    var vrMessageOverlayResponse
         set(value) {
             unVRMessageOverlayResponse_internal = value.i
         }
@@ -1986,8 +1987,8 @@ open class VREvent_MessageOverlay : Structure {
 
     constructor()
 
-    constructor(unVRMessageOverlayResponse: VRMessageOverlayResponse) {
-        this.unVRMessageOverlayResponse_internal = unVRMessageOverlayResponse.i
+    constructor(vrMessageOverlayResponse: VRMessageOverlayResponse) {
+        this.unVRMessageOverlayResponse_internal = vrMessageOverlayResponse.i
     }
 
     constructor(peer: Pointer) : super(peer) {

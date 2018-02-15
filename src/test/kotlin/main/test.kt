@@ -2,7 +2,7 @@ import com.sun.jna.ptr.FloatByReference
 import glm_.vec2.Vec2
 import io.kotlintest.matchers.shouldBe
 import io.kotlintest.specs.StringSpec
-import openvr.*
+import openvr.EventListener
 import openvr.lib.*
 
 
@@ -17,61 +17,66 @@ class Test : StringSpec() {
 
         "simple test" {
 
-            if(true) {
+            if (System.getProperty("TRAVIS") != "true")
+                simpleTest()
+        }
+    }
 
-                val error = EVRInitError_ByReference()
+    fun simpleTest() {
 
-                val hmd = vrInit(error, EVRApplicationType.Scene)
+        val error = EVRInitError_ByReference()
+
+        val hmd = vrInit(error, EVRApplicationType.Scene)
 //            vr.compositor shouldNotBe null
 
-                error.value shouldBe EVRInitError.None
+        error.value shouldBe EVRInitError.None
 
-                if (hmd == null) throw Error()
+        if (hmd == null) throw Error()
 
-                val (w, h) = hmd.recommendedRenderTargetSize
-                (w > 0 && h > 0) shouldBe true
-
-
-                val m = hmd.getProjectionMatrix(EVREye.Left, .1f, 10f)
-                /** 0.75787073  0           -0.05657852   0
-                 *  0           0.6820195   -0.0013340205 0
-                 *  0           0           -1.0101011    -0.10101011
-                 *  0           0           -1            0             */
-                (m[0, 0] != 0f && m[1, 0] == 0f && m[2, 0] != 0f && m[3, 0] == 0f &&
-                        m[0, 1] == 0f && m[1, 1] != 0f && m[2, 1] != 0f && m[3, 1] == 0f &&
-                        m[0, 2] == 0f && m[1, 2] == 0f && m[2, 2] != 0f && m[3, 2] != 0f &&
-                        m[0, 3] == 0f && m[1, 3] == 0f && m[2, 3] != 0f && m[3, 3] == 0f) shouldBe true
+        val (w, h) = hmd.recommendedRenderTargetSize
+        (w > 0 && h > 0) shouldBe true
 
 
-                val left_ = FloatByReference()
-                val right = FloatByReference()
-                val top = FloatByReference()
-                val bottom = FloatByReference()
-                hmd.getProjectionRaw(EVREye.Left, left_, right, top, bottom)
+        val m = hmd.getProjectionMatrix(EVREye.Left, .1f, 10f)
+        /** 0.75787073  0           -0.05657852   0
+         *  0           0.6820195   -0.0013340205 0
+         *  0           0           -1.0101011    -0.10101011
+         *  0           0           -1            0             */
+        (m[0, 0] != 0f && m[1, 0] == 0f && m[2, 0] != 0f && m[3, 0] == 0f &&
+                m[0, 1] == 0f && m[1, 1] != 0f && m[2, 1] != 0f && m[3, 1] == 0f &&
+                m[0, 2] == 0f && m[1, 2] == 0f && m[2, 2] != 0f && m[3, 2] != 0f &&
+                m[0, 3] == 0f && m[1, 3] == 0f && m[2, 3] != 0f && m[3, 3] == 0f) shouldBe true
+
+
+        val left_ = FloatByReference()
+        val right = FloatByReference()
+        val top = FloatByReference()
+        val bottom = FloatByReference()
+        hmd.getProjectionRaw(EVREye.Left, left_, right, top, bottom)
 //      -1.3941408, 1.2448317, -1.4681898, 1.4642779
-                (left_.value < 0 && right.value > 0 && top.value < 0 && bottom.value >= 0) shouldBe true
+        (left_.value < 0 && right.value > 0 && top.value < 0 && bottom.value >= 0) shouldBe true
 
-                val overlayHandle = VROverlayHandle_ByReference()
-                val overlayThumbnailHandle = VROverlayHandle_ByReference()
+        val overlayHandle = VROverlayHandle_ByReference()
+        val overlayThumbnailHandle = VROverlayHandle_ByReference()
 
-                vrOverlay?.let {
-                    val name = "systemOverlay"
-                    val key = "sample.$name"
-                    val overlayError = it.createDashboardOverlay(key, name, overlayHandle, overlayThumbnailHandle)
-                    overlayError shouldBe EVROverlayError.None
-                }
+        vrOverlay?.let {
+            val name = "systemOverlay"
+            val key = "sample.$name"
+            val overlayError = it.createDashboardOverlay(key, name, overlayHandle, overlayThumbnailHandle)
+            overlayError shouldBe EVROverlayError.None
+        }
 
-                val listener = Listener(hmd)
+        val listener = Listener(hmd)
 
-                val start = System.nanoTime()
-                while (System.nanoTime() - start < 5e9) {
-                    listener.poll()
+        val start = System.nanoTime()
+        while (System.nanoTime() - start < 5e9) {
+            listener.poll()
 //                hmd.getControllerState(1, state, state.size())
 //                println("(${state.rAxis[0].x}, ${state.rAxis[0].y}")
 //                val leftMost = Controller.deviceIndex(Controller.DeviceRelation.Leftmost)
 //                val rightMost = Controller.deviceIndex(Controller.DeviceRelation.Rightmost)
 //                println("most $leftMost, $rightMost")
-                }
+        }
 
 //            if(vr.compositor == null) throw Error()
 
@@ -91,9 +96,7 @@ class Test : StringSpec() {
 //    println("IsDisplayOnDesktop " + IVRSystem.IsDisplayOnDesktop())
 //    040 78880
 
-                vrShutdown()
-            }
-        }
+        vrShutdown()
     }
 }
 
