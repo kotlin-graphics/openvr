@@ -199,7 +199,7 @@ open class RenderModel_t : Structure {
     }
 
     override fun getFieldOrder(): List<String> = Arrays.asList("rVertexData_internal", "unVertexCount", "rIndexData_internal",
-            "unTriangleCount", "diffuseTextureId")
+            "triangleCount", "diffuseTextureId")
 
     constructor(peer: Pointer) : super(peer) {
         read()

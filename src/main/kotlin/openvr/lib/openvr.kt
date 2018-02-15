@@ -1389,19 +1389,19 @@ open class VREvent_Controller : Structure {
 
     /** EVRButtonId value    */
     @JvmField
-    var _button = 0
+    var eButton = 0
     var button
         set(value) {
-            _button = value.i
+            eButton = value.i
         }
-        get() = EVRButtonId.of(_button)
+        get() = EVRButtonId.of(eButton)
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("_button")
+    override fun getFieldOrder(): List<String> = listOf("eButton")
 
     constructor(button: EVRButtonId) {
-        this._button = button.i
+        this.eButton = button.i
     }
 
     constructor(peer: Pointer) : super(peer) {
@@ -1434,21 +1434,21 @@ open class VREvent_Mouse : Structure {
     var y = 0f
     /** EVRButtonId value    */
     @JvmField
-    var _button = 0
+    var eButton = 0
     var button
         set(value) {
-            _button = value.i
+            eButton = value.i
         }
-        get() = EVRMouseButton.of(_button)
+        get() = EVRMouseButton.of(eButton)
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("x", "y", "_button")
+    override fun getFieldOrder(): List<String> = listOf("x", "y", "eButton")
 
     constructor(x: Float, y: Float, button: EVRMouseButton) {
         this.x = x
         this.y = y
-        this._button = button.i
+        this.eButton = button.i
     }
 
     constructor(peer: Pointer) : super(peer) {
@@ -1565,16 +1565,16 @@ open class VREvent_DualAnalog : Structure {
     var transformedY = 0f
 
     @JvmField
-    var _which = 0
+    var eWhich = 0
     var which
-        get() = EDualAnalogWhich.of(_which)
+        get() = EDualAnalogWhich.of(eWhich)
         set(value) {
-            _which = value.i
+            eWhich = value.i
         }
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("x", "y", "transformedX", "transformedY", "_which")
+    override fun getFieldOrder(): List<String> = listOf("x", "y", "transformedX", "transformedY", "eWhich")
 
     constructor(x: Float, y: Float, transformedX: Float, transformedY: Float, which: EDualAnalogWhich) {
         this.x = x
@@ -1712,19 +1712,19 @@ open class VREvent_Status : Structure {
 
     /** EVRState value   */
     @JvmField
-    var _statusState = 0
+    var eStatusState = 0
     var statusState
         set(value) {
-            _statusState = value.i
+            eStatusState = value.i
         }
-        get() = EVRState.of(_statusState)
+        get() = EVRState.of(eStatusState)
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("_statusState")
+    override fun getFieldOrder(): List<String> = listOf("eStatusState")
 
     constructor(statusState: EVRState) {
-        this._statusState = statusState.i
+        this.eStatusState = statusState.i
     }
 
     constructor(peer: Pointer) : super(peer) {
@@ -2005,19 +2005,20 @@ open class VREvent_Property : Structure {
 
     @JvmField
     var container: PropertyContainerHandle = 0
+    /** ETrackedDeviceProperty value    */
     @JvmField
-    var prop_internal = 0
+    var eProp = 0
     var prop
         set(value) {
-            prop_internal = value.i
+            eProp = value.i
         }
-        get() = ETrackedDeviceProperty.of(prop_internal)
+        get() = ETrackedDeviceProperty.of(eProp)
 
     constructor()
 
     constructor(container: PropertyContainerHandle, prop: ETrackedDeviceProperty) {
         this.container = container
-        this.prop_internal = prop.i
+        this.eProp = prop.i
         write() // TODO?
     }
 
@@ -2025,7 +2026,7 @@ open class VREvent_Property : Structure {
         read()
     }
 
-    override fun getFieldOrder(): List<String> = listOf("container", "prop_internal")
+    override fun getFieldOrder(): List<String> = listOf("container", "eProp")
 
     class ByReference : VREvent_Property(), Structure.ByReference
     class ByValue : VREvent_Property(), Structure.ByValue
@@ -2093,13 +2094,14 @@ open class VREvent_Data : Union {
 /** An event posted by the server to all running applications */
 open class VREvent : Structure {
 
+    /** EVREventType value  */
     @JvmField
-    var eventType_internal = 0   // openvr.lib.EVREventType value
+    var eEventType = 0
     var eventType
         set(value) {
-            eventType_internal = value.i
+            eEventType = value.i
         }
-        get() = EVREventType.of(eventType_internal)
+        get() = EVREventType.of(eEventType)
     @JvmField
     var trackedDeviceIndex = 0
     @JvmField
@@ -2110,10 +2112,10 @@ open class VREvent : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("eventType_internal", "trackedDeviceIndex", "eventAgeSeconds", "data")
+    override fun getFieldOrder(): List<String> = listOf("eEventType", "trackedDeviceIndex", "eventAgeSeconds", "data")
 
     constructor(eventType: EVREventType, trackedDeviceIndex: Int, eventAgeSeconds: Float, data: VREvent_Data) {
-        this.eventType_internal = eventType.i
+        this.eEventType = eventType.i
         this.trackedDeviceIndex = trackedDeviceIndex
         this.eventAgeSeconds = eventAgeSeconds
         this.data = data
@@ -2145,21 +2147,21 @@ enum class EVRInputError {
 
 /** The mesh to draw into the stencil (or depth) buffer to perform early stencil (or depth) kills of pixels that will never appear on the HMD.
  *  This mesh draws on all the pixels that will be hidden after distortion. *
- *  If the HMD does not provide a visible area mesh pVertexData will be NULL and unTriangleCount will be 0. */
+ *  If the HMD does not provide a visible area mesh vertexData will be NULL and triangleCount will be 0. */
 open class HiddenAreaMesh : Structure {
 
     @JvmField
-    var pVertexData: HmdVec2.ByReference? = null
+    var vertexData: HmdVec2.ByReference? = null
     @JvmField
-    var unTriangleCount = 0
+    var triangleCount = 0
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("pVertexData", "unTriangleCount")
+    override fun getFieldOrder(): List<String> = listOf("vertexData", "triangleCount")
 
     constructor(pVertexData: HmdVec2.ByReference, unTriangleCount: Int) {
-        this.pVertexData = pVertexData
-        this.unTriangleCount = unTriangleCount
+        this.vertexData = pVertexData
+        this.triangleCount = unTriangleCount
     }
 
     constructor(peer: Pointer) : super(peer) {
@@ -2233,34 +2235,34 @@ open class VRControllerState : Structure {
     /** If packet num matches that on your prior call, then the controller state hasn't been changed since your last
      *  call and there is no need to process it.    */
     @JvmField
-    var unPacketNum = 0
+    var packetNum = 0
 
-    // bit flags for each of the buttons. Use ButtonMaskFromId to turn an ID into a mask
+    /** bit flags for each of the buttons. Use ButtonMaskFromId to turn an ID into a mask   */
     @JvmField
-    var ulButtonPressed = 0L
+    var buttonPressed = 0L
     @JvmField
-    var ulButtonTouched = 0L
+    var buttonTouched = 0L
 
-    // Axis data for the controller's analog inputs
+    /** Axis data for the controller's analog inputs    */
     @JvmField
-    var rAxis = Array(controllerStateAxisCount, { VRControllerAxis() })
+    var axis = Array(controllerStateAxisCount, { VRControllerAxis() })
 
-    val axis0 get() = rAxis[0]
-    val axis1 get() = rAxis[1]
-    val axis2 get() = rAxis[2]
-    val axis3 get() = rAxis[3]
-    val axis4 get() = rAxis[4]
+    val axis0 get() = axis[0]
+    val axis1 get() = axis[1]
+    val axis2 get() = axis[2]
+    val axis3 get() = axis[3]
+    val axis4 get() = axis[4]
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("unPacketNum", "ulButtonPressed", "ulButtonTouched", "rAxis")
+    override fun getFieldOrder(): List<String> = listOf("packetNum", "buttonPressed", "buttonTouched", "axis")
 
-    constructor(unPacketNum: Int, ulButtonPressed: Long, ulButtonTouched: Long, rAxis: Array<VRControllerAxis>) {
-        this.unPacketNum = unPacketNum
-        this.ulButtonPressed = ulButtonPressed
-        this.ulButtonTouched = ulButtonTouched
-        if (rAxis.size != this.rAxis.size) throw IllegalArgumentException("Wrong array size!")
-        this.rAxis = rAxis
+    constructor(packetNum: Int, buttonPressed: Long, buttonTouched: Long, axis: Array<VRControllerAxis>) {
+        this.packetNum = packetNum
+        this.buttonPressed = buttonPressed
+        this.buttonTouched = buttonTouched
+        if (axis.size != this.axis.size) throw IllegalArgumentException("Wrong array size!")
+        this.axis = axis
     }
 
     constructor(peer: Pointer) : super(peer) {
@@ -2306,19 +2308,19 @@ open class Compositor_OverlaySettings : Structure {
     @JvmField
     var size = 0    // sizeof(openvr.lib.Compositor_OverlaySettings)
     @JvmField
-    var curved_internal = 0.b
+    var bCurved = 0.b
     var curved
         set(value) {
-            curved_internal = if (value) 1.b else 0.b
+            bCurved = if (value) 1.b else 0.b
         }
-        get() = curved_internal == 1.b
+        get() = bCurved == 1.b
     @JvmField
-    var antialias_internal = 0.b
+    var bAntialias = 0.b
     var antialias
         set(value) {
-            antialias_internal = if (value) 1.b else 0.b
+            bAntialias = if (value) 1.b else 0.b
         }
-        get() = antialias_internal == 1.b
+        get() = bAntialias == 1.b
     @JvmField
     var scale = 0f
     @JvmField
@@ -2348,8 +2350,8 @@ open class Compositor_OverlaySettings : Structure {
                 vOffset: Float, uScale: Float, vScale: Float, gridDivs: Float, gridWidth: Float, gridScale: Float,
                 transform: HmdMat44) {
         this.size = size
-        this.curved_internal = if (curved) 1.b else 0.b
-        this.antialias_internal = if (antialias) 1.b else 0.b
+        this.bCurved = if (curved) 1.b else 0.b
+        this.bAntialias = if (antialias) 1.b else 0.b
         this.scale = scale
         this.distance = distance
         this.alpha = alpha
@@ -2363,7 +2365,7 @@ open class Compositor_OverlaySettings : Structure {
         this.transform = transform
     }
 
-    override fun getFieldOrder(): List<String> = listOf("size", "curved_internal", "antialias_internal", "scale", "distance", "alpha",
+    override fun getFieldOrder(): List<String> = listOf("size", "bCurved", "bAntialias", "scale", "distance", "alpha",
             "uOffset", "vOffset", "uScale", "vScale", "gridDivs", "gridWidth", "gridScale", "transform")
 
     constructor(peer: Pointer) : super(peer) {
@@ -2653,36 +2655,36 @@ val INVALID_TRACKED_CAMERA_HANDLE = 0L
 open class CameraVideoStreamFrameHeader : Structure {
 
     @JvmField
-    var eFrameType_internal = 0
-    var eFrameType
+    var eFrameType = 0
+    var frameType
         set(value) {
-            eFrameType_internal = value.i
+            eFrameType = value.i
         }
-        get() = EVRTrackedCameraFrameType.of(eFrameType_internal)
+        get() = EVRTrackedCameraFrameType.of(eFrameType)
 
     @JvmField
-    var nWidth = 0
+    var width = 0
     @JvmField
-    var nHeight = 0
+    var height = 0
     @JvmField
-    var nBytesPerPixel = 0
+    var bytesPerPixel = 0
 
     @JvmField
-    var nFrameSequence = 0
+    var frameSequence = 0
 
     @JvmField
     var standingTrackedDevicePose = TrackedDevicePose()
 
     constructor()
 
-    constructor(eFrameType: EVRTrackedCameraFrameType, nWidth: Int, nHeight: Int, nBytesPerPixel: Int, nFrameSequence: Int,
+    constructor(frameType: EVRTrackedCameraFrameType, width: Int, nHeight: Int, nBytesPerPixel: Int, nFrameSequence: Int,
                 standingTrackedDevicePose: TrackedDevicePose) {
 
-        this.eFrameType_internal = eFrameType.i
-        this.nWidth = nWidth
-        this.nHeight = nHeight
-        this.nBytesPerPixel = nBytesPerPixel
-        this.nFrameSequence = nFrameSequence
+        this.eFrameType = frameType.i
+        this.width = width
+        this.height = nHeight
+        this.bytesPerPixel = nBytesPerPixel
+        this.frameSequence = nFrameSequence
         this.standingTrackedDevicePose = standingTrackedDevicePose
     }
 
@@ -2690,7 +2692,7 @@ open class CameraVideoStreamFrameHeader : Structure {
         read()
     }
 
-    override fun getFieldOrder(): List<String> = listOf("eFrameType_internal", "nWidth", "nHeight", "nBytesPerPixel", "nFrameSequence",
+    override fun getFieldOrder(): List<String> = listOf("eFrameType", "width", "height", "bytesPerPixel", "frameSequence",
             "standingTrackedDevicePose")
 
     class ByReference : CameraVideoStreamFrameHeader(), Structure.ByReference

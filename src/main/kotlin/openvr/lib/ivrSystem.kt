@@ -524,8 +524,8 @@ open class IVRSystem : Structure {
      *  per-eye.
      *  Setting the bInverse argument to true will produce the visible area mesh that is commonly used in place of full-screen quads.
      *  The visible area mesh covers all of the pixels the hidden area mesh does not cover.
-     *  Setting the bLineLoop argument will return a line loop of vertices in HiddenAreaMesh->pVertexData with
-     *  HiddenAreaMesh->unTriangleCount set to the number of vertices.
+     *  Setting the bLineLoop argument will return a line loop of vertices in HiddenAreaMesh->vertexData with
+     *  HiddenAreaMesh->triangleCount set to the number of vertices.
      */
     @JvmOverloads
     fun GetHiddenAreaMesh(eEye: EVREye, type: EHiddenAreaMeshType = EHiddenAreaMeshType.Standard) = GetHiddenAreaMesh!!.invoke(eEye.i, type)

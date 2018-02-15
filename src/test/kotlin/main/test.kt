@@ -16,7 +16,7 @@ class Test : StringSpec() {
     init {
 
         "simple test" {
-
+            println(System.getProperty("TRAVIS"))
             if (System.getProperty("TRAVIS") != "true")
                 simpleTest()
         }
@@ -72,7 +72,7 @@ class Test : StringSpec() {
         while (System.nanoTime() - start < 5e9) {
             listener.poll()
 //                hmd.getControllerState(1, state, state.size())
-//                println("(${state.rAxis[0].x}, ${state.rAxis[0].y}")
+//                println("(${state.axis[0].x}, ${state.axis[0].y}")
 //                val leftMost = Controller.deviceIndex(Controller.DeviceRelation.Leftmost)
 //                val rightMost = Controller.deviceIndex(Controller.DeviceRelation.Rightmost)
 //                println("most $leftMost, $rightMost")
