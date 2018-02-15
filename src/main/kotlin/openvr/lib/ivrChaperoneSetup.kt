@@ -69,6 +69,15 @@ open class IVRChaperoneSetup : Structure {
         fun invoke(pSizeX: FloatByReference, pSizeZ: FloatByReference): Boolean
     }
 
+    var workingPlayAreaSize = Vec2()
+    set(value) {
+
+    }
+    get() {
+        getWorkingPlayAreaSize(field)
+        return field
+    }
+
     /** Returns the 4 corner positions of the Play Area (formerly named Soft Bounds) from the working copy.
      *  Corners are in clockwise order.
      *  Tracking space center (0,0,0) is the center of the Play Area.
