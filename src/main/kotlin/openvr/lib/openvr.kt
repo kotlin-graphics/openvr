@@ -2677,14 +2677,14 @@ open class CameraVideoStreamFrameHeader : Structure {
 
     constructor()
 
-    constructor(frameType: EVRTrackedCameraFrameType, width: Int, nHeight: Int, nBytesPerPixel: Int, nFrameSequence: Int,
+    constructor(frameType: EVRTrackedCameraFrameType, width: Int, height: Int, bytesPerPixel: Int, frameSequence: Int,
                 standingTrackedDevicePose: TrackedDevicePose) {
 
         this.eFrameType = frameType.i
         this.width = width
-        this.height = nHeight
-        this.bytesPerPixel = nBytesPerPixel
-        this.frameSequence = nFrameSequence
+        this.height = height
+        this.bytesPerPixel = bytesPerPixel
+        this.frameSequence = frameSequence
         this.standingTrackedDevicePose = standingTrackedDevicePose
     }
 
@@ -2813,13 +2813,13 @@ internal external fun VR_GetVRInitErrorAsEnglishDescription(error: Int): String
 
 /** Returns the interface of the specified version. This method must be called after VR_Init. The pointer returned is
  * valid until VR_Shutdown is called.   */
-fun vrGetGenericInterface(pchInterfaceVersion: String, peError: EVRInitError_ByReference) =
-        VR_GetGenericInterface(pchInterfaceVersion, peError)
+fun vrGetGenericInterface(interfaceVersion: String, error: EVRInitError_ByReference) =
+        VR_GetGenericInterface(interfaceVersion, error)
 
-internal external fun VR_GetGenericInterface(pchInterfaceVersion: String, peError: EVRInitError_ByReference): Pointer?
+internal external fun VR_GetGenericInterface(interfaceVersion: String, peError: EVRInitError_ByReference): Pointer?
 
 /** Returns whether the interface of the specified version exists.   */
-fun vrIsInterfaceVersionValid(pchInterfaceVersion: String) = VR_IsInterfaceVersionValid(pchInterfaceVersion)
+fun vrIsInterfaceVersionValid(interfaceVersion: String) = VR_IsInterfaceVersionValid(interfaceVersion)
 
 internal external fun VR_IsInterfaceVersionValid(pchInterfaceVersion: String): Boolean
 
@@ -2832,19 +2832,19 @@ val FnTable = "FnTable:"
 
 object COpenVRContext {
 
-    private var m_pVRSystem: IVRSystem? = null
-    private var m_pVRChaperone: IVRChaperone? = null
-    private var m_pVRChaperoneSetup: IVRChaperoneSetup? = null
-    private var m_pVRCompositor: IVRCompositor? = null
-    private var m_pVROverlay: IVROverlay? = null
-    private var m_pVRResources: IVRResources? = null
-    private var m_pVRRenderModels: IVRRenderModels? = null
-    private var m_pVRExtendedDisplay: IVRExtendedDisplay? = null
-    private var m_pVRSettings: IVRSettings? = null
-    private var m_pVRApplications: IVRApplications? = null
-    private var m_pVRTrackedCamera: IVRTrackedCamera? = null
-    private var m_pVRScreenshots: IVRScreenshots? = null
-    private var m_pVRDriverManager: IVRDriverManager? = null
+    private var vrSystem: IVRSystem? = null
+    private var vrChaperone: IVRChaperone? = null
+    private var vrChaperoneSetup: IVRChaperoneSetup? = null
+    private var vrCompositor: IVRCompositor? = null
+    private var vrOverlay: IVROverlay? = null
+    private var vrResources: IVRResources? = null
+    private var vrRenderModels: IVRRenderModels? = null
+    private var vrExtendedDisplay: IVRExtendedDisplay? = null
+    private var vrSettings: IVRSettings? = null
+    private var vrApplications: IVRApplications? = null
+    private var vrTrackedCamera: IVRTrackedCamera? = null
+    private var vrScreenshots: IVRScreenshots? = null
+    private var vrDriverManager: IVRDriverManager? = null
 
     private val error = EVRInitError_ByReference(EVRInitError.None)
 
@@ -2857,109 +2857,109 @@ object COpenVRContext {
 
     fun vrSystem(): IVRSystem? {
         checkClear()
-        if (m_pVRSystem == null)
-            m_pVRSystem = vrGetGenericInterface(FnTable + IVRSystem_Version, error)?.let(::IVRSystem)
-        return m_pVRSystem
+        if (vrSystem == null)
+            vrSystem = vrGetGenericInterface(FnTable + IVRSystem_Version, error)?.let(::IVRSystem)
+        return vrSystem
     }
 
     fun vrChaperone(): IVRChaperone? {
         checkClear()
-        if (m_pVRChaperone == null)
-            m_pVRChaperone = vrGetGenericInterface(FnTable + IVRChaperone_Version, error)?.let(::IVRChaperone)
-        return m_pVRChaperone
+        if (vrChaperone == null)
+            vrChaperone = vrGetGenericInterface(FnTable + IVRChaperone_Version, error)?.let(::IVRChaperone)
+        return vrChaperone
     }
 
     fun vrChaperoneSetup(): IVRChaperoneSetup? {
         checkClear()
-        if (m_pVRChaperoneSetup == null)
-            m_pVRChaperoneSetup = vrGetGenericInterface(FnTable + IVRChaperoneSetup_Version, error)?.let(::IVRChaperoneSetup)
-        return m_pVRChaperoneSetup
+        if (vrChaperoneSetup == null)
+            vrChaperoneSetup = vrGetGenericInterface(FnTable + IVRChaperoneSetup_Version, error)?.let(::IVRChaperoneSetup)
+        return vrChaperoneSetup
     }
 
     fun vrCompositor(): IVRCompositor? {
         checkClear()
-        if (m_pVRCompositor == null)
-            m_pVRCompositor = vrGetGenericInterface(FnTable + IVRCompositor_Version, error)?.let(::IVRCompositor)
-        return m_pVRCompositor
+        if (vrCompositor == null)
+            vrCompositor = vrGetGenericInterface(FnTable + IVRCompositor_Version, error)?.let(::IVRCompositor)
+        return vrCompositor
     }
 
     fun vrOverlay(): IVROverlay? {
         checkClear()
-        if (m_pVROverlay == null)
-            m_pVROverlay = vrGetGenericInterface(FnTable + IVROverlay_Version, error)?.let(::IVROverlay)
-        return m_pVROverlay
+        if (vrOverlay == null)
+            vrOverlay = vrGetGenericInterface(FnTable + IVROverlay_Version, error)?.let(::IVROverlay)
+        return vrOverlay
     }
 
     fun vrResources(): IVRResources? {
         checkClear()
-        if (m_pVRResources == null)
-            m_pVRResources = vrGetGenericInterface(FnTable + IVRResources_Version, error)?.let(::IVRResources)
-        return m_pVRResources
+        if (vrResources == null)
+            vrResources = vrGetGenericInterface(FnTable + IVRResources_Version, error)?.let(::IVRResources)
+        return vrResources
     }
 
     fun vrRenderModels(): IVRRenderModels? {
         checkClear()
-        if (m_pVRRenderModels == null)
-            m_pVRRenderModels = vrGetGenericInterface(FnTable + IVRRenderModels_Version, error)?.let(::IVRRenderModels)
-        return m_pVRRenderModels
+        if (vrRenderModels == null)
+            vrRenderModels = vrGetGenericInterface(FnTable + IVRRenderModels_Version, error)?.let(::IVRRenderModels)
+        return vrRenderModels
     }
 
     fun vrExtendedDisplay(): IVRExtendedDisplay? {
         checkClear()
-        if (m_pVRExtendedDisplay == null)
-            m_pVRExtendedDisplay = vrGetGenericInterface(FnTable + IVRExtendedDisplay_Version, error)?.let(::IVRExtendedDisplay)
-        return m_pVRExtendedDisplay
+        if (vrExtendedDisplay == null)
+            vrExtendedDisplay = vrGetGenericInterface(FnTable + IVRExtendedDisplay_Version, error)?.let(::IVRExtendedDisplay)
+        return vrExtendedDisplay
     }
 
     fun vrSettings(): IVRSettings? {
         checkClear()
-        if (m_pVRSettings == null)
-            m_pVRSettings = vrGetGenericInterface(FnTable + IVRSettings_Version, error)?.let(::IVRSettings)
-        return m_pVRSettings
+        if (vrSettings == null)
+            vrSettings = vrGetGenericInterface(FnTable + IVRSettings_Version, error)?.let(::IVRSettings)
+        return vrSettings
     }
 
     fun vrApplications(): IVRApplications? {
         checkClear()
-        if (m_pVRApplications == null)
-            m_pVRApplications = vrGetGenericInterface(FnTable + IVRApplications_Version, error)?.let(::IVRApplications)
-        return m_pVRApplications
+        if (vrApplications == null)
+            vrApplications = vrGetGenericInterface(FnTable + IVRApplications_Version, error)?.let(::IVRApplications)
+        return vrApplications
     }
 
     fun vrTrackedCamera(): IVRTrackedCamera? {
         checkClear()
-        if (m_pVRTrackedCamera == null)
-            m_pVRTrackedCamera = vrGetGenericInterface(FnTable + IVRTrackedCamera_Version, error)?.let(::IVRTrackedCamera)
-        return m_pVRTrackedCamera
+        if (vrTrackedCamera == null)
+            vrTrackedCamera = vrGetGenericInterface(FnTable + IVRTrackedCamera_Version, error)?.let(::IVRTrackedCamera)
+        return vrTrackedCamera
     }
 
     fun vrScreenshots(): IVRScreenshots? {
         checkClear()
-        if (m_pVRScreenshots == null)
-            m_pVRScreenshots = vrGetGenericInterface(FnTable + IVRScreenshots_Version, error)?.let(::IVRScreenshots)
-        return m_pVRScreenshots
+        if (vrScreenshots == null)
+            vrScreenshots = vrGetGenericInterface(FnTable + IVRScreenshots_Version, error)?.let(::IVRScreenshots)
+        return vrScreenshots
     }
 
     fun vrDriverManager(): IVRDriverManager? {
         checkClear()
-        if (m_pVRDriverManager == null)
-            m_pVRDriverManager = vrGetGenericInterface(FnTable + IVRDriverManager_Version, error)?.let(::IVRDriverManager)
-        return m_pVRDriverManager
+        if (vrDriverManager == null)
+            vrDriverManager = vrGetGenericInterface(FnTable + IVRDriverManager_Version, error)?.let(::IVRDriverManager)
+        return vrDriverManager
     }
 
     fun clear() {
-        m_pVRSystem = null
-        m_pVRChaperone = null
-        m_pVRChaperoneSetup = null
-        m_pVRCompositor = null
-        m_pVROverlay = null
-        m_pVRResources = null
-        m_pVRRenderModels = null
-        m_pVRExtendedDisplay = null
-        m_pVRSettings = null
-        m_pVRApplications = null
-        m_pVRTrackedCamera = null
-        m_pVRScreenshots = null
-        m_pVRDriverManager = null
+        vrSystem = null
+        vrChaperone = null
+        vrChaperoneSetup = null
+        vrCompositor = null
+        vrOverlay = null
+        vrResources = null
+        vrRenderModels = null
+        vrExtendedDisplay = null
+        vrSettings = null
+        vrApplications = null
+        vrTrackedCamera = null
+        vrScreenshots = null
+        vrDriverManager = null
     }
 }
 
