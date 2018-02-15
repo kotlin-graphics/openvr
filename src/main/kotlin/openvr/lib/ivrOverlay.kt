@@ -757,7 +757,7 @@ open class IVROverlay : Structure {
     }
 
     /** Gets the transform if it is relative to a tracked device. Returns an error if the transform is some other value. */
-    fun getOverlayTransformTrackedDeviceRelative(ulOverlayHandle: VROverlayHandle, punTrackedDevice: TrackedDeviceIndex_t_ByReference,
+    fun getOverlayTransformTrackedDeviceRelative(ulOverlayHandle: VROverlayHandle, punTrackedDevice: TrackedDeviceIndex_ByReference,
                                                  pmatTrackedDeviceToOverlayTransform: HmdMat34.ByReference)
             = ETrackedDeviceClass.of(GetOverlayTransformTrackedDeviceRelative!!.invoke(ulOverlayHandle, punTrackedDevice, pmatTrackedDeviceToOverlayTransform))
 
@@ -765,7 +765,7 @@ open class IVROverlay : Structure {
     var GetOverlayTransformTrackedDeviceRelative: GetOverlayTransformTrackedDeviceRelative_callback? = null
 
     interface GetOverlayTransformTrackedDeviceRelative_callback : Callback {
-        fun invoke(ulOverlayHandle: VROverlayHandle, punTrackedDevice: TrackedDeviceIndex_t_ByReference,
+        fun invoke(ulOverlayHandle: VROverlayHandle, punTrackedDevice: TrackedDeviceIndex_ByReference,
                    pmatTrackedDeviceToOverlayTransform: HmdMat34.ByReference): Int
     }
 
@@ -782,7 +782,7 @@ open class IVROverlay : Structure {
     }
 
     /** Gets the transform information when the overlay is rendering on a component. */
-    fun getOverlayTransformTrackedDeviceComponent(ulOverlayHandle: VROverlayHandle, punDeviceIndex: TrackedDeviceIndex_t_ByReference, pchComponentName: String,
+    fun getOverlayTransformTrackedDeviceComponent(ulOverlayHandle: VROverlayHandle, punDeviceIndex: TrackedDeviceIndex_ByReference, pchComponentName: String,
                                                   unComponentNameSize: Int)
             = EVROverlayError.of(GetOverlayTransformTrackedDeviceComponent!!.invoke(ulOverlayHandle, punDeviceIndex, pchComponentName, unComponentNameSize))
 
@@ -790,7 +790,7 @@ open class IVROverlay : Structure {
     var GetOverlayTransformTrackedDeviceComponent: GetOverlayTransformTrackedDeviceComponent_callback? = null
 
     interface GetOverlayTransformTrackedDeviceComponent_callback : Callback {
-        fun invoke(ulOverlayHandle: VROverlayHandle, punDeviceIndex: TrackedDeviceIndex_t_ByReference, pchComponentName: String, unComponentNameSize: Int): Int
+        fun invoke(ulOverlayHandle: VROverlayHandle, punDeviceIndex: TrackedDeviceIndex_ByReference, pchComponentName: String, unComponentNameSize: Int): Int
     }
 
     /** Gets the transform if it is relative to another overlay. Returns an error if the transform is some other type. */

@@ -483,22 +483,22 @@ open class Texture : Structure {
     @JvmField
     var handle = 0L  //See ETextureType definition above
     @JvmField
-    var eType_internal = 0
-    val eType
-        get() = ETextureType.of(eType_internal)
+    var eType = 0
+    val type
+        get() = ETextureType.of(eType)
     @JvmField
-    var eColorSpace_internal = 0
-    val eColorSpace
-        get() = EColorSpace.of(eColorSpace_internal)
+    var eColorSpac = 0
+    val colorSpace
+        get() = EColorSpace.of(eColorSpac)
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("handle", "eType_internal", "eColorSpace_internal")
+    override fun getFieldOrder(): List<String> = listOf("handle", "eType", "eColorSpac")
 
     constructor(handle: Long, eType: ETextureType, eColorSpace: EColorSpace) {
         this.handle = handle
-        this.eType_internal = eType.i
-        this.eColorSpace_internal = eColorSpace.i
+        this.eType = eType.i
+        this.eColorSpac = eColorSpace.i
         write()
     }
 
@@ -509,12 +509,12 @@ open class Texture : Structure {
     class ByReference : Texture, Structure.ByReference {
 
         constructor() : super()
-        constructor(handle: Long, eType: ETextureType, eColorSpace: EColorSpace) : super(handle, eType, eColorSpace)
+        constructor(handle: Long, type: ETextureType, eColorSpace: EColorSpace) : super(handle, type, eColorSpace)
 
-        fun put(handle: Long, eType: ETextureType, eColorSpace: EColorSpace) {
+        fun put(handle: Long, type: ETextureType, colorSpace: EColorSpace) {
             this.handle = handle
-            this.eType_internal = eType.i
-            this.eColorSpace_internal = eColorSpace.i
+            this.eType = type.i
+            this.eColorSpac = colorSpace.i
         }
     }
 
@@ -550,7 +550,7 @@ val maxDriverDebugResponseSize = 32768
         /** Used to pass device IDs to API calls */
 typealias TrackedDeviceIndex = Int
 
-typealias TrackedDeviceIndex_t_ByReference = IntByReference
+typealias TrackedDeviceIndex_ByReference = IntByReference
 
 val trackedDeviceIndex_Hmd = 0
 val maxTrackedDeviceCount = 64

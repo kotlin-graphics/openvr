@@ -56,3 +56,10 @@ artifacts {
     archives sourcesJar
     archives javadocJar
 }
+
+test {
+    testLogging {
+        events "failed"
+        exceptionFormat "short"
+    }
+}

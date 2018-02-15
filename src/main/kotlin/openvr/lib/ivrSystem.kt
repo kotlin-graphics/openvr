@@ -263,7 +263,7 @@ open class IVRSystem : Structure {
      *  Returns the number of devices in the list, or the size of the array needed if not large enough. */
     @JvmOverloads
     fun getSortedTrackedDeviceIndicesOfClass(eTrackedDeviceClass: ETrackedDeviceClass,
-                                             punTrackedDeviceIndexArray: TrackedDeviceIndex_t_ByReference,
+                                             punTrackedDeviceIndexArray: TrackedDeviceIndex_ByReference,
                                              unTrackedDeviceIndexArrayCount: Int,
                                              unRelativeToTrackedDeviceIndex: TrackedDeviceIndex = trackedDeviceIndex_Hmd) = GetSortedTrackedDeviceIndicesOfClass!!.invoke(eTrackedDeviceClass.i, punTrackedDeviceIndexArray, unTrackedDeviceIndexArrayCount,
             unRelativeToTrackedDeviceIndex)
@@ -272,7 +272,7 @@ open class IVRSystem : Structure {
     var GetSortedTrackedDeviceIndicesOfClass: GetSortedTrackedDeviceIndicesOfClass_callback? = null
 
     interface GetSortedTrackedDeviceIndicesOfClass_callback : Callback {
-        fun invoke(eTrackedDeviceClass: Int, punTrackedDeviceIndexArray: TrackedDeviceIndex_t_ByReference, unTrackedDeviceIndexArrayCount: Int,
+        fun invoke(eTrackedDeviceClass: Int, punTrackedDeviceIndexArray: TrackedDeviceIndex_ByReference, unTrackedDeviceIndexArrayCount: Int,
                    unRelativeToTrackedDeviceIndex: TrackedDeviceIndex): Int
     }
 
@@ -338,7 +338,7 @@ open class IVRSystem : Structure {
     }
 
     /** Returns true if there is a device connected in this slot. */
-    fun isTrackedDeviceConnected(unDeviceIndex: TrackedDeviceIndex) = IsTrackedDeviceConnected!!.invoke(unDeviceIndex)
+    infix fun isTrackedDeviceConnected(deviceIndex: TrackedDeviceIndex) = IsTrackedDeviceConnected!!.invoke(deviceIndex)
 
     @JvmField
     var IsTrackedDeviceConnected: IsTrackedDeviceConnected_callback? = null
