@@ -631,14 +631,14 @@ open class TrackedDevicePose : Structure {
     override fun getFieldOrder(): List<String> = listOf("deviceToAbsoluteTracking", "velocity", "angularVelocity",
             "eTrackingResult", "bPoseIsValid", "bDeviceIsConnected")
 
-    constructor(mDeviceToAbsoluteTracking: HmdMat34, vVelocity: HmdVec3, vAngularVelocity: HmdVec3,
-                eTrackingResult: ETrackingResult, bPoseIsValid: Boolean, bDeviceIsConnected: Boolean) {
-        this.deviceToAbsoluteTracking = mDeviceToAbsoluteTracking
-        this.velocity = vVelocity
-        this.angularVelocity = vAngularVelocity
-        this.eTrackingResult = eTrackingResult.i
-        this.bPoseIsValid = if (bPoseIsValid) 1.b else 0.b
-        this.bDeviceIsConnected = if (bDeviceIsConnected) 1.b else 0.b
+    constructor(deviceToAbsoluteTracking: HmdMat34, velocity: HmdVec3, angularVelocity: HmdVec3,
+                trackingResult: ETrackingResult, poseIsValid: Boolean, deviceIsConnected: Boolean) {
+        this.deviceToAbsoluteTracking = deviceToAbsoluteTracking
+        this.velocity = velocity
+        this.angularVelocity = angularVelocity
+        this.eTrackingResult = trackingResult.i
+        this.bPoseIsValid = if (poseIsValid) 1.b else 0.b
+        this.bDeviceIsConnected = if (deviceIsConnected) 1.b else 0.b
     }
 
     constructor(peer: Pointer) : super(peer) {
@@ -1387,20 +1387,21 @@ fun buttonMaskFromId(id: EVRButtonId) = 1L shl id.i
 /** used for controller button events */
 open class VREvent_Controller : Structure {
 
+    /** EVRButtonId value    */
     @JvmField
-    var button_internal = 0  // openvr.lib.EVRButtonId value
+    var _button = 0
     var button
         set(value) {
-            button_internal = value.i
+            _button = value.i
         }
-        get() = EVRButtonId.of(button_internal)
+        get() = EVRButtonId.of(_button)
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("button_internal")
+    override fun getFieldOrder(): List<String> = listOf("_button")
 
     constructor(button: EVRButtonId) {
-        this.button_internal = button.i
+        this._button = button.i
     }
 
     constructor(peer: Pointer) : super(peer) {
@@ -1431,22 +1432,23 @@ open class VREvent_Mouse : Structure {
     var x = 0f
     @JvmField
     var y = 0f
+    /** EVRButtonId value    */
     @JvmField
-    var button_internal = 0  // openvr.lib.EVRMouseButton value
+    var _button = 0
     var button
         set(value) {
-            button_internal = value.i
+            _button = value.i
         }
-        get() = EVRMouseButton.of(button_internal)
+        get() = EVRMouseButton.of(_button)
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("x", "y", "button_internal")
+    override fun getFieldOrder(): List<String> = listOf("x", "y", "_button")
 
     constructor(x: Float, y: Float, button: EVRMouseButton) {
         this.x = x
         this.y = y
-        this.button_internal = button.i
+        this._button = button.i
     }
 
     constructor(peer: Pointer) : super(peer) {
@@ -1462,19 +1464,19 @@ open class VREvent_Scroll : Structure {
 
     // movement in fraction of the pad traversed since last delta, 1.0 for a full swipe
     @JvmField
-    var xdelta = 0f
+    var xDelta = 0f
     @JvmField
-    var ydelta = 0f
+    var yDelta = 0f
     @JvmField
     var repeatCount = 0
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("xdelta", "ydelta", "repeatCount")
+    override fun getFieldOrder(): List<String> = listOf("xDelta", "yDelta", "repeatCount")
 
-    constructor(xdelta: Float, ydelta: Float, repeatCount: Int) {
-        this.xdelta = xdelta
-        this.ydelta = ydelta
+    constructor(xDelta: Float, yDelta: Float, repeatCount: Int) {
+        this.xDelta = xDelta
+        this.yDelta = yDelta
         this.repeatCount = repeatCount
     }
 
