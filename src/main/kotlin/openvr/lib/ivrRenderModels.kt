@@ -41,6 +41,7 @@ enum class EVRRenderModelError(@JvmField val i: Int) {
         fun of(i: Int) = values().first { it.i == i }
     }
 
+    /** Note: can't use `val name` because you can't overwrite the Enum::name   */
     fun getName() = vrRenderModels!!.getRenderModelErrorNameFromEnum(this)
 }
 
