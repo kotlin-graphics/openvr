@@ -88,14 +88,14 @@ open class IVRApplications : Structure {
     }
 
     /** Launches an instance of an application of value template, with its app key being newAppKey (which must be unique) and optionally override sections
-     *  from the manifest file via openvr.lib.AppOverrideKeys_t     */
-    fun launchTemplateApplication(templateAppKey: String, newAppKey: String, keys: AppOverrideKeys_t.ByReference, keysCount: Int) = EVRApplicationError.of(LaunchTemplateApplication!!.invoke(templateAppKey, newAppKey, keys, keysCount))
+     *  from the manifest file via openvr.lib.AppOverrideKeys     */
+    fun launchTemplateApplication(templateAppKey: String, newAppKey: String, keys: AppOverrideKeys.ByReference, keysCount: Int) = EVRApplicationError.of(LaunchTemplateApplication!!.invoke(templateAppKey, newAppKey, keys, keysCount))
 
     @JvmField
     var LaunchTemplateApplication: LaunchTemplateApplication_callback? = null
 
     interface LaunchTemplateApplication_callback : Callback {
-        fun invoke(pchTemplateAppKey: String, pchNewAppKey: String, pKeys: AppOverrideKeys_t.ByReference, unKeys: Int): Int
+        fun invoke(pchTemplateAppKey: String, pchNewAppKey: String, pKeys: AppOverrideKeys.ByReference, unKeys: Int): Int
     }
 
     /** launches the application currently associated with this mime value and passes it the option args, typically the filename or object name of the item being

@@ -9,7 +9,7 @@ import java.util.*
 // ivrnotifications.h =============================================================================================================================================
 
 // Used for passing graphic data
-open class NotificationBitmap_t : Structure {
+open class NotificationBitmap : Structure {
 
     @JvmField
     var imageData: Pointer? = null
@@ -33,8 +33,8 @@ open class NotificationBitmap_t : Structure {
         read()
     }
 
-    class ByReference : NotificationBitmap_t(), Structure.ByReference
-    class ByValue : NotificationBitmap_t(), Structure.ByValue
+    class ByReference : NotificationBitmap(), Structure.ByReference
+    class ByValue : NotificationBitmap(), Structure.ByValue
 }
 
 /** Be aware that the notification value is used as 'priority' to pick the next notification */
@@ -96,12 +96,12 @@ open class IVRNotifications : Structure {
      *  An overlay handle is required to create a notification, as otherwise it would be impossible for a user to act on it.
      *  To create a two-line notification, use a line break ('\n') to split the text into two lines.
      *  The image argument may be NULL, in which case the specified overlay's icon will be used instead. */
-    fun createNotification(overlayHandle: VROverlayHandle, userValue: Long, type: EVRNotificationType, text: String, style: EVRNotificationStyle, image: NotificationBitmap_t.ByReference, /* out */ notificationId: VRNotificationId_ByReference) = EVRNotificationError.of(CreateNotification!!(overlayHandle, userValue, type.i, text, style.i, image, notificationId))
+    fun createNotification(overlayHandle: VROverlayHandle, userValue: Long, type: EVRNotificationType, text: String, style: EVRNotificationStyle, image: NotificationBitmap.ByReference, /* out */ notificationId: VRNotificationId_ByReference) = EVRNotificationError.of(CreateNotification!!(overlayHandle, userValue, type.i, text, style.i, image, notificationId))
 
     @JvmField var CreateNotification: CreateNotification_callback? = null
 
     interface CreateNotification_callback : Callback {
-        operator fun invoke(ulOverlayHandle: VROverlayHandle, ulUserValue: Long, type: Int, pchText: String, style: Int, pImage: NotificationBitmap_t.ByReference, /* out */ pNotificationId: VRNotificationId_ByReference): Int
+        operator fun invoke(ulOverlayHandle: VROverlayHandle, ulUserValue: Long, type: Int, pchText: String, style: Int, pImage: NotificationBitmap.ByReference, /* out */ pNotificationId: VRNotificationId_ByReference): Int
     }
 
     /** Destroy a notification, hiding it first if it currently shown to the user. */

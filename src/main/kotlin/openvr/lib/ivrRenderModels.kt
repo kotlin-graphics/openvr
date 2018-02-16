@@ -64,7 +64,7 @@ enum class EVRComponentProperty(@JvmField val i: Int) {
 }
 
 /** Describes state information about a render-model component, including transforms and other dynamic properties */
-open class RenderModel_ComponentState_t : Structure {
+open class RenderModel_ComponentState : Structure {
 
     /** Transform required when drawing the component render model  */
     @JvmField
@@ -89,12 +89,12 @@ open class RenderModel_ComponentState_t : Structure {
         read()
     }
 
-    class ByReference : RenderModel_ComponentState_t(), Structure.ByReference
-    class ByValue : RenderModel_ComponentState_t(), Structure.ByValue
+    class ByReference : RenderModel_ComponentState(), Structure.ByReference
+    class ByValue : RenderModel_ComponentState(), Structure.ByValue
 }
 
 /** A single vertex in a render model */
-open class RenderModel_Vertex_t : Structure {
+open class RenderModel_Vertex : Structure {
 
     /** position in meters in device space  */
     @JvmField
@@ -127,8 +127,8 @@ open class RenderModel_Vertex_t : Structure {
         read()
     }
 
-    class ByReference : RenderModel_Vertex_t(), Structure.ByReference
-    class ByValue : RenderModel_Vertex_t(), Structure.ByValue
+    class ByReference : RenderModel_Vertex(), Structure.ByReference
+    class ByValue : RenderModel_Vertex(), Structure.ByValue
 
     companion object {
         @JvmStatic
@@ -143,7 +143,7 @@ open class RenderModel_Vertex_t : Structure {
 }
 
 /** A texture map for use on a render model */
-open class RenderModel_TextureMap_t : Structure {
+open class RenderModel_TextureMap : Structure {
 
     // width and height of the texture map in pixels
     @JvmField
@@ -173,12 +173,12 @@ open class RenderModel_TextureMap_t : Structure {
         read()
     }
 
-    class ByReference : RenderModel_TextureMap_t, Structure.ByReference {
+    class ByReference : RenderModel_TextureMap, Structure.ByReference {
         constructor() : super()
         constructor(peer: Pointer) : super(peer)
     }
 
-    class ByValue : RenderModel_TextureMap_t(), Structure.ByValue
+    class ByValue : RenderModel_TextureMap(), Structure.ByValue
 }
 
 /**  Session unique texture identifier. Rendermodels which share the same texture will have the same id.
@@ -189,11 +189,11 @@ typealias TextureId = Int
 val INVALID_TEXTURE_ID = -1
 
 /** A texture map for use on a render model */
-open class RenderModel_t : Structure {
+open class RenderModel : Structure {
 
     /** Vertex data for the mesh    */
     @JvmField
-    var rVertexData: RenderModel_Vertex_t.ByReference? = null
+    var rVertexData: RenderModel_Vertex.ByReference? = null
     /** Number of vertices in the vertex data   */
     @JvmField
     var vertexCount = 0
@@ -208,14 +208,14 @@ open class RenderModel_t : Structure {
     var diffuseTextureId = INVALID_TEXTURE_ID
 
     val vertices
-        get() = rVertexData?.pointer?.getByteArray(0, vertexCount * RenderModel_Vertex_t.SIZE)
+        get() = rVertexData?.pointer?.getByteArray(0, vertexCount * RenderModel_Vertex.SIZE)
 
     val indices
         get() = rIndexData?.pointer?.getByteArray(0, triangleCount * 3 * Short.BYTES)
 
     constructor()
 
-    constructor(vertexData: RenderModel_Vertex_t.ByReference, vertexCount: Int, indexData: ShortByReference, triangleCount: Int,
+    constructor(vertexData: RenderModel_Vertex.ByReference, vertexCount: Int, indexData: ShortByReference, triangleCount: Int,
                 diffuseTextureId: Int) {
         this.rVertexData = vertexData
         this.vertexCount = vertexCount
@@ -231,16 +231,16 @@ open class RenderModel_t : Structure {
         read()
     }
 
-    class ByReference : RenderModel_t, Structure.ByReference {
+    class ByReference : RenderModel, Structure.ByReference {
         constructor() : super()
         constructor(peer: Pointer) : super(peer)
     }
 
-    class ByValue : RenderModel_t(), Structure.ByValue
+    class ByValue : RenderModel(), Structure.ByValue
 }
 
 /** A texture map for use on a render model */
-open class RenderModel_ControllerMode_State_t : Structure {
+open class RenderModel_ControllerMode_State : Structure {
 
     /** is this controller currently set to be in a scroll wheel mode   */
     @JvmField
@@ -263,8 +263,8 @@ open class RenderModel_ControllerMode_State_t : Structure {
         read()
     }
 
-    class ByReference : RenderModel_ControllerMode_State_t(), Structure.ByReference
-    class ByValue : RenderModel_ControllerMode_State_t(), Structure.ByValue
+    class ByReference : RenderModel_ControllerMode_State(), Structure.ByReference
+    class ByValue : RenderModel_ControllerMode_State(), Structure.ByValue
 }
 
 open class IVRRenderModels : Structure {
@@ -288,13 +288,13 @@ open class IVRRenderModels : Structure {
 
     /** Frees a previously returned render model
      *   It is safe to call this on a null ptr. */
-    infix fun freeRenderModel(renderModel: RenderModel_t.ByReference) = FreeRenderModel!!(renderModel)
+    infix fun freeRenderModel(renderModel: RenderModel.ByReference) = FreeRenderModel!!(renderModel)
 
     @JvmField
     var FreeRenderModel: FreeRenderModel_callback? = null
 
     interface FreeRenderModel_callback : Callback {
-        operator fun invoke(pRenderModel: RenderModel_t.ByReference)
+        operator fun invoke(pRenderModel: RenderModel.ByReference)
     }
 
     /** Loads and returns a texture for use in the application. */
@@ -309,13 +309,13 @@ open class IVRRenderModels : Structure {
 
     /** Frees a previously returned texture
      *  It is safe to call this on a null ptr. */
-    infix fun freeTexture(texture: RenderModel_TextureMap_t.ByReference) = FreeTexture!!(texture)
+    infix fun freeTexture(texture: RenderModel_TextureMap.ByReference) = FreeTexture!!(texture)
 
     @JvmField
     var FreeTexture: FreeTexture_callback? = null
 
     interface FreeTexture_callback : Callback {
-        operator fun invoke(pTexture: RenderModel_TextureMap_t.ByReference)
+        operator fun invoke(pTexture: RenderModel_TextureMap.ByReference)
     }
 
     /** Creates a D3D11 texture and loads data into it. */
@@ -448,13 +448,13 @@ open class IVRRenderModels : Structure {
      *  If the renderModelName or componentName is invalid, this will return false (and transforms will be set to identity).
      *  Otherwise, return true
      *  Note: For dynamic objects, visibility may be dynamic. (I.e., true/false will be returned based on controller state and controller mode state ) */
-    fun getComponentState(renderModelName: String, componentName: String, controllerState: VRControllerState.ByReference, state: RenderModel_ControllerMode_State_t.ByReference, componentState: RenderModel_ComponentState_t.ByReference) = GetComponentState!!(renderModelName, componentName, controllerState, state, componentState)
+    fun getComponentState(renderModelName: String, componentName: String, controllerState: VRControllerState.ByReference, state: RenderModel_ControllerMode_State.ByReference, componentState: RenderModel_ComponentState.ByReference) = GetComponentState!!(renderModelName, componentName, controllerState, state, componentState)
 
     @JvmField
     var GetComponentState: GetComponentState_callback? = null
 
     interface GetComponentState_callback : Callback {
-        operator fun invoke(pchRenderModelName: String, pchComponentName: String, pControllerState: VRControllerState.ByReference, pState: RenderModel_ControllerMode_State_t.ByReference, pComponentState: RenderModel_ComponentState_t.ByReference): Boolean
+        operator fun invoke(pchRenderModelName: String, pchComponentName: String, pControllerState: VRControllerState.ByReference, pState: RenderModel_ControllerMode_State.ByReference, pComponentState: RenderModel_ComponentState.ByReference): Boolean
     }
 
     /** Returns true if the render model has a component with the specified name */

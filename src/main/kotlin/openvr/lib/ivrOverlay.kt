@@ -79,7 +79,7 @@ enum class VROverlayFlags(@JvmField val i: Int) {
     /** Indicates that the overlay should dim/brighten to show gamepad focus    */
     ShowGamepadFocus(5),
 
-    /** When in VROverlayInputMethod_Mouse you can optionally enable sending VRScroll_t */
+    /** When in VROverlayInputMethod_Mouse you can optionally enable sending VRScroll */
     SendVRScrollEvents(6),
     SendVRTouchpadEvents(7),
 
@@ -128,7 +128,7 @@ enum class VRMessageOverlayResponse(@JvmField val i: Int) {
     }
 }
 
-open class VROverlayIntersectionParams_t : Structure {
+open class VROverlayIntersectionParams : Structure {
 
     @JvmField
     var source = HmdVec3()
@@ -156,11 +156,11 @@ open class VROverlayIntersectionParams_t : Structure {
         read()
     }
 
-    class ByReference : VROverlayIntersectionParams_t(), Structure.ByReference
-    class ByValue : VROverlayIntersectionParams_t(), Structure.ByValue
+    class ByReference : VROverlayIntersectionParams(), Structure.ByReference
+    class ByValue : VROverlayIntersectionParams(), Structure.ByValue
 }
 
-open class VROverlayIntersectionResults_t : Structure {
+open class VROverlayIntersectionResults : Structure {
 
     @JvmField
     var point = HmdVec3()
@@ -186,8 +186,8 @@ open class VROverlayIntersectionResults_t : Structure {
         read()
     }
 
-    class ByReference : VROverlayIntersectionResults_t(), Structure.ByReference
-    class ByValue : VROverlayIntersectionResults_t(), Structure.ByValue
+    class ByReference : VROverlayIntersectionResults(), Structure.ByReference
+    class ByValue : VROverlayIntersectionResults(), Structure.ByValue
 }
 
 // Input modes for the Big Picture gamepad text entry
@@ -238,7 +238,7 @@ enum class EVROverlayIntersectionMaskPrimitiveType(@JvmField val i: Int) {
     }
 }
 
-open class IntersectionMaskRectangle_t : Structure {
+open class IntersectionMaskRectangle : Structure {
 
     @JvmField
     var topLeftX = 0f
@@ -264,11 +264,11 @@ open class IntersectionMaskRectangle_t : Structure {
         read()
     }
 
-    class ByReference : IntersectionMaskRectangle_t(), Structure.ByReference
-    class ByValue : IntersectionMaskRectangle_t(), Structure.ByValue
+    class ByReference : IntersectionMaskRectangle(), Structure.ByReference
+    class ByValue : IntersectionMaskRectangle(), Structure.ByValue
 }
 
-open class IntersectionMaskCircle_t : Structure {
+open class IntersectionMaskCircle : Structure {
 
     @JvmField
     var centerX = 0f
@@ -291,32 +291,32 @@ open class IntersectionMaskCircle_t : Structure {
         read()
     }
 
-    class ByReference : IntersectionMaskRectangle_t(), Structure.ByReference
-    class ByValue : IntersectionMaskRectangle_t(), Structure.ByValue
+    class ByReference : IntersectionMaskRectangle(), Structure.ByReference
+    class ByValue : IntersectionMaskRectangle(), Structure.ByValue
 }
 
 /** NOTE!!! If you change this you MUST manually update openvr_interop.cs.py and openvr_api_flat.h.py */
-abstract class VROverlayIntersectionMaskPrimitive_Data_t : Union() {
+abstract class VROverlayIntersectionMaskPrimitive_Data : Union() {
 
-    class ByValue : VROverlayIntersectionMaskPrimitive_Data_t(), Structure.ByValue
+    class ByValue : VROverlayIntersectionMaskPrimitive_Data(), Structure.ByValue
 
-    var rectangle: IntersectionMaskRectangle_t? = null
-    var circle: IntersectionMaskCircle_t? = null
+    var rectangle: IntersectionMaskRectangle? = null
+    var circle: IntersectionMaskCircle? = null
 }
 
-open class VROverlayIntersectionMaskPrimitive_t : Structure {
+open class VROverlayIntersectionMaskPrimitive : Structure {
 
     @JvmField
     var primitiveType = 0
     @JvmField
-    var primitive: VROverlayIntersectionMaskPrimitive_Data_t? = null
+    var primitive: VROverlayIntersectionMaskPrimitive_Data? = null
 
     constructor()
 
-    constructor(primitiveType: EVROverlayIntersectionMaskPrimitiveType, primitive: VROverlayIntersectionMaskPrimitive_Data_t) :
+    constructor(primitiveType: EVROverlayIntersectionMaskPrimitiveType, primitive: VROverlayIntersectionMaskPrimitive_Data) :
             this(primitiveType.i, primitive)
 
-    constructor(m_nPrimitiveType: Int, m_Primitive: VROverlayIntersectionMaskPrimitive_Data_t) {
+    constructor(m_nPrimitiveType: Int, m_Primitive: VROverlayIntersectionMaskPrimitive_Data) {
         this.primitiveType = m_nPrimitiveType
         this.primitive = m_Primitive
     }
@@ -327,8 +327,8 @@ open class VROverlayIntersectionMaskPrimitive_t : Structure {
         read()
     }
 
-    class ByReference : VROverlayIntersectionMaskPrimitive_t(), Structure.ByReference
-    class ByValue : VROverlayIntersectionMaskPrimitive_t(), Structure.ByValue
+    class ByReference : VROverlayIntersectionMaskPrimitive(), Structure.ByReference
+    class ByValue : VROverlayIntersectionMaskPrimitive(), Structure.ByValue
 }
 
 open class IVROverlay : Structure {
@@ -898,13 +898,13 @@ open class IVROverlay : Structure {
 
     /** Computes the overlay-space pixel coordinates of where the ray intersects the overlay with the specified settings. Returns false if there is no
      *  intersection. */
-    fun computeOverlayIntersection(overlayHandle: VROverlayHandle, params: VROverlayIntersectionParams_t.ByReference, results: VROverlayIntersectionResults_t.ByReference) = ComputeOverlayIntersection!!(overlayHandle, params, results)
+    fun computeOverlayIntersection(overlayHandle: VROverlayHandle, params: VROverlayIntersectionParams.ByReference, results: VROverlayIntersectionResults.ByReference) = ComputeOverlayIntersection!!(overlayHandle, params, results)
 
     @JvmField
     var ComputeOverlayIntersection: ComputeOverlayIntersection_callback? = null
 
     interface ComputeOverlayIntersection_callback : Callback {
-        operator fun invoke(ulOverlayHandle: VROverlayHandle, pParams: VROverlayIntersectionParams_t.ByReference, pResults: VROverlayIntersectionResults_t.ByReference): Boolean
+        operator fun invoke(ulOverlayHandle: VROverlayHandle, pParams: VROverlayIntersectionParams.ByReference, pResults: VROverlayIntersectionResults.ByReference): Boolean
     }
 
     /** Returns true if the specified overlay is the hover target. An overlay is the hover target when it is the last overlay "moused over" by the virtual mouse
@@ -1223,13 +1223,13 @@ open class IVROverlay : Structure {
     /** Sets a list of primitives to be used for controller ray intersection typically the size of the underlying UI in pixels
      *  (not in world space). */
     @JvmOverloads
-    fun setOverlayIntersectionMask(overlayHandle: VROverlayHandle, maskPrimitives: VROverlayIntersectionMaskPrimitive_t.ByReference, numMaskPrimitives: Int, primitiveSize: Int = Int.BYTES + Pointer.SIZE) = SetOverlayIntersectionMask!!(overlayHandle, maskPrimitives, numMaskPrimitives, primitiveSize)
+    fun setOverlayIntersectionMask(overlayHandle: VROverlayHandle, maskPrimitives: VROverlayIntersectionMaskPrimitive.ByReference, numMaskPrimitives: Int, primitiveSize: Int = Int.BYTES + Pointer.SIZE) = SetOverlayIntersectionMask!!(overlayHandle, maskPrimitives, numMaskPrimitives, primitiveSize)
 
     @JvmField
     var SetOverlayIntersectionMask: SetOverlayIntersectionMask_callback? = null
 
     interface SetOverlayIntersectionMask_callback : Callback {
-        operator fun invoke(ulOverlayHandle: VROverlayHandle, pMaskPrimitives: VROverlayIntersectionMaskPrimitive_t.ByReference, unNumMaskPrimitives: Int, unPrimitiveSize: Int): EVROverlayError
+        operator fun invoke(ulOverlayHandle: VROverlayHandle, pMaskPrimitives: VROverlayIntersectionMaskPrimitive.ByReference, unNumMaskPrimitives: Int, unPrimitiveSize: Int): EVROverlayError
     }
 
 

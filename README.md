@@ -26,11 +26,11 @@ More information on OpenVR and SteamVR can be found on http://steamvr.com
 - original comments preserved and properly formatted
 - every struct method is offered also much more user friendly offering also full interoperability with glm, `getProjectionMatrix` returns, for example, directly a glm `Mat4`
 ```kotlin
-IVRSystem.GetProjectionMatrix(eEye: Int, fNearZ: Float, fFarZ: Float): HmdMatrix44_t.ByValue
+IVRSystem.GetProjectionMatrix(eEye: Int, fNearZ: Float, fFarZ: Float): HmdMatrix44.ByValue
 ``` 
 because of the jna binding requirements, shall be called as:
 ```kotlin
-IVRSystem.GetProjectionMatrix.invoke(eEye: Int, fNearZ: Float, fFarZ: Float): HmdMatrix44_t.ByValue
+IVRSystem.GetProjectionMatrix.invoke(eEye: Int, fNearZ: Float, fFarZ: Float): HmdMatrix44.ByValue
 ```
 but there is also the possibility to simply call:
 ```kotlin
@@ -48,7 +48,7 @@ getStringTrackedDeviceProperty(..): String
 ```
 that returns directly the resulting string, bringing down a lot of boilerplate code
 
-- array classes `[]` operator, included `RenderModel_Vertex_t`
+- array classes `[]` operator, included `RenderModel_Vertex`
 - concise enumerators, e.g. `EVRComponentProperty.VRComponentProperty_IsStatic` is `EVRComponentProperty.IsStatic`
 - `SteamVRListener` for event listener. Instantiate a class extending it, call `.poll()` on it at the begin of each frame and override the corresponding methods you are looking for, such as `buttonPress(left: Boolean, button: EVRButtonId)`
 

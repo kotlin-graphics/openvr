@@ -811,7 +811,7 @@ enum class EVRApplicationTransitionState(@JvmField val i: Int) {
 
 fun Int.toEVRApplicationTransitionState() = EVRApplicationTransitionState.values().first { it.i == this }
 
-open class AppOverrideKeys_t : Structure {
+open class AppOverrideKeys : Structure {
 
     @JvmField
     var pchKey = "" // TODO check
@@ -831,8 +831,8 @@ open class AppOverrideKeys_t : Structure {
 
     override fun getFieldOrder(): List<String> = Arrays.asList("pchKey", "pchValue")
 
-    class ByReference : AppOverrideKeys_t(), Structure.ByReference
-    class ByValue : AppOverrideKeys_t(), Structure.ByValue
+    class ByReference : AppOverrideKeys(), Structure.ByReference
+    class ByValue : AppOverrideKeys(), Structure.ByValue
 }
 
 /** Currently recognized mime types */
