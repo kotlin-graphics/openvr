@@ -23,7 +23,7 @@ open class IVRSystem : Structure {
         get() {
             val w = IntByReference()
             val h = IntByReference()
-            GetRecommendedRenderTargetSize!!.invoke(w, h)
+            GetRecommendedRenderTargetSize!!(w, h)
             return Vec2i(w.value, h.value)
         }
 
@@ -31,55 +31,54 @@ open class IVRSystem : Structure {
     var GetRecommendedRenderTargetSize: GetRecommendedRenderTargetSize_callback? = null
 
     interface GetRecommendedRenderTargetSize_callback : Callback {
-        fun invoke(pnWidth: IntByReference, pnHeight: IntByReference)
+        operator fun invoke(pnWidth: IntByReference, pnHeight: IntByReference)
     }
 
     /** The projection matrix for the specified eye */
-    fun getProjectionMatrix(eEye: EVREye, fNearZ: Float, fFarZ: Float, res: Mat4 = Mat4()): Mat4 {
-        val proj = GetProjectionMatrix!!.invoke(eEye.i, fNearZ, fFarZ)
+    fun getProjectionMatrix(eye: EVREye, nearZ: Float, farZ: Float, res: Mat4 = Mat4()): Mat4 {
+        val m = GetProjectionMatrix!!(eye.i, nearZ, farZ)
         return res.put(
-                proj[0], proj[4], proj[8], proj[12],
-                proj[1], proj[5], proj[9], proj[13],
-                proj[2], proj[6], proj[10], proj[14],
-                proj[3], proj[7], proj[11], proj[15])
+                m[0], m[4], m[8], m[12],
+                m[1], m[5], m[9], m[13],
+                m[2], m[6], m[10], m[14],
+                m[3], m[7], m[11], m[15])
     }
 
     @JvmField
     var GetProjectionMatrix: GetProjectionMatrix_callback? = null
 
     interface GetProjectionMatrix_callback : Callback {
-        fun invoke(eEye: Int, fNearZ: Float, fFarZ: Float): HmdMat44.ByValue
+        operator fun invoke(eEye: Int, fNearZ: Float, fFarZ: Float): HmdMat44.ByValue
     }
 
     /** The components necessary to build your own projection matrix in case your application is doing something fancy like infinite Z  */
-    fun getProjectionRaw(eEye: EVREye, pfLeft: FloatByReference, pfRight: FloatByReference, pfTop: FloatByReference,
-                         pfBottom: FloatByReference) = GetProjectionRaw!!.invoke(eEye.i, pfLeft, pfRight, pfTop, pfBottom)
+    fun getProjectionRaw(eye: EVREye, left: FloatByReference, right: FloatByReference, top: FloatByReference, bottom: FloatByReference) = GetProjectionRaw!!(eye.i, left, right, top, bottom)
 
     @JvmField
     var GetProjectionRaw: GetProjectionRaw_callback? = null
 
     interface GetProjectionRaw_callback : Callback {
-        fun invoke(eEye: Int, pfLeft: FloatByReference, pfRight: FloatByReference, pfTop: FloatByReference, pfBottom: FloatByReference)
+        operator fun invoke(eEye: Int, pfLeft: FloatByReference, pfRight: FloatByReference, pfTop: FloatByReference, pfBottom: FloatByReference)
     }
 
     /** Gets the result of the distortion function for the specified eye and input UVs.
      *  UVs go from 0,0 in the upper left of that eye's viewport and 1,1 in the lower right of that eye's viewport.
      *  Returns true for success. Otherwise, returns false, and distortion coordinates are not suitable.    */
-    fun computeDistortion(eEye: EVREye, fU: Float, fV: Float, distortionCoordinates: DistortionCoordinates.ByReference) = ComputeDistortion!!.invoke(eEye.i, fU, fV, distortionCoordinates)
+    fun computeDistortion(eye: EVREye, u: Float, v: Float, distortionCoordinates: DistortionCoordinates.ByReference) = ComputeDistortion!!(eye.i, u, v, distortionCoordinates)
 
     @JvmField
     var ComputeDistortion: ComputeDistortion_callback? = null
 
     interface ComputeDistortion_callback : Callback {
-        fun invoke(eEye: Int, fU: Float, fV: Float, pDistortionCoordinates_t: DistortionCoordinates.ByReference): Boolean
+        operator fun invoke(eEye: Int, fU: Float, fV: Float, pDistortionCoordinates_t: DistortionCoordinates.ByReference): Boolean
     }
 
     /** Returns the transform from eye space to the head space. Eye space is the per-eye flavor of head space that provides stereo
      *  disparity.
      *  Instead of Model * View * Projection the sequence is Model * View * Eye^-1 * Projection.
      *  Normally View and Eye^-1 will be multiplied together and treated as View in your application.   */
-    fun getEyeToHeadTransform(eEye: EVREye, res: Mat4 = Mat4()): Mat4 {
-        val m = GetEyeToHeadTransform!!.invoke(eEye.i)
+    fun getEyeToHeadTransform(eye: EVREye, res: Mat4 = Mat4()): Mat4 {
+        val m = GetEyeToHeadTransform!!(eye.i)
         return res.put(
                 m[0], m[4], m[8], 0f,
                 m[1], m[5], m[9], 0f,
@@ -91,49 +90,49 @@ open class IVRSystem : Structure {
     var GetEyeToHeadTransform: GetEyeToHeadTransform_callback? = null
 
     interface GetEyeToHeadTransform_callback : Callback {
-        fun invoke(eEye: Int): HmdMat34.ByValue
+        operator fun invoke(eEye: Int): HmdMat34.ByValue
     }
 
     /** Returns the number of elapsed seconds since the last recorded vsync event. This will come from a vsync timer event in the timer
      *  if possible or from the application-reported time if that is not available.
      *  If no vsync times are available the function will return zero for vsync time and frame counter and return false from the method.    */
-    fun getTimeSinceLastVsync(pfSecondsSinceLastVsync: FloatByReference, pulFrameCounter: LongByReference) = GetTimeSinceLastVsync!!.invoke(pfSecondsSinceLastVsync, pulFrameCounter)
+    fun getTimeSinceLastVsync(secondsSinceLastVsync: FloatByReference, frameCounter: LongByReference) = GetTimeSinceLastVsync!!(secondsSinceLastVsync, frameCounter)
 
     @JvmField
     var GetTimeSinceLastVsync: GetTimeSinceLastVsync_callback? = null
 
     interface GetTimeSinceLastVsync_callback : Callback {
-        fun invoke(pfSecondsSinceLastVsync: FloatByReference, pulFrameCounter: LongByReference): Boolean
+        operator fun invoke(pfSecondsSinceLastVsync: FloatByReference, pulFrameCounter: LongByReference): Boolean
     }
 
     /** [D3D9 Only]
      * Returns the adapter index that the user should pass into CreateDevice to set up D3D9 in such a way that it can go full screen
      * exclusive on the HMD.
      * Returns -1 if there was an error.     */
-    val d3d9AdapterIndex get() = GetD3D9AdapterIndex!!.invoke()
+    val d3d9AdapterIndex get() = GetD3D9AdapterIndex!!()
 
     @JvmField
     var GetD3D9AdapterIndex: GetD3D9AdapterIndex_callback? = null
 
     interface GetD3D9AdapterIndex_callback : Callback {
-        fun invoke(): Int
+        operator fun invoke(): Int
     }
 
     /** [D3D10/11 Only]
      * Returns the adapter index that the user should pass into EnumAdapters to create the device and swap chain in DX10 and DX11.
      * If an error occurs the index will be set to -1.  */
-    fun getDXGIOutputInfo(pnAdapterIndex: IntByReference) = GetDXGIOutputInfo!!.invoke(pnAdapterIndex)
+    fun getDXGIOutputInfo(adapterIndex: IntByReference) = GetDXGIOutputInfo!!(adapterIndex)
 
     @JvmField
     var GetDXGIOutputInfo: GetDXGIOutputInfo_callback? = null
 
     interface GetDXGIOutputInfo_callback : Callback {
-        fun invoke(pnAdapterIndex: IntByReference)
+        operator fun invoke(pnAdapterIndex: IntByReference)
     }
 
     /** Returns platform- and texture-type specific adapter identification so that applications and the compositor are
      *  creating textures and swap chains on the same GPU. If an error occurs the device will be set to 0.
-     *  pInstance is an optional parameter that is required only when textureType is TextureType_Vulkan.
+     *  instance is an optional parameter that is required only when textureType is TextureType_Vulkan.
      *  [D3D10/11/12 Only (D3D9 Not Supported)]
      *  Returns the adapter LUID that identifies the GPU attached to the HMD. The user should enumerate all adapters
      *  using IDXGIFactory::EnumAdapters and IDXGIAdapter::GetDesc to find the adapter with the matching LUID, or use
@@ -141,7 +140,7 @@ open class IVRSystem : Structure {
      *  The discovered IDXGIAdapter should be used to create the device and swap chain.
      *  [Vulkan Only]
      *  Returns the VkPhysicalDevice that should be used by the application.
-     *  pInstance must be the instance the application will use to query for the VkPhysicalDevice. The application must
+     *  instance must be the instance the application will use to query for the VkPhysicalDevice. The application must
      *  create the VkInstance with extensions returned by IVRCompositor::GetVulkanInstanceExtensionsRequired enabled.
      *  [macOS Only]
      *  For TextureType_IOSurface returns the id<MTLDevice> that should be used by the application.
@@ -150,14 +149,13 @@ open class IVRSystem : Structure {
      *  new kCGLRPRegistryIDLow and kCGLRPRegistryIDHigh CGLRendererProperty values in the 10.13 SDK.
      *  Pre 10.13 for TextureType_OpenGL returns 0, as there is no dependable way to correlate the HMDs MTLDevice
      *  with a GL Renderer.    */
-    fun getOutputDevice_callback(pnDevice: LongByReference, textureType: ETextureType, pInstance: VkInstance? = null) =
-            GetOutputDevice!!.invoke(pnDevice, textureType.i, pInstance)
+    fun getOutputDevice_callback(device: LongByReference, textureType: ETextureType, instance: VkInstance? = null) = GetOutputDevice!!(device, textureType.i, instance)
 
     @JvmField
     var GetOutputDevice: GetOutputDevice_callback? = null
 
     interface GetOutputDevice_callback : Callback {
-        fun invoke(pnDevice: LongByReference, textureType: Int, pInstance: VkInstance? = null)
+        operator fun invoke(pnDevice: LongByReference, textureType: Int, pInstance: VkInstance? = null)
     }
 
     // ------------------------------------
@@ -165,23 +163,23 @@ open class IVRSystem : Structure {
     // ------------------------------------
 
     /** Use to determine if the headset display is part of the desktop (i.e. extended) or hidden (i.e. direct mode). */
-    val isDisplayOnDesktop get() = IsDisplayOnDesktop!!.invoke()
+    val isDisplayOnDesktop get() = IsDisplayOnDesktop!!()
 
     @JvmField
     var IsDisplayOnDesktop: IsDisplayOnDesktop_callback? = null
 
     interface IsDisplayOnDesktop_callback : Callback {
-        fun invoke(): Boolean
+        operator fun invoke(): Boolean
     }
 
     /** Set the display visibility (true = extended, false = direct mode).  Return value of true indicates that the change was successful. */
-    fun setDisplayVisibility(bIsVisibleOnDesktop: Boolean): Boolean = SetDisplayVisibility!!.invoke(bIsVisibleOnDesktop)
+    infix fun setDisplayVisibility(isVisibleOnDesktop: Boolean): Boolean = SetDisplayVisibility!!(isVisibleOnDesktop)
 
     @JvmField
     var SetDisplayVisibility: SetDisplayVisibility_callback? = null
 
     interface SetDisplayVisibility_callback : Callback {
-        fun invoke(bIsVisibleOnDesktop: Boolean): Boolean
+        operator fun invoke(bIsVisibleOnDesktop: Boolean): Boolean
     }
 
 
@@ -203,16 +201,13 @@ open class IVRSystem : Structure {
      *  Standing experiences should call this method with TrackingUniverseStanding and receive poses relative to the Chaperone Play Area.
      *  TrackingUniverseRawAndUncalibrated should probably not be used unless the application is the Chaperone calibration tool itself,
      *  but will provide poses relative to the hardware-specific coordinate system in the driver.     */
-    fun getDeviceToAbsoluteTrackingPose(eOrigin: ETrackingUniverseOrigin, fPredictedSecondsToPhotonsFromNow: Float,
-                                        pTrackedDevicePoseArray: TrackedDevicePose.ByReference, unTrackedDevicePoseArrayCount: Int) = GetDeviceToAbsoluteTrackingPose!!.invoke(eOrigin.i, fPredictedSecondsToPhotonsFromNow, pTrackedDevicePoseArray,
-            unTrackedDevicePoseArrayCount)
+    fun getDeviceToAbsoluteTrackingPose(origin: ETrackingUniverseOrigin, predictedSecondsToPhotonsFromNow: Float, trackedDevicePoseArray: TrackedDevicePose.ByReference, trackedDevicePoseArrayCount: Int) = GetDeviceToAbsoluteTrackingPose!!(origin.i, predictedSecondsToPhotonsFromNow, trackedDevicePoseArray, trackedDevicePoseArrayCount)
 
     @JvmField
     var GetDeviceToAbsoluteTrackingPose: GetDeviceToAbsoluteTrackingPose_callback? = null
 
     interface GetDeviceToAbsoluteTrackingPose_callback : Callback {
-        fun invoke(eOrigin: Int, fPredictedSecondsToPhotonsFromNow: Float, pTrackedDevicePoseArray: TrackedDevicePose.ByReference,
-                   unTrackedDevicePoseArrayCount: Int)
+        operator fun invoke(eOrigin: Int, fPredictedSecondsToPhotonsFromNow: Float, pTrackedDevicePoseArray: TrackedDevicePose.ByReference, unTrackedDevicePoseArrayCount: Int)
     }
 
     /** Sets the zero pose for the seated tracker coordinate system to the current position and yaw of the HMD.
@@ -224,13 +219,13 @@ open class IVRSystem : Structure {
      *  NOTE: This function overrides the user's previously saved seated zero pose and should only be called as the result of a user
      *  action.
      *  Users are also able to set their seated zero pose via the openvr.OpenVR Dashboard.     **/
-    fun resetSeatedZeroPose() = ResetSeatedZeroPose!!.invoke()
+    fun resetSeatedZeroPose() = ResetSeatedZeroPose!!()
 
     @JvmField
     var ResetSeatedZeroPose: ResetSeatedZeroPose_callback? = null
 
     interface ResetSeatedZeroPose_callback : Callback {
-        fun invoke()
+        operator fun invoke()
     }
 
     /** Returns the transform from the seated zero pose to the standing absolute tracking system. This allows applications to
@@ -238,83 +233,78 @@ open class IVRSystem : Structure {
      *
      *  The seated origin may or may not be inside the Play Area or Collision Bounds returned by openvr.lib.IVRChaperone.
      *  Its position depends on what the user has set from the Dashboard settings and previous calls to ResetSeatedZeroPose. */
-    val seatedZeroPoseToStandingAbsoluteTrackingPose get() = GetSeatedZeroPoseToStandingAbsoluteTrackingPose!!.invoke()
+    val seatedZeroPoseToStandingAbsoluteTrackingPose get() = GetSeatedZeroPoseToStandingAbsoluteTrackingPose!!()
 
     @JvmField
     var GetSeatedZeroPoseToStandingAbsoluteTrackingPose: GetSeatedZeroPoseToStandingAbsoluteTrackingPose_callback? = null
 
     interface GetSeatedZeroPoseToStandingAbsoluteTrackingPose_callback : Callback {
-        fun invoke(): HmdMat34.ByValue
+        operator fun invoke(): HmdMat34.ByValue
     }
 
     /** Returns the transform from the tracking origin to the standing absolute tracking system. This allows applications to convert
      *  from raw tracking space to the calibrated standing coordinate system. */
-    fun getRawZeroPoseToStandingAbsoluteTrackingPose(res: Mat4 = Mat4()) = GetRawZeroPoseToStandingAbsoluteTrackingPose!!.invoke().to(res)
+    fun getRawZeroPoseToStandingAbsoluteTrackingPose(res: Mat4 = Mat4()) = GetRawZeroPoseToStandingAbsoluteTrackingPose!!().to(res)
 
     @JvmField
     var GetRawZeroPoseToStandingAbsoluteTrackingPose: GetRawZeroPoseToStandingAbsoluteTrackingPose_callback? = null
 
     interface GetRawZeroPoseToStandingAbsoluteTrackingPose_callback : Callback {
-        fun invoke(): HmdMat34.ByValue
+        operator fun invoke(): HmdMat34.ByValue
     }
 
     /** Get a sorted array of device indices of a given class of tracked devices (e.g. controllers).  Devices are sorted right to left
      *  relative to the specified tracked device (default: hmd -- pass in -1 for absolute tracking space).
      *  Returns the number of devices in the list, or the size of the array needed if not large enough. */
     @JvmOverloads
-    fun getSortedTrackedDeviceIndicesOfClass(eTrackedDeviceClass: ETrackedDeviceClass,
-                                             punTrackedDeviceIndexArray: TrackedDeviceIndex_ByReference,
-                                             unTrackedDeviceIndexArrayCount: Int,
-                                             unRelativeToTrackedDeviceIndex: TrackedDeviceIndex = trackedDeviceIndex_Hmd) = GetSortedTrackedDeviceIndicesOfClass!!.invoke(eTrackedDeviceClass.i, punTrackedDeviceIndexArray, unTrackedDeviceIndexArrayCount,
-            unRelativeToTrackedDeviceIndex)
+    fun getSortedTrackedDeviceIndicesOfClass(trackedDeviceClass: ETrackedDeviceClass, trackedDeviceIndexArray: TrackedDeviceIndex_ByReference, trackedDeviceIndexArrayCount: Int, relativeToTrackedDeviceIndex: TrackedDeviceIndex = trackedDeviceIndex_Hmd) = GetSortedTrackedDeviceIndicesOfClass!!(trackedDeviceClass.i, trackedDeviceIndexArray, trackedDeviceIndexArrayCount, relativeToTrackedDeviceIndex)
 
     @JvmField
     var GetSortedTrackedDeviceIndicesOfClass: GetSortedTrackedDeviceIndicesOfClass_callback? = null
 
     interface GetSortedTrackedDeviceIndicesOfClass_callback : Callback {
-        fun invoke(eTrackedDeviceClass: Int, punTrackedDeviceIndexArray: TrackedDeviceIndex_ByReference, unTrackedDeviceIndexArrayCount: Int,
-                   unRelativeToTrackedDeviceIndex: TrackedDeviceIndex): Int
+        operator fun invoke(eTrackedDeviceClass: Int, punTrackedDeviceIndexArray: TrackedDeviceIndex_ByReference, unTrackedDeviceIndexArrayCount: Int, unRelativeToTrackedDeviceIndex: TrackedDeviceIndex): Int
     }
 
     /** Returns the level of activity on the device. */
-    fun getTrackedDeviceActivityLevel(unDeviceId: TrackedDeviceIndex) = EDeviceActivityLevel.of(GetTrackedDeviceActivityLevel!!.invoke(unDeviceId))
+    infix fun getTrackedDeviceActivityLevel(deviceId: TrackedDeviceIndex) = EDeviceActivityLevel.of(GetTrackedDeviceActivityLevel!!(deviceId))
 
     @JvmField
     var GetTrackedDeviceActivityLevel: GetTrackedDeviceActivityLevel_callback? = null
 
     interface GetTrackedDeviceActivityLevel_callback : Callback {
-        fun invoke(unDeviceId: TrackedDeviceIndex): Int
+        operator fun invoke(unDeviceId: TrackedDeviceIndex): Int
     }
 
     /** Convenience utility to apply the specified transform to the specified pose.
      *  This properly transforms all pose components, including velocity and angular velocity     */
-    fun invokeTransform(pOutputPose: TrackedDevicePose.ByReference, pTrackedDevicePose: TrackedDevicePose.ByReference, pTransform: HmdMat34.ByReference) = ApplyTransform!!.invoke(pOutputPose, pTrackedDevicePose, pTransform)
+    fun applyTransform(outputPose: TrackedDevicePose.ByReference, trackedDevicePose: TrackedDevicePose.ByReference, transform: HmdMat34.ByReference) = ApplyTransform!!(outputPose, trackedDevicePose, transform)
 
     @JvmField
     var ApplyTransform: ApplyTransform_callback? = null
 
     interface ApplyTransform_callback : Callback {
-        fun invoke(pOutputPose: TrackedDevicePose.ByReference, pTrackedDevicePose: TrackedDevicePose.ByReference, pTransform: HmdMat34.ByReference)
+        operator fun invoke(pOutputPose: TrackedDevicePose.ByReference, pTrackedDevicePose: TrackedDevicePose.ByReference, pTransform: HmdMat34.ByReference)
     }
 
     /** Returns the device index associated with a specific role, for example the left hand or the right hand. */
-    fun getTrackedDeviceIndexForControllerRole(unDeviceType: ETrackedControllerRole) = GetTrackedDeviceIndexForControllerRole!!.invoke(unDeviceType.i)
+    infix fun getTrackedDeviceIndexForControllerRole(deviceType: ETrackedControllerRole) = GetTrackedDeviceIndexForControllerRole!!(deviceType.i)
 
     @JvmField
     var GetTrackedDeviceIndexForControllerRole: GetTrackedDeviceIndexForControllerRole_callback? = null
 
     interface GetTrackedDeviceIndexForControllerRole_callback : Callback {
-        fun invoke(unDeviceType: Int): TrackedDeviceIndex
+        operator fun invoke(unDeviceType: Int): TrackedDeviceIndex
     }
 
     /** Returns the controller value associated with a device index. */
-    fun getControllerRoleForTrackedDeviceIndex(unDeviceIndex: TrackedDeviceIndex) = ETrackedControllerRole.of(GetControllerRoleForTrackedDeviceIndex!!.invoke(unDeviceIndex))
+    infix fun getControllerRoleForTrackedDeviceIndex(deviceIndex: TrackedDeviceIndex) = ETrackedControllerRole.of(GetControllerRoleForTrackedDeviceIndex!!(deviceIndex))
 
     @JvmField
     var GetControllerRoleForTrackedDeviceIndex: GetControllerRoleForTrackedDeviceIndex_callback? = null
 
     interface GetControllerRoleForTrackedDeviceIndex_callback : Callback {
-        fun invoke(unDeviceIndex: TrackedDeviceIndex): Int
+        operator fun invoke(unDeviceIndex: TrackedDeviceIndex): Int
     }
 
 
@@ -328,123 +318,113 @@ open class IVRSystem : Structure {
      *
      *  To determine which devices exist on the system, just loop from 0 to openvr.lib.getK_unMaxTrackedDeviceCount and check
      *  the device class. Every device with something other than TrackedDevice_Invalid is associated with an actual tracked device. */
-    fun getTrackedDeviceClass(unDeviceIndex: TrackedDeviceIndex) = ETrackedDeviceClass.of(GetTrackedDeviceClass!!.invoke(unDeviceIndex))
+    infix fun getTrackedDeviceClass(deviceIndex: TrackedDeviceIndex) = ETrackedDeviceClass.of(GetTrackedDeviceClass!!(deviceIndex))
 
     @JvmField
     var GetTrackedDeviceClass: GetTrackedDeviceClass_callback? = null
 
     interface GetTrackedDeviceClass_callback : Callback {
-        fun invoke(unDeviceIndex: TrackedDeviceIndex): Int
+        operator fun invoke(unDeviceIndex: TrackedDeviceIndex): Int
     }
 
     /** Returns true if there is a device connected in this slot. */
-    infix fun isTrackedDeviceConnected(deviceIndex: TrackedDeviceIndex) = IsTrackedDeviceConnected!!.invoke(deviceIndex)
+    infix fun isTrackedDeviceConnected(deviceIndex: TrackedDeviceIndex) = IsTrackedDeviceConnected!!(deviceIndex)
 
     @JvmField
     var IsTrackedDeviceConnected: IsTrackedDeviceConnected_callback? = null
 
     interface IsTrackedDeviceConnected_callback : Callback {
-        fun invoke(unDeviceIndex: TrackedDeviceIndex): Boolean
+        operator fun invoke(unDeviceIndex: TrackedDeviceIndex): Boolean
     }
 
     /** Returns a bool property. If the device index is not valid or the property is not a bool value this function will return false. */
     @JvmOverloads
-    fun getBoolTrackedDeviceProperty(unDeviceIndex: TrackedDeviceIndex, prop: ETrackedDeviceProperty,
-                                     pError: ETrackedPropertyError_ByReference? = null) = GetBoolTrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, pError)
+    fun getBoolTrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: ETrackedDeviceProperty, error: ETrackedPropertyError_ByReference? = null) = GetBoolTrackedDeviceProperty!!(deviceIndex, prop.i, error)
 
     @JvmField
     var GetBoolTrackedDeviceProperty: GetBoolTrackedDeviceProperty_callback? = null
 
     interface GetBoolTrackedDeviceProperty_callback : Callback {
-        fun invoke(unDeviceIndex: TrackedDeviceIndex, prop: Int, pError: ETrackedPropertyError_ByReference?): Boolean
+        operator fun invoke(unDeviceIndex: TrackedDeviceIndex, prop: Int, pError: ETrackedPropertyError_ByReference?): Boolean
     }
 
     /** Returns a float property. If the device index is not valid or the property is not a float value this function will return 0. */
     @JvmOverloads
-    fun getFloatTrackedDeviceProperty(unDeviceIndex: TrackedDeviceIndex, prop: ETrackedDeviceProperty,
-                                      pError: ETrackedPropertyError_ByReference? = null): Float = GetFloatTrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, pError)
+    fun getFloatTrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: ETrackedDeviceProperty, error: ETrackedPropertyError_ByReference? = null): Float = GetFloatTrackedDeviceProperty!!(deviceIndex, prop.i, error)
 
     @JvmField
     var GetFloatTrackedDeviceProperty: GetFloatTrackedDeviceProperty_callback? = null
 
     interface GetFloatTrackedDeviceProperty_callback : Callback {
-        fun invoke(unDeviceIndex: TrackedDeviceIndex, prop: Int, pError: ETrackedPropertyError_ByReference?): Float
+        operator fun invoke(unDeviceIndex: TrackedDeviceIndex, prop: Int, pError: ETrackedPropertyError_ByReference?): Float
     }
 
     /** Returns an int property. If the device index is not valid or the property is not a int value this function will return 0. */
     @JvmOverloads
-    fun getInt32TrackedDeviceProperty(unDeviceIndex: TrackedDeviceIndex, prop: ETrackedDeviceProperty,
-                                      pError: ETrackedPropertyError_ByReference? = null) = GetInt32TrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, pError)
+    fun getInt32TrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: ETrackedDeviceProperty, error: ETrackedPropertyError_ByReference? = null) = GetInt32TrackedDeviceProperty!!(deviceIndex, prop.i, error)
 
     @JvmField
     var GetInt32TrackedDeviceProperty: GetInt32TrackedDeviceProperty_callback? = null
 
     interface GetInt32TrackedDeviceProperty_callback : Callback {
-        fun invoke(unDeviceIndex: TrackedDeviceIndex, prop: Int, pError: ETrackedPropertyError_ByReference?): Int
+        operator fun invoke(unDeviceIndex: TrackedDeviceIndex, prop: Int, pError: ETrackedPropertyError_ByReference?): Int
     }
 
     /** Returns a uint64 property. If the device index is not valid or the property is not a uint64 value this function will return 0. */
     @JvmOverloads
-    fun getUint64TrackedDeviceProperty(unDeviceIndex: TrackedDeviceIndex, prop: ETrackedDeviceProperty,
-                                       pError: ETrackedPropertyError_ByReference? = null) = GetUint64TrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, pError)
+    fun getUint64TrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: ETrackedDeviceProperty, error: ETrackedPropertyError_ByReference? = null) = GetUint64TrackedDeviceProperty!!(deviceIndex, prop.i, error)
 
     @JvmField
     var GetUint64TrackedDeviceProperty: GetUint64TrackedDeviceProperty_callback? = null
 
     interface GetUint64TrackedDeviceProperty_callback : Callback {
-        fun invoke(unDeviceIndex: TrackedDeviceIndex, prop: Int, pError: ETrackedPropertyError_ByReference?): Long
+        operator fun invoke(unDeviceIndex: TrackedDeviceIndex, prop: Int, pError: ETrackedPropertyError_ByReference?): Long
     }
 
     /** Returns a matrix property. If the device index is not valid or the property is not a matrix value, this function will return identity. */
     @JvmOverloads
-    fun getMatrix34TrackedDeviceProperty(unDeviceIndex: TrackedDeviceIndex, prop: ETrackedDeviceProperty,
-                                         pError: ETrackedPropertyError_ByReference? = null) = GetMatrix34TrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, pError)
+    fun getMatrix34TrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: ETrackedDeviceProperty, error: ETrackedPropertyError_ByReference? = null) = GetMatrix34TrackedDeviceProperty!!(deviceIndex, prop.i, error)
 
     @JvmField
     var GetMatrix34TrackedDeviceProperty: GetMatrix34TrackedDeviceProperty_callback? = null
 
     interface GetMatrix34TrackedDeviceProperty_callback : Callback {
-        fun invoke(unDeviceIndex: TrackedDeviceIndex, prop: Int, pError: ETrackedPropertyError_ByReference?): HmdMat34.ByValue
+        operator fun invoke(unDeviceIndex: TrackedDeviceIndex, prop: Int, pError: ETrackedPropertyError_ByReference?): HmdMat34.ByValue
     }
 
     /** Returns an array of one type of property. If the device index is not valid or the property is not a single value or
      *  an array of the specified type,
      *  this function will return 0. Otherwise it returns the number of bytes necessary to hold the array of properties.
      *  If bufferSize is greater than the returned size and buffer is non-NULL, buffer is filled with the contents of array of properties. */
-    fun getArrayTrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: ETrackedDeviceProperty, propType: PropertyTypeTag,
-                                      buffer: Pointer, bufferSize: Int,
-                                      error: ETrackedPropertyError_ByReference = ETrackedPropertyError_ByReference(ETrackedPropertyError.Success)) =
-            GetArrayTrackedDeviceProperty!!.invoke(deviceIndex, prop.i, propType, buffer, bufferSize, error)
+    fun getArrayTrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: ETrackedDeviceProperty, propType: PropertyTypeTag, buffer: Pointer, bufferSize: Int, error: ETrackedPropertyError_ByReference = ETrackedPropertyError_ByReference(ETrackedPropertyError.Success)) = GetArrayTrackedDeviceProperty!!(deviceIndex, prop.i, propType, buffer, bufferSize, error)
 
     @JvmField
     var GetArrayTrackedDeviceProperty: GetArrayTrackedDeviceProperty_callback? = null
 
     interface GetArrayTrackedDeviceProperty_callback : Callback {
-        fun invoke(deviceIndex: TrackedDeviceIndex, prop: Int, propType: PropertyTypeTag, buffer: Pointer, bufferSize: Int,
-                   error: ETrackedPropertyError_ByReference = ETrackedPropertyError_ByReference(ETrackedPropertyError.Success)): Int
+        operator fun invoke(deviceIndex: TrackedDeviceIndex, prop: Int, propType: PropertyTypeTag, buffer: Pointer, bufferSize: Int, error: ETrackedPropertyError_ByReference = ETrackedPropertyError_ByReference(ETrackedPropertyError.Success)): Int
     }
 
     /** Wrapper: returns a string property. If the device index is not valid or the property is not a string value this function will
      *  return an empty String. */
     @JvmOverloads
-    fun getStringTrackedDeviceProperty(unDeviceIndex: TrackedDeviceIndex, prop: ETrackedDeviceProperty,
-                                       pError: ETrackedPropertyError_ByReference? = null): String {
+    fun getStringTrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: ETrackedDeviceProperty, error: ETrackedPropertyError_ByReference? = null): String {
 
         val err = ETrackedPropertyError_ByReference(ETrackedPropertyError.Success)
         var ret = ""
 
         val bytes = ByteArray(32)
-        val propLen = GetStringTrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, bytes, bytes.size, err)
+        val propLen = GetStringTrackedDeviceProperty!!(deviceIndex, prop.i, bytes, bytes.size, err)
 
         if (err.value == ETrackedPropertyError.Success)
             ret = String(bytes).filter { it.isLetterOrDigit() || it == '_' }
         else if (err.value == ETrackedPropertyError.BufferTooSmall) {
             val newBytes = ByteArray(propLen)
-            GetStringTrackedDeviceProperty!!.invoke(unDeviceIndex, prop.i, newBytes, propLen, err)
+            GetStringTrackedDeviceProperty!!(deviceIndex, prop.i, newBytes, propLen, err)
             if (err.value == ETrackedPropertyError.Success)
                 ret = String(newBytes).drop(1)
         }
-        pError?.let { it.value = err.value }
+        error?.let { it.value = err.value }
         return ret
     }
 
@@ -455,18 +435,18 @@ open class IVRSystem : Structure {
      *  Otherwise it returns the length of the number of bytes necessary to hold this string including the trailing null.
      *  Strings will always fit in buffers of maxPropertyStringSize characters. */
     interface GetStringTrackedDeviceProperty_callback : Callback {
-        fun invoke(unDeviceIndex: TrackedDeviceIndex, prop: Int, pchValue: ByteArray?, unBufferSize: Int,
-                   pError: ETrackedPropertyError_ByReference?): Int
+        operator fun invoke(unDeviceIndex: TrackedDeviceIndex, prop: Int, pchValue: ByteArray?, unBufferSize: Int,
+                            pError: ETrackedPropertyError_ByReference?): Int
     }
 
     /** returns a string that corresponds with the specified property error. The string will be the name of the error value value for all valid error codes */
-    fun getPropErrorNameFromEnum(error: ETrackedPropertyError) = GetPropErrorNameFromEnum!!.invoke(error.i)
+    infix fun getPropErrorNameFromEnum(error: ETrackedPropertyError) = GetPropErrorNameFromEnum!!(error.i)
 
     @JvmField
     var GetPropErrorNameFromEnum: GetPropErrorNameFromEnum_callback? = null
 
     interface GetPropErrorNameFromEnum_callback : Callback {
-        fun invoke(error: Int): String
+        operator fun invoke(error: Int): String
     }
 
 
@@ -475,38 +455,37 @@ open class IVRSystem : Structure {
     // ------------------------------------
 
     /** Returns true and fills the event with the next event on the queue if there is one. If there are no events this method returns
-     *  false. uncbVREvent should be the size in bytes of the openvr.lib.VREvent struct */
-    fun pollNextEvent(pEvent: VREvent.ByReference, uncbVREvent: Int) = PollNextEvent!!.invoke(pEvent, uncbVREvent)
+     *  false. vrEvent should be the size in bytes of the openvr.lib.VREvent struct */
+    fun pollNextEvent(event: VREvent.ByReference, vrEvent: Int) = PollNextEvent!!(event, vrEvent)
 
     @JvmField
     var PollNextEvent: PollNextEvent_callback? = null
 
     interface PollNextEvent_callback : Callback {
-        fun invoke(pEvent: VREvent.ByReference, uncbVREvent: Int): Boolean
+        operator fun invoke(pEvent: VREvent.ByReference, uncbVREvent: Int): Boolean
     }
 
     /** Returns true and fills the event with the next event on the queue if there is one. If there are no events this method returns false. Fills in the pose
      *  of the associated tracked device in the provided pose struct.
      *  This pose will always be older than the call to this function and should not be used to render the device.
-     *  uncbVREvent should be the size in bytes of the openvr.lib.VREvent struct */
-    fun pollNextEventWithPose(eOrigin: ETrackingUniverseOrigin, pEvent: VREvent.ByReference, uncbVREvent: Int,
-                              pTrackedDevicePose: TrackedDevicePose.ByReference) = PollNextEventWithPose!!.invoke(eOrigin.i, pEvent, uncbVREvent, pTrackedDevicePose)
+     *  vrEvent should be the size in bytes of the openvr.lib.VREvent struct */
+    fun pollNextEventWithPose(origin: ETrackingUniverseOrigin, event: VREvent.ByReference, vrEvent: Int, trackedDevicePose: TrackedDevicePose.ByReference) = PollNextEventWithPose!!(origin.i, event, vrEvent, trackedDevicePose)
 
     @JvmField
     var PollNextEventWithPose: PollNextEventWithPose_callback? = null
 
     interface PollNextEventWithPose_callback : Callback {
-        fun invoke(eOrigin: Int, pEvent: VREvent.ByReference, uncbVREvent: Int, pTrackedDevicePose: TrackedDevicePose.ByReference): Boolean
+        operator fun invoke(eOrigin: Int, pEvent: VREvent.ByReference, uncbVREvent: Int, pTrackedDevicePose: TrackedDevicePose.ByReference): Boolean
     }
 
     /** returns the name of an EVREvent value value */
-    fun getEventTypeNameFromEnum(eType: EVREventType) = GetEventTypeNameFromEnum!!.invoke(eType.i)
+    infix fun getEventTypeNameFromEnum(type: EVREventType) = GetEventTypeNameFromEnum!!(type.i)
 
     @JvmField
     var GetEventTypeNameFromEnum: GetEventTypeNameFromEnum_callback? = null
 
     interface GetEventTypeNameFromEnum_callback : Callback {
-        fun invoke(eType: Int): String
+        operator fun invoke(eType: Int): String
     }
 
 
@@ -528,13 +507,13 @@ open class IVRSystem : Structure {
      *  HiddenAreaMesh->triangleCount set to the number of vertices.
      */
     @JvmOverloads
-    fun GetHiddenAreaMesh(eEye: EVREye, type: EHiddenAreaMeshType = EHiddenAreaMeshType.Standard) = GetHiddenAreaMesh!!.invoke(eEye.i, type)
+    fun getHiddenAreaMesh(eye: EVREye, type: EHiddenAreaMeshType = EHiddenAreaMeshType.Standard) = GetHiddenAreaMesh!!(eye.i, type)
 
     @JvmField
     var GetHiddenAreaMesh: GetHiddenAreaMesh_callback? = null
 
     interface GetHiddenAreaMesh_callback : Callback {
-        fun invoke(eEye: Int, type: EHiddenAreaMeshType): HiddenAreaMesh.ByValue
+        operator fun invoke(eEye: Int, type: EHiddenAreaMeshType): HiddenAreaMesh.ByValue
     }
 
 
@@ -543,117 +522,111 @@ open class IVRSystem : Structure {
     // ------------------------------------
 
     /** Fills the supplied struct with the current state of the controller. Returns false if the controller index is invalid. */
-    fun getControllerState(unControllerDeviceIndex: TrackedDeviceIndex, pControllerState: VRControllerState.ByReference,
-                           unControllerStateSize: Int) = GetControllerState!!.invoke(unControllerDeviceIndex, pControllerState, unControllerStateSize)
+    fun getControllerState(controllerDeviceIndex: TrackedDeviceIndex, controllerState: VRControllerState.ByReference, controllerStateSize: Int) = GetControllerState!!(controllerDeviceIndex, controllerState, controllerStateSize)
 
     @JvmField
     var GetControllerState: GetControllerState_callback? = null
 
     interface GetControllerState_callback : Callback {
-        fun invoke(unControllerDeviceIndex: TrackedDeviceIndex, pControllerState: VRControllerState.ByReference,
-                   unControllerStateSize: Int): Boolean
+        operator fun invoke(unControllerDeviceIndex: TrackedDeviceIndex, pControllerState: VRControllerState.ByReference, unControllerStateSize: Int): Boolean
     }
 
     /** Fills the supplied struct with the current state of the controller and the provided pose with the pose of the controller when the controller state was
      *  updated most recently. Use this form if you need a precise controller pose as input to your application when the user presses or releases a button. */
-    fun getControllerStateWithPose(eOrigin: ETrackingUniverseOrigin, unControllerDeviceIndex: TrackedDeviceIndex,
-                                   pControllerState: VRControllerState.ByReference, unControllerStateSize: Int,
-                                   pTrackedDevicePose: TrackedDevicePose.ByReference) = GetControllerStateWithPose!!.invoke(eOrigin.i, unControllerDeviceIndex, pControllerState, unControllerStateSize,
-            pTrackedDevicePose)
+    fun getControllerStateWithPose(origin: ETrackingUniverseOrigin, controllerDeviceIndex: TrackedDeviceIndex, controllerState: VRControllerState.ByReference, controllerStateSize: Int, trackedDevicePose: TrackedDevicePose.ByReference) = GetControllerStateWithPose!!(origin.i, controllerDeviceIndex, controllerState, controllerStateSize, trackedDevicePose)
 
     @JvmField
     var GetControllerStateWithPose: GetControllerStateWithPose_callback? = null
 
     interface GetControllerStateWithPose_callback : Callback {
-        fun invoke(eOrigin: Int, unControllerDeviceIndex: TrackedDeviceIndex, pControllerState: VRControllerState.ByReference,
-                   unControllerStateSize: Int, pTrackedDevicePose: TrackedDevicePose.ByReference): Boolean
+        operator fun invoke(eOrigin: Int, unControllerDeviceIndex: TrackedDeviceIndex, pControllerState: VRControllerState.ByReference, unControllerStateSize: Int, pTrackedDevicePose: TrackedDevicePose.ByReference): Boolean
     }
 
     /** Trigger a single haptic pulse on a controller. After this call the application may not trigger another haptic pulse on this controller and axis
      *  combination for 5ms. */
-    fun triggerHapticPulse(unControllerDeviceIndex: TrackedDeviceIndex, unAxisId: Int, usDurationMicroSec: Short) = TriggerHapticPulse!!.invoke(unControllerDeviceIndex, unAxisId, usDurationMicroSec)
+    fun triggerHapticPulse(controllerDeviceIndex: TrackedDeviceIndex, axisId: Int, durationMicroSec: Short) = TriggerHapticPulse!!(controllerDeviceIndex, axisId, durationMicroSec)
 
     @JvmField
     var TriggerHapticPulse: TriggerHapticPulse_callback? = null
 
     interface TriggerHapticPulse_callback : Callback {
-        fun invoke(unControllerDeviceIndex: TrackedDeviceIndex, unAxisId: Int, usDurationMicroSec: Short)
+        operator fun invoke(unControllerDeviceIndex: TrackedDeviceIndex, unAxisId: Int, usDurationMicroSec: Short)
     }
 
     /** returns the name of an openvr.lib.EVRButtonId value value */
-    fun getButtonIdNameFromEnum(eButtonId: EVRButtonId) = GetButtonIdNameFromEnum!!.invoke(eButtonId.i)
+    infix fun getButtonIdNameFromEnum(buttonId: EVRButtonId) = GetButtonIdNameFromEnum!!(buttonId.i)
 
     @JvmField
     var GetButtonIdNameFromEnum: GetButtonIdNameFromEnum_callback? = null
 
     interface GetButtonIdNameFromEnum_callback : Callback {
-        fun invoke(eButtonId: Int): String
+        operator fun invoke(eButtonId: Int): String
     }
 
     /** returns the game of an openvr.lib.EVRControllerAxisType value value */
-    fun getControllerAxisTypeNameFromEnum(eAxisType: EVRControllerAxisType) = GetControllerAxisTypeNameFromEnum!!.invoke(eAxisType.i)
+    infix fun getControllerAxisTypeNameFromEnum(axisType: EVRControllerAxisType) = GetControllerAxisTypeNameFromEnum!!(axisType.i)
 
     @JvmField
     var GetControllerAxisTypeNameFromEnum: GetControllerAxisTypeNameFromEnum_callback? = null
 
     interface GetControllerAxisTypeNameFromEnum_callback : Callback {
-        fun invoke(eAxisType: Int): String
+        operator fun invoke(eAxisType: Int): String
     }
 
     /** Returns true if this application is receiving input from the system. This would return false if system-related
      *  functionality is consuming the input stream. */
-    val isInputAvailable get() = IsInputAvailable!!.invoke()
+    val isInputAvailable get() = IsInputAvailable!!()
 
     @JvmField
     var IsInputAvailable: IsInputAvailable_callback? = null
 
     interface IsInputAvailable_callback : Callback {
-        fun invoke(): Boolean
+        operator fun invoke(): Boolean
     }
 
 
     /** Returns true SteamVR is drawing controllers on top of the application. Applications should consider not drawing
      *  anything attached to the user's hands in this case. */
-    val isSteamVRDrawingControllers get() = IsSteamVRDrawingControllers!!.invoke()
+    val isSteamVRDrawingControllers get() = IsSteamVRDrawingControllers!!()
 
     @JvmField
     var IsSteamVRDrawingControllers: IsSteamVRDrawingControllers_callback? = null
 
     interface IsSteamVRDrawingControllers_callback : Callback {
-        fun invoke(): Boolean
+        operator fun invoke(): Boolean
     }
 
     /** Tells openvr.OpenVR that this process no longer wants exclusive access to button states and button events. Other apps will be notified that input focus has
      *  been released with a VREvent_InputFocusReleased event. */
-    fun releaseInputFocus() = ReleaseInputFocus!!.invoke()
+    fun releaseInputFocus() = ReleaseInputFocus!!()
 
     @JvmField
     var ReleaseInputFocus: ReleaseInputFocus_callback? = null
 
     interface ReleaseInputFocus_callback : Callback {
-        fun invoke()
+        operator fun invoke()
     }
 
     /** Returns true if the user has put SteamVR into a mode that is distracting them from the application.
      *  For applications where this is appropriate, the application should pause ongoing activity. */
-    val shouldApplicationPause get() = ShouldApplicationPause!!.invoke()
+    val shouldApplicationPause get() = ShouldApplicationPause!!()
 
     @JvmField
     var ShouldApplicationPause: ShouldApplicationPause_callback? = null
 
     interface ShouldApplicationPause_callback : Callback {
-        fun invoke(): Boolean
+        operator fun invoke(): Boolean
     }
 
     /** Returns true if SteamVR is doing significant rendering work and the game should do what it can to reduce its
      *  own workload. One common way to do this is to reduce the size of the render target provided for each eye. */
-    val shouldApplicationReduceRenderingWork get() = ShouldApplicationReduceRenderingWork!!.invoke()
+    val shouldApplicationReduceRenderingWork get() = ShouldApplicationReduceRenderingWork!!()
 
     @JvmField
     var ShouldApplicationReduceRenderingWork: ShouldApplicationReduceRenderingWork_callback? = null
 
     interface ShouldApplicationReduceRenderingWork_callback : Callback {
-        fun invoke(): Boolean
+        operator fun invoke(): Boolean
     }
 
 
@@ -664,13 +637,13 @@ open class IVRSystem : Structure {
     /** Sends a request to the driver for the specified device and returns the response. The maximum response size is 32k, but this method can be called with
      *  a smaller buffer. If the response exceeds the size of the buffer, it is truncated.
      *  The size of the response including its terminating null is returned. */
-    fun driverDebugRequest(unDeviceIndex: TrackedDeviceIndex, pchRequest: String, pchResponseBuffer: String, unResponseBufferSize: Int) = DriverDebugRequest!!.invoke(unDeviceIndex, pchRequest, pchResponseBuffer, unResponseBufferSize)
+    fun driverDebugRequest(deviceIndex: TrackedDeviceIndex, request: String, responseBuffer: String, responseBufferSize: Int) = DriverDebugRequest!!(deviceIndex, request, responseBuffer, responseBufferSize)
 
     @JvmField
     var DriverDebugRequest: DriverDebugRequest_callback? = null
 
     interface DriverDebugRequest_callback : Callback {
-        fun invoke(unDeviceIndex: TrackedDeviceIndex, pchRequest: String, pchResponseBuffer: String, unResponseBufferSize: Int): Int
+        operator fun invoke(unDeviceIndex: TrackedDeviceIndex, pchRequest: String, pchResponseBuffer: String, unResponseBufferSize: Int): Int
     }
 
 
@@ -683,13 +656,13 @@ open class IVRSystem : Structure {
      *  Use the properties Prop_Firmware_UpdateAvailable_Bool, Prop_Firmware_ManualUpdate_Bool, and Prop_Firmware_ManualUpdateURL_String to figure our whether
      *  a firmware update is available, and to figure out whether its a manual update
      *  Prop_Firmware_ManualUpdateURL_String should point to an URL describing the manual update process */
-    fun performFirmwareUpdate(unDeviceIndex: TrackedDeviceIndex) = EVRFirmwareError.of(PerformFirmwareUpdate!!.invoke(unDeviceIndex))
+    fun performFirmwareUpdate(deviceIndex: TrackedDeviceIndex) = EVRFirmwareError.of(PerformFirmwareUpdate!!(deviceIndex))
 
     @JvmField
     var PerformFirmwareUpdate: PerformFirmwareUpdate_callback? = null
 
     interface PerformFirmwareUpdate_callback : Callback {
-        fun invoke(unDeviceIndex: TrackedDeviceIndex): Int
+        operator fun invoke(unDeviceIndex: TrackedDeviceIndex): Int
     }
 
 
@@ -699,24 +672,24 @@ open class IVRSystem : Structure {
 
     /** Call this to acknowledge to the system that VREvent_Quit has been received and that the process is exiting.
      *  This extends the timeout until the process is killed. */
-    fun acknowledgeQuit_Exiting() = AcknowledgeQuit_Exiting!!.invoke()
+    fun acknowledgeQuit_Exiting() = AcknowledgeQuit_Exiting!!()
 
     @JvmField
     var AcknowledgeQuit_Exiting: AcknowledgeQuit_Exiting_callback? = null
 
     interface AcknowledgeQuit_Exiting_callback : Callback {
-        fun invoke()
+        operator fun invoke()
     }
 
     /** Call this to tell the system that the user is being prompted to save data. This halts the timeout and dismisses the dashboard (if it was up).
      *  Applications should be sure to actually prompt the user to save and then exit afterward, otherwise the user will be left in a confusing state. */
-    fun acknowledgeQuit_UserPrompt() = AcknowledgeQuit_UserPrompt!!.invoke()
+    fun acknowledgeQuit_UserPrompt() = AcknowledgeQuit_UserPrompt!!()
 
     @JvmField
     var AcknowledgeQuit_UserPrompt: AcknowledgeQuit_UserPrompt_callback? = null
 
     interface AcknowledgeQuit_UserPrompt_callback : Callback {
-        fun invoke()
+        operator fun invoke()
     }
 
     constructor()

@@ -9,128 +9,114 @@ import java.util.*
 
 open class IVRSettings : Structure {
 
-    fun getSettingsErrorNameFromEnum(eError: EVRSettingsError) = GetSettingsErrorNameFromEnum!!.invoke(eError.i)
+    fun getSettingsErrorNameFromEnum(error: EVRSettingsError) = GetSettingsErrorNameFromEnum!!(error.i)
     @JvmField var GetSettingsErrorNameFromEnum: GetSettingsErrorNameFromEnum_callback? = null
 
     interface GetSettingsErrorNameFromEnum_callback : Callback {
-        fun invoke(eError: Int): String
+        operator fun invoke(eError: Int): String
     }
 
 
     // Returns true if file sync occurred (force or settings dirty)
-    @JvmOverloads fun sync(bForce: Boolean = false, peError: EVRSettingsError_ByReference? = null) = Sync!!.invoke(bForce, peError)
+    @JvmOverloads fun sync(force: Boolean = false, error: EVRSettingsError_ByReference? = null) = Sync!!(force, error)
 
     @JvmField var Sync: Sync_callback? = null
 
     interface Sync_callback : Callback {
-        fun invoke(bForce: Boolean, peError: EVRSettingsError_ByReference?): Boolean
+        operator fun invoke(bForce: Boolean, peError: EVRSettingsError_ByReference?): Boolean
     }
 
 
-    @JvmOverloads fun setBool(pchSection: String, pchSettingsKey: String, bValue: Boolean,
-                              peError: EVRSettingsError_ByReference? = null)
-            = SetBool!!.invoke(pchSection, pchSettingsKey, bValue, peError)
+    @JvmOverloads fun setBool(section: String, settingsKey: String, value: Boolean, error: EVRSettingsError_ByReference? = null) = SetBool!!(section, settingsKey, value, error)
 
     @JvmField var SetBool: SetBool_callback? = null
 
     interface SetBool_callback : Callback {
-        fun invoke(pchSection: String, pchSettingsKey: String, bValue: Boolean, peError: EVRSettingsError_ByReference?)
+        operator fun invoke(pchSection: String, pchSettingsKey: String, bValue: Boolean, peError: EVRSettingsError_ByReference?)
     }
 
 
-    @JvmOverloads fun setInt32(pchSection: String, pchSettingsKey: String, nValue: Int, peError: EVRSettingsError_ByReference? = null)
-            = SetInt32!!.invoke(pchSection, pchSettingsKey, nValue, peError)
+    @JvmOverloads fun setInt32(section: String, settingsKey: String, value: Int, error: EVRSettingsError_ByReference? = null) = SetInt32!!(section, settingsKey, value, error)
 
     @JvmField var SetInt32: SetInt32_callback? = null
 
     interface SetInt32_callback : Callback {
-        fun invoke(pchSection: String, pchSettingsKey: String, nValue: Int, peError: EVRSettingsError_ByReference?)
+        operator fun invoke(pchSection: String, pchSettingsKey: String, nValue: Int, peError: EVRSettingsError_ByReference?)
     }
 
 
-    @JvmOverloads fun setFloat(pchSection: String, pchSettingsKey: String, flValue: Float,
-                               peError: EVRSettingsError_ByReference? = null)
-            = SetFloat!!.invoke(pchSection, pchSettingsKey, flValue, peError)
+    @JvmOverloads fun setFloat(section: String, settingsKey: String, value: Float, error: EVRSettingsError_ByReference? = null)
+            = SetFloat!!(section, settingsKey, value, error)
 
     @JvmField var SetFloat: SetFloat_callback? = null
 
     interface SetFloat_callback : Callback {
-        fun invoke(pchSection: String, pchSettingsKey: String, flValue: Float, peError: EVRSettingsError_ByReference?)
+        operator fun invoke(pchSection: String, pchSettingsKey: String, flValue: Float, peError: EVRSettingsError_ByReference?)
     }
 
 
-    @JvmOverloads fun setString(pchSection: String, pchSettingsKey: String, pchValue: String,
-                                peError: EVRSettingsError_ByReference? = null)
-            = SetString!!.invoke(pchSection, pchSettingsKey, pchValue, peError)
+    @JvmOverloads fun setString(section: String, settingsKey: String, value: String, error: EVRSettingsError_ByReference? = null) = SetString!!(section, settingsKey, value, error)
 
     @JvmField var SetString: SetString_callback? = null
 
     interface SetString_callback : Callback {
-        fun invoke(pchSection: String, pchSettingsKey: String, pchValue: String, peError: EVRSettingsError_ByReference?)
+        operator fun invoke(pchSection: String, pchSettingsKey: String, pchValue: String, peError: EVRSettingsError_ByReference?)
     }
 
 
     // Users of the system need to provide a proper default in default.vrsettings in the resources/settings/ directory of either the runtime or the driver_xxx
     // directory. Otherwise the default will be false, 0, 0.0 or ""
-    @JvmOverloads fun getBool(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference? = null)
-            = GetBool!!.invoke(pchSection, pchSettingsKey, peError)
+    @JvmOverloads fun getBool(section: String, settingsKey: String, error: EVRSettingsError_ByReference? = null) = GetBool!!(section, settingsKey, error)
 
     @JvmField var GetBool: GetBool_callback? = null
 
     interface GetBool_callback : Callback {
-        fun invoke(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference?): Boolean
+        operator fun invoke(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference?): Boolean
     }
 
 
-    @JvmOverloads fun getInt32(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference? = null)
-            = GetInt32!!.invoke(pchSection, pchSettingsKey, peError)
+    @JvmOverloads fun getInt32(section: String, settingsKey: String, error: EVRSettingsError_ByReference? = null) = GetInt32!!(section, settingsKey, error)
 
     @JvmField var GetInt32: GetInt32_callback? = null
 
     interface GetInt32_callback : Callback {
-        fun invoke(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference?): Int
+        operator fun invoke(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference?): Int
     }
 
 
-    @JvmOverloads fun getFloat(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference? = null)
-            = GetFloat!!.invoke(pchSection, pchSettingsKey, peError)
+    @JvmOverloads fun getFloat(section: String, settingsKey: String, error: EVRSettingsError_ByReference? = null) = GetFloat!!(section, settingsKey, error)
 
     @JvmField var GetFloat: GetFloat_callback? = null
 
     interface GetFloat_callback : Callback {
-        fun invoke(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference?): Float
+        operator fun invoke(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference?): Float
     }
 
 
-    fun getString(pchSection: String, pchSettingsKey: String, pchValue: String, unValueLen: Int,
-                  peError: EVRSettingsError_ByReference? = null)
-            = GetString!!.invoke(pchSection, pchSettingsKey, pchValue, unValueLen, peError)
+    fun getString(section: String, settingsKey: String, value: String, valueLen: Int, error: EVRSettingsError_ByReference? = null) = GetString!!(section, settingsKey, value, valueLen, error)
 
     @JvmField var GetString: GetString_callback? = null
 
     interface GetString_callback : Callback {
-        fun invoke(pchSection: String, pchSettingsKey: String, pchValue: String, unValueLen: Int,
-                   peError: EVRSettingsError_ByReference?)
+        operator fun invoke(pchSection: String, pchSettingsKey: String, pchValue: String, unValueLen: Int, peError: EVRSettingsError_ByReference?)
     }
 
 
-    @JvmOverloads fun removeSection(pchSection: String, peError: EVRSettingsError_ByReference? = null)
-            = RemoveSection!!.invoke(pchSection, peError)
+    @JvmOverloads fun removeSection(section: String, error: EVRSettingsError_ByReference? = null) = RemoveSection!!(section, error)
 
     @JvmField var RemoveSection: RemoveSection_callback? = null
 
     interface RemoveSection_callback : Callback {
-        fun invoke(pchSection: String, peError: EVRSettingsError_ByReference?)
+        operator fun invoke(pchSection: String, peError: EVRSettingsError_ByReference?)
     }
 
 
-    @JvmOverloads fun removeKeyInSection(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference? = null)
-            = RemoveKeyInSection!!.invoke(pchSection, pchSettingsKey, peError)
+    @JvmOverloads fun removeKeyInSection(section: String, settingsKey: String, error: EVRSettingsError_ByReference? = null) = RemoveKeyInSection!!(section, settingsKey, error)
 
     @JvmField var RemoveKeyInSection: RemoveKeyInSection_callback? = null
 
     interface RemoveKeyInSection_callback : Callback {
-        fun invoke(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference?)
+        operator fun invoke(pchSection: String, pchSettingsKey: String, peError: EVRSettingsError_ByReference?)
     }
 
 

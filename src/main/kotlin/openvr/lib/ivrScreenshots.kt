@@ -43,74 +43,66 @@ open class IVRScreenshots : Structure {
      *  If Steam is not running, the paths will be in the user's documents folder under Documents\SteamVR\Screenshots.
      *  Other VR applications can call this to initiate a screenshot outside of user control.
      *  The destination file names do not need an extension, will be replaced with the correct one for the format which is currently .png. */
-    fun requestScreenshot(pOutScreenshotHandle: ScreenshotHandle_ByReference, type: EVRScreenshotType, pchPreviewFilename: String, pchVRFilename: String)
-            = EVRScreenshotError.of(RequestScreenshot!!.invoke(pOutScreenshotHandle, type.i, pchPreviewFilename, pchVRFilename))
+    fun requestScreenshot(outScreenshotHandle: ScreenshotHandle_ByReference, type: EVRScreenshotType, previewFilename: String, vrFilename: String) = EVRScreenshotError.of(RequestScreenshot!!(outScreenshotHandle, type.i, previewFilename, vrFilename))
 
     @JvmField var RequestScreenshot: RequestScreenshot_callback? = null
 
     interface RequestScreenshot_callback : Callback {
-        fun invoke(pOutScreenshotHandle: ScreenshotHandle_ByReference, type: Int, pchPreviewFilename: String, pchVRFilename: String): Int
+        operator fun invoke(pOutScreenshotHandle: ScreenshotHandle_ByReference, type: Int, pchPreviewFilename: String, pchVRFilename: String): Int
     }
 
     /** Called by the running VR application to indicate that it wishes to be in charge of screenshots.  If the application does not call this, the Compositor
      *  will only support VRScreenshotType_Stereo screenshots that will be captured without notification to the running app.
      *  Once hooked your application will receive a VREvent_RequestScreenshot event when the user presses the buttons to take a screenshot. */
-    fun hookScreenshot(pSupportedTypes: Array<EVRScreenshotType>, numTypes: Int): EVRScreenshotError {
-
+    fun hookScreenshot(supportedTypes: Array<EVRScreenshotType>, numTypes: Int): EVRScreenshotError {
         val pointer = Memory((numTypes * Native.getNativeSize(java.lang.Double.TYPE)).toLong())
-        pointer.read(0, pSupportedTypes.map { it.i }.toIntArray(), 0, numTypes) // TODO probably also the other arrays needs Pointer type
-
-        return EVRScreenshotError.of(HookScreenshot!!.invoke(pointer, numTypes))
+        pointer.read(0, supportedTypes.map { it.i }.toIntArray(), 0, numTypes) // TODO probably also the other arrays needs Pointer type
+        return EVRScreenshotError.of(HookScreenshot!!(pointer, numTypes))
     }
 
     @JvmField var HookScreenshot: HookScreenshot_callback? = null
 
     interface HookScreenshot_callback : Callback {
-        fun invoke(pSupportedTypes: Pointer, numTypes: Int): Int
+        operator fun invoke(pSupportedTypes: Pointer, numTypes: Int): Int
     }
 
     /** When your application receives a VREvent_RequestScreenshot event, call these functions to get the details of the screenshot request. */
-    fun getScreenshotPropertyType(screenshotHandle: ScreenshotHandle, pError: EVRScreenshotError_ByReference)
-            = EVRScreenshotError.of(GetScreenshotPropertyType!!.invoke(screenshotHandle, pError))
+    fun getScreenshotPropertyType(screenshotHandle: ScreenshotHandle, error: EVRScreenshotError_ByReference) = EVRScreenshotError.of(GetScreenshotPropertyType!!(screenshotHandle, error))
 
     @JvmField var GetScreenshotPropertyType: GetScreenshotPropertyType_callback? = null
 
     interface GetScreenshotPropertyType_callback : Callback {
-        fun invoke(screenshotHandle: ScreenshotHandle, pError: IntByReference): Int
+        operator fun invoke(screenshotHandle: ScreenshotHandle, pError: IntByReference): Int
     }
 
     /** Get the filename for the preview or vr image (see vr::EScreenshotPropertyFilenames).  The return value is the size of the string.   */
-    fun getScreenshotPropertyFilename(screenshotHandle: ScreenshotHandle, filenameType: EVRScreenshotPropertyFilenames, pchFilename: String,
-                                      cchFilename: Int, pError: EVRScreenshotError_ByReference)
-            = EVRScreenshotError.of(GetScreenshotPropertyFilename!!.invoke(screenshotHandle, filenameType.i, pchFilename, cchFilename, pError))
+    fun getScreenshotPropertyFilename(screenshotHandle: ScreenshotHandle, filenameType: EVRScreenshotPropertyFilenames, filename: String, filenameLen: Int, error: EVRScreenshotError_ByReference) = EVRScreenshotError.of(GetScreenshotPropertyFilename!!(screenshotHandle, filenameType.i, filename, filenameLen, error))
 
     @JvmField var GetScreenshotPropertyFilename: GetScreenshotPropertyFilename_callback? = null
 
     interface GetScreenshotPropertyFilename_callback : Callback {
-        fun invoke(screenshotHandle: ScreenshotHandle, filenameType: Int, pchFilename: String, cchFilename: Int, pError: EVRScreenshotError_ByReference): Int
+        operator fun invoke(screenshotHandle: ScreenshotHandle, filenameType: Int, pchFilename: String, cchFilename: Int, pError: EVRScreenshotError_ByReference): Int
     }
 
     /** Call this if the application is taking the screen shot will take more than a few ms processing. This will result in an overlay being presented that shows
      *  a completion bar. */
-    fun updateScreenshotProgress(screenshotHandle: ScreenshotHandle, flProgress: Float)
-            = EVRScreenshotError.of(UpdateScreenshotProgress!!.invoke(screenshotHandle, flProgress))
+    fun updateScreenshotProgress(screenshotHandle: ScreenshotHandle, progress: Float) = EVRScreenshotError.of(UpdateScreenshotProgress!!(screenshotHandle, progress))
 
     @JvmField var UpdateScreenshotProgress: UpdateScreenshotProgress_callback? = null
 
     interface UpdateScreenshotProgress_callback : Callback {
-        fun invoke(screenshotHandle: ScreenshotHandle, flProgress: Float): Int
+        operator fun invoke(screenshotHandle: ScreenshotHandle, flProgress: Float): Int
     }
 
     /** Tells the compositor to take an internal screenshot of type VRScreenshotType_Stereo. It will take the current submitted scene textures of the running
      *  application and write them into the preview image and a side-by-side file for the VR image.
      *  This is similar to request screenshot, but doesn't ever talk to the application, just takes the shot and submits. */
-    fun takeStereoScreenshot(pOutScreenshotHandle: ScreenshotHandle_ByReference, pchPreviewFilename: String, pchVRFilename: String)
-            = EVRScreenshotError.of(TakeStereoScreenshot!!.invoke(pOutScreenshotHandle, pchPreviewFilename, pchVRFilename))
+    fun takeStereoScreenshot(outScreenshotHandle: ScreenshotHandle_ByReference, previewFilename: String, vrFilename: String) = EVRScreenshotError.of(TakeStereoScreenshot!!(outScreenshotHandle, previewFilename, vrFilename))
 
     @JvmField var TakeStereoScreenshot: TakeStereoScreenshot_callback? = null
 
     interface TakeStereoScreenshot_callback : Callback {
-        fun invoke(pOutScreenshotHandle: ScreenshotHandle_ByReference, pchPreviewFilename: String, pchVRFilename: String): Int
+        operator fun invoke(pOutScreenshotHandle: ScreenshotHandle_ByReference, pchPreviewFilename: String, pchVRFilename: String): Int
     }
 
     /** Submit the completed screenshot.  If Steam is running this will call into the Steam client and upload the screenshot to the screenshots section of the
@@ -119,13 +111,12 @@ open class IVRScreenshots : Structure {
      *  File paths should be absolute including extensions.
      *  screenshotHandle can be screenshotHandleInvalid if this was a new shot taking by the app to be saved and not initiated by a user (achievement earned
      *  or something) */
-    fun submitScreenshot(screenshotHandle: ScreenshotHandle, type: EVRScreenshotType, pchSourcePreviewFilename: String, pchSourceVRFilename: String)
-            = EVRScreenshotError.of(SubmitScreenshot!!.invoke(screenshotHandle, type.i, pchSourcePreviewFilename, pchSourceVRFilename))
+    fun submitScreenshot(screenshotHandle: ScreenshotHandle, type: EVRScreenshotType, sourcePreviewFilename: String, sourceVRFilename: String) = EVRScreenshotError.of(SubmitScreenshot!!(screenshotHandle, type.i, sourcePreviewFilename, sourceVRFilename))
 
     @JvmField var SubmitScreenshot: SubmitScreenshot_callback? = null
 
     interface SubmitScreenshot_callback : Callback {
-        fun invoke(screenshotHandle: ScreenshotHandle, type: Int, pchSourcePreviewFilename: String, pchSourceVRFilename: String): Int
+        operator fun invoke(screenshotHandle: ScreenshotHandle, type: Int, pchSourcePreviewFilename: String, pchSourceVRFilename: String): Int
     }
 
     constructor()

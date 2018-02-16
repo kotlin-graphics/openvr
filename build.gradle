@@ -32,7 +32,7 @@ dependencies {
 
     compile "com.github.kotlin-graphics:glm:63724ee72e719842addce7a55113225a00cf085f"
 
-    compile "net.java.dev.jna:jna:4.5.0"
+    compile "net.java.dev.jna:jna:4.5.1"
 }
 
 repositories {
