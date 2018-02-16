@@ -9,6 +9,7 @@ import com.sun.jna.ptr.ShortByReference
 import glm_.BYTES
 import glm_.b
 import glm_.i
+import glm_.s
 import java.util.*
 
 // ivrrendermodels.h ==============================================================================================================================================
@@ -68,20 +69,21 @@ open class RenderModel_ComponentState_t : Structure {
     /** Transform required when drawing the component render model  */
     @JvmField
     var trackingToComponentRenderModel = HmdMat34()
+    /** Transform available for attaching to a local component coordinate system (-Z out from surface ) */
     @JvmField
-    var mTrackingToComponentLocal = HmdMat34()        // Transform available for attaching to a local component coordinate system (-Z out from surface )
+    var trackingToComponentLocal = HmdMat34()
     @JvmField
-    var uProperties: VRComponentProperties = 0
+    var properties: VRComponentProperties = 0
 
     constructor()
 
-    constructor(mTrackingToComponentRenderModel: HmdMat34, mTrackingToComponentLocal: HmdMat34, uProperties: Int) {
-        this.trackingToComponentRenderModel = mTrackingToComponentRenderModel
-        this.mTrackingToComponentLocal = mTrackingToComponentLocal
-        this.uProperties = uProperties
+    constructor(trackingToComponentRenderModel: HmdMat34, trackingToComponentLocal: HmdMat34, properties: Int) {
+        this.trackingToComponentRenderModel = trackingToComponentRenderModel
+        this.trackingToComponentLocal = trackingToComponentLocal
+        this.properties = properties
     }
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("trackingToComponentRenderModel", "mTrackingToComponentLocal", "uProperties")
+    override fun getFieldOrder(): List<String> = Arrays.asList("trackingToComponentRenderModel", "trackingToComponentLocal", "properties")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -94,31 +96,32 @@ open class RenderModel_ComponentState_t : Structure {
 /** A single vertex in a render model */
 open class RenderModel_Vertex_t : Structure {
 
+    /** position in meters in device space  */
     @JvmField
-    var vPosition = HmdVec3()  // position in meters in device space
+    var position = HmdVec3()
     @JvmField
-    var vNormal = HmdVec3()
+    var normal = HmdVec3()
     @JvmField
-    var rfTextureCoord = floatArrayOf(0f, 0f)
+    var textureCoord = floatArrayOf(0f, 0f)
 
     operator fun get(i: Int) = when (i) {
-        in 0 until 3 -> vPosition[i]
-        in 3 until 6 -> vNormal[i]
-        in 6 until 8 -> rfTextureCoord[i]
+        in 0 until 3 -> position[i]
+        in 3 until 6 -> normal[i]
+        in 6 until 8 -> textureCoord[i]
         else -> throw IndexOutOfBoundsException()
     }
 
     constructor()
 
-    constructor(vPosition: HmdVec3, vNormal: HmdVec3, rfTextureCoord: FloatArray) {
-        this.vPosition = vPosition
-        this.vNormal = vNormal
+    constructor(position: HmdVec3, normal: HmdVec3, textureCoord: FloatArray) {
+        this.position = position
+        this.normal = normal
         // TODO check all size checks, necessary/dangerous?
-        if (rfTextureCoord.size != this.rfTextureCoord.size) throw IllegalArgumentException("Wrong array size!")
-        this.rfTextureCoord = rfTextureCoord
+        if (textureCoord.size != this.textureCoord.size) throw IllegalArgumentException("Wrong array size!")
+        this.textureCoord = textureCoord
     }
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("vPosition", "normal", "rfTextureCoord")
+    override fun getFieldOrder(): List<String> = Arrays.asList("position", "normal", "textureCoord")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -144,27 +147,27 @@ open class RenderModel_TextureMap_t : Structure {
 
     // width and height of the texture map in pixels
     @JvmField
-    var unWidth = 0.toShort()
+    var width = 0.s
     @JvmField
-    var unHeight = 0.toShort()
+    var height = 0.s
     // Map texture data. All textures are RGBA with 8 bits per channel per pixel. Data size is width * height * 4ub
     @JvmField
-    var rubTextureMapData_internal: Pointer? = null
+    var rubTextureMapData: Pointer? = null
     val textureMapData
-        get() = rubTextureMapData_internal?.getByteArray(0, SIZE.i)
+        get() = rubTextureMapData?.getByteArray(0, SIZE.i)
 
     val SIZE
-        get() = unWidth * unHeight * 4 * Byte.BYTES
+        get() = width * height * 4 * Byte.BYTES
 
     constructor()
 
-    constructor(unWidth: Short, unHeight: Short, rubTextureMapData_internal: Pointer?) {
-        this.unWidth = unWidth
-        this.unHeight = unHeight
-        this.rubTextureMapData_internal = rubTextureMapData_internal
+    constructor(width: Short, height: Short, rubTextureMapData: Pointer?) {
+        this.width = width
+        this.height = height
+        this.rubTextureMapData = rubTextureMapData
     }
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("unWidth", "unHeight", "rubTextureMapData_internal")
+    override fun getFieldOrder(): List<String> = Arrays.asList("width", "height", "rubTextureMapData")
 
     constructor(peer: Pointer) : super(peer) {
         read()
