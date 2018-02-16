@@ -9,21 +9,21 @@ import java.util.*
 
 open class IVRDriverManager : Structure {
 
-    fun getDriverCount() = GetDriverCount!!.invoke()
+    val driverCount get() = GetDriverCount!!()
 
     @JvmField var GetDriverCount: GetDriverCount_callback? = null
 
     interface GetDriverCount_callback : Callback {
-        fun invoke(): Int
+        operator fun invoke(): Int
     }
 
     /** Returns the length of the number of bytes necessary to hold this string including the trailing null.    */
-    fun getDriverName(nDriver: DriverId, pchValue: String, unBufferSize: Int) = GetDriverName!!.invoke(nDriver, pchValue, unBufferSize)
+    fun getDriverName(driver: DriverId, value: String, bufferSize: Int) = GetDriverName!!(driver, value, bufferSize)
 
     @JvmField var GetDriverName: GetDriverName_callback? = null
 
     interface GetDriverName_callback : Callback {
-        fun invoke(nDriver: DriverId, pchValue: String, unBufferSize: Int): Int
+        operator fun invoke(nDriver: DriverId, pchValue: String, unBufferSize: Int): Int
     }
 
     constructor()

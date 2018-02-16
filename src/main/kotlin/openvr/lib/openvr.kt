@@ -1065,7 +1065,7 @@ enum class EVRSubmitFlags(@JvmField val i: Int) {
     VkInstance *m_pInstance;
     VkQueue_T *m_pQueue;
     uint32_t m_nQueueFamilyIndex;
-    uint32_t m_nWidth, m_nHeight, m_nFormat, m_nSampleCount;
+    uint32_t width, height, m_nFormat, m_nSampleCount;
 };*/
 
 /** Data required for passing D3D12 textures to IVRCompositor::Submit.
@@ -1978,24 +1978,24 @@ open class VREvent_EditingCameraSurface : Structure {
 open class VREvent_MessageOverlay : Structure {
 
     @JvmField
-    var unVRMessageOverlayResponse_internal = 0 // vr::VRMessageOverlayResponse enum
+    var unVRMessageOverlayResponse = 0 // vr::VRMessageOverlayResponse enum
     var vrMessageOverlayResponse
         set(value) {
-            unVRMessageOverlayResponse_internal = value.i
+            unVRMessageOverlayResponse = value.i
         }
-        get() = VRMessageOverlayResponse.of(unVRMessageOverlayResponse_internal)
+        get() = VRMessageOverlayResponse.of(unVRMessageOverlayResponse)
 
     constructor()
 
     constructor(vrMessageOverlayResponse: VRMessageOverlayResponse) {
-        this.unVRMessageOverlayResponse_internal = vrMessageOverlayResponse.i
+        this.unVRMessageOverlayResponse = vrMessageOverlayResponse.i
     }
 
     constructor(peer: Pointer) : super(peer) {
         read()
     }
 
-    override fun getFieldOrder(): List<String> = listOf("unVRMessageOverlayResponse_internal")
+    override fun getFieldOrder(): List<String> = listOf("unVRMessageOverlayResponse")
 
     class ByReference : VREvent_MessageOverlay(), Structure.ByReference
     class ByValue : VREvent_MessageOverlay(), Structure.ByValue

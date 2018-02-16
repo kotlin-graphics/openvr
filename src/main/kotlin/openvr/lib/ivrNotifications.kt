@@ -11,21 +11,23 @@ import java.util.*
 // Used for passing graphic data
 open class NotificationBitmap_t : Structure {
 
-    var m_pImageData: Pointer? = null
-    var m_nWidth = 0
-    var m_nHeight = 0
-    var m_nBytesPerPixel = 0
+    @JvmField
+    var imageData: Pointer? = null
+    @JvmField
+    var width = 0
+    var height = 0
+    var bytesPerPixel = 0
 
     constructor()
 
-    constructor(m_pImageData: Pointer?, m_nWidth: Int, m_nHeight: Int, m_nBytesPerPixel: Int) {
-        this.m_pImageData = m_pImageData
-        this.m_nWidth = m_nWidth
-        this.m_nHeight = m_nHeight
-        this.m_nBytesPerPixel = m_nBytesPerPixel
+    constructor(imageData: Pointer?, width: Int, height: Int, bytesPerPixel: Int) {
+        this.imageData = imageData
+        this.width = width
+        this.height = height
+        this.bytesPerPixel = bytesPerPixel
     }
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("m_pImageData", "m_nWidth", "m_nHeight", "m_nBytesPerPixel")
+    override fun getFieldOrder(): List<String> = Arrays.asList("imageData", "width", "height", "bytesPerPixel")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -93,25 +95,22 @@ open class IVRNotifications : Structure {
     /** Create a notification and enqueue it to be shown to the user.
      *  An overlay handle is required to create a notification, as otherwise it would be impossible for a user to act on it.
      *  To create a two-line notification, use a line break ('\n') to split the text into two lines.
-     *  The pImage argument may be NULL, in which case the specified overlay's icon will be used instead. */
-    fun createNotification(ulOverlayHandle: VROverlayHandle, ulUserValue: Long, type: EVRNotificationType, pchText: String, style: EVRNotificationStyle,
-                           pImage: NotificationBitmap_t.ByReference, /* out */ pNotificationId: VRNotificationId_ByReference)
-            = EVRNotificationError.of(CreateNotification!!.invoke(ulOverlayHandle, ulUserValue, type.i, pchText, style.i, pImage, pNotificationId))
+     *  The image argument may be NULL, in which case the specified overlay's icon will be used instead. */
+    fun createNotification(overlayHandle: VROverlayHandle, userValue: Long, type: EVRNotificationType, text: String, style: EVRNotificationStyle, image: NotificationBitmap_t.ByReference, /* out */ notificationId: VRNotificationId_ByReference) = EVRNotificationError.of(CreateNotification!!(overlayHandle, userValue, type.i, text, style.i, image, notificationId))
 
     @JvmField var CreateNotification: CreateNotification_callback? = null
 
     interface CreateNotification_callback : Callback {
-        fun invoke(ulOverlayHandle: VROverlayHandle, ulUserValue: Long, type: Int, pchText: String, style: Int, pImage: NotificationBitmap_t.ByReference,
-                /* out */ pNotificationId: VRNotificationId_ByReference): Int
+        operator fun invoke(ulOverlayHandle: VROverlayHandle, ulUserValue: Long, type: Int, pchText: String, style: Int, pImage: NotificationBitmap_t.ByReference, /* out */ pNotificationId: VRNotificationId_ByReference): Int
     }
 
     /** Destroy a notification, hiding it first if it currently shown to the user. */
-    fun removeNotification(notificationId: VRNotificationId) = EVRNotificationError.of(RemoveNotification!!.invoke(notificationId))
+    infix fun removeNotification(notificationId: VRNotificationId) = EVRNotificationError.of(RemoveNotification!!(notificationId))
 
     @JvmField var RemoveNotification: RemoveNotification_callback? = null
 
     interface RemoveNotification_callback : Callback {
-        fun invoke(notificationId: VRNotificationId): Int
+        operator fun invoke(notificationId: VRNotificationId): Int
     }
 
     constructor()

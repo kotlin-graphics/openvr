@@ -17,6 +17,8 @@ class Test : StringSpec() {
 
         "simple test" {
             println(System.getProperty("TRAVIS"))
+            System.getenv().forEach(System.out::println)
+            println(System.getProperty("CI"))
             if (System.getProperty("TRAVIS") != "TRUE")
                 simpleTest()
         }

@@ -49,13 +49,13 @@ enum class ChaperoneCalibrationState(@JvmField val i: Int) {
 open class IVRChaperone : Structure {
 
     /** Get the current state of Chaperone calibration. This state can change at any time during a session due to physical base station changes. **/
-    val calibrationState get() = ChaperoneCalibrationState.of(GetCalibrationState!!.invoke())
+    val calibrationState get() = ChaperoneCalibrationState.of(GetCalibrationState!!())
 
     @JvmField
     var GetCalibrationState: GetCalibrationState_callback? = null
 
     interface GetCalibrationState_callback : Callback {
-        fun invoke(): Int
+        operator fun invoke(): Int
     }
 
     /** Returns the width and depth of the Play Area (formerly named Soft Bounds) in X and Z.
@@ -63,14 +63,14 @@ open class IVRChaperone : Structure {
     infix fun getPlayAreaSize(area: Vec2): Boolean {
         val sizeX = FloatByReference()
         val sizeZ = FloatByReference()
-        return GetPlayAreaSize!!.invoke(sizeX, sizeZ).also { area.put(sizeX.value, sizeZ.value) }
+        return GetPlayAreaSize!!(sizeX, sizeZ).also { area.put(sizeX.value, sizeZ.value) }
     }
 
     @JvmField
     var GetPlayAreaSize: GetPlayAreaSize_callback? = null
 
     interface GetPlayAreaSize_callback : Callback {
-        fun invoke(pSizeX: FloatByReference, pSizeZ: FloatByReference): Boolean
+        operator fun invoke(pSizeX: FloatByReference, pSizeZ: FloatByReference): Boolean
     }
 
     /** Returns the 4 corner positions of the Play Area (formerly named Soft Bounds).
@@ -79,64 +79,64 @@ open class IVRChaperone : Structure {
      * It's a rectangle.
      * 2 sides are parallel to the X axis and 2 sides are parallel to the Z axis.
      * Height of every corner is 0Y (on the floor). **/
-    infix fun getPlayAreaRect(rect: HmdQuad.ByReference) = GetPlayAreaRect!!.invoke(rect)
+    infix fun getPlayAreaRect(rect: HmdQuad.ByReference) = GetPlayAreaRect!!(rect)
 
     @JvmField
     var GetPlayAreaRect: GetPlayAreaRect_callback? = null
 
     interface GetPlayAreaRect_callback : Callback {
-        fun invoke(rect: HmdQuad.ByReference): Boolean
+        operator fun invoke(rect: HmdQuad.ByReference): Boolean
     }
 
     /** Reload Chaperone data from the .vrchap file on disk. */
-    fun reloadInfo() = ReloadInfo!!.invoke()
+    fun reloadInfo() = ReloadInfo!!()
 
     @JvmField
     var ReloadInfo: ReloadInfo_callback? = null
 
     interface ReloadInfo_callback : Callback {
-        fun invoke()
+        operator fun invoke()
     }
 
     /** Optionally give the chaperone system a hit about the color and brightness in the scene **/
-    infix fun setSceneColor(color: HmdColor) = SetSceneColor!!.invoke(color)
+    infix fun setSceneColor(color: HmdColor) = SetSceneColor!!(color)
 
     @JvmField
     var SetSceneColor: SetSceneColor_callback? = null
 
     interface SetSceneColor_callback : Callback {
-        fun invoke(color: HmdColor)
+        operator fun invoke(color: HmdColor)
     }
 
     /** Get the current chaperone bounds draw color and brightness **/
-    fun getBoundsColor(outputColorArray: HmdColor.ByReference, numOutputColors: Int, collisionBoundsFadeDistance: Float, outputCameraColor: HmdColor.ByReference) = GetBoundsColor!!.invoke(outputColorArray, numOutputColors, collisionBoundsFadeDistance, outputCameraColor)
+    fun getBoundsColor(outputColorArray: HmdColor.ByReference, numOutputColors: Int, collisionBoundsFadeDistance: Float, outputCameraColor: HmdColor.ByReference) = GetBoundsColor!!(outputColorArray, numOutputColors, collisionBoundsFadeDistance, outputCameraColor)
 
     @JvmField
     var GetBoundsColor: GetBoundsColor_callback? = null
 
     interface GetBoundsColor_callback : Callback {
-        fun invoke(pOutputColorArray: HmdColor.ByReference, nNumOutputColors: Int, flCollisionBoundsFadeDistance: Float,
+        operator fun invoke(pOutputColorArray: HmdColor.ByReference, nNumOutputColors: Int, flCollisionBoundsFadeDistance: Float,
                    pOutputCameraColor: HmdColor.ByReference)
     }
 
     /** Determine whether the bounds are showing right now **/
-    val areBoundsVisible get() = AreBoundsVisible!!.invoke()
+    val areBoundsVisible get() = AreBoundsVisible!!()
 
     @JvmField
     var AreBoundsVisible: AreBoundsVisible_callback? = null
 
     interface AreBoundsVisible_callback : Callback {
-        fun invoke(): Boolean
+        operator fun invoke(): Boolean
     }
 
     /** Force the bounds to show, mostly for utilities **/
-    infix fun forceBoundsVisible(force: Boolean) = ForceBoundsVisible!!.invoke(force)
+    infix fun forceBoundsVisible(force: Boolean) = ForceBoundsVisible!!(force)
 
     @JvmField
     var ForceBoundsVisible: ForceBoundsVisible_callback? = null
 
     interface ForceBoundsVisible_callback : Callback {
-        fun invoke(bForce: Boolean)
+        operator fun invoke(bForce: Boolean)
     }
 
 
@@ -154,3 +154,8 @@ open class IVRChaperone : Structure {
 }
 
 val IVRChaperone_Version = "IVRChaperone_003"
+
+fun main(args: Array<String>) {
+    var a: FloatArray? = null
+    a!![0]
+}
