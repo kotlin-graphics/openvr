@@ -11,7 +11,8 @@ open class IVRDriverManager : Structure {
 
     val driverCount get() = GetDriverCount!!()
 
-    @JvmField var GetDriverCount: GetDriverCount_callback? = null
+    @JvmField
+    var GetDriverCount: GetDriverCount_callback? = null
 
     interface GetDriverCount_callback : Callback {
         operator fun invoke(): Int
@@ -20,15 +21,27 @@ open class IVRDriverManager : Structure {
     /** Returns the length of the number of bytes necessary to hold this string including the trailing null.    */
     fun getDriverName(driver: DriverId, value: String, bufferSize: Int) = GetDriverName!!(driver, value, bufferSize)
 
-    @JvmField var GetDriverName: GetDriverName_callback? = null
+    @JvmField
+    var GetDriverName: GetDriverName_callback? = null
 
     interface GetDriverName_callback : Callback {
         operator fun invoke(nDriver: DriverId, pchValue: String, unBufferSize: Int): Int
     }
 
+
+    fun getDriverHandle(driverName: String) = GetDriverHandle!!(driverName)
+
+    @JvmField
+    var GetDriverHandle: GetDriverHandle_callback? = null
+
+    interface GetDriverHandle_callback : Callback {
+        operator fun invoke(pchDriverName: String): DriverHandle
+    }
+
+
     constructor()
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("GetDriverCount", "GetDriverName")
+    override fun getFieldOrder(): List<String> = Arrays.asList("GetDriverCount", "GetDriverName", "GetDriverHandle")
 
     constructor(peer: Pointer) : super(peer) {
         read()

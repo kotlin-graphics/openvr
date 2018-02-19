@@ -443,17 +443,23 @@ enum class EVREye(@JvmField val i: Int) {
     }
 }
 
-enum class ETextureType(@JvmField val i: Int) {
+/** This texture is used directly by our renderer, so only perform atomic (copyresource or resolve) on it   */
+enum class ETextureType {
     /** Handle is an ID3D11Texture  */
-    DirectX(0),
+    DirectX,
     /** Handle is an OpenGL texture name or an OpenGL render buffer name, depending on submit flags */
-    OpenGL(1),
+    OpenGL,
     /** Handle is a pointer to a VRVulkanTextureData_t structure    */
-    Vulkan(2),
+    Vulkan,
     /** Handle is a macOS cross-process-sharable IOSurfaceRef   */
-    IOSurface(3),
+    IOSurface,
     /** Handle is a pointer to a D3D12TextureData_t structure   */
-    DirectX12(4);
+    DirectX12,
+    /** Handle is a HANDLE DXGI share handle, only supported for Overlay render targets.    */
+    DXGISharedHandle;
+
+    @JvmField
+    val i = ordinal
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -578,13 +584,18 @@ enum class ETrackedDeviceClass(@JvmField val i: Int) {
 }
 
 /** Describes what specific role associated with a tracked device */
-enum class ETrackedControllerRole(@JvmField val i: Int) {
+enum class ETrackedControllerRole {
     /** Invalid value for controller value  */
-    Invalid(0),
+    Invalid,
     /** Tracked device associated with the left hand    */
-    LeftHand(1),
+    LeftHand,
     /** Tracked device associated with the right hand   */
-    RightHand(2);
+    RightHand,
+    /** Tracked device is opting out of left/right hand selection   */
+    OptOut;
+
+    @JvmField
+    val i = ordinal
 
     companion object {
         fun of(i: Int) = values().first { it.i == i }
@@ -674,6 +685,10 @@ typealias PropertyTypeTag = Int
 val invalidPropertyContainer: PropertyContainerHandle = 0
 val invalidPropertyTag: PropertyTypeTag = 0
 
+typealias DriverHandle = PropertyContainerHandle
+
+val invalidDriverHandle: PropertyContainerHandle = 0
+
 // Use these tags to set/get common types as struct properties
 val floatPropertyTag: PropertyTypeTag = 1
 val int32PropertyTag: PropertyTypeTag = 2
@@ -744,6 +759,8 @@ enum class ETrackedDeviceProperty(@JvmField val i: Int) {
     RegisteredDeviceType_String(1036),
     /** input profile to use for this device in the input system. Will default to tracking system name if this isn't provided */
     InputProfilePath_String(1037),
+    /** Used for devices that will never have a valid pose by design    */
+    NeverTracked_Bool(1038),
 
     // Properties that are unique to TrackedDeviceClass_HMD
     ReportsTimeSinceVSync_Bool(2000),
@@ -805,9 +822,14 @@ enum class ETrackedDeviceProperty(@JvmField val i: Int) {
     NamedIconPathTrackingReferenceDeviceOff_String(2053),
     DoNotApplyPrediction_Bool(2054),
     CameraToHeadTransforms_Matrix34_Array(2055),
+    /** custom resolution of compositor calls to IVRSystem::ComputeDistortion   */
+    DistortionMeshResolution_Int32(2056),
     DriverIsDrawingControllers_Bool(2057),
     DriverRequestsApplicationPause_Bool(2058),
     DriverRequestsReducedRendering_Bool(2059),
+    MinimumIpdStepMeters_Float(2060),
+    AudioBridgeFirmwareVersion_Uint64(2061),
+    ImageBridgeFirmwareVersion_Uint64(2062),
 
     // Properties that are unique to TrackedDeviceClass_Controller
     AttachedDeviceId_String(3000),
@@ -1176,6 +1198,8 @@ enum class EVREventType(@JvmField val i: Int) {
     InputFocusChanged(406),
     /** data is process */
     SceneApplicationSecondaryRenderingStarted(407),
+    /** data is process */
+    SceneApplicationUsingWrongGraphicsAdapter(408),
 
     /** Sent to the scene application to request hiding render models temporarily   */
     HideRenderModels(410),
@@ -1207,14 +1231,15 @@ enum class EVREventType(@JvmField val i: Int) {
     OverlayGamepadFocusGained(511),
     /** Send to an overlay when it previously had focus and IVROverlay::SetFocusOverlay is called on something else */
     OverlayGamepadFocusLost(512),
-    OverlaySharedTextureChanged(513),
-    DashboardGuideButtonDown(514),
+    //    OverlaySharedTextureChanged(513), There are no longer sent
+//    DashboardGuideButtonDown(514),
     DashboardGuideButtonUp(515),
     /** Screenshot button combo was pressed), Dashboard should request a screenshot */
     ScreenshotTriggered(516),
     /** Sent to overlays when a SetOverlayRaw or SetOverlayfromFail fails to load   */
     ImageFailed(517),
     DashboardOverlayCreated(518),
+    SwitchGamepadFocus(519),
 
     // Screenshot API
     /** Sent by vrclient application to compositor to take a screenshot */
@@ -1229,6 +1254,10 @@ enum class EVREventType(@JvmField val i: Int) {
     ScreenshotProgressToDashboard(524),
 
     PrimaryDashboardDeviceChanged(525),
+    /** Sent by compositor whenever room-view is enabled    */
+    RoomViewShown(526),
+    /** Sent by compositor whenever room-view is disabled   */
+    RoomViewHidden(527),
 
     Notification_Shown(600),
     Notification_Hidden(601),
@@ -1817,14 +1846,20 @@ open class VREvent_Reserved : Structure {
     var reserved0 = 0L
     @JvmField
     var reserved1 = 0L
+    @JvmField
+    var reserved2 = 0L
+    @JvmField
+    var reserved3 = 0L
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("reserved0", "reserved1")
+    override fun getFieldOrder(): List<String> = listOf("reserved0", "reserved1", "reserved2", "reserved3")
 
-    constructor(reserved0: Long, reserved1: Long) {
+    constructor(reserved0: Long, reserved1: Long, reserved2: Long, reserved3: Long) {
         this.reserved0 = reserved0
         this.reserved1 = reserved1
+        this.reserved2 = reserved2
+        this.reserved3 = reserved3
     }
 
     constructor(peer: Pointer) : super(peer) {
@@ -2523,8 +2558,8 @@ enum class EVRInitError(@JvmField val i: Int) {
     Init_RebootingBusy(137),
     Init_FirmwareUpdateBusy(138),
     Init_FirmwareRecoveryBusy(139),
-
     Init_USBServiceBusy(140),
+    VRWebHelperStartupFailed(141),
 
     Driver_Failed(200),
     Driver_Unknown(201),

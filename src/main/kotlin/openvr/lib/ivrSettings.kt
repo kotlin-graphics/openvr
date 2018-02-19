@@ -200,6 +200,7 @@ val Lighthouse_DisambiguationDebug_Int32 = "disambiguationdebug"
 val Lighthouse_PrimaryBasestation_Int32 = "primarybasestation"
 val Lighthouse_DBHistory_Bool = "dbhistory"
 val Lighthouse_EnableBluetooth_Bool = "enableBluetooth"
+val Lighthouse_PowerManagedBaseStations_String = "PowerManagedBaseStations"
 
 //-----------------------------------------------------------------------------
 // null keys
@@ -302,6 +303,7 @@ val Power_PauseCompositorOnStandby_Bool = "pauseCompositorOnStandby"
 val Dashboard_Section = "dashboard"
 val Dashboard_EnableDashboard_Bool = "enableDashboard"
 val Dashboard_ArcadeMode_Bool = "arcadeMode"
+val Dashboard_EnableWebUI = "webUI"
 
 //-----------------------------------------------------------------------------
 // model skin keys
@@ -310,3 +312,8 @@ val modelskin_Section = "modelskins"
 //-----------------------------------------------------------------------------
 // driver keys - These could be checked in any driver_<name> section
 val Driver_Enable_Bool = "enable"
+
+//-----------------------------------------------------------------------------
+// web interface keys
+val WebInterface_Section = "WebInterface"
+val WebInterface_WebPort_String = "WebPort"
