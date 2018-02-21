@@ -150,7 +150,7 @@ open class VROverlayIntersectionParams : Structure {
         this.eOrigin = origin.i
     }
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("source", "direction", "eOrigin")
+    override fun getFieldOrder()= listOf("source", "direction", "eOrigin")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -180,7 +180,7 @@ open class VROverlayIntersectionResults : Structure {
         this.distance = distance
     }
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("point", "normal", "uv", "distance")
+    override fun getFieldOrder()= listOf("point", "normal", "uv", "distance")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -258,7 +258,7 @@ open class IntersectionMaskRectangle : Structure {
         this.height = height
     }
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("topLeftX", "topLeftY", "width", "height")
+    override fun getFieldOrder()= listOf("topLeftX", "topLeftY", "width", "height")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -285,7 +285,7 @@ open class IntersectionMaskCircle : Structure {
         this.radius = radius
     }
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("centerX", "centerY", "radius")
+    override fun getFieldOrder()= listOf("centerX", "centerY", "radius")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -321,7 +321,7 @@ open class VROverlayIntersectionMaskPrimitive : Structure {
         this.primitive = m_Primitive
     }
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("primitiveType", "primitive")
+    override fun getFieldOrder()= listOf("primitiveType", "primitive")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -1269,7 +1269,7 @@ open class IVROverlay : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("FindOverlay", "CreateOverlay", "DestroyOverlay",
+    override fun getFieldOrder()= listOf("FindOverlay", "CreateOverlay", "DestroyOverlay",
             "SetHighQualityOverlay", "GetHighQualityOverlay", "GetOverlayKey", "GetOverlayName", "SetOverlayName",
             "GetOverlayImageData", "GetOverlayErrorNameFromEnum", "SetOverlayRenderingPid", "GetOverlayRenderingPid", "SetOverlayFlag",
             "GetOverlayFlag", "SetOverlayColor", "GetOverlayColor", "SetOverlayAlpha", "GetOverlayAlpha", "SetOverlayTexelAspect",

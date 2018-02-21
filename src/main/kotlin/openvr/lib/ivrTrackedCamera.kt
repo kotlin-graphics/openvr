@@ -137,7 +137,7 @@ open class IVRTrackedCamera : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("GetCameraErrorNameFromEnum", "HasCamera", "GetCameraFrameSize",
+    override fun getFieldOrder()= listOf("GetCameraErrorNameFromEnum", "HasCamera", "GetCameraFrameSize",
             "GetCameraIntrinsics", "GetCameraProjection", "AcquireVideoStreamingService", "ReleaseVideoStreamingService",
             "GetVideoStreamFrameBuffer", "GetVideoStreamTextureSize", "GetVideoStreamTextureD3D11", "GetVideoStreamTextureGL",
             "ReleaseVideoStreamTextureGL")

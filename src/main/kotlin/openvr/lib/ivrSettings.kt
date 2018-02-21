@@ -122,7 +122,7 @@ open class IVRSettings : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("GetSettingsErrorNameFromEnum", "Sync", "SetBool", "SetInt32",
+    override fun getFieldOrder()= listOf("GetSettingsErrorNameFromEnum", "Sync", "SetBool", "SetInt32",
             "SetFloat", "SetString", "GetBool", "GetInt32", "GetFloat", "GetString", "RemoveSection", "RemoveKeyInSection")
 
     constructor(peer: Pointer) : super(peer) {

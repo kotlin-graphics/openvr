@@ -33,7 +33,7 @@ open class VkPhysicalDevice : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("")
+    override fun getFieldOrder() = listOf<String>()
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -47,7 +47,7 @@ open class VkInstance : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("")
+    override fun getFieldOrder() = listOf<String>()
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -79,7 +79,7 @@ open class HmdMat34 : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("m")
+    override fun getFieldOrder() = listOf("m")
 
     constructor(m: FloatArray) {
         if (m.size != this.m.size) throw IllegalArgumentException("Wrong array size!")
@@ -110,7 +110,7 @@ open class HmdMat44 : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("m")
+    override fun getFieldOrder() = listOf("m")
 
     constructor(m: FloatArray) {
         if (m.size != this.m.size) throw IllegalArgumentException("Wrong array size!")
@@ -150,7 +150,7 @@ open class HmdVec3 : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("v")
+    override fun getFieldOrder() = listOf("v")
 
     constructor(v: FloatArray) {
         if (v.size != this.v.size) throw IllegalArgumentException("Wrong array size!")
@@ -195,7 +195,7 @@ open class HmdVec4 : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("v")
+    override fun getFieldOrder() = listOf("v")
 
     constructor(v: FloatArray) {
         if (v.size != this.v.size) throw IllegalArgumentException("Wrong array size!")
@@ -229,7 +229,7 @@ open class HmdVec3d : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("v")
+    override fun getFieldOrder() = listOf("v")
 
     constructor(v: DoubleArray) {
         if (v.size != this.v.size) throw IllegalArgumentException("Wrong array size!")
@@ -260,7 +260,7 @@ open class HmdVec2 : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("v")
+    override fun getFieldOrder() = listOf("v")
 
     constructor(v: FloatArray) {
         if (v.size != this.v.size) throw IllegalArgumentException("Wrong array size!")
@@ -290,7 +290,7 @@ open class HmdQuat : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("w", "x", "y", "z")
+    override fun getFieldOrder() = listOf("w", "x", "y", "z")
 
     constructor(w: Double, x: Double, y: Double, z: Double) {
         this.w = w
@@ -328,7 +328,7 @@ open class HmdColor : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("r", "g", "b", "a")
+    override fun getFieldOrder() = listOf("r", "g", "b", "a")
 
     constructor(r: Float, g: Float, b: Float, a: Float) {
         this.r = r
@@ -356,15 +356,15 @@ open class HmdColor : Structure {
 open class HmdQuad : Structure {
 
     @JvmField
-    var vCorners = arrayOf(HmdVec3(), HmdVec3(), HmdVec3(), HmdVec3())
+    var corners = arrayOf(HmdVec3(), HmdVec3(), HmdVec3(), HmdVec3())
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("vCorners")
+    override fun getFieldOrder()= listOf("corners")
 
-    constructor(vCorners: Array<HmdVec3>) {
-        if (vCorners.size != this.vCorners.size) throw IllegalArgumentException("Wrong array size!")
-        this.vCorners = vCorners
+    constructor(corners: Array<HmdVec3>) {
+        if (corners.size != this.corners.size) throw IllegalArgumentException("Wrong array size!")
+        this.corners = corners
     }
 
     constructor(peer: Pointer) : super(peer) {
@@ -378,17 +378,17 @@ open class HmdQuad : Structure {
 open class HmdRect2 : Structure {
 
     @JvmField
-    var vTopLeft = HmdVec2()
+    var topLeft = HmdVec2()
     @JvmField
-    var vBottomRight = HmdVec2()
+    var bottomRight = HmdVec2()
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("vTopLeft", "vBottomRight")
+    override fun getFieldOrder()= listOf("topLeft", "bottomRight")
 
-    constructor(vTopLeft: HmdVec2, vBottomRight: HmdVec2) {
-        this.vTopLeft = vTopLeft
-        this.vBottomRight = vBottomRight
+    constructor(topLeft: HmdVec2, bottomRight: HmdVec2) {
+        this.topLeft = topLeft
+        this.bottomRight = bottomRight
     }
 
     constructor(peer: Pointer) : super(peer) {
@@ -404,23 +404,23 @@ open class HmdRect2 : Structure {
 open class DistortionCoordinates : Structure {
 
     @JvmField
-    var rfRed = FloatArray(2)
+    var red = FloatArray(2)
     @JvmField
-    var rfGreen = FloatArray(2)
+    var green = FloatArray(2)
     @JvmField
-    var rfBlue = FloatArray(2)
+    var blue = FloatArray(2)
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("rfRed", "rfGreen", "rfBlue")
+    override fun getFieldOrder()= listOf("red", "green", "blue")
 
     constructor(rfRed: FloatArray, rfGreen: FloatArray, rfBlue: FloatArray) {
-        if (rfRed.size != this.rfRed.size) throw IllegalArgumentException("Wrong rfRed array size!")
-        this.rfRed = rfRed
-        if (rfGreen.size != this.rfGreen.size) throw IllegalArgumentException("Wrong rfGreen array size!")
-        this.rfGreen = rfGreen
-        if (rfBlue.size != this.rfBlue.size) throw IllegalArgumentException("Wrong rfBlue array size!")
-        this.rfBlue = rfBlue
+        if (rfRed.size != this.red.size) throw IllegalArgumentException("Wrong red array size!")
+        this.red = rfRed
+        if (rfGreen.size != this.green.size) throw IllegalArgumentException("Wrong green array size!")
+        this.green = rfGreen
+        if (rfBlue.size != this.blue.size) throw IllegalArgumentException("Wrong blue array size!")
+        this.blue = rfBlue
     }
 
     constructor(peer: Pointer) : super(peer) {
@@ -499,7 +499,7 @@ open class Texture : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("handle", "eType", "eColorSpac")
+    override fun getFieldOrder()= listOf("handle", "eType", "eColorSpac")
 
     constructor(handle: Long, eType: ETextureType, eColorSpace: EColorSpace) {
         this.handle = handle
@@ -639,7 +639,7 @@ open class TrackedDevicePose : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("deviceToAbsoluteTracking", "velocity", "angularVelocity",
+    override fun getFieldOrder()= listOf("deviceToAbsoluteTracking", "velocity", "angularVelocity",
             "eTrackingResult", "bPoseIsValid", "bDeviceIsConnected")
 
     constructor(deviceToAbsoluteTracking: HmdMat34, velocity: HmdVec3, angularVelocity: HmdVec3,
@@ -950,7 +950,7 @@ open class VRTextureBounds : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("uMin", "vMin", "uMax", "vMax")
+    override fun getFieldOrder()= listOf("uMin", "vMin", "uMax", "vMax")
 
     constructor(uMin: Float, vMin: Float, uMax: Float, vMax: Float) {
         this.uMin = uMin
@@ -976,7 +976,7 @@ open class VRTextureWithPose : Texture {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("deviceToAbsoluteTracking")
+    override fun getFieldOrder()= listOf("deviceToAbsoluteTracking")
 
     constructor(deviceToAbsoluteTracking: HmdMat34) {
         this.deviceToAbsoluteTracking = deviceToAbsoluteTracking
@@ -999,7 +999,7 @@ open class VRTextureDepthInfo : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("handle, projection, range")
+    override fun getFieldOrder()= listOf("handle, projection, range")
 
     constructor(handle: Pointer, projection: HmdMat44, range: HmdVec2) {
         this.handle = handle
@@ -1021,7 +1021,7 @@ open class VRTextureWithDepth : Texture {
 
     constructor() : super()
 
-    override fun getFieldOrder(): List<String> = listOf("depth")
+    override fun getFieldOrder()= listOf("depth")
 
     constructor(depth: VRTextureDepthInfo) {
         this.depth = depth
@@ -1039,7 +1039,7 @@ open class VRTextureWithPoseAndDepth : VRTextureWithPose {
 
     constructor() : super()
 
-    override fun getFieldOrder(): List<String> = listOf("depth")
+    override fun getFieldOrder()= listOf("depth")
 
     constructor(depth: VRTextureDepthInfo) {
         this.depth = depth
@@ -1427,7 +1427,7 @@ open class VREvent_Controller : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("eButton")
+    override fun getFieldOrder()= listOf("eButton")
 
     constructor(button: EVRButtonId) {
         this.eButton = button.i
@@ -1472,7 +1472,7 @@ open class VREvent_Mouse : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("x", "y", "eButton")
+    override fun getFieldOrder()= listOf("x", "y", "eButton")
 
     constructor(x: Float, y: Float, button: EVRMouseButton) {
         this.x = x
@@ -1501,7 +1501,7 @@ open class VREvent_Scroll : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("xDelta", "yDelta", "repeatCount")
+    override fun getFieldOrder()= listOf("xDelta", "yDelta", "repeatCount")
 
     constructor(xDelta: Float, yDelta: Float, repeatCount: Int) {
         this.xDelta = xDelta
@@ -1549,7 +1549,7 @@ open class VREvent_TouchPadMove : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("bFingerDown", "secondsFingerDown", "valueXFirst", "valueYFirst",
+    override fun getFieldOrder()= listOf("bFingerDown", "secondsFingerDown", "valueXFirst", "valueYFirst",
             "valueXRaw", "valueYRaw")
 
     constructor(fingerDown: Boolean, secondsFingerDown: Float, valueXFirst: Float, valueYFirst: Float, valueXRaw: Float, valueYRaw: Float) {
@@ -1603,7 +1603,7 @@ open class VREvent_DualAnalog : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("x", "y", "transformedX", "transformedY", "eWhich")
+    override fun getFieldOrder()= listOf("x", "y", "transformedX", "transformedY", "eWhich")
 
     constructor(x: Float, y: Float, transformedX: Float, transformedY: Float, which: EDualAnalogWhich) {
         this.x = x
@@ -1638,7 +1638,7 @@ open class VREvent_HapticVibration : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("containerHandle", "componentHandle", "durationSeconds", "frequency", "amplitude")
+    override fun getFieldOrder()= listOf("containerHandle", "componentHandle", "durationSeconds", "frequency", "amplitude")
 
     constructor(containerHandle: Long, componentHandle: Long, durationSeconds: Float, frequency: Float, amplitude: Float) {
         this.containerHandle = containerHandle
@@ -1666,7 +1666,7 @@ open class VREvent_Notification : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("userValue", "notificationId")
+    override fun getFieldOrder()= listOf("userValue", "notificationId")
 
     constructor(userValue: Long, notificationId: Int) {
         this.userValue = userValue
@@ -1698,7 +1698,7 @@ open class VREvent_Process : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("pid", "oldPid", "bForced")
+    override fun getFieldOrder()= listOf("pid", "oldPid", "bForced")
 
     constructor(pid: Int, oldPid: Int, forced: Boolean) {
         this.pid = pid
@@ -1722,7 +1722,7 @@ open class VREvent_Overlay : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("overlayHandle")
+    override fun getFieldOrder()= listOf("overlayHandle")
 
     constructor(overlayHandle: Long) {
         this.overlayHandle = overlayHandle
@@ -1750,7 +1750,7 @@ open class VREvent_Status : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("eStatusState")
+    override fun getFieldOrder()= listOf("eStatusState")
 
     constructor(statusState: EVRState) {
         this.eStatusState = statusState.i
@@ -1779,7 +1779,7 @@ open class VREvent_Keyboard : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("cNewInput", "userValue")
+    override fun getFieldOrder()= listOf("cNewInput", "userValue")
 
     constructor(newInput: String, userValue: Long) {
         this.cNewInput = newInput.take(8).toByteArray()
@@ -1801,7 +1801,7 @@ open class VREvent_Ipd : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("ipdMeters")
+    override fun getFieldOrder()= listOf("ipdMeters")
 
     constructor(ipdMeters: Float) {
         this.ipdMeters = ipdMeters
@@ -1824,7 +1824,7 @@ open class VREvent_Chaperone : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("previousUniverse", "currentUniverse")
+    override fun getFieldOrder()= listOf("previousUniverse", "currentUniverse")
 
     constructor(previousUniverse: Long, currentUniverse: Long) {
         this.previousUniverse = previousUniverse
@@ -1853,7 +1853,7 @@ open class VREvent_Reserved : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("reserved0", "reserved1", "reserved2", "reserved3")
+    override fun getFieldOrder()= listOf("reserved0", "reserved1", "reserved2", "reserved3")
 
     constructor(reserved0: Long, reserved1: Long, reserved2: Long, reserved3: Long) {
         this.reserved0 = reserved0
@@ -1877,7 +1877,7 @@ open class VREvent_PerformanceTest : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("fidelityLevel")
+    override fun getFieldOrder()= listOf("fidelityLevel")
 
     constructor(m_nFidelityLevel: Int) {
         this.fidelityLevel = m_nFidelityLevel
@@ -1903,7 +1903,7 @@ open class VREvent_SeatedZeroPoseReset : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("bResetBySystemMenu")
+    override fun getFieldOrder()= listOf("bResetBySystemMenu")
 
     constructor(resetBySystemMenu: Boolean) {
         this.bResetBySystemMenu = if (resetBySystemMenu) 1.b else 0.b
@@ -1935,7 +1935,7 @@ open class VREvent_Screenshot : Structure {
         read()
     }
 
-    override fun getFieldOrder(): List<String> = listOf("handle", "type")
+    override fun getFieldOrder()= listOf("handle", "type")
 
     class ByReference : VREvent_Screenshot(), Structure.ByReference
     class ByValue : VREvent_Screenshot(), Structure.ByValue
@@ -1956,7 +1956,7 @@ open class VREvent_ScreenshotProgress : Structure {
         read()
     }
 
-    override fun getFieldOrder(): List<String> = listOf("progress")
+    override fun getFieldOrder()= listOf("progress")
 
     class ByReference : VREvent_ScreenshotProgress(), Structure.ByReference
     class ByValue : VREvent_ScreenshotProgress(), Structure.ByValue
@@ -1980,7 +1980,7 @@ open class VREvent_ApplicationLaunch : Structure {
         read()
     }
 
-    override fun getFieldOrder(): List<String> = listOf("pid", "argsHandle")
+    override fun getFieldOrder()= listOf("pid", "argsHandle")
 
     class ByReference : VREvent_ApplicationLaunch(), Structure.ByReference
     class ByValue : VREvent_ApplicationLaunch(), Structure.ByValue
@@ -2004,7 +2004,7 @@ open class VREvent_EditingCameraSurface : Structure {
         read()
     }
 
-    override fun getFieldOrder(): List<String> = listOf("overlayHandle", "visualMode")
+    override fun getFieldOrder()= listOf("overlayHandle", "visualMode")
 
     class ByReference : VREvent_EditingCameraSurface(), Structure.ByReference
     class ByValue : VREvent_EditingCameraSurface(), Structure.ByValue
@@ -2030,7 +2030,7 @@ open class VREvent_MessageOverlay : Structure {
         read()
     }
 
-    override fun getFieldOrder(): List<String> = listOf("unVRMessageOverlayResponse")
+    override fun getFieldOrder()= listOf("unVRMessageOverlayResponse")
 
     class ByReference : VREvent_MessageOverlay(), Structure.ByReference
     class ByValue : VREvent_MessageOverlay(), Structure.ByValue
@@ -2061,7 +2061,7 @@ open class VREvent_Property : Structure {
         read()
     }
 
-    override fun getFieldOrder(): List<String> = listOf("container", "eProp")
+    override fun getFieldOrder()= listOf("container", "eProp")
 
     class ByReference : VREvent_Property(), Structure.ByReference
     class ByValue : VREvent_Property(), Structure.ByValue
@@ -2121,7 +2121,7 @@ open class VREvent_Data : Union {
     class ByReference : VREvent_Data(), Structure.ByReference
     class ByValue : VREvent_Data(), Structure.ByValue
 
-    override fun getFieldOrder(): List<String> = listOf("controller", "mouse", "scroll", "process", "notification", "overlay",
+    override fun getFieldOrder()= listOf("controller", "mouse", "scroll", "process", "notification", "overlay",
             "status", "keyboard", "ipd", "chaperone", "performanceTest", "touchPadMove", "seatedZeroPoseReset", "screenshot",
             "screenshotProgress", "applicationLaunch", "cameraSurface", "messageOverlay", "property", "dualAnalog", "hapticVibration")
 }
@@ -2147,7 +2147,7 @@ open class VREvent : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("eEventType", "trackedDeviceIndex", "eventAgeSeconds", "data")
+    override fun getFieldOrder()= listOf("eEventType", "trackedDeviceIndex", "eventAgeSeconds", "data")
 
     constructor(eventType: EVREventType, trackedDeviceIndex: Int, eventAgeSeconds: Float, data: VREvent_Data) {
         this.eEventType = eventType.i
@@ -2192,7 +2192,7 @@ open class HiddenAreaMesh : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("vertexData", "triangleCount")
+    override fun getFieldOrder()= listOf("vertexData", "triangleCount")
 
     constructor(pVertexData: HmdVec2.ByReference, unTriangleCount: Int) {
         this.vertexData = pVertexData
@@ -2246,7 +2246,7 @@ open class VRControllerAxis : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("x", "y")
+    override fun getFieldOrder()= listOf("x", "y")
 
     constructor(x: Float, y: Float) {
         this.x = x
@@ -2290,7 +2290,7 @@ open class VRControllerState : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("packetNum", "buttonPressed", "buttonTouched", "axis")
+    override fun getFieldOrder()= listOf("packetNum", "buttonPressed", "buttonTouched", "axis")
 
     constructor(packetNum: Int, buttonPressed: Long, buttonTouched: Long, axis: Array<VRControllerAxis>) {
         this.packetNum = packetNum
@@ -2400,7 +2400,7 @@ open class Compositor_OverlaySettings : Structure {
         this.transform = transform
     }
 
-    override fun getFieldOrder(): List<String> = listOf("size", "bCurved", "bAntialias", "scale", "distance", "alpha",
+    override fun getFieldOrder()= listOf("size", "bCurved", "bAntialias", "scale", "distance", "alpha",
             "uOffset", "vOffset", "uScale", "vScale", "gridDivs", "gridWidth", "gridScale", "transform")
 
     constructor(peer: Pointer) : super(peer) {
@@ -2727,7 +2727,7 @@ open class CameraVideoStreamFrameHeader : Structure {
         read()
     }
 
-    override fun getFieldOrder(): List<String> = listOf("eFrameType", "width", "height", "bytesPerPixel", "frameSequence",
+    override fun getFieldOrder()= listOf("eFrameType", "width", "height", "bytesPerPixel", "frameSequence",
             "standingTrackedDevicePose")
 
     class ByReference : CameraVideoStreamFrameHeader(), Structure.ByReference
@@ -2774,7 +2774,7 @@ open class DriverDirectMode_FrameTiming : Structure {
         read()
     }
 
-    override fun getFieldOrder(): List<String> = listOf("size", "numFramePresents", "numMisPresented", "numDroppedFrames", "reprojectionFlags")
+    override fun getFieldOrder()= listOf("size", "numFramePresents", "numMisPresented", "numDroppedFrames", "reprojectionFlags")
 
     class ByReference : DriverDirectMode_FrameTiming(), Structure.ByReference
     class ByValue : DriverDirectMode_FrameTiming(), Structure.ByValue

@@ -121,7 +121,7 @@ open class IVRScreenshots : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("RequestScreenshot", "HookScreenshot", "GetScreenshotPropertyType", "GetScreenshotPropertyFilename",
+    override fun getFieldOrder()= listOf("RequestScreenshot", "HookScreenshot", "GetScreenshotPropertyType", "GetScreenshotPropertyFilename",
             "UpdateScreenshotProgress", "TakeStereoScreenshot", "SubmitScreenshot")
 
     constructor(peer: Pointer) : super(peer) {

@@ -41,7 +41,7 @@ open class IVRDriverManager : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("GetDriverCount", "GetDriverName", "GetDriverHandle")
+    override fun getFieldOrder()= listOf("GetDriverCount", "GetDriverName", "GetDriverHandle")
 
     constructor(peer: Pointer) : super(peer) {
         read()

@@ -36,7 +36,7 @@ open class IVRResources : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("LoadSharedResource", "GetResourceFullPath")
+    override fun getFieldOrder()= listOf("LoadSharedResource", "GetResourceFullPath")
 
     constructor(peer: Pointer) : super(peer) {
         read()

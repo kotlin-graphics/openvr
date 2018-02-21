@@ -27,7 +27,7 @@ open class NotificationBitmap : Structure {
         this.bytesPerPixel = bytesPerPixel
     }
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("imageData", "width", "height", "bytesPerPixel")
+    override fun getFieldOrder()= listOf("imageData", "width", "height", "bytesPerPixel")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -115,7 +115,7 @@ open class IVRNotifications : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("CreateNotification", "RemoveNotification")
+    override fun getFieldOrder()= listOf("CreateNotification", "RemoveNotification")
 
     constructor(peer: Pointer) : super(peer) {
         read()

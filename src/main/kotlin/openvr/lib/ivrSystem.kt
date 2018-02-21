@@ -694,7 +694,7 @@ open class IVRSystem : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("GetRecommendedRenderTargetSize", "GetProjectionMatrix",
+    override fun getFieldOrder()= listOf("GetRecommendedRenderTargetSize", "GetProjectionMatrix",
             "GetProjectionRaw", "ComputeDistortion", "GetEyeToHeadTransform", "GetTimeSinceLastVsync", "GetD3D9AdapterIndex",
             "GetDXGIOutputInfo", "GetOutputDevice", "IsDisplayOnDesktop", "SetDisplayVisibility", "GetDeviceToAbsoluteTrackingPose",
             "ResetSeatedZeroPose", "GetSeatedZeroPoseToStandingAbsoluteTrackingPose", "GetRawZeroPoseToStandingAbsoluteTrackingPose",
@@ -814,22 +814,22 @@ fun Int.toEVRApplicationTransitionState() = EVRApplicationTransitionState.values
 open class AppOverrideKeys : Structure {
 
     @JvmField
-    var pchKey = "" // TODO check
+    var key = "" // TODO check
     @JvmField
-    var pchValue = ""
+    var value = ""
 
     constructor()
 
-    constructor(pchKey: String, pchValue: String) {
-        this.pchKey = pchKey
-        this.pchValue = pchValue
+    constructor(key: String, value: String) {
+        this.key = key
+        this.value = value
     }
 
     constructor(peer: Pointer) : super(peer) {
         read()
     }
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("pchKey", "pchValue")
+    override fun getFieldOrder()= listOf("key", "value")
 
     class ByReference : AppOverrideKeys(), Structure.ByReference
     class ByValue : AppOverrideKeys(), Structure.ByValue

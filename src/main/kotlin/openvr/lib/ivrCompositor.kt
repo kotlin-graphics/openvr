@@ -178,7 +178,7 @@ open class Compositor_FrameTiming : Structure {
         this.hmdPose = hmdPose
     }
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("size", "frameIndex", "numFramePresents", "numMisPresented",
+    override fun getFieldOrder() = listOf("size", "frameIndex", "numFramePresents", "numMisPresented",
             "numDroppedFrames", "reprojectionFlags", "systemTimeInSeconds", "preSubmitGpuMs", "postSubmitGpuMs",
             "totalRenderGpuMs", "compositorRenderGpuMs", "compositorRenderCpuMs", "compositorIdleCpuMs",
             "clientFrameIntervalMs", "presentCallCpuMs", "waitForPresentCpuMs", "submitFrameMs",
@@ -272,7 +272,7 @@ open class Compositor_CumulativeStats : Structure {
         this.numReprojectedFramesTimedOut = numReprojectedFramesTimedOut
     }
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("pid", "numFramePresents", "numDroppedFrames",
+    override fun getFieldOrder()= listOf("pid", "numFramePresents", "numDroppedFrames",
             "numReprojectedFrames", "numFramePresentsOnStartup", "numDroppedFramesOnStartup",
             "numReprojectedFramesOnStartup", "numLoading", "numFramePresentsLoading", "numDroppedFramesLoading",
             "numReprojectedFramesLoading", "numTimedOut", "numFramePresentsTimedOut", "numDroppedFramesTimedOut",
@@ -794,7 +794,7 @@ open class IVRCompositor : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = listOf("SetTrackingSpace", "GetTrackingSpace", "WaitGetPoses", "GetLastPoses",
+    override fun getFieldOrder()= listOf("SetTrackingSpace", "GetTrackingSpace", "WaitGetPoses", "GetLastPoses",
             "GetLastPoseForTrackedDeviceIndex", "Submit", "ClearLastSubmittedFrame", "PostPresentHandoff", "GetFrameTiming",
             "GetFrameTimings", "GetFrameTimeRemaining", "GetCumulativeStats", "FadeToColor", "GetCurrentFadeColor", "FadeGrid",
             "GetCurrentGridAlpha", "SetSkyboxOverride", "ClearSkyboxOverride", "CompositorBringToFront", "CompositorGoToBack",

@@ -81,7 +81,7 @@ class Test : StringSpec() {
 
 //            val dc = hmd.computeDistortion(EVREye.Left, .5f, .5f)
 //            //
-//            assert(dc.rfRed[0] in 0..1 && dc.rfRed[1] in 0..1 && dc.rfGreen[0] in 0..1 && dc.rfGreen[1] in 0..1 && dc.rfBlue[0] in 0..1 && dc.rfBlue[1] in 0..1)
+//            assert(dc.red[0] in 0..1 && dc.red[1] in 0..1 && dc.green[0] in 0..1 && dc.green[1] in 0..1 && dc.blue[0] in 0..1 && dc.blue[1] in 0..1)
 //
 //
 //            val m43 = hmd.getEyeToHeadTransform(EVREye.Left)

@@ -83,7 +83,7 @@ open class RenderModel_ComponentState : Structure {
         this.properties = properties
     }
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("trackingToComponentRenderModel", "trackingToComponentLocal", "properties")
+    override fun getFieldOrder()= listOf("trackingToComponentRenderModel", "trackingToComponentLocal", "properties")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -121,7 +121,7 @@ open class RenderModel_Vertex : Structure {
         this.textureCoord = textureCoord
     }
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("position", "normal", "textureCoord")
+    override fun getFieldOrder()= listOf("position", "normal", "textureCoord")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -167,7 +167,7 @@ open class RenderModel_TextureMap : Structure {
         this.rubTextureMapData = rubTextureMapData
     }
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("width", "height", "rubTextureMapData")
+    override fun getFieldOrder()= listOf("width", "height", "rubTextureMapData")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -224,7 +224,7 @@ open class RenderModel : Structure {
         this.diffuseTextureId = diffuseTextureId
     }
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("rVertexData", "vertexCount", "rIndexData",
+    override fun getFieldOrder()= listOf("rVertexData", "vertexCount", "rIndexData",
             "triangleCount", "diffuseTextureId")
 
     constructor(peer: Pointer) : super(peer) {
@@ -257,7 +257,7 @@ open class RenderModel_ControllerMode_State : Structure {
         this.bScrollWheelVisible = if (bScrollWheelVisible) 1.b else 0.b
     }
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("bScrollWheelVisible")
+    override fun getFieldOrder()= listOf("bScrollWheelVisible")
 
     constructor(peer: Pointer) : super(peer) {
         read()
@@ -501,7 +501,7 @@ open class IVRRenderModels : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("LoadRenderModel_Async", "FreeRenderModel", "LoadTexture_Async", "FreeTexture",
+    override fun getFieldOrder()= listOf("LoadRenderModel_Async", "FreeRenderModel", "LoadTexture_Async", "FreeTexture",
             "LoadTextureD3D11_Async", "LoadIntoTextureD3D11_Async", "FreeTextureD3D11", "GetRenderModelName", "GetRenderModelCount", "GetComponentCount",
             "GetComponentName", "GetComponentButtonMask", "GetComponentRenderModelName", "GetComponentState", "RenderModelHasComponent",
             "GetRenderModelThumbnailURL", "GetRenderModelOriginalPath", "GetRenderModelErrorNameFromEnum")

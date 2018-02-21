@@ -60,7 +60,7 @@ open class IVRExtendedDisplay : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("GetWindowBounds", "GetEyeOutputViewport", "GetDXGIOutputInfo")
+    override fun getFieldOrder()= listOf("GetWindowBounds", "GetEyeOutputViewport", "GetDXGIOutputInfo")
 
     constructor(peer: Pointer) : super(peer) {
         read()

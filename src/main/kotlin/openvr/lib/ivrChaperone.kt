@@ -142,7 +142,7 @@ open class IVRChaperone : Structure {
 
     constructor()
 
-    override fun getFieldOrder(): List<String> = Arrays.asList("GetCalibrationState", "GetPlayAreaSize", "GetPlayAreaRect", "ReloadInfo", "SetSceneColor",
+    override fun getFieldOrder() = listOf("GetCalibrationState", "GetPlayAreaSize", "GetPlayAreaRect", "ReloadInfo", "SetSceneColor",
             "GetBoundsColor", "AreBoundsVisible_callback", "ForceBoundsVisible")
 
     constructor(peer: Pointer) : super(peer) {
