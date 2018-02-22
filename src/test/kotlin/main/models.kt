@@ -26,14 +26,14 @@ class models : StringSpec() {
     fun loadRenderModel(renderModelName: String) {
 
         // load the model if we didn't find one
-        val error = EVRRenderModelError.None
+        var error: EVRRenderModelError
 
         val rm = vrRenderModels!!
 
         val pModel = PointerByReference()
         while (true) {
-            if (rm.loadRenderModel_Async(renderModelName, pModel) != EVRRenderModelError.Loading)
-                break
+            error = rm.loadRenderModel_Async(renderModelName, pModel)
+            if (error != EVRRenderModelError.Loading) break
             Thread.sleep(1)
         }
         val model = RenderModel.ByReference(pModel.value)
@@ -64,7 +64,7 @@ class models : StringSpec() {
 //        model.write()
 //        texture.read()
 //        texture.write()
-//        println(model.pointer)
+        println(model.pointer)
 //        println("   " + model.rVertexData?.pointer)
 //        println("   " + model.vertexCount)
 //        println("   " + model.rIndexData?.pointer)
