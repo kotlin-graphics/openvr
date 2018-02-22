@@ -1,6 +1,7 @@
 import com.sun.jna.ptr.FloatByReference
 import glm_.vec2.Vec2
 import io.kotlintest.matchers.shouldBe
+import io.kotlintest.matchers.shouldNotBe
 import io.kotlintest.specs.StringSpec
 import openvr.EventListener
 import openvr.lib.*
@@ -25,12 +26,11 @@ class Test : StringSpec() {
 
         val error = EVRInitError_ByReference()
 
-        val hmd = vrInit(error, EVRApplicationType.Scene)
-//            vr.compositor shouldNotBe null
+        val hmd = vrInit(error, EVRApplicationType.Scene)!!
+
+        vrCompositor shouldNotBe null
 
         error.value shouldBe EVRInitError.None
-
-        if (hmd == null) throw Error()
 
         val (w, h) = hmd.recommendedRenderTargetSize
         (w > 0 && h > 0) shouldBe true
@@ -47,13 +47,13 @@ class Test : StringSpec() {
                 m[0, 3] == 0f && m[1, 3] == 0f && m[2, 3] != 0f && m[3, 3] == 0f) shouldBe true
 
 
-        val left_ = FloatByReference()
+        val left = FloatByReference()
         val right = FloatByReference()
         val top = FloatByReference()
         val bottom = FloatByReference()
-        hmd.getProjectionRaw(EVREye.Left, left_, right, top, bottom)
+        hmd.getProjectionRaw(EVREye.Left, left, right, top, bottom)
 //      -1.3941408, 1.2448317, -1.4681898, 1.4642779
-        (left_.value < 0 && right.value > 0 && top.value < 0 && bottom.value >= 0) shouldBe true
+        (left.value < 0 && right.value > 0 && top.value < 0 && bottom.value >= 0) shouldBe true
 
         val overlayHandle = VROverlayHandle_ByReference()
         val overlayThumbnailHandle = VROverlayHandle_ByReference()

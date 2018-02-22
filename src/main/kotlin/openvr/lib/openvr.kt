@@ -23,7 +23,7 @@ import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import java.nio.ByteBuffer
 
-val version = "1.0.10"
+val version = "1.0.13 22 Feb"
 
 class BooleanByReference(@JvmField var value: Boolean = false) : ByteByReference(if (value) 1 else 0)
 
@@ -2782,6 +2782,8 @@ open class DriverDirectMode_FrameTiming : Structure {
 
 // ================================================================================================================================================================
 
+private val mapNative = Native.register("openvr_api")
+
 /** Finds the active installation of the VR API and initializes it. The provided path must be absolute or relative to
  *  the current working directory. These are the local install versions of the equivalent functions in steamvr.h and
  *  will work without a local Steam install.
@@ -2791,13 +2793,6 @@ open class DriverDirectMode_FrameTiming : Structure {
  *
  *  startupInfo is reserved for future use.    */
 fun vrInit(error: EVRInitError_ByReference?, applicationType: EVRApplicationType, startupInfo: String? = null): IVRSystem? {
-
-    try {
-        Native.register("openvr_api")
-    } catch (exc: Exception) {
-        println(exc)
-        println(exc.message)
-    }
 
     var pVRSystem: IVRSystem? = null
 
