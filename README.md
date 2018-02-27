@@ -1,4 +1,4 @@
-# JVM OpenVR Binding (synchronized with 1.0.12)
+# JVM OpenVR Binding (synchronized with 1.0.13)
 
 [![Build Status](https://travis-ci.org/kotlin-graphics/openvr.svg?branch=master)](https://travis-ci.org/kotlin-graphics/openvr) 
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-orange.svg)](https://github.com/kotlin-graphics/openvr/blob/master/LICENSE.txt)
