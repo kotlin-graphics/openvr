@@ -6,16 +6,59 @@ import com.sun.jna.Structure
 import com.sun.jna.ptr.ByteByReference
 import com.sun.jna.ptr.IntByReference
 import com.sun.jna.ptr.PointerByReference
-import java.util.*
 
 // ivrtrackedcamera.h =============================================================================================================================================
+
+enum class ECameraVideoStreamFormat {
+    CVS_FORMAT_UNKNOWN,
+    /** 10 bits per pixel */
+    CVS_FORMAT_RAW10,
+    /** 12 bits per pixel */
+    CVS_FORMAT_NV12,
+    /** 24 bits per pixel */
+    CVS_FORMAT_RGB24,
+    /** 12 bits per pixel, 2x height */
+    CVS_FORMAT_NV12_2;
+
+    val i = ordinal
+}
+
+enum class ECameraCompatibilityMode {
+    BULK_DEFAULT,
+    BULK_64K_DMA,
+    BULK_16K_DMA,
+    BULK_8K_DMA,
+    ISO_52FPS,
+    ISO_50FPS,
+    ISO_48FPS,
+    ISO_46FPS,
+    ISO_44FPS,
+    ISO_42FPS,
+    ISO_40FPS,
+    ISO_35FPS,
+    ISO_30FPS;
+
+    val i = ordinal
+}
+
+enum class ETrackedCameraRoomViewMode {
+    DEFAULT,
+    EDGE_A,
+    EDGE_B,
+    VIDEO_TRANSLUSCENT,
+    VIDEO_OPAQUE,
+    COUNT;
+
+    val i = ordinal
+}
 
 open class IVRTrackedCamera : Structure {
 
     /** Returns a string for an error */
     infix fun getCameraErrorNameFromEnum(cameraError: EVRTrackedCameraError) = GetCameraErrorNameFromEnum!!(cameraError.i)
 
-    @JvmField var GetCameraErrorNameFromEnum: GetCameraErrorNameFromEnum_callback? = null
+    @JvmField
+    var GetCameraErrorNameFromEnum: GetCameraErrorNameFromEnum_callback? = null
 
     interface GetCameraErrorNameFromEnum_callback : Callback {
         operator fun invoke(eCameraError: Int): String
@@ -25,7 +68,8 @@ open class IVRTrackedCamera : Structure {
     // TODO check automatic conversion *Boolean -> *Byte
     fun hasCamera(deviceIndex: TrackedDeviceIndex, hasCamera: BooleanByReference) = EVRTrackedCameraError.of(HasCamera!!(deviceIndex, hasCamera))
 
-    @JvmField var HasCamera: HasCamera_callback? = null
+    @JvmField
+    var HasCamera: HasCamera_callback? = null
 
     interface HasCamera_callback : Callback {
         operator fun invoke(nDeviceIndex: TrackedDeviceIndex, pHasCamera: ByteByReference): Int
@@ -34,7 +78,8 @@ open class IVRTrackedCamera : Structure {
     /** Gets size of the image frame. */
     fun getCameraFrameSize(deviceIndex: TrackedDeviceIndex, frameType: EVRTrackedCameraFrameType, width: IntByReference, height: IntByReference, frameBufferSize: IntByReference) = EVRTrackedCameraError.of(GetCameraFrameSize!!(deviceIndex, frameType.i, width, height, frameBufferSize))
 
-    @JvmField var GetCameraFrameSize: GetCameraFrameSize_callback? = null
+    @JvmField
+    var GetCameraFrameSize: GetCameraFrameSize_callback? = null
 
     interface GetCameraFrameSize_callback : Callback {
         operator fun invoke(nDeviceIndex: TrackedDeviceIndex, eFrameType: Int, pnWidth: IntByReference, pnHeight: IntByReference, pnFrameBufferSize: IntByReference): Int
@@ -43,7 +88,8 @@ open class IVRTrackedCamera : Structure {
 
     fun GetCameraIntrinsics(deviceIndex: TrackedDeviceIndex, frameType: EVRTrackedCameraFrameType, focalLength: HmdVec2.ByReference, center: HmdVec2.ByReference) = EVRTrackedCameraError.of(GetCameraIntrinsics!!(deviceIndex, frameType.i, focalLength, center))
 
-    @JvmField var GetCameraIntrinsics: GetCameraIntrinsics_callback? = null
+    @JvmField
+    var GetCameraIntrinsics: GetCameraIntrinsics_callback? = null
 
     interface GetCameraIntrinsics_callback : Callback {
         operator fun invoke(nDeviceIndex: TrackedDeviceIndex, eFrameType: Int, pFocalLength: HmdVec2.ByReference, pCenter: HmdVec2.ByReference): Int
@@ -52,7 +98,8 @@ open class IVRTrackedCamera : Structure {
 
     fun getCameraProjection(deviceIndex: TrackedDeviceIndex, frameType: EVRTrackedCameraFrameType, zNear: Float, zFar: Float, projection: HmdMat44.ByReference) = EVRTrackedCameraError.of(GetCameraProjection!!(deviceIndex, frameType.i, zNear, zFar, projection))
 
-    @JvmField var GetCameraProjection: GetCameraProjection_callback? = null
+    @JvmField
+    var GetCameraProjection: GetCameraProjection_callback? = null
 
     interface GetCameraProjection_callback : Callback {
         operator fun invoke(nDeviceIndex: TrackedDeviceIndex, eFrameType: Int, flZNear: Float, flZFar: Float, pProjection: HmdMat44.ByReference): Int
@@ -65,7 +112,8 @@ open class IVRTrackedCamera : Structure {
      *  The camera may go inactive due to lack of active consumers or headset idleness. */
     fun acquireVideoStreamingService(deviceIndex: TrackedDeviceIndex, handle: TrackedCameraHandle) = EVRTrackedCameraError.of(AcquireVideoStreamingService!!(deviceIndex, handle))
 
-    @JvmField var AcquireVideoStreamingService: AcquireVideoStreamingService_callback? = null
+    @JvmField
+    var AcquireVideoStreamingService: AcquireVideoStreamingService_callback? = null
 
     interface AcquireVideoStreamingService_callback : Callback {
         operator fun invoke(nDeviceIndex: TrackedDeviceIndex, pHandle: TrackedCameraHandle): Int
@@ -73,7 +121,8 @@ open class IVRTrackedCamera : Structure {
 
     infix fun releaseVideoStreamingService(trackedCamera: TrackedCameraHandle) = EVRTrackedCameraError.of(ReleaseVideoStreamingService!!(trackedCamera))
 
-    @JvmField var ReleaseVideoStreamingService: ReleaseVideoStreamingService_callback? = null
+    @JvmField
+    var ReleaseVideoStreamingService: ReleaseVideoStreamingService_callback? = null
 
     interface ReleaseVideoStreamingService_callback : Callback {
         operator fun invoke(hTrackedCamera: TrackedCameraHandle): Int
@@ -86,7 +135,8 @@ open class IVRTrackedCamera : Structure {
      *  Ideally a caller should be polling at ~16ms intervals */
     fun getVideoStreamFrameBuffer(trackedCamera: TrackedCameraHandle, frameType: EVRTrackedCameraFrameType, frameBuffer: Pointer, frameBufferSize: Int, frameHeader: CameraVideoStreamFrameHeader.ByReference, frameHeaderSize: Int) = EVRTrackedCameraError.of(GetVideoStreamFrameBuffer!!(trackedCamera, frameType.i, frameBuffer, frameBufferSize, frameHeader, frameHeaderSize))
 
-    @JvmField var GetVideoStreamFrameBuffer: GetVideoStreamFrameBuffer_callback? = null
+    @JvmField
+    var GetVideoStreamFrameBuffer: GetVideoStreamFrameBuffer_callback? = null
 
     interface GetVideoStreamFrameBuffer_callback : Callback {
         operator fun invoke(hTrackedCamera: TrackedCameraHandle, eFrameType: Int, pFrameBuffer: Pointer, nFrameBufferSize: Int, pFrameHeader: CameraVideoStreamFrameHeader.ByReference, nFrameHeaderSize: Int): Int
@@ -95,7 +145,8 @@ open class IVRTrackedCamera : Structure {
     /** Gets size of the image frame. */
     fun getVideoStreamTextureSize(deviceIndex: TrackedDeviceIndex, frameType: EVRTrackedCameraFrameType, textureBounds: VRTextureBounds.ByReference, width: IntByReference, height: IntByReference) = EVRTrackedCameraError.of(GetVideoStreamTextureSize!!(deviceIndex, frameType.i, textureBounds, width, height))
 
-    @JvmField var GetVideoStreamTextureSize: GetVideoStreamTextureSize_callback? = null
+    @JvmField
+    var GetVideoStreamTextureSize: GetVideoStreamTextureSize_callback? = null
 
     interface GetVideoStreamTextureSize_callback : Callback {
         operator fun invoke(nDeviceIndex: TrackedDeviceIndex, eFrameType: Int, pTextureBounds: VRTextureBounds.ByReference, pnWidth: IntByReference, pnHeight: IntByReference): Int
@@ -109,9 +160,10 @@ open class IVRTrackedCamera : Structure {
      *  The VRTrackedCameraFrameType_MaximumUndistorted will yield an image where the invalid regions are decoded by the alpha channel
      *  having a zero component. The valid regions all have a non-zero alpha component. The subregion as described by
      *  VRTrackedCameraFrameType_Undistorted guarantees a rectangle where all pixels are valid. */
-    fun getVideoStreamTextureD3D11(trackedCamera: TrackedCameraHandle, frameType: EVRTrackedCameraFrameType, d3d11DeviceOrResource: Pointer, d311ShaderResourceView: PointerByReference, frameHeader: CameraVideoStreamFrameHeader.ByReference, frameHeaderSize: Int)= EVRTrackedCameraError.of(GetVideoStreamTextureD3D11!!(trackedCamera, frameType.i, d3d11DeviceOrResource, d311ShaderResourceView, frameHeader, frameHeaderSize))
+    fun getVideoStreamTextureD3D11(trackedCamera: TrackedCameraHandle, frameType: EVRTrackedCameraFrameType, d3d11DeviceOrResource: Pointer, d311ShaderResourceView: PointerByReference, frameHeader: CameraVideoStreamFrameHeader.ByReference, frameHeaderSize: Int) = EVRTrackedCameraError.of(GetVideoStreamTextureD3D11!!(trackedCamera, frameType.i, d3d11DeviceOrResource, d311ShaderResourceView, frameHeader, frameHeaderSize))
 
-    @JvmField var GetVideoStreamTextureD3D11: GetVideoStreamTextureD3D11_callback? = null
+    @JvmField
+    var GetVideoStreamTextureD3D11: GetVideoStreamTextureD3D11_callback? = null
 
     interface GetVideoStreamTextureD3D11_callback : Callback {
         operator fun invoke(hTrackedCamera: TrackedCameraHandle, eFrameType: Int, pD3D11DeviceOrResource: Pointer, ppD3D11ShaderResourceView: PointerByReference, pFrameHeader: CameraVideoStreamFrameHeader.ByReference, nFrameHeaderSize: Int): Int
@@ -120,16 +172,18 @@ open class IVRTrackedCamera : Structure {
     /** Access a shared GL texture for the specified tracked camera stream */
     fun getVideoStreamTextureGl(trackedCamera: TrackedCameraHandle, frameType: EVRTrackedCameraFrameType, textureId: glUInt_ByReference, frameHeader: CameraVideoStreamFrameHeader.ByReference, frameHeaderSize: Int) = EVRTrackedCameraError.of(GetVideoStreamTextureGL!!(trackedCamera, frameType.i, textureId, frameHeader, frameHeaderSize))
 
-    @JvmField var GetVideoStreamTextureGL: GetVideoStreamTextureGL_callback? = null
+    @JvmField
+    var GetVideoStreamTextureGL: GetVideoStreamTextureGL_callback? = null
 
     interface GetVideoStreamTextureGL_callback : Callback {
         operator fun invoke(hTrackedCamera: TrackedCameraHandle, eFrameType: Int, pglTextureId: IntByReference, pFrameHeader: CameraVideoStreamFrameHeader.ByReference, nFrameHeaderSize: Int): Int
     }
 
 
-    fun releaseVideoStreamTextureGl(trackedCamera: TrackedCameraHandle, textureId: glUInt)= EVRTrackedCameraError.of(ReleaseVideoStreamTextureGL!!(trackedCamera, textureId))
+    fun releaseVideoStreamTextureGl(trackedCamera: TrackedCameraHandle, textureId: glUInt) = EVRTrackedCameraError.of(ReleaseVideoStreamTextureGL!!(trackedCamera, textureId))
 
-    @JvmField var ReleaseVideoStreamTextureGL: ReleaseVideoStreamTextureGL_callback? = null
+    @JvmField
+    var ReleaseVideoStreamTextureGL: ReleaseVideoStreamTextureGL_callback? = null
 
     interface ReleaseVideoStreamTextureGL_callback : Callback {
         operator fun invoke(hTrackedCamera: TrackedCameraHandle, glTextureId: Int): Int
@@ -137,7 +191,7 @@ open class IVRTrackedCamera : Structure {
 
     constructor()
 
-    override fun getFieldOrder()= listOf("GetCameraErrorNameFromEnum", "HasCamera", "GetCameraFrameSize",
+    override fun getFieldOrder() = listOf("GetCameraErrorNameFromEnum", "HasCamera", "GetCameraFrameSize",
             "GetCameraIntrinsics", "GetCameraProjection", "AcquireVideoStreamingService", "ReleaseVideoStreamingService",
             "GetVideoStreamFrameBuffer", "GetVideoStreamTextureSize", "GetVideoStreamTextureD3D11", "GetVideoStreamTextureGL",
             "ReleaseVideoStreamTextureGL")

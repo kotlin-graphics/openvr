@@ -1,13 +1,6 @@
-apply plugin: 'java'
-apply plugin: 'kotlin'
-
-// jitpack
-apply plugin: 'maven'
-group = 'com.github.kotlin-graphics'
-
 buildscript {
 
-    ext.kotlinVersion = '1.2.30-eap-16'
+    ext.kotlinVersion = '1.2.40'
 
     repositories {
         jcenter()   // shadow
@@ -18,19 +11,31 @@ buildscript {
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.3'
+        classpath "org.junit.platform:junit-platform-gradle-plugin:1.1.0"
+        classpath 'org.apache.ivy:ivy:2.3.0'
     }
 }
 
+plugins {
+    id "de.undercouch.download" version "3.4.2"
+}
+
+apply plugin: 'java'
+apply plugin: 'kotlin'
+
+// jitpack
+apply plugin: 'maven'
+group = 'com.github.kotlin-graphics'
 apply plugin: 'com.github.johnrengelman.shadow'
 
 dependencies {
 
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
 
-    testCompile 'io.kotlintest:kotlintest:2.0.7'
+    testCompile 'io.kotlintest:kotlintest-runner-junit5:3.0.4'
 
-    compile "com.github.kotlin-graphics:glm:63724ee72e719842addce7a55113225a00cf085f"
+    compile "com.github.kotlin-graphics:glm:7dcdec524aa79ff01ea7e169125ed13365e76d5c"
 
     compile "net.java.dev.jna:jna:4.5.1"
 }
@@ -38,6 +43,7 @@ dependencies {
 repositories {
     mavenCentral()
     maven { setUrl("https://dl.bintray.com/kotlin/kotlin-dev") }
+    maven { setUrl("http://dl.bintray.com/kotlin/kotlin-eap-1.2") }
     maven { setUrl("https://oss.sonatype.org/content/repositories/snapshots/") }
     maven { setUrl('https://jitpack.io') }
 }
@@ -57,6 +63,7 @@ artifacts {
     archives javadocJar
 }
 
+// https://stackoverflow.com/a/47458666/1047713
 test {
     testLogging {
         events "passed", "skipped", "failed"
@@ -65,3 +72,82 @@ test {
         showStandardStreams = true
     }
 }
+
+/**
+ * Download all files from a directory in GitHub. Use the GitHub API to get the
+ * directory's contents. Parse the result and download the files.
+ */
+task downloadNatives {
+    doLast {
+        // download directory listing via GitHub API
+        def dirBin = 'https://api.github.com/repos/ValveSoftware/openvr/contents/bin'
+//        def dir = 'https://api.github.com/repos/michel-kraemer/gradle-download-task/contents/examples'
+        def content_linux32 = new File(buildDir, "directoryContents_linux32.json")
+        download {
+            src "$dirBin/linux32"
+            dest content_linux32
+        }
+        def content_linux64 = new File(buildDir, "directoryContents_linux64.json")
+        download {
+            src "$dirBin/linux64"
+            dest content_linux64
+        }
+        def content_win32 = new File(buildDir, "directoryContents_win32.json")
+        download {
+            src "$dirBin/win32"
+            dest content_win32
+        }
+        def content_win64 = new File(buildDir, "directoryContents_win64.json")
+        download {
+            src "$dirBin/win64"
+            dest content_win64
+        }
+
+        def dstDir = sourceSets.main.resources.srcDirs[0]
+
+        // parse directory listing
+        def contents_linux32 = new groovy.json.JsonSlurper().parseFile(content_linux32, "utf-8")
+
+        // download files
+        download {
+            src contents_linux32.collect { it.download_url }
+            dest "$dstDir/linux32"
+        }
+
+        def contents_linux64 = new groovy.json.JsonSlurper().parseFile(content_linux64, "utf-8")
+        download {
+            src contents_linux64.collect { it.download_url }
+            dest "$dstDir/linux-x86-64"
+        }
+
+        def contents_win32 = new groovy.json.JsonSlurper().parseFile(content_win32, "utf-8")
+        download {
+            src contents_win32.collect { it.download_url }
+            dest "$dstDir/win32"
+        }
+
+        def contents_win64 = new groovy.json.JsonSlurper().parseFile(content_win64, "utf-8")
+        download {
+            src contents_win64.collect { it.download_url }
+            dest "$dstDir/win32-x86-64"
+        }
+
+        // delete downloaded directory listing
+        content_linux32.delete()
+        content_linux64.delete()
+        content_win32.delete()
+        content_win64.delete()
+    }
+}
+
+defaultTasks 'downloadNatives'
+
+//task fetchBinaries {
+//    def dir = 'https://github.com/ValveSoftware/openvr/tree/master/bin/linux32/'
+//    def urlLister = new org.apache.ivy.util.url.ApacheURLLister()
+//    def files = urlLister.listFiles(new URL(dir))
+//    download {
+//        src files
+//        dest "C:\\Users\\Public\\Music"
+//    }
+//}

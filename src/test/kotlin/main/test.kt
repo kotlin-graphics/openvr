@@ -1,7 +1,7 @@
 import com.sun.jna.ptr.FloatByReference
 import glm_.vec2.Vec2
-import io.kotlintest.matchers.shouldBe
-import io.kotlintest.matchers.shouldNotBe
+import io.kotlintest.shouldBe
+import io.kotlintest.shouldNotBe
 import io.kotlintest.specs.StringSpec
 import openvr.EventListener
 import openvr.lib.*

@@ -183,11 +183,13 @@ val SteamVR_CycleBackgroundImageTimeSec_Int32 = "CycleBackgroundImageTimeSec"
 val SteamVR_RetailDemo_Bool = "retailDemo"
 val SteamVR_IpdOffset_Float = "ipdOffset"
 val SteamVR_AllowSupersampleFiltering_Bool = "allowSupersampleFiltering"
+val SteamVR_SupersampleManualOverride_Bool = "supersampleManualOverride"
 val SteamVR_EnableLinuxVulkanAsync_Bool = "enableLinuxVulkanAsync"
 val SteamVR_AllowDisplayLockedMode_Bool = "allowDisplayLockedMode"
 val SteamVR_HaveStartedTutorialForNativeChaperoneDriver_Bool = "haveStartedTutorialForNativeChaperoneDriver"
 val SteamVR_ForceWindows32bitVRMonitor = "forceWindows32BitVRMonitor"
-
+val SteamVR_DebugInput = "debugInput"
+val SteamVR_LegacyInputRebinding = "legacyInputRebinding"
 
 //-----------------------------------------------------------------------------
 // lighthouse keys
@@ -277,6 +279,7 @@ val Camera_BoundsColorGammaG_Int32 = "cameraBoundsColorGammaG"
 val Camera_BoundsColorGammaB_Int32 = "cameraBoundsColorGammaB"
 val Camera_BoundsColorGammaA_Int32 = "cameraBoundsColorGammaA"
 val Camera_BoundsStrength_Int32 = "cameraBoundsStrength"
+val Camera_RoomViewMode_Int32 = "cameraRoomViewMode"
 
 //-----------------------------------------------------------------------------
 // audio keys
@@ -304,6 +307,7 @@ val Dashboard_Section = "dashboard"
 val Dashboard_EnableDashboard_Bool = "enableDashboard"
 val Dashboard_ArcadeMode_Bool = "arcadeMode"
 val Dashboard_EnableWebUI = "webUI"
+val Dashboard_EnableWebUIDevTools = "webUIDevTools"
 
 //-----------------------------------------------------------------------------
 // model skin keys
