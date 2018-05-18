@@ -27,7 +27,7 @@ enum class EVRCompositorError(@JvmField val i: Int) {
     InvalidBounds(109);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -38,7 +38,7 @@ enum class EVRCompositorTimingMode {
     val i = ordinal
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 

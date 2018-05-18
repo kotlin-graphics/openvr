@@ -21,6 +21,7 @@ import glm_.i
 import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
+import org.lwjgl.system.MemoryUtil.NULL
 import java.nio.ByteBuffer
 
 val version = "1.0.13 22 Feb"
@@ -315,6 +316,44 @@ open class HmdQuat : Structure {
     }
 }
 
+open class HmdQuatF : Structure {
+
+    @JvmField
+    var w = 0f
+    @JvmField
+    var x = 0f
+    @JvmField
+    var y = 0f
+    @JvmField
+    var z = 0f
+
+    constructor()
+
+    override fun getFieldOrder() = listOf("w", "x", "y", "z")
+
+    constructor(w: Float, x: Float, y: Float, z: Float) {
+        this.w = w
+        this.x = x
+        this.y = y
+        this.z = z
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : HmdQuat(), Structure.ByReference
+    class ByValue : HmdQuat(), Structure.ByValue
+
+    operator fun get(i: Int) = when (i) {
+        0 -> x
+        1 -> y
+        2 -> z
+        3 -> w
+        else -> throw IndexOutOfBoundsException()
+    }
+}
+
 open class HmdColor : Structure {
 
     @JvmField
@@ -439,7 +478,7 @@ enum class EVREye(@JvmField val i: Int) {
         @JvmStatic
         val MAX = 2
 
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -462,7 +501,7 @@ enum class ETextureType {
     val i = ordinal
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -478,7 +517,7 @@ enum class EColorSpace(@JvmField val i: Int) {
     Linear(2);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -579,7 +618,7 @@ enum class ETrackedDeviceClass(@JvmField val i: Int) {
     DisplayRedirect(5);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -598,7 +637,7 @@ enum class ETrackedControllerRole {
     val i = ordinal
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -671,7 +710,7 @@ enum class ETrackingUniverseOrigin(@JvmField val i: Int) {
     RawAndUncalibrated(2);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -707,6 +746,7 @@ val actionPropertyTag = 32
 val inputValuePropertyTag = 33
 val wildcardPropertyTag = 34
 val hapticVibrationPropertyTag = 35
+val skeletonPropertyTag = 36
 
 val openVRInternalReserved_Start: PropertyTypeTag = 1000
 val openVRInternalReserved_End: PropertyTypeTag = 10000
@@ -833,6 +873,11 @@ enum class ETrackedDeviceProperty(@JvmField val i: Int) {
     MinimumIpdStepMeters_Float(2060),
     AudioBridgeFirmwareVersion_Uint64(2061),
     ImageBridgeFirmwareVersion_Uint64(2062),
+    ImuToHeadTransform_Matrix34(2063),
+    ImuFactoryGyroBias_Vector3(2064),
+    ImuFactoryGyroScale_Vector3(2065),
+    ImuFactoryAccelerometerBias_Vector3(2066),
+    ImuFactoryAccelerometerScale_Vector3(2067),
 
     // Properties that are unique to TrackedDeviceClass_Controller
     AttachedDeviceId_String(3000),
@@ -906,7 +951,7 @@ enum class ETrackedDeviceProperty(@JvmField val i: Int) {
     TrackedDeviceProperty_Max(1000000);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -933,7 +978,7 @@ enum class ETrackedPropertyError(@JvmField val i: Int) {
     CannotWriteToWildcards(12);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -1076,7 +1121,7 @@ enum class EVRSubmitFlags(@JvmField val i: Int) {
     TextureWithDepth(0x10);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -1117,7 +1162,7 @@ enum class EVRState(@JvmField val i: Int) {
     Ready_Alert_Low(7);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -1347,13 +1392,17 @@ enum class EVREventType(@JvmField val i: Int) {
     MessageOverlayCloseRequested(1651),
     /** data is hapticVibration */
     Input_HapticVibration(1700),
+    /** data is process */
+    BindingLoadFailed(1701),
+    /** data is process */
+    BindingLoadSuccessful(1702),
 
     // Vendors are free to expose private events in this reserved region
     VendorSpecific_Reserved_Start(10000),
     VendorSpecific_Reserved_End(19999);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -1376,7 +1425,7 @@ enum class EDeviceActivityLevel(@JvmField val i: Int) {
     Standby(3);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -1409,7 +1458,7 @@ enum class EVRButtonId(@JvmField val i: Int) {
     Max(64);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 
     val mask get() = 1L shl i
@@ -1454,7 +1503,7 @@ enum class EVRMouseButton(@JvmField val i: Int) {
     Middle(0x0004);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -1580,7 +1629,7 @@ enum class EDualAnalogWhich {
     val i = ordinal
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -1683,6 +1732,33 @@ open class VREvent_WebConsole : Structure {
 
     class ByReference : VREvent_HapticVibration(), Structure.ByReference
     class ByValue : VREvent_HapticVibration(), Structure.ByValue
+}
+
+open class VREvent_InputBindingLoad : Structure {
+
+    @JvmField
+    var appContainer: PropertyContainerHandle = NULL
+    @JvmField
+    var pathMessage = 0L
+    @JvmField
+    var pathUrl = 0L
+
+    constructor()
+
+    override fun getFieldOrder() = listOf("appContainer", "pathMessage", "pathUrl")
+
+    constructor(appContainer: PropertyContainerHandle, pathMessage: Long, pathUrl: Long) {
+        this.appContainer = appContainer
+        this.pathMessage = pathMessage
+        this.pathUrl = pathUrl
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : VREvent_InputBindingLoad(), Structure.ByReference
+    class ByValue : VREvent_InputBindingLoad(), Structure.ByValue
 }
 
 /** notification related events. Details will still change at this point */
@@ -2146,6 +2222,8 @@ open class VREvent_Data : Union {
     var hapticVibration = VREvent_HapticVibration()
     @JvmField
     var webConsole = VREvent_WebConsole()
+    @JvmField
+    var inputBinding = VREvent_InputBindingLoad()
 
     constructor() : super()
     constructor(peer: Pointer) : super(peer) {
@@ -2210,9 +2288,19 @@ enum class EVRInputError {
     MaxCapacityReached,
     IPCError,
     NoActiveActionSet,
-    InvalidDevice;
+    InvalidDevice,
+    InvalidSkeleton,
+    InvalidBoneCount,
+    InvalidCompressedData,
+    NoData,
+    BufferTooSmall,
+    MismatchedActionManifest;
 
     val i = ordinal
+
+    companion object {
+        infix fun of(i: Int) = values().first { it.i == i }
+    }
 }
 
 /** The mesh to draw into the stencil (or depth) buffer to perform early stencil (or depth) kills of pixels that will never appear on the HMD.
@@ -2250,7 +2338,7 @@ enum class EHiddenAreaMeshType(@JvmField val i: Int) {
     Max(3);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -2264,7 +2352,7 @@ enum class EVRControllerAxisType(@JvmField val i: Int) {
     Trigger(3);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -2352,7 +2440,7 @@ enum class EVRControllerEventOutputType(@JvmField val i: Int) {
     VREvents(1);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -2368,7 +2456,7 @@ enum class ECollisionBoundsStyle(@JvmField val i: Int) {
     COUNT(5);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -2484,7 +2572,7 @@ enum class EVROverlayError(@JvmField val i: Int) {
     TextureNotLocked(33);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -2514,7 +2602,7 @@ enum class EVRApplicationType(@JvmField val i: Int) {
     Max(7);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -2526,7 +2614,7 @@ enum class EVRFirmwareError(@JvmField val i: Int) {
     Fail(2);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -2540,8 +2628,33 @@ enum class EVRNotificationError(@JvmField val i: Int) {
     SystemWithUserValueAlreadyExists(103);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
+}
+
+/** Holds the transform for a single bone */
+open class VRBoneTransform : Structure {
+
+    @JvmField
+    var position = HmdVec4()
+    @JvmField
+    var orientation = HmdQuatF()
+
+    constructor()
+
+    override fun getFieldOrder() = listOf("position", "orientation")
+
+    constructor(position: HmdVec4, orientation: HmdQuatF) {
+        this.position = position
+        this.orientation = orientation
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    class ByReference : VRBoneTransform(), Structure.ByReference
+    class ByValue : VRBoneTransform(), Structure.ByValue
 }
 
 /** error codes returned by Vr_Init */
@@ -2651,7 +2764,12 @@ enum class EVRInitError(@JvmField val i: Int) {
     }
 }
 
-class EVRInitError_ByReference(@JvmField var value: EVRInitError = EVRInitError.None) : IntByReference(value.i)
+class EVRInitError_ByReference(value: EVRInitError = EVRInitError.None) : IntByReference(value.i) {
+    var value: EVRInitError
+        get() = EVRInitError of super.getValue()
+        set(value) = super.setValue(value.i)
+    operator fun invoke() = value
+}
 
 enum class EVRScreenshotType(@JvmField val i: Int) {
 
@@ -2664,7 +2782,7 @@ enum class EVRScreenshotType(@JvmField val i: Int) {
     StereoPanorama(5);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -2674,7 +2792,7 @@ enum class EVRScreenshotPropertyFilenames(@JvmField val i: Int) {
     VR(1);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -2699,7 +2817,7 @@ enum class EVRTrackedCameraError(@JvmField val i: Int) {
     InvalidFrameBufferSize(115);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -2723,7 +2841,7 @@ enum class EVRTrackedCameraFrameType(@JvmField val i: Int) {
     MAX(3);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -2733,6 +2851,47 @@ enum class EVSync {
     WaitRender,
     /** do not block following render work (allow to get started early) */
     NoWaitRender
+}
+
+/** raw IMU data provided by IVRIOBuffer from paths to tracked devices with IMUs */
+enum class ImuOffScaleFlags(val i: Int) {
+    AccelX(0x01),
+    AccelY(0x02),
+    AccelZ(0x04),
+    GyroX(0x08),
+    GyroY(0x10),
+    GyroZ(0x20)
+}
+
+open class ImuSample : Structure {
+
+    @JvmField
+    var sampleTime = 0.0
+    @JvmField
+    var accel = HmdVec3d()
+    @JvmField
+    var gyro = HmdVec3d()
+    @JvmField
+    var offScaleFlags = 0
+
+    constructor()
+
+    constructor(sampleTime: Double, accel: HmdVec3d, gyro: HmdVec3d, offScaleFlags: Int) {
+
+        this.sampleTime = sampleTime
+        this.accel = accel
+        this.gyro = gyro
+        this.offScaleFlags = offScaleFlags
+    }
+
+    constructor(peer: Pointer) : super(peer) {
+        read()
+    }
+
+    override fun getFieldOrder() = listOf("sampleTime", "accel", "gyro", "offScaleFlags")
+
+    class ByReference : CameraVideoStreamFrameHeader(), Structure.ByReference
+    class ByValue : CameraVideoStreamFrameHeader(), Structure.ByValue
 }
 
 typealias TrackedCameraHandle = Long
@@ -2927,6 +3086,8 @@ object COpenVRContext {
     private var vrTrackedCamera: IVRTrackedCamera? = null
     private var vrScreenshots: IVRScreenshots? = null
     private var vrDriverManager: IVRDriverManager? = null
+    private var vrInput: IVRInput? = null
+    private var vrIoBuffer: IVRIOBuffer? = null
 
     private val error = EVRInitError_ByReference(EVRInitError.None)
 
@@ -3028,6 +3189,19 @@ object COpenVRContext {
         return vrDriverManager
     }
 
+    fun vrInput(): IVRInput? {
+        checkClear()
+        if (vrInput == null)
+            vrInput = vrGetGenericInterface(FnTable + IVRInput_Version, error)?.let(::IVRInput)
+        return vrInput
+    }
+
+    fun vrIoBuffer(): IVRIOBuffer? {
+        if (vrIoBuffer == null)
+            vrIoBuffer = vrGetGenericInterface(FnTable + IVRIOBuffer_Version, error)?.let(::IVRIOBuffer)
+        return vrIoBuffer
+    }
+
     fun clear() {
         vrSystem = null
         vrChaperone = null
@@ -3042,6 +3216,7 @@ object COpenVRContext {
         vrTrackedCamera = null
         vrScreenshots = null
         vrDriverManager = null
+        vrInput = null
     }
 }
 
@@ -3060,6 +3235,8 @@ val vrApplications get() = COpenVRContext.vrApplications()
 val vrTrackedCamera get() = COpenVRContext.vrTrackedCamera()
 val vrScreenshots get() = COpenVRContext.vrScreenshots()
 val vrDriverManager get() = COpenVRContext.vrDriverManager()
+val vrInput get() = COpenVRContext.vrInput()
+val vrIoBuffer get() = COpenVRContext.vrIoBuffer()
 
 internal external fun VR_InitInternal2(peError: EVRInitError_ByReference, eType: Int, pStartupInfo: String? = null): Int
 internal external fun VR_ShutdownInternal()

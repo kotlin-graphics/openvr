@@ -54,7 +54,7 @@ enum class EVRNotificationType(@JvmField val i: Int) {
     Transient_SystemWithUserValue(2);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -79,7 +79,7 @@ enum class EVRNotificationStyle(@JvmField val i: Int) {
     Contact_Active(202);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 

@@ -17,7 +17,7 @@ enum class EVRScreenshotError(@JvmField val i: Int) {
     ScreenshotAlreadyInProgress(108);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 

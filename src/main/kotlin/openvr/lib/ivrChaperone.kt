@@ -37,7 +37,7 @@ enum class ChaperoneCalibrationState(@JvmField val i: Int) {
     Error_CollisionBoundsInvalid(204);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 

@@ -18,7 +18,7 @@ enum class EChaperoneConfigFile(@JvmField val i: Int) {
     Temp(2);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -27,7 +27,7 @@ enum class EChaperoneImportFlags(@JvmField val i: Int) {
     BoundsOnly(0x0001);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 

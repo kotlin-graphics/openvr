@@ -1,6 +1,8 @@
+import groovy.json.JsonSlurper
+
 buildscript {
 
-    ext.kotlinVersion = '1.2.40'
+    ext.kotlinVersion = '1.2.41'
 
     repositories {
         jcenter()   // shadow
@@ -35,7 +37,10 @@ dependencies {
 
     testCompile 'io.kotlintest:kotlintest-runner-junit5:3.0.4'
 
-    compile "com.github.kotlin-graphics:glm:7dcdec524aa79ff01ea7e169125ed13365e76d5c"
+    compile "com.github.kotlin-graphics:glm:86ecfc812ba39da9dd62ec4e69c658b2111567bb"
+    compile "com.github.kotlin-graphics:uno-sdk:92e3da570b63b414c19c78535e91d245dc1e3264"
+
+    testCompile "com.github.kotlin-graphics:glm:f3303ecbfc77b7a64c0d9e99f02870a75417184d"
 
     compile "net.java.dev.jna:jna:4.5.1"
 }
@@ -106,7 +111,7 @@ task downloadNatives {
         def dstDir = sourceSets.main.resources.srcDirs[0]
 
         // parse directory listing
-        def contents_linux32 = new groovy.json.JsonSlurper().parseFile(content_linux32, "utf-8")
+        def contents_linux32 = new JsonSlurper().parseFile(content_linux32, "utf-8")
 
         // download files
         download {
@@ -114,19 +119,19 @@ task downloadNatives {
             dest "$dstDir/linux32"
         }
 
-        def contents_linux64 = new groovy.json.JsonSlurper().parseFile(content_linux64, "utf-8")
+        def contents_linux64 = new JsonSlurper().parseFile(content_linux64, "utf-8")
         download {
             src contents_linux64.collect { it.download_url }
             dest "$dstDir/linux-x86-64"
         }
 
-        def contents_win32 = new groovy.json.JsonSlurper().parseFile(content_win32, "utf-8")
+        def contents_win32 = new JsonSlurper().parseFile(content_win32, "utf-8")
         download {
             src contents_win32.collect { it.download_url }
             dest "$dstDir/win32"
         }
 
-        def contents_win64 = new groovy.json.JsonSlurper().parseFile(content_win64, "utf-8")
+        def contents_win64 = new JsonSlurper().parseFile(content_win64, "utf-8")
         download {
             src contents_win64.collect { it.download_url }
             dest "$dstDir/win32-x86-64"

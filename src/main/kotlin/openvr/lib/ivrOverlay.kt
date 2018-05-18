@@ -40,7 +40,7 @@ enum class VROverlayInputMethod {
     val i = ordinal
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -55,7 +55,7 @@ enum class VROverlayTransformType(@JvmField val i: Int) {
     TrackedComponent(3);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -109,7 +109,7 @@ enum class VROverlayFlags(@JvmField val i: Int) {
     VisibleInDashboard(15);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -124,7 +124,7 @@ enum class VRMessageOverlayResponse(@JvmField val i: Int) {
     ApplicationQuit(6);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -198,7 +198,7 @@ enum class EGamepadTextInputMode(@JvmField val i: Int) {
     Submit(2);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -209,7 +209,7 @@ enum class EGamepadTextInputLineMode(@JvmField val i: Int) {
     MultipleLines(1);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -224,7 +224,7 @@ enum class EOverlayDirection(@JvmField val i: Int) {
     Count(4);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -234,7 +234,7 @@ enum class EVROverlayIntersectionMaskPrimitiveType(@JvmField val i: Int) {
     Circle(1);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 

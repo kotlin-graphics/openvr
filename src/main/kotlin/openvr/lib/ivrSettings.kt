@@ -190,6 +190,7 @@ val SteamVR_HaveStartedTutorialForNativeChaperoneDriver_Bool = "haveStartedTutor
 val SteamVR_ForceWindows32bitVRMonitor = "forceWindows32BitVRMonitor"
 val SteamVR_DebugInput = "debugInput"
 val SteamVR_LegacyInputRebinding = "legacyInputRebinding"
+val SteamVR_DebugInputBinding = "debugInputBinding"
 
 //-----------------------------------------------------------------------------
 // lighthouse keys
@@ -321,3 +322,14 @@ val Driver_Enable_Bool = "enable"
 // web interface keys
 val WebInterface_Section = "WebInterface"
 val WebInterface_WebPort_String = "WebPort"
+
+//-----------------------------------------------------------------------------
+// tracking overrides - keys are device paths, values are the device paths their tracking/pose information overrides
+val TrackingOverride_Section = "TrackingOverrides"
+
+//-----------------------------------------------------------------------------
+// per-app keys - the section name for these is the app key itself. Some of these are prefixed by the controller type
+val App_BindingAutosaveURLSuffix_String = "AutosaveURL"
+val App_BindingCurrentURLSuffix_String = "CurrentURL"
+val App_NeedToUpdateAutosaveSuffix_Bool = "NeedToUpdateAutosave"
+val App_ActionManifestURL_String = "ActionManifestURL"

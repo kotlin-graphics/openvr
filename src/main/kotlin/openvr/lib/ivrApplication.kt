@@ -379,7 +379,7 @@ enum class EVRSettingsError(@JvmField val i: Int) {
     UnsetSettingHasNoDefault(5);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 

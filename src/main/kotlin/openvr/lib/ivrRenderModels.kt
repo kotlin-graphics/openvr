@@ -39,7 +39,7 @@ enum class EVRRenderModelError(@JvmField val i: Int) {
     InvalidTexture(400);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 
     /** Note: can't use `val name` because you can't overwrite the Enum::name   */
@@ -59,7 +59,7 @@ enum class EVRComponentProperty(@JvmField val i: Int) {
     IsScrolled(1 shl 4);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 

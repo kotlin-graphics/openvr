@@ -37,7 +37,7 @@ open class IVRSystem : Structure {
     /** The projection matrix for the specified eye */
     fun getProjectionMatrix(eye: EVREye, nearZ: Float, farZ: Float, res: Mat4 = Mat4()): Mat4 {
         val m = GetProjectionMatrix!!(eye.i, nearZ, farZ)
-        return res.put(
+        return res(
                 m[0], m[4], m[8], m[12],
                 m[1], m[5], m[9], m[13],
                 m[2], m[6], m[10], m[14],
@@ -79,7 +79,7 @@ open class IVRSystem : Structure {
      *  Normally View and Eye^-1 will be multiplied together and treated as View in your application.   */
     fun getEyeToHeadTransform(eye: EVREye, res: Mat4 = Mat4()): Mat4 {
         val m = GetEyeToHeadTransform!!(eye.i)
-        return res.put(
+        return res(
                 m[0], m[4], m[8], 0f,
                 m[1], m[5], m[9], 0f,
                 m[2], m[6], m[10], 0f,
@@ -755,7 +755,7 @@ enum class EVRApplicationError(@JvmField val i: Int) {
     InvalidParameter(203);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -790,7 +790,7 @@ enum class EVRApplicationProperty(@JvmField val i: Int) {
     LastLaunchTime_Uint64(70);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
@@ -805,7 +805,7 @@ enum class EVRApplicationTransitionState(@JvmField val i: Int) {
     NewAppLaunched(20);
 
     companion object {
-        fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
