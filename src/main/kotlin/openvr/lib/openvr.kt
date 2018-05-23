@@ -2236,7 +2236,7 @@ open class VREvent_Data : Union {
     override fun getFieldOrder() = listOf("controller", "mouse", "scroll", "process", "notification",
             "overlay", "status", "keyboard", "ipd", "chaperone", "performanceTest", "touchPadMove",
             "seatedZeroPoseReset", "screenshot", "screenshotProgress", "applicationLaunch", "cameraSurface",
-            "messageOverlay", "property", "dualAnalog", "hapticVibration", "webConsole")
+            "messageOverlay", "property", "dualAnalog", "hapticVibration", "webConsole","inputBinding")
 }
 
 /** An event posted by the server to all running applications */
