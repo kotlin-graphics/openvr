@@ -1,6 +1,7 @@
 package main.helloVr_OpenGL
 
 import openvr.lib.*
+import org.lwjgl.Version
 import org.lwjgl.opengl.GL11.GL_DONT_CARE
 import org.lwjgl.opengl.GL11.glEnable
 import org.lwjgl.opengl.KHRDebug.*
@@ -146,8 +147,6 @@ class Application {
         if (!initCompositor())
             throw Error("Application::init() - Failed to initialize VR Compositor!")
 
-        println("driverManager: ${vrIsInterfaceVersionValid(FnTable + IVRDriverManager_Version)}")
-        println("inputVersion: ${vrIsInterfaceVersionValid(FnTable + IVRInput_Version)}")
         vrInput!!.apply {
 
 //            setActionManifestPath(Path_MakeAbsolute("../hellovr_actions.json", Path_StripFilename(Path_GetExecutablePath())).c_str());
