@@ -11,7 +11,7 @@ class models : StringSpec() {
 
             if (System.getenv("TRAVIS") != "true") {
 
-                vrInit(null, EVRApplicationType.Scene)
+//                vrInit(null, EVRApplicationType.Scene)
 
                 val models = listOf(
                         "arrow",

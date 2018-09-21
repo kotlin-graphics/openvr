@@ -8,7 +8,9 @@ import com.sun.jna.ptr.IntByReference
 import com.sun.jna.ptr.LongByReference
 import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2i
-import java.util.*
+import org.lwjgl.openvr.DistortionCoordinates
+import org.lwjgl.vulkan.VkInstance
+import vr_.TrackedDeviceProperty
 
 // ivrsystem.h ====================================================================================================================================================
 
@@ -64,14 +66,14 @@ open class IVRSystem : Structure {
     /** Gets the result of the distortion function for the specified eye and input UVs.
      *  UVs go from 0,0 in the upper left of that eye's viewport and 1,1 in the lower right of that eye's viewport.
      *  Returns true for success. Otherwise, returns false, and distortion coordinates are not suitable.    */
-    fun computeDistortion(eye: EVREye, u: Float, v: Float, distortionCoordinates: DistortionCoordinates.ByReference) = ComputeDistortion!!(eye.i, u, v, distortionCoordinates)
-
-    @JvmField
-    var ComputeDistortion: ComputeDistortion_callback? = null
-
-    interface ComputeDistortion_callback : Callback {
-        operator fun invoke(eEye: Int, fU: Float, fV: Float, pDistortionCoordinates_t: DistortionCoordinates.ByReference): Boolean
-    }
+//    fun computeDistortion(eye: EVREye, u: Float, v: Float, distortionCoordinates: DistortionCoordinates.ByReference) = ComputeDistortion!!(eye.i, u, v, distortionCoordinates)
+//
+//    @JvmField
+//    var ComputeDistortion: ComputeDistortion_callback? = null
+//
+//    interface ComputeDistortion_callback : Callback {
+//        operator fun invoke(eEye: Int, fU: Float, fV: Float, pDistortionCoordinates_t: DistortionCoordinates.ByReference): Boolean
+//    }
 
     /** Returns the transform from eye space to the head space. Eye space is the per-eye flavor of head space that provides stereo
      *  disparity.
@@ -339,7 +341,7 @@ open class IVRSystem : Structure {
 
     /** Returns a bool property. If the device index is not valid or the property is not a bool value this function will return false. */
     @JvmOverloads
-    fun getBoolTrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: ETrackedDeviceProperty, error: ETrackedPropertyError_ByReference? = null) = GetBoolTrackedDeviceProperty!!(deviceIndex, prop.i, error)
+    fun getBoolTrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: TrackedDeviceProperty, error: ETrackedPropertyError_ByReference? = null) = GetBoolTrackedDeviceProperty!!(deviceIndex, prop.i, error)
 
     @JvmField
     var GetBoolTrackedDeviceProperty: GetBoolTrackedDeviceProperty_callback? = null
@@ -350,7 +352,7 @@ open class IVRSystem : Structure {
 
     /** Returns a float property. If the device index is not valid or the property is not a float value this function will return 0. */
     @JvmOverloads
-    fun getFloatTrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: ETrackedDeviceProperty, error: ETrackedPropertyError_ByReference? = null): Float = GetFloatTrackedDeviceProperty!!(deviceIndex, prop.i, error)
+    fun getFloatTrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: TrackedDeviceProperty, error: ETrackedPropertyError_ByReference? = null): Float = GetFloatTrackedDeviceProperty!!(deviceIndex, prop.i, error)
 
     @JvmField
     var GetFloatTrackedDeviceProperty: GetFloatTrackedDeviceProperty_callback? = null
@@ -361,7 +363,7 @@ open class IVRSystem : Structure {
 
     /** Returns an int property. If the device index is not valid or the property is not a int value this function will return 0. */
     @JvmOverloads
-    fun getInt32TrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: ETrackedDeviceProperty, error: ETrackedPropertyError_ByReference? = null) = GetInt32TrackedDeviceProperty!!(deviceIndex, prop.i, error)
+    fun getInt32TrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: TrackedDeviceProperty, error: ETrackedPropertyError_ByReference? = null) = GetInt32TrackedDeviceProperty!!(deviceIndex, prop.i, error)
 
     @JvmField
     var GetInt32TrackedDeviceProperty: GetInt32TrackedDeviceProperty_callback? = null
@@ -372,7 +374,7 @@ open class IVRSystem : Structure {
 
     /** Returns a uint64 property. If the device index is not valid or the property is not a uint64 value this function will return 0. */
     @JvmOverloads
-    fun getUint64TrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: ETrackedDeviceProperty, error: ETrackedPropertyError_ByReference? = null) = GetUint64TrackedDeviceProperty!!(deviceIndex, prop.i, error)
+    fun getUint64TrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: TrackedDeviceProperty, error: ETrackedPropertyError_ByReference? = null) = GetUint64TrackedDeviceProperty!!(deviceIndex, prop.i, error)
 
     @JvmField
     var GetUint64TrackedDeviceProperty: GetUint64TrackedDeviceProperty_callback? = null
@@ -383,7 +385,7 @@ open class IVRSystem : Structure {
 
     /** Returns a matrix property. If the device index is not valid or the property is not a matrix value, this function will return identity. */
     @JvmOverloads
-    fun getMatrix34TrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: ETrackedDeviceProperty, error: ETrackedPropertyError_ByReference? = null) = GetMatrix34TrackedDeviceProperty!!(deviceIndex, prop.i, error)
+    fun getMatrix34TrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: TrackedDeviceProperty, error: ETrackedPropertyError_ByReference? = null) = GetMatrix34TrackedDeviceProperty!!(deviceIndex, prop.i, error)
 
     @JvmField
     var GetMatrix34TrackedDeviceProperty: GetMatrix34TrackedDeviceProperty_callback? = null
@@ -396,32 +398,32 @@ open class IVRSystem : Structure {
      *  an array of the specified type,
      *  this function will return 0. Otherwise it returns the number of bytes necessary to hold the array of properties.
      *  If bufferSize is greater than the returned size and buffer is non-NULL, buffer is filled with the contents of array of properties. */
-    fun getArrayTrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: ETrackedDeviceProperty, propType: PropertyTypeTag, buffer: Pointer, bufferSize: Int, error: ETrackedPropertyError_ByReference = ETrackedPropertyError_ByReference(ETrackedPropertyError.Success)) = GetArrayTrackedDeviceProperty!!(deviceIndex, prop.i, propType, buffer, bufferSize, error)
+    fun getArrayTrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: TrackedDeviceProperty, propType: PropertyTypeTag, buffer: Pointer, bufferSize: Int, error: ETrackedPropertyError_ByReference = ETrackedPropertyError_ByReference(TrackedPropertyError.Success)) = GetArrayTrackedDeviceProperty!!(deviceIndex, prop.i, propType, buffer, bufferSize, error)
 
     @JvmField
     var GetArrayTrackedDeviceProperty: GetArrayTrackedDeviceProperty_callback? = null
 
     interface GetArrayTrackedDeviceProperty_callback : Callback {
-        operator fun invoke(deviceIndex: TrackedDeviceIndex, prop: Int, propType: PropertyTypeTag, buffer: Pointer, bufferSize: Int, error: ETrackedPropertyError_ByReference = ETrackedPropertyError_ByReference(ETrackedPropertyError.Success)): Int
+        operator fun invoke(deviceIndex: TrackedDeviceIndex, prop: Int, propType: PropertyTypeTag, buffer: Pointer, bufferSize: Int, error: ETrackedPropertyError_ByReference = ETrackedPropertyError_ByReference(TrackedPropertyError.Success)): Int
     }
 
     /** Wrapper: returns a string property. If the device index is not valid or the property is not a string value this function will
      *  return an empty String. */
     @JvmOverloads
-    fun getStringTrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: ETrackedDeviceProperty, error: ETrackedPropertyError_ByReference? = null): String {
+    fun getStringTrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: TrackedDeviceProperty, error: ETrackedPropertyError_ByReference? = null): String {
 
-        val err = ETrackedPropertyError_ByReference(ETrackedPropertyError.Success)
+        val err = ETrackedPropertyError_ByReference(TrackedPropertyError.Success)
         var ret = ""
 
         val bytes = ByteArray(32)
         val propLen = GetStringTrackedDeviceProperty!!(deviceIndex, prop.i, bytes, bytes.size, err)
 
-        if (err.value == ETrackedPropertyError.Success)
+        if (err.value == TrackedPropertyError.Success)
             ret = String(bytes).filter { it.isLetterOrDigit() || it == '_' }
-        else if (err.value == ETrackedPropertyError.BufferTooSmall) {
+        else if (err.value == TrackedPropertyError.BufferTooSmall) {
             val newBytes = ByteArray(propLen)
             GetStringTrackedDeviceProperty!!(deviceIndex, prop.i, newBytes, propLen, err)
-            if (err.value == ETrackedPropertyError.Success)
+            if (err.value == TrackedPropertyError.Success)
                 ret = String(newBytes).drop(1)
         }
         error?.let { it.value = err.value }
@@ -440,7 +442,7 @@ open class IVRSystem : Structure {
     }
 
     /** returns a string that corresponds with the specified property error. The string will be the name of the error value value for all valid error codes */
-    infix fun getPropErrorNameFromEnum(error: ETrackedPropertyError) = GetPropErrorNameFromEnum!!(error.i)
+    infix fun getPropErrorNameFromEnum(error: TrackedPropertyError) = GetPropErrorNameFromEnum!!(error.i)
 
     @JvmField
     var GetPropErrorNameFromEnum: GetPropErrorNameFromEnum_callback? = null
@@ -836,5 +838,5 @@ open class AppOverrideKeys : Structure {
 }
 
 /** Currently recognized mime types */
-val k_pch_MimeType_HomeApp = "vr/home"
-val k_pch_MimeType_GameTheater = "vr/game_theater"
+val k_pch_MimeType_HomeApp = "vr_/home"
+val k_pch_MimeType_GameTheater = "vr_/game_theater"

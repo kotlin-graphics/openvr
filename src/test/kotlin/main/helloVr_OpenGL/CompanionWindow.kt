@@ -1,5 +1,6 @@
 package main.helloVr_OpenGL
 
+import ab.appBuffer
 import glm_.BYTES
 import glm_.L
 import glm_.buffer.intBufferBig
@@ -7,22 +8,38 @@ import glm_.i
 import glm_.size
 import glm_.vec2.Vec2
 import glm_.vec2.Vec2i
+import gln.buffer.glArrayBufferData
+import gln.buffer.glBindArrayBuffer
+import gln.buffer.glBindElementBuffer
+import gln.buffer.glElementBufferData
+import gln.glViewport
+import gln.glf.glf
 import gln.glf.semantic
-import openvr.lib.ETrackedDeviceProperty
+import gln.program.glUseProgram
+import gln.program.usingProgram
+import gln.vertexArray.glBindVertexArray
+import gln.vertexArray.glEnableVertexAttribArray
+import gln.vertexArray.glVertexAttribPointer
 import openvr.lib.trackedDeviceIndex_Hmd
 import org.lwjgl.opengl.GL
-import uno.buffer.floatBufferOf
-import uno.buffer.shortBufferOf
+import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE
+import org.lwjgl.opengl.GL15.GL_STATIC_DRAW
+import org.lwjgl.opengl.GL15.glGenBuffers
+import org.lwjgl.opengl.GL20
+import org.lwjgl.opengl.GL30.glGenVertexArrays
 import uno.glfw.GlfwWindow
 import uno.glfw.glfw
+import vr_.TrackedDeviceProperty
+import vr_.getStringTrackedDeviceProperty
 
 class CompanionWindow {
 
     val resolution = Vec2i(640, 320)
     val position = Vec2i(700, 100)
 
-    val strDriver = hmd.getStringTrackedDeviceProperty(trackedDeviceIndex_Hmd, ETrackedDeviceProperty.TrackingSystemName_String)
-    val strDisplay = hmd.getStringTrackedDeviceProperty(trackedDeviceIndex_Hmd, ETrackedDeviceProperty.SerialNumber_String)
+    val strDriver = hmd.getStringTrackedDeviceProperty(trackedDeviceIndex_Hmd, TrackedDeviceProperty.TrackingSystemName_String)
+    val strDisplay = hmd.getStringTrackedDeviceProperty(trackedDeviceIndex_Hmd, TrackedDeviceProperty.SerialNumber_String)
 
     val window = GlfwWindow(resolution, "helloVr - $strDriver $strDisplay").also {
         it.pos = position
@@ -30,6 +47,7 @@ class CompanionWindow {
         glfw.swapInterval = vBlank.i
         it.show()
         GL.createCapabilities()
+        it.autoSwap = false
     }
 
     object Buffer {
@@ -45,21 +63,21 @@ class CompanionWindow {
 
     init {
 
-        val vertices = floatBufferOf(
+        val vertices = appBuffer.floatBufferOf(
                 /* left eye verts
                 | Pos | TexCoord    */
-                -1, -1, 0, 0,
-                +0, -1, 1, 0,
-                -1, +1, 0, 1,
-                +0, +1, 1, 1,
+                -1f, -1f, 0f, 0f,
+                +0f, -1f, 1f, 0f,
+                -1f, +1f, 0f, 1f,
+                +0f, +1f, 1f, 1f,
                 /*  right eye verts
                 | Pos | TexCoord    */
-                +0, -1, 0, 0,
-                +1, -1, 1, 0,
-                +0, +1, 0, 1,
-                +1, +1, 1, 1)
+                +0f, -1f, 0f, 0f,
+                +1f, -1f, 1f, 0f,
+                +0f, +1f, 0f, 1f,
+                +1f, +1f, 1f, 1f)
 
-        val indices = shortBufferOf(
+        val indices = appBuffer.shortBufferOf(
                 0, 1, 3,
                 0, 3, 2,
                 4, 5, 7,
@@ -67,62 +85,50 @@ class CompanionWindow {
 
         indexSize = indices.size / Short.BYTES
 
-//        with(gl) {
-//
-//            glGenVertexArrays(1, vertexArrayName)
-//            glBindVertexArray(vertexArrayName[0])
-//
-//            glGenBuffers(Buffer.MAX, bufferName)
-//
-//            glBindBuffer(GL_ARRAY_BUFFER, bufferName[Buffer.VERTEX])
-//            glBufferData(GL_ARRAY_BUFFER, vertices.size.L, vertices, GL_STATIC_DRAW)
-//
-//            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferName[Buffer.INDEX])
-//            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size.L, indices, GL_STATIC_DRAW)
-//
-//            glEnableVertexAttribArray(Semantic.Attr.POSITION)
-//            glVertexAttribPointer(Semantic.Attr.POSITION, glm_.vec2.Vec2.length, GL_FLOAT, false, VertexData.SIZE, VertexData.OFFSET_POSITION)
-//
-//            glEnableVertexAttribArray(Semantic.Attr.TEX_COORD)
-//            glVertexAttribPointer(Semantic.Attr.TEX_COORD, glm_.vec2.Vec2.length, GL_FLOAT, false, VertexData.SIZE, VertexData.OFFSET_TEXCOORD)
-//
-//            glBindVertexArray(0)
-//
-//            glDisableVertexAttribArray(Semantic.Attr.POSITION)
-//            glDisableVertexAttribArray(Semantic.Attr.TEX_COORD)
-//
-//            glBindBuffer(GL_ARRAY_BUFFER, 0)
-//            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0)
-//        }
+        glGenVertexArrays(vertexArrayName)
+        glBindVertexArray(vertexArrayName)
+
+        glGenBuffers(bufferName)
+
+        glBindArrayBuffer(bufferName[Buffer.VERTEX])
+        glArrayBufferData(vertices, GL_STATIC_DRAW)
+
+        glBindElementBuffer(bufferName[Buffer.INDEX])
+        glElementBufferData(indices, GL_STATIC_DRAW)
+
+        glEnableVertexAttribArray(glf.pos2_tc2)
+        glVertexAttribPointer(glf.pos2_tc2)
+
+        glBindVertexArray()
     }
 
-//    fun render() = with(gl) {
-//
-//        glDisable(GL_DEPTH_TEST)
-//        glViewport(0, 0, companionWindowSize.x, companionWindowSize.y)
-//
-//        glBindVertexArray(vertexArrayName[0])
-//        glUseProgram(program.name)
-//
-//        // render left eye with first half of index array and right eye with the second half.
-//        for (eye in openvr.lib.EVREye.values()) {
-//            glBindTexture(GL_TEXTURE_2D, eyeDesc[eye.i].textureName[FrameBufferDesc.Target.RESOLVE])
-//            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
-//            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
-//            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-//            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-//            // offset is in bytes, so indexSize points to half of indices, because short -> int
-//            glDrawElements(GL_TRIANGLES, indexSize / 2, GL_UNSIGNED_SHORT, if (eye == openvr.lib.EVREye.Left) 0 else indexSize.L)
-//        }
-//
-//        glBindVertexArray(0)
-//        glUseProgram(0)
-//    }
+    fun render() {
+
+        glDisable(GL_DEPTH_TEST)
+        glViewport(resolution)
+
+        glBindVertexArray(vertexArrayName)
+        GL20.glUseProgram(program.name)
+
+        // render left eye with first half of index array and right eye with the second half.
+        for (eye in openvr.lib.EVREye.values()) {
+            glBindTexture(GL_TEXTURE_2D, eyeDesc[eye.i].textureName[FrameBufferDesc.Target.RESOLVE])
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+            // offset is in bytes, so indexSize points to half of indices, because short -> int
+            glDrawElements(GL_TRIANGLES, indexSize / 2, GL_UNSIGNED_SHORT, if (eye == openvr.lib.EVREye.Left) 0 else indexSize.L)
+        }
+
+        glBindVertexArray()
+        glUseProgram()
+    }
 
     object VertexData {
         val SIZE = Vec2.size * 2
-        val OFFSET_POSITION = 0.L
-        val OFFSET_TEXCOORD = Vec2.size.L
+        val OFFSET_POSITION = 0
+        val OFFSET_TEXCOORD = Vec2.size
     }
 
     class ProgramWindow : Program(
@@ -144,11 +150,7 @@ class CompanionWindow {
                     outColor = texture(myTexture, uv);
                 }""") {
         init {
-//            with(gl) {
-//                glUseProgram(name)
-//                glUniform1i(glGetUniformLocation(name, "myTexture"), Semantic.Sampler.DIFFUSE)
-//                glUseProgram(0)
-//            }
+            usingProgram(name) { "myTexture".unit = semantic.sampler.DIFFUSE }
         }
     }
 }

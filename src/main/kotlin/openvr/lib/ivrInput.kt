@@ -6,6 +6,7 @@ import com.sun.jna.Structure
 import com.sun.jna.ptr.IntByReference
 import glm_.size
 import org.lwjgl.system.MemoryUtil.NULL
+import vr_.EVRInputError
 import java.nio.ByteBuffer
 
 // ivrinput.h =============================================================================================================================================

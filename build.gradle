@@ -1,4 +1,5 @@
 import groovy.json.JsonSlurper
+import org.gradle.internal.os.OperatingSystem
 
 buildscript {
 
@@ -33,16 +34,36 @@ apply plugin: 'com.github.johnrengelman.shadow'
 
 dependencies {
 
-    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
 
-    testCompile 'io.kotlintest:kotlintest-runner-junit5:3.0.4'
+    testImplementation 'io.kotlintest:kotlintest-runner-junit5:3.0.4'
 
-    compile "com.github.kotlin-graphics:glm:86ecfc812ba39da9dd62ec4e69c658b2111567bb"
-    compile "com.github.kotlin-graphics:uno-sdk:92e3da570b63b414c19c78535e91d245dc1e3264"
+    ext.kx = "com.github.kotlin-graphics"
+    implementation "$kx:glm:86ecfc812ba39da9dd62ec4e69c658b2111567bb"
+    implementation "$kx:uno-sdk:15763149045000c0ab377a9dd164853382451fcd"
+    implementation "$kx:appBuffer:8e7c97d4bb6651ce7d9446cd4ac619b7cc8c72ed"
+    implementation "$kx:vkk:ba2b18307a0385d8d5f9e2c4ebd099db9fb87b1a"
 
     testCompile "com.github.kotlin-graphics:glm:f3303ecbfc77b7a64c0d9e99f02870a75417184d"
 
     compile "net.java.dev.jna:jna:4.5.1"
+
+    ext.lwjglVersion = "3.1.7-SNAPSHOT"
+    switch (OperatingSystem.current()) {
+        case OperatingSystem.WINDOWS:
+            ext.lwjglNatives = "natives-windows"
+            break
+        case OperatingSystem.LINUX:
+            ext.lwjglNatives = "natives-linux"
+            break
+        case OperatingSystem.MAC_OS:
+            ext.lwjglNatives = "natives-macos"
+            break
+    }
+    ["", "-glfw", "-jemalloc", "-openal", "-opengl", "-stb", "-openvr", "-vulkan"].each {
+        implementation "org.lwjgl:lwjgl$it:$lwjglVersion"
+        runtime "org.lwjgl:lwjgl$it:$lwjglVersion:$lwjglNatives"
+    }
 }
 
 repositories {
@@ -73,7 +94,7 @@ test {
     testLogging {
         events "passed", "skipped", "failed"
         exceptionFormat "full"
-        outputs.upToDateWhen {false}
+        outputs.upToDateWhen { false }
         showStandardStreams = true
     }
 }

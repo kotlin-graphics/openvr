@@ -1,36 +1,42 @@
 package main.helloVr_OpenGL
 
+import glm_.BYTES
+import glm_.L
 import glm_.buffer.intBufferBig
 import glm_.f
 import glm_.mat4x4.Mat4
+import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import glm_.vec3.Vec3i
 import glm_.vec4.Vec4
-import gln.buffer.initArrayBuffer
-import gln.glf.glf
+import gln.buffer.glArrayBufferData
+import gln.buffer.glBindArrayBuffer
+import gln.clear.glClearColorBuffer
+import gln.clear.glClearDepthBuffer
 import gln.glf.semantic
 import gln.program.usingProgram
 import gln.texture.glBindTexture2d
-import gln.texture.glGenerateMipmap
+import gln.texture.glGenerateMipmap2D
 import gln.texture.glTex2dParameter
 import gln.texture.glTexImage2D
-import gln.vertexArray.initVertexArray
-import openvr.lib.ETrackedDeviceClass
+import gln.uniform.glUniform
+import gln.vertexArray.glBindVertexArray
 import openvr.lib.EVREye
 import openvr.lib.maxTrackedDeviceCount
-import openvr.lib.trackedDeviceIndex_Hmd
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE
 import org.lwjgl.opengl.GL13.GL_TEXTURE0
 import org.lwjgl.opengl.GL13.glActiveTexture
-import org.lwjgl.opengl.GL15.GL_STATIC_DRAW
+import org.lwjgl.opengl.GL15.*
 import org.lwjgl.opengl.GL20.*
-import org.lwjgl.opengl.GL30.glClearBufferfv
+import org.lwjgl.opengl.GL30.*
 import uno.buffer.toBuffer
+import uno.buffer.toFloatBuffer
 import uno.buffer.use
 import uno.kotlin.url
+import vr_.isInputAvailable
 import java.awt.image.DataBufferByte
 import javax.imageio.ImageIO
 
@@ -65,21 +71,21 @@ class Scene {
 
             glGenTextures(textureName)
             glActiveTexture(GL_TEXTURE0)
-            glBindTexture2d(textureName[0])
+            glBindTexture(GL_TEXTURE_2D, textureName[0])
 
-            glTexImage2D(GL_RGB8, image.width, image.height, GL_RGB, GL_UNSIGNED_BYTE, it)
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, image.width, image.height, 0, GL_RGB, GL_UNSIGNED_BYTE, it)
 
-            glGenerateMipmap()
+            glGenerateMipmap(GL_TEXTURE_2D)
 
-            glTex2dParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
-            glTex2dParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
-            glTex2dParameter(GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-            glTex2dParameter(GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR)
 
             val largest = glGetFloat(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT)
-            glTex2dParameter(GL_TEXTURE_MAX_ANISOTROPY_EXT, largest)
+            glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, largest)
 
-            glBindTexture2d()
+            glBindTexture(GL_TEXTURE_2D, 0)
         }
     }
 
@@ -108,17 +114,47 @@ class Scene {
         }
         vertexCount = vertDataArray.size / 5
 
-        initArrayBuffer(bufferName) {
+//        initArrayBuffer(bufferName) {
+//
+//            initVertexArray(vertexArrayName) {
+//
+//                vertDataArray.toFloatArray().toBuffer().use { vertices ->
+//
+//                    data(vertices, GL_STATIC_DRAW)
+//
+//                    array(bufferName, glf.pos3_tc2)
+//                }
+//            }
+//        }
 
-            initVertexArray(vertexArrayName) {
+        glGenVertexArrays(vertexArrayName)
+        glBindVertexArray(vertexArrayName[0])
 
-                vertDataArray.toFloatArray().toBuffer().use { vertices ->
+        vertDataArray.toFloatArray().toBuffer().use {
 
-                    data(vertices, GL_STATIC_DRAW)
+            glGenBuffers(bufferName)
+            glBindBuffer(GL_ARRAY_BUFFER, bufferName[0])
+            glBufferData(GL_ARRAY_BUFFER, it, GL_STATIC_DRAW)
 
-                    array(bufferName, glf.pos3_tc2)
-                }
-            }
+            val stride = VertexData.SIZE
+            var offset = 0L
+
+            glEnableVertexAttribArray(semantic.attr.POSITION)
+            glVertexAttribPointer(semantic.attr.POSITION, Vec3.length, GL_FLOAT, false, stride, offset)
+
+            offset += Vec3.size
+            glEnableVertexAttribArray(semantic.attr.TEX_COORD)
+            glVertexAttribPointer(semantic.attr.TEX_COORD, Vec2.length, GL_FLOAT, false, stride, offset)
+
+            glBindVertexArray(0)
+            glDisableVertexAttribArray(semantic.attr.POSITION)
+            glDisableVertexAttribArray(semantic.attr.TEX_COORD)
+        }
+    }
+
+    class VertexData(val position: Vec3, val texCoord: Vec2) {
+        companion object {
+            val SIZE = Vec3.size + Vec2.size
         }
     }
 
@@ -192,38 +228,38 @@ class Scene {
     /** Purpose: Renders a scene with respect to nEye.  */
     fun render(eye: EVREye) {
 
-//        glClearBufferfv(GL_COLOR, 0, clearColor)
-//        glClearBufferfv(GL_DEPTH, 0, clearDepth)
-//        glEnable(GL_DEPTH_TEST)
-//
-//        if (showCubes) {
-//            glUseProgram(program.name)
-//            glUniformMatrix4fv(program.matrix, 1, false, getCurrentViewProjectionMatrix(eye) to bufferMat)
-//            glBindVertexArray(vertexArrayName[0])
-//            glActiveTexture(GL_TEXTURE0 + Semantic.Sampler.DIFFUSE)
-//            glBindTexture(GL_TEXTURE_2D, textureName[0])
-//            glDrawArrays(GL_TRIANGLES, 0, vertexCount)
-//            glBindVertexArray(0)
-//        }
-//
-//        val isInputAvailable = hmd.isInputAvailable
-//
-//        // draw the controller axis lines
+        glClearColorBuffer(clearColor)
+        glClearDepthBuffer()
+        glEnable(GL_DEPTH_TEST)
+
+        if (showCubes) {
+            glUseProgram(program.name)
+            glUniform(program.matrix, getCurrentViewProjectionMatrix(eye))
+            glBindVertexArray(vertexArrayName)
+            glActiveTexture(GL_TEXTURE0 + semantic.sampler.DIFFUSE)
+            glBindTexture2d(textureName)
+            glDrawArrays(GL_TRIANGLES, 0, vertexCount)
+            glBindVertexArray()
+        }
+
+        val isInputAvailable = hmd.isInputAvailable
+
+        // draw the controller axis lines
 //        if (!isInputAvailable)
 //            controllerAxes.render(eye)
-//
-//        // ----- Render Model rendering -----
-//        glUseProgram(modelProgram.name)
-//
-//        for (trackedDevice in 0 until maxTrackedDeviceCount) {
-//
+
+        // ----- Render Model rendering -----
+        glUseProgram(modelProgram.name)
+
+        for (trackedDevice in 0 until maxTrackedDeviceCount) {
+
 //            if (!trackedDeviceToRenderModel.contains(trackedDevice) || !showTrackedDevice[trackedDevice])
 //                continue
 //
 //            if (!trackedDevicePose[trackedDevice].poseIsValid)
 //                continue
 //
-//            if (isInputAvailable && hmd.getTrackedDeviceClass(trackedDevice) == ETrackedDeviceClass.Controller)
+//            if (isInputAvailable && hmd.getTrackedDeviceClass(trackedDevice) == TrackedDeviceClass.Controller)
 //                continue
 //
 //            val deviceToTracking = devicesPoses[trackedDevice]
@@ -231,20 +267,23 @@ class Scene {
 //            glUniformMatrix4fv(modelProgram.matrix, 1, false, mvp to bufferMat)
 //
 //            trackedDeviceToRenderModel[trackedDevice]!!.draw()
-//        }
-//        glUseProgram(0)
+        }
+        glUseProgram(0)
     }
+
+    /** Purpose: Gets a Current View Projection Matrix with respect to nEye, which may be an Eye_Left or an Eye_Right.  */
+    fun getCurrentViewProjectionMatrix(eye: EVREye) = projection[eye.i] * eyePos[eye.i] * hmdPose
 
     class ProgramScene : ProgramA(
             vertSrc = """
                 #version 410
                 uniform mat4 matrix;
-                layout(location = ${semantic.attr.POSITION}) in vec4 position;
+                layout(location = ${semantic.attr.POSITION}) in vec3 position;
                 layout(location = ${semantic.attr.TEX_COORD}) in vec2 uvCoords;
                 out vec2 uv;
                 void main() {
                     uv = uvCoords;
-                    gl_Position = matrix * position;
+                    gl_Position = matrix * vec4(position, 1);
                 }""",
             fragSrc = """
                 #version 410 core
@@ -338,7 +377,7 @@ class Scene {
 //
 //                if (!hmd.isTrackedDeviceConnected(trackedDevice)) continue
 //
-//                if (hmd.getTrackedDeviceClass(trackedDevice) != ETrackedDeviceClass.Controller) continue
+//                if (hmd.getTrackedDeviceClass(trackedDevice) != TrackedDeviceClass.Controller) continue
 //
 //                trackedControllerCount++
 //

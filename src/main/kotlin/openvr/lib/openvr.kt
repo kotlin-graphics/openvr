@@ -21,7 +21,9 @@ import glm_.i
 import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
+import org.lwjgl.openvr.VR
 import org.lwjgl.system.MemoryUtil.NULL
+import vr_.TrackedDeviceProperty
 import java.nio.ByteBuffer
 
 val version = "1.0.13 22 Feb"
@@ -44,19 +46,19 @@ open class VkPhysicalDevice : Structure {
     class ByValue : VkPhysicalDevice(), Structure.ByValue
 }
 
-open class VkInstance : Structure {
-
-    constructor()
-
-    override fun getFieldOrder() = listOf<String>()
-
-    constructor(peer: Pointer) : super(peer) {
-        read()
-    }
-
-    class ByReference : VkPhysicalDevice(), Structure.ByReference
-    class ByValue : VkPhysicalDevice(), Structure.ByValue
-}
+//open class VkInstance : Structure {
+//
+//    constructor()
+//
+//    override fun getFieldOrder() = listOf<String>()
+//
+//    constructor(peer: Pointer) : super(peer) {
+//        read()
+//    }
+//
+//    class ByReference : VkPhysicalDevice(), Structure.ByReference
+//    class ByValue : VkPhysicalDevice(), Structure.ByValue
+//}
 //struct VkQueue_T;
 // Forward declarations to avoid requiring d3d12.h
 //struct ID3D12Resource;
@@ -437,47 +439,45 @@ open class HmdRect2 : Structure {
     class ByReference : HmdRect2(), Structure.ByReference
     class ByValue : HmdRect2(), Structure.ByValue
 }
-
-/** Used to return the post-distortion UVs for each color channel.
- *  UVs range from 0 to 1 with 0,0 in the upper left corner of the source render target. The 0,0 to 1,1 range covers a single eye.  */
-open class DistortionCoordinates : Structure {
-
-    @JvmField
-    var red = FloatArray(2)
-    @JvmField
-    var green = FloatArray(2)
-    @JvmField
-    var blue = FloatArray(2)
-
-    constructor()
-
-    override fun getFieldOrder() = listOf("red", "green", "blue")
-
-    constructor(rfRed: FloatArray, rfGreen: FloatArray, rfBlue: FloatArray) {
-        if (rfRed.size != this.red.size) throw IllegalArgumentException("Wrong red array size!")
-        this.red = rfRed
-        if (rfGreen.size != this.green.size) throw IllegalArgumentException("Wrong green array size!")
-        this.green = rfGreen
-        if (rfBlue.size != this.blue.size) throw IllegalArgumentException("Wrong blue array size!")
-        this.blue = rfBlue
-    }
-
-    constructor(peer: Pointer) : super(peer) {
-        read()
-    }
-
-    class ByReference : DistortionCoordinates(), Structure.ByReference
-    class ByValue : DistortionCoordinates(), Structure.ByValue
-}
+//
+///** Used to return the post-distortion UVs for each color channel.
+// *  UVs range from 0 to 1 with 0,0 in the upper left corner of the source render target. The 0,0 to 1,1 range covers a single eye.  */
+//open class DistortionCoordinates : Structure {
+//
+//    @JvmField
+//    var red = FloatArray(2)
+//    @JvmField
+//    var green = FloatArray(2)
+//    @JvmField
+//    var blue = FloatArray(2)
+//
+//    constructor()
+//
+//    override fun getFieldOrder() = listOf("red", "green", "blue")
+//
+//    constructor(rfRed: FloatArray, rfGreen: FloatArray, rfBlue: FloatArray) {
+//        if (rfRed.size != this.red.size) throw IllegalArgumentException("Wrong red array size!")
+//        this.red = rfRed
+//        if (rfGreen.size != this.green.size) throw IllegalArgumentException("Wrong green array size!")
+//        this.green = rfGreen
+//        if (rfBlue.size != this.blue.size) throw IllegalArgumentException("Wrong blue array size!")
+//        this.blue = rfBlue
+//    }
+//
+//    constructor(peer: Pointer) : super(peer) {
+//        read()
+//    }
+//
+//    class ByReference : DistortionCoordinates(), Structure.ByReference
+//    class ByValue : DistortionCoordinates(), Structure.ByValue
+//}
 
 enum class EVREye(@JvmField val i: Int) {
     Left(0),
     Right(1);
 
     companion object {
-        @JvmStatic
         val MAX = 2
-
         infix fun of(i: Int) = values().first { it.i == i }
     }
 }
@@ -526,7 +526,7 @@ class EColorSpace_ByReference(@JvmField var value: EColorSpace = EColorSpace.Aut
 open class Texture : Structure {
 
     @JvmField
-    var handle = 0L  //See ETextureType definition above
+    var handle = 0L  //See TextureType definition above
     @JvmField
     var eType = 0
     val type
@@ -587,16 +587,13 @@ enum class ETrackingResult(@JvmField val i: Int) {
 }
 
 typealias DriverId = Int
-
 val driverNone = 0xFFFFFFFF.i
 
 val maxDriverDebugResponseSize = 32768
 
 /** Used to pass device IDs to API calls */
 typealias TrackedDeviceIndex = Int
-
 typealias TrackedDeviceIndex_ByReference = IntByReference
-
 val trackedDeviceIndex_Hmd = 0
 val maxTrackedDeviceCount = 64
 val trackedDeviceIndexOther = 0xFFFFFFFE.i
@@ -753,213 +750,213 @@ val openVRInternalReserved_End: PropertyTypeTag = 10000
 
 
 /** Each entry in this value represents a property that can be retrieved about a tracked device.
- *  Many fields are only valid for one openvr.lib.ETrackedDeviceClass. */
-enum class ETrackedDeviceProperty(@JvmField val i: Int) {
-
-    Invalid(0),
-
-    // general properties that apply to all device classes
-    TrackingSystemName_String(1000),
-    ModelNumber_String(1001),
-    SerialNumber_String(1002),
-    RenderModelName_String(1003),
-    WillDriftInYaw_Bool(1004),
-    ManufacturerName_String(1005),
-    TrackingFirmwareVersion_String(1006),
-    HardwareRevision_String(1007),
-    AllWirelessDongleDescriptions_String(1008),
-    ConnectedWirelessDongle_String(1009),
-    DeviceIsWireless_Bool(1010),
-    DeviceIsCharging_Bool(1011),
-    /** 0 is empty), 1 is full  */
-    DeviceBatteryPercentage_Float(1012),
-    StatusDisplayTransform_Matrix34(1013),
-    Firmware_UpdateAvailable_Bool(1014),
-    Firmware_ManualUpdate_Bool(1015),
-    Firmware_ManualUpdateURL_String(1016),
-    HardwareRevision_Uint64(1017),
-    FirmwareVersion_Uint64(1018),
-    FPGAVersion_Uint64(1019),
-    VRCVersion_Uint64(1020),
-    RadioVersion_Uint64(1021),
-    DongleVersion_Uint64(1022),
-    BlockServerShutdown_Bool(1023),
-    CanUnifyCoordinateSystemWithHmd_Bool(1024),
-    ContainsProximitySensor_Bool(1025),
-    DeviceProvidesBatteryStatus_Bool(1026),
-    DeviceCanPowerOff_Bool(1027),
-    Firmware_ProgrammingTarget_String(1028),
-    DeviceClass_Int32(1029),
-    HasCamera_Bool(1030),
-    DriverVersion_String(1031),
-    Firmware_ForceUpdateRequired_Bool(1032),
-    ViveSystemButtonFixRequired_Bool(1033),
-    ParentDriver_Uint64(1034),
-    ResourceRoot_String(1035),
-    RegisteredDeviceType_String(1036),
-    /** input profile to use for this device in the input system. Will default to tracking system name if this isn't provided */
-    InputProfilePath_String(1037),
-    /** Used for devices that will never have a valid pose by design    */
-    NeverTracked_Bool(1038),
-    NumCameras_Int32(1039),
-    /** EVRTrackedCameraFrameLayout value */
-    CameraFrameLayout_Int32(1040),
-
-    // Properties that are unique to TrackedDeviceClass_HMD
-    ReportsTimeSinceVSync_Bool(2000),
-    SecondsFromVsyncToPhotons_Float(2001),
-    DisplayFrequency_Float(2002),
-    UserIpdMeters_Float(2003),
-    CurrentUniverseId_Uint64(2004),
-    PreviousUniverseId_Uint64(2005),
-    DisplayFirmwareVersion_Uint64(2006),
-    IsOnDesktop_Bool(2007),
-    DisplayMCType_Int32(2008),
-    DisplayMCOffset_Float(2009),
-    DisplayMCScale_Float(2010),
-    EdidVendorID_Int32(2011),
-    DisplayMCImageLeft_String(2012),
-    DisplayMCImageRight_String(2013),
-    DisplayGCBlackClamp_Float(2014),
-    EdidProductID_Int32(2015),
-    CameraToHeadTransform_Matrix34(2016),
-    DisplayGCType_Int32(2017),
-    DisplayGCOffset_Float(2018),
-    DisplayGCScale_Float(2019),
-    DisplayGCPrescale_Float(2020),
-    DisplayGCImage_String(2021),
-    LensCenterLeftU_Float(2022),
-    LensCenterLeftV_Float(2023),
-    LensCenterRightU_Float(2024),
-    LensCenterRightV_Float(2025),
-    UserHeadToEyeDepthMeters_Float(2026),
-    CameraFirmwareVersion_Uint64(2027),
-    CameraFirmwareDescription_String(2028),
-    DisplayFPGAVersion_Uint64(2029),
-    DisplayBootloaderVersion_Uint64(2030),
-    DisplayHardwareVersion_Uint64(2031),
-    AudioFirmwareVersion_Uint64(2032),
-    CameraCompatibilityMode_Int32(2033),
-    ScreenshotHorizontalFieldOfViewDegrees_Float(2034),
-    ScreenshotVerticalFieldOfViewDegrees_Float(2035),
-    DisplaySuppressed_Bool(2036),
-    DisplayAllowNightMode_Bool(2037),
-    DisplayMCImageWidth_Int32(2038),
-    DisplayMCImageHeight_Int32(2039),
-    DisplayMCImageNumChannels_Int32(2040),
-    DisplayMCImageData_Binary(2041),
-    SecondsFromPhotonsToVblank_Float(2042),
-    DriverDirectModeSendsVsyncEvents_Bool(2043),
-    DisplayDebugMode_Bool(2044),
-    GraphicsAdapterLuid_Uint64(2045),
-    DriverProvidedChaperonePath_String(2048),
-    /** expected number of sensors or basestations to reserve UI space for */
-    ExpectedTrackingReferenceCount_Int32(2049),
-    /** expected number of tracked controllers to reserve UI space for */
-    ExpectedControllerCount_Int32(2050),
-    /** placeholder icon for "left" controller if not yet detected/loaded */
-    NamedIconPathControllerLeftDeviceOff_String(2051),
-    /** placeholder icon for "right" controller if not yet detected/loaded */
-    NamedIconPathControllerRightDeviceOff_String(2052),
-    /** placeholder icon for sensor/base if not yet detected/loaded */
-    NamedIconPathTrackingReferenceDeviceOff_String(2053),
-    DoNotApplyPrediction_Bool(2054),
-    CameraToHeadTransforms_Matrix34_Array(2055),
-    /** custom resolution of compositor calls to IVRSystem::ComputeDistortion   */
-    DistortionMeshResolution_Int32(2056),
-    DriverIsDrawingControllers_Bool(2057),
-    DriverRequestsApplicationPause_Bool(2058),
-    DriverRequestsReducedRendering_Bool(2059),
-    MinimumIpdStepMeters_Float(2060),
-    AudioBridgeFirmwareVersion_Uint64(2061),
-    ImageBridgeFirmwareVersion_Uint64(2062),
-    ImuToHeadTransform_Matrix34(2063),
-    ImuFactoryGyroBias_Vector3(2064),
-    ImuFactoryGyroScale_Vector3(2065),
-    ImuFactoryAccelerometerBias_Vector3(2066),
-    ImuFactoryAccelerometerScale_Vector3(2067),
-
-    // Properties that are unique to TrackedDeviceClass_Controller
-    AttachedDeviceId_String(3000),
-    SupportedButtons_Uint64(3001),
-    /** Return value is of value openvr.lib.EVRControllerAxisType   */
-    Axis0Type_Int32(3002),
-    /** Return value is of value openvr.lib.EVRControllerAxisType   */
-    Axis1Type_Int32(3003),
-    /** Return value is of value openvr.lib.EVRControllerAxisType   */
-    Axis2Type_Int32(3004),
-    /** Return value is of value openvr.lib.EVRControllerAxisType   */
-    Axis3Type_Int32(3005),
-    /** Return value is of value openvr.lib.EVRControllerAxisType   */
-    Axis4Type_Int32(3006),
-    /** Return value is of value openvr.lib.ETrackedControllerRole  */
-    ControllerRoleHint_Int32(3007),
-
-    // Properties that are unique to TrackedDeviceClass_TrackingReference
-    FieldOfViewLeftDegrees_Float(4000),
-    FieldOfViewRightDegrees_Float(4001),
-    FieldOfViewTopDegrees_Float(4002),
-    FieldOfViewBottomDegrees_Float(4003),
-    TrackingRangeMinimumMeters_Float(4004),
-    TrackingRangeMaximumMeters_Float(4005),
-    ModeLabel_String(4006),
-
-
-    // Properties that are used for user interface like icons names
-
-    /** DEPRECATED. Value not referenced. Now expected to be part of icon path properties.  */
-    IconPathName_String(5000),
-    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others   */
-    NamedIconPathDeviceOff_String(5001),
-    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others   */
-    NamedIconPathDeviceSearching_String(5002),
-    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others   */
-    NamedIconPathDeviceSearchingAlert_String(5003),
-    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others   */
-    NamedIconPathDeviceReady_String(5004),
-    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others    */
-    NamedIconPathDeviceReadyAlert_String(5005),
-    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others    */
-    NamedIconPathDeviceNotReady_String(5006),
-    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others    */
-    NamedIconPathDeviceStandby_String(5007),
-    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others    */
-    NamedIconPathDeviceAlertLow_String(5008),
-
-    // Properties that are used by helpers, but are opaque to applications
-    DisplayHiddenArea_Binary_Start(5100),
-    DisplayHiddenArea_Binary_End(5150),
-    ParentContainer(5151),
-
-    // Properties that are unique to drivers
-    UserConfigPath_String(6000),
-    InstallPath_String(6001),
-    HasDisplayComponent_Bool(6002),
-    HasControllerComponent_Bool(6003),
-    HasCameraComponent_Bool(6004),
-    HasDriverDirectModeComponent_Bool(6005),
-    HasVirtualDisplayComponent_Bool(6006),
-
-    // Properties that are set internally based on other information provided by drivers
-    ControllerType_String(7000),
-    LegacyInputProfile_String(7001),
-
-    // Vendors are free to expose private debug data in this reserved region
-    VendorSpecific_Reserved_Start(10000),
-    VendorSpecific_Reserved_End(10999),
-
-    TrackedDeviceProperty_Max(1000000);
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
+ *  Many fields are only valid for one openvr.lib.TrackedDeviceClass. */
+//enum class TrackedDeviceProperty(@JvmField val i: Int) {
+//
+//    Invalid(0),
+//
+//    // general properties that apply to all device classes
+//    TrackingSystemName_String(1000),
+//    ModelNumber_String(1001),
+//    SerialNumber_String(1002),
+//    RenderModelName_String(1003),
+//    WillDriftInYaw_Bool(1004),
+//    ManufacturerName_String(1005),
+//    TrackingFirmwareVersion_String(1006),
+//    HardwareRevision_String(1007),
+//    AllWirelessDongleDescriptions_String(1008),
+//    ConnectedWirelessDongle_String(1009),
+//    DeviceIsWireless_Bool(1010),
+//    DeviceIsCharging_Bool(1011),
+//    /** 0 is empty), 1 is full  */
+//    DeviceBatteryPercentage_Float(1012),
+//    StatusDisplayTransform_Matrix34(1013),
+//    Firmware_UpdateAvailable_Bool(1014),
+//    Firmware_ManualUpdate_Bool(1015),
+//    Firmware_ManualUpdateURL_String(1016),
+//    HardwareRevision_Uint64(1017),
+//    FirmwareVersion_Uint64(1018),
+//    FPGAVersion_Uint64(1019),
+//    VRCVersion_Uint64(1020),
+//    RadioVersion_Uint64(1021),
+//    DongleVersion_Uint64(1022),
+//    BlockServerShutdown_Bool(1023),
+//    CanUnifyCoordinateSystemWithHmd_Bool(1024),
+//    ContainsProximitySensor_Bool(1025),
+//    DeviceProvidesBatteryStatus_Bool(1026),
+//    DeviceCanPowerOff_Bool(1027),
+//    Firmware_ProgrammingTarget_String(1028),
+//    DeviceClass_Int32(1029),
+//    HasCamera_Bool(1030),
+//    DriverVersion_String(1031),
+//    Firmware_ForceUpdateRequired_Bool(1032),
+//    ViveSystemButtonFixRequired_Bool(1033),
+//    ParentDriver_Uint64(1034),
+//    ResourceRoot_String(1035),
+//    RegisteredDeviceType_String(1036),
+//    /** input profile to use for this device in the input system. Will default to tracking system name if this isn't provided */
+//    InputProfilePath_String(1037),
+//    /** Used for devices that will never have a valid pose by design    */
+//    NeverTracked_Bool(1038),
+//    NumCameras_Int32(1039),
+//    /** EVRTrackedCameraFrameLayout value */
+//    CameraFrameLayout_Int32(1040),
+//
+//    // Properties that are unique to TrackedDeviceClass_HMD
+//    ReportsTimeSinceVSync_Bool(2000),
+//    SecondsFromVsyncToPhotons_Float(2001),
+//    DisplayFrequency_Float(2002),
+//    UserIpdMeters_Float(2003),
+//    CurrentUniverseId_Uint64(2004),
+//    PreviousUniverseId_Uint64(2005),
+//    DisplayFirmwareVersion_Uint64(2006),
+//    IsOnDesktop_Bool(2007),
+//    DisplayMCType_Int32(2008),
+//    DisplayMCOffset_Float(2009),
+//    DisplayMCScale_Float(2010),
+//    EdidVendorID_Int32(2011),
+//    DisplayMCImageLeft_String(2012),
+//    DisplayMCImageRight_String(2013),
+//    DisplayGCBlackClamp_Float(2014),
+//    EdidProductID_Int32(2015),
+//    CameraToHeadTransform_Matrix34(2016),
+//    DisplayGCType_Int32(2017),
+//    DisplayGCOffset_Float(2018),
+//    DisplayGCScale_Float(2019),
+//    DisplayGCPrescale_Float(2020),
+//    DisplayGCImage_String(2021),
+//    LensCenterLeftU_Float(2022),
+//    LensCenterLeftV_Float(2023),
+//    LensCenterRightU_Float(2024),
+//    LensCenterRightV_Float(2025),
+//    UserHeadToEyeDepthMeters_Float(2026),
+//    CameraFirmwareVersion_Uint64(2027),
+//    CameraFirmwareDescription_String(2028),
+//    DisplayFPGAVersion_Uint64(2029),
+//    DisplayBootloaderVersion_Uint64(2030),
+//    DisplayHardwareVersion_Uint64(2031),
+//    AudioFirmwareVersion_Uint64(2032),
+//    CameraCompatibilityMode_Int32(2033),
+//    ScreenshotHorizontalFieldOfViewDegrees_Float(2034),
+//    ScreenshotVerticalFieldOfViewDegrees_Float(2035),
+//    DisplaySuppressed_Bool(2036),
+//    DisplayAllowNightMode_Bool(2037),
+//    DisplayMCImageWidth_Int32(2038),
+//    DisplayMCImageHeight_Int32(2039),
+//    DisplayMCImageNumChannels_Int32(2040),
+//    DisplayMCImageData_Binary(2041),
+//    SecondsFromPhotonsToVblank_Float(2042),
+//    DriverDirectModeSendsVsyncEvents_Bool(2043),
+//    DisplayDebugMode_Bool(2044),
+//    GraphicsAdapterLuid_Uint64(2045),
+//    DriverProvidedChaperonePath_String(2048),
+//    /** expected number of sensors or basestations to reserve UI space for */
+//    ExpectedTrackingReferenceCount_Int32(2049),
+//    /** expected number of tracked controllers to reserve UI space for */
+//    ExpectedControllerCount_Int32(2050),
+//    /** placeholder icon for "left" controller if not yet detected/loaded */
+//    NamedIconPathControllerLeftDeviceOff_String(2051),
+//    /** placeholder icon for "right" controller if not yet detected/loaded */
+//    NamedIconPathControllerRightDeviceOff_String(2052),
+//    /** placeholder icon for sensor/base if not yet detected/loaded */
+//    NamedIconPathTrackingReferenceDeviceOff_String(2053),
+//    DoNotApplyPrediction_Bool(2054),
+//    CameraToHeadTransforms_Matrix34_Array(2055),
+//    /** custom resolution of compositor calls to IVRSystem::ComputeDistortion   */
+//    DistortionMeshResolution_Int32(2056),
+//    DriverIsDrawingControllers_Bool(2057),
+//    DriverRequestsApplicationPause_Bool(2058),
+//    DriverRequestsReducedRendering_Bool(2059),
+//    MinimumIpdStepMeters_Float(2060),
+//    AudioBridgeFirmwareVersion_Uint64(2061),
+//    ImageBridgeFirmwareVersion_Uint64(2062),
+//    ImuToHeadTransform_Matrix34(2063),
+//    ImuFactoryGyroBias_Vector3(2064),
+//    ImuFactoryGyroScale_Vector3(2065),
+//    ImuFactoryAccelerometerBias_Vector3(2066),
+//    ImuFactoryAccelerometerScale_Vector3(2067),
+//
+//    // Properties that are unique to TrackedDeviceClass_Controller
+//    AttachedDeviceId_String(3000),
+//    SupportedButtons_Uint64(3001),
+//    /** Return value is of value openvr.lib.EVRControllerAxisType   */
+//    Axis0Type_Int32(3002),
+//    /** Return value is of value openvr.lib.EVRControllerAxisType   */
+//    Axis1Type_Int32(3003),
+//    /** Return value is of value openvr.lib.EVRControllerAxisType   */
+//    Axis2Type_Int32(3004),
+//    /** Return value is of value openvr.lib.EVRControllerAxisType   */
+//    Axis3Type_Int32(3005),
+//    /** Return value is of value openvr.lib.EVRControllerAxisType   */
+//    Axis4Type_Int32(3006),
+//    /** Return value is of value openvr.lib.TrackedControllerRole  */
+//    ControllerRoleHint_Int32(3007),
+//
+//    // Properties that are unique to TrackedDeviceClass_TrackingReference
+//    FieldOfViewLeftDegrees_Float(4000),
+//    FieldOfViewRightDegrees_Float(4001),
+//    FieldOfViewTopDegrees_Float(4002),
+//    FieldOfViewBottomDegrees_Float(4003),
+//    TrackingRangeMinimumMeters_Float(4004),
+//    TrackingRangeMaximumMeters_Float(4005),
+//    ModeLabel_String(4006),
+//
+//
+//    // Properties that are used for user interface like icons names
+//
+//    /** DEPRECATED. Value not referenced. Now expected to be part of icon path properties.  */
+//    IconPathName_String(5000),
+//    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others   */
+//    NamedIconPathDeviceOff_String(5001),
+//    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others   */
+//    NamedIconPathDeviceSearching_String(5002),
+//    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others   */
+//    NamedIconPathDeviceSearchingAlert_String(5003),
+//    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others   */
+//    NamedIconPathDeviceReady_String(5004),
+//    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others    */
+//    NamedIconPathDeviceReadyAlert_String(5005),
+//    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others    */
+//    NamedIconPathDeviceNotReady_String(5006),
+//    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others    */
+//    NamedIconPathDeviceStandby_String(5007),
+//    /** {driver}/icons/icon_filename - PNG for static icon, or GIF for animation, 50x32 for headsets and 32x32 for others    */
+//    NamedIconPathDeviceAlertLow_String(5008),
+//
+//    // Properties that are used by helpers, but are opaque to applications
+//    DisplayHiddenArea_Binary_Start(5100),
+//    DisplayHiddenArea_Binary_End(5150),
+//    ParentContainer(5151),
+//
+//    // Properties that are unique to drivers
+//    UserConfigPath_String(6000),
+//    InstallPath_String(6001),
+//    HasDisplayComponent_Bool(6002),
+//    HasControllerComponent_Bool(6003),
+//    HasCameraComponent_Bool(6004),
+//    HasDriverDirectModeComponent_Bool(6005),
+//    HasVirtualDisplayComponent_Bool(6006),
+//
+//    // Properties that are set internally based on other information provided by drivers
+//    ControllerType_String(7000),
+//    LegacyInputProfile_String(7001),
+//
+//    // Vendors are free to expose private debug data in this reserved region
+//    VendorSpecific_Reserved_Start(10000),
+//    VendorSpecific_Reserved_End(10999),
+//
+//    TrackedDeviceProperty_Max(1000000);
+//
+//    companion object {
+//        infix fun of(i: Int) = values().first { it.i == i }
+//    }
+//}
 
 /** No string property will ever be longer than this length */
 val maxPropertyStringSize = 32 * 1024
 
 /** Used to return errors that occur when reading properties. */
-enum class ETrackedPropertyError(@JvmField val i: Int) {
+enum class TrackedPropertyError(@JvmField val i: Int) {
 
     Success(0),
     WrongDataType(1),
@@ -982,7 +979,7 @@ enum class ETrackedPropertyError(@JvmField val i: Int) {
     }
 }
 
-class ETrackedPropertyError_ByReference(@JvmField var value: ETrackedPropertyError = ETrackedPropertyError.Success) : IntByReference(value.i)
+class ETrackedPropertyError_ByReference(@JvmField var value: TrackedPropertyError = TrackedPropertyError.Success) : IntByReference(value.i)
 
 /** Allows the application to control what part of the provided texture will be used in the frame buffer. */
 open class VRTextureBounds : Structure {
@@ -1039,7 +1036,7 @@ open class VRTextureWithPose : Texture {
 open class VRTextureDepthInfo : Structure {
 
     @JvmField
-    var handle = Pointer(0) // See ETextureType definition above
+    var handle = Pointer(0) // See TextureType definition above
     @JvmField
     var projection = HmdMat44()
     @JvmField
@@ -2148,18 +2145,18 @@ open class VREvent_Property : Structure {
 
     @JvmField
     var container: PropertyContainerHandle = 0
-    /** ETrackedDeviceProperty value    */
+    /** TrackedDeviceProperty value    */
     @JvmField
     var eProp = 0
     var prop
         set(value) {
             eProp = value.i
         }
-        get() = ETrackedDeviceProperty.of(eProp)
+        get() = TrackedDeviceProperty.of(eProp)
 
     constructor()
 
-    constructor(container: PropertyContainerHandle, prop: ETrackedDeviceProperty) {
+    constructor(container: PropertyContainerHandle, prop: TrackedDeviceProperty) {
         this.container = container
         this.eProp = prop.i
         write() // TODO?
@@ -2278,30 +2275,30 @@ open class VREvent : Structure {
     class ByValue : VREvent(), Structure.ByValue
 }
 
-enum class EVRInputError {
-    None,
-    NameNotFound,
-    WrongType,
-    InvalidHandle,
-    InvalidParam,
-    NoSteam,
-    MaxCapacityReached,
-    IPCError,
-    NoActiveActionSet,
-    InvalidDevice,
-    InvalidSkeleton,
-    InvalidBoneCount,
-    InvalidCompressedData,
-    NoData,
-    BufferTooSmall,
-    MismatchedActionManifest;
-
-    val i = ordinal
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
+//enum class EVRInputError {
+//    None,
+//    NameNotFound,
+//    WrongType,
+//    InvalidHandle,
+//    InvalidParam,
+//    NoSteam,
+//    MaxCapacityReached,
+//    IPCError,
+//    NoActiveActionSet,
+//    InvalidDevice,
+//    InvalidSkeleton,
+//    InvalidBoneCount,
+//    InvalidCompressedData,
+//    NoData,
+//    BufferTooSmall,
+//    MismatchedActionManifest;
+//
+//    val i = ordinal
+//
+//    companion object {
+//        infix fun of(i: Int) = values().first { it.i == i }
+//    }
+//}
 
 /** The mesh to draw into the stencil (or depth) buffer to perform early stencil (or depth) kills of pixels that will never appear on the HMD.
  *  This mesh draws on all the pixels that will be hidden after distortion. *
@@ -2579,7 +2576,7 @@ enum class EVROverlayError(@JvmField val i: Int) {
 class EVROverlayError_ByReference(@JvmField var value: EVROverlayError = EVROverlayError.None) : IntByReference(value.i)
 
 /** value values to pass in to openvr.VR_Init to identify whether the application will draw a 3D scene.     */
-enum class EVRApplicationType(@JvmField val i: Int) {
+enum class VRApplication(@JvmField val i: Int) {
     /** Some other kind of application that isn't covered by the other entries  */
     Other(0),
     /** Application will submit 3D frames   */
@@ -2659,7 +2656,7 @@ open class VRBoneTransform : Structure {
 
 /** error codes returned by Vr_Init */
 // Please add adequate error description to https://developer.valvesoftware.com/w/index.php?title=Category:SteamVRHelp
-enum class EVRInitError(@JvmField val i: Int) {
+enum class VRInitError(@JvmField val i: Int) {
 
     None(0),
     Unknown(1),
@@ -2759,14 +2756,23 @@ enum class EVRInitError(@JvmField val i: Int) {
 
     Steam_SteamInstallationNotFound(2000);
 
+    /** Returns the name of the enum value for an EVRInitError. This function may be called outside of VR_Init()/VR_Shutdown().  */
+    val asSymbol: String?
+        get()= VR.VR_GetVRInitErrorAsSymbol(i)
+
+    /** Returns an English string for an EVRInitError. Applications should call VR_GetVRInitErrorAsSymbol instead and
+     * use that as a key to look up their own localized error message. This function may be called outside of VR_Init()/VR_Shutdown(). */
+    val asEnglishDescription: String?
+            get() = VR.VR_GetVRInitErrorAsEnglishDescription(i)
+
     companion object {
         infix fun of(i: Int) = values().first { it.i == i }
     }
 }
 
-class EVRInitError_ByReference(value: EVRInitError = EVRInitError.None) : IntByReference(value.i) {
-    var value: EVRInitError
-        get() = EVRInitError of super.getValue()
+class EVRInitError_ByReference(value: VRInitError = VRInitError.None) : IntByReference(value.i) {
+    var value: VRInitError
+        get() = VRInitError of super.getValue()
         set(value) = super.setValue(value.i)
     operator fun invoke() = value
 }
@@ -3003,7 +3009,7 @@ private val mapNative = Native.register("openvr_api")
  *  (i.e. "win32") directory in it, not the directory with the DLL itself.
  *
  *  startupInfo is reserved for future use.    */
-fun vrInit(error: EVRInitError_ByReference?, applicationType: EVRApplicationType, startupInfo: String? = null): IVRSystem? {
+fun vrInit(error: EVRInitError_ByReference?, applicationType: VRApplication, startupInfo: String? = null): IVRSystem? {
 
     var pVRSystem: IVRSystem? = null
 
@@ -3011,12 +3017,12 @@ fun vrInit(error: EVRInitError_ByReference?, applicationType: EVRApplicationType
     vrToken = VR_InitInternal2(eError, applicationType.i, startupInfo)
     COpenVRContext.clear()
 
-    if (eError.value == EVRInitError.None)
+    if (eError.value == VRInitError.None)
         if (VR_IsInterfaceVersionValid(IVRSystem_Version))
             pVRSystem = vrSystem
         else {
             VR_ShutdownInternal()
-            eError.value = EVRInitError.Init_InterfaceNotFound
+            eError.value = VRInitError.Init_InterfaceNotFound
         }
     error?.value = eError.value
     return pVRSystem
@@ -3041,14 +3047,14 @@ fun vrRuntimePath() = VR_RuntimePath()
 
 internal external fun VR_RuntimePath(): String
 
-/** Returns the name of the value value for an EVRInitError. This function may be called outside of VR_Init()/VR_Shutdown(). */
-fun vrGetVRInitErrorAsSymbol(error: EVRInitError) = VR_GetVRInitErrorAsSymbol(error.i)
+/** Returns the name of the value value for an VRInitError. This function may be called outside of VR_Init()/VR_Shutdown(). */
+fun vrGetVRInitErrorAsSymbol(error: VRInitError) = VR_GetVRInitErrorAsSymbol(error.i)
 
 internal external fun VR_GetVRInitErrorAsSymbol(error: Int): String
 
-/** Returns an English string for an EVRInitError. Applications should call VR_GetVRInitErrorAsSymbol instead and use that
+/** Returns an English string for an VRInitError. Applications should call VR_GetVRInitErrorAsSymbol instead and use that
  *  as a key to look up their own localized error message. This function may be called outside of VR_Init()/VR_Shutdown(). */
-fun vrGetVRInitErrorAsEnglishDescription(error: EVRInitError) = VR_GetVRInitErrorAsEnglishDescription(error.i)
+fun vrGetVRInitErrorAsEnglishDescription(error: VRInitError) = VR_GetVRInitErrorAsEnglishDescription(error.i)
 
 internal external fun VR_GetVRInitErrorAsEnglishDescription(error: Int): String
 
@@ -3089,7 +3095,7 @@ object COpenVRContext {
     private var vrInput: IVRInput? = null
     private var vrIoBuffer: IVRIOBuffer? = null
 
-    private val error = EVRInitError_ByReference(EVRInitError.None)
+    private val error = EVRInitError_ByReference(VRInitError.None)
 
     private fun checkClear() {
         if (vrToken != VR_GetInitToken()) {
@@ -3225,7 +3231,7 @@ var vrToken = 0
 val vrSystem get() = COpenVRContext.vrSystem()
 val vrChaperone get() = COpenVRContext.vrChaperone()
 val vrChaperoneSetup get() = COpenVRContext.vrChaperoneSetup()
-val vrCompositor get() = COpenVRContext.vrCompositor()
+//val vrCompositor get() = COpenVRContext.vrCompositor()
 val vrOverlay get() = COpenVRContext.vrOverlay()
 val vrResources get() = COpenVRContext.vrResources()
 val vrRenderModels get() = COpenVRContext.vrRenderModels()
@@ -3235,7 +3241,7 @@ val vrApplications get() = COpenVRContext.vrApplications()
 val vrTrackedCamera get() = COpenVRContext.vrTrackedCamera()
 val vrScreenshots get() = COpenVRContext.vrScreenshots()
 val vrDriverManager get() = COpenVRContext.vrDriverManager()
-val vrInput get() = COpenVRContext.vrInput()
+//val vrInput get() = COpenVRContext.vrInput()
 val vrIoBuffer get() = COpenVRContext.vrIoBuffer()
 
 internal external fun VR_InitInternal2(peError: EVRInitError_ByReference, eType: Int, pStartupInfo: String? = null): Int
