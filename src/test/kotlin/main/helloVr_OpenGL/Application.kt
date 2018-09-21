@@ -1,17 +1,15 @@
 package main.helloVr_OpenGL
 
 import openvr.lib.*
-import org.lwjgl.Version
 import org.lwjgl.opengl.GL11.GL_DONT_CARE
 import org.lwjgl.opengl.GL11.glEnable
 import org.lwjgl.opengl.KHRDebug.*
 import org.lwjgl.system.MemoryUtil.NULL
 import org.lwjgl.system.MemoryUtil.memUTF8
-import uno.glfw.GlfwWindow
 import uno.glfw.glfw
+import uno.glfw.windowHint.Profile
 import java.nio.IntBuffer
 import kotlin.properties.Delegates
-import uno.glfw.windowHint.Profile
 
 fun main(args: Array<String>) {
 
