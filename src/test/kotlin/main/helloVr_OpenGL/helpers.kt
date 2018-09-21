@@ -1,7 +1,7 @@
 package main.helloVr_OpenGL
 
-import glm_.buffer.intBufferBig
 import glm_.vec2.Vec2i
+import kool.intBufferBig
 import openvr.lib.EVREye
 
 class FrameBufferDesc(val size: Vec2i) {

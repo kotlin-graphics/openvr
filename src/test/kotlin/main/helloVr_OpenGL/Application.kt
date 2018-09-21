@@ -10,6 +10,7 @@ import uno.glfw.GlfwWindow
 import uno.glfw.glfw
 import java.nio.IntBuffer
 import kotlin.properties.Delegates
+import uno.glfw.windowHint.Profile
 
 fun main(args: Array<String>) {
 
@@ -67,7 +68,7 @@ class Application {
             init()
             windowHint {
                 context.version = "4.1"
-                profile = "core"
+                profile = Profile.core
                 debug = debugOpenGL
             }
         }
@@ -145,6 +146,8 @@ class Application {
         if (!initCompositor())
             throw Error("Application::init() - Failed to initialize VR Compositor!")
 
+        println("driverManager: ${vrIsInterfaceVersionValid(FnTable + IVRDriverManager_Version)}")
+        println("inputVersion: ${vrIsInterfaceVersionValid(FnTable + IVRInput_Version)}")
         vrInput!!.apply {
 
 //            setActionManifestPath(Path_MakeAbsolute("../hellovr_actions.json", Path_StripFilename(Path_GetExecutablePath())).c_str());
@@ -184,7 +187,7 @@ class Application {
 
     fun loop() {
 
-        companionWindow.window.cursor = GlfwWindow.Cursor.Hidden
+//        companionWindow.window.cursor = GlfwWindow.Cursor.Hidden
 
         companionWindow.window.loop {
 

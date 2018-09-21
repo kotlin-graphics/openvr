@@ -477,4 +477,4 @@ open class IVRInput : Structure {
     class ByValue : IVRNotifications(), Structure.ByValue
 }
 
-val IVRInput_Version = "FnTable:IVRInput_003"
+val IVRInput_Version = "IVRInput_003"

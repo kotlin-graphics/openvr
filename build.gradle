@@ -1,8 +1,9 @@
 import groovy.json.JsonSlurper
+import org.gradle.internal.os.OperatingSystem
 
 buildscript {
 
-    ext.kotlinVersion = '1.2.41'
+    ext.kotlinVersion = '1.2.70'
 
     repositories {
         jcenter()   // shadow
@@ -14,13 +15,13 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.3'
-        classpath "org.junit.platform:junit-platform-gradle-plugin:1.1.0"
-        classpath 'org.apache.ivy:ivy:2.3.0'
+        classpath "org.junit.platform:junit-platform-gradle-plugin:1.2.0"
+        classpath 'org.apache.ivy:ivy:2.4.0'
     }
 }
 
 plugins {
-    id "de.undercouch.download" version "3.4.2"
+    id "de.undercouch.download" version "3.4.3"
 }
 
 apply plugin: 'java'
@@ -35,20 +36,34 @@ dependencies {
 
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
 
-    testCompile 'io.kotlintest:kotlintest-runner-junit5:3.0.4'
+    testCompile 'io.kotlintest:kotlintest-runner-junit5:3.1.10'
 
-    compile "com.github.kotlin-graphics:glm:86ecfc812ba39da9dd62ec4e69c658b2111567bb"
-    compile "com.github.kotlin-graphics:uno-sdk:92e3da570b63b414c19c78535e91d245dc1e3264"
+//    compile "com.github.kotlin-graphics:glm:86ecfc812ba39da9dd62ec4e69c658b2111567bb"
+    compile "com.github.kotlin-graphics:uno-sdk:c74defd9f15267646ae0205e8a3525d581ec2d9e"
 
-    testCompile "com.github.kotlin-graphics:glm:f3303ecbfc77b7a64c0d9e99f02870a75417184d"
+    compile "net.java.dev.jna:jna:4.5.2"
 
-    compile "net.java.dev.jna:jna:4.5.1"
+    ext.lwjglVersion = "3.2.0"
+    switch (OperatingSystem.current()) {
+        case OperatingSystem.WINDOWS:
+            ext.lwjglNatives = "natives-windows"
+            break
+        case OperatingSystem.LINUX:
+            ext.lwjglNatives = "natives-linux"
+            break
+        case OperatingSystem.MAC_OS:
+            ext.lwjglNatives = "natives-macos"
+            break
+    }
+    ["", "-glfw", "-jemalloc", "-openal", "-opengl", "-stb", "-vulkan"].each {
+        implementation "org.lwjgl:lwjgl$it:$lwjglVersion"
+        if (it != "-vulkan")
+            runtime "org.lwjgl:lwjgl$it:$lwjglVersion:$lwjglNatives"
+    }
 }
 
 repositories {
     mavenCentral()
-    maven { setUrl("https://dl.bintray.com/kotlin/kotlin-dev") }
-    maven { setUrl("http://dl.bintray.com/kotlin/kotlin-eap-1.2") }
     maven { setUrl("https://oss.sonatype.org/content/repositories/snapshots/") }
     maven { setUrl('https://jitpack.io') }
 }

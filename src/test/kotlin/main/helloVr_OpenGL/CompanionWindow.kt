@@ -2,7 +2,7 @@ package main.helloVr_OpenGL
 
 import glm_.BYTES
 import glm_.L
-import glm_.buffer.intBufferBig
+import kool.intBufferBig
 import glm_.i
 import glm_.size
 import glm_.vec2.Vec2

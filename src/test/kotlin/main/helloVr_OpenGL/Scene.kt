@@ -1,33 +1,28 @@
 package main.helloVr_OpenGL
 
-import glm_.buffer.intBufferBig
 import glm_.f
 import glm_.mat4x4.Mat4
 import glm_.vec3.Vec3
 import glm_.vec3.Vec3i
 import glm_.vec4.Vec4
+import gln.buffer.Usage
 import gln.buffer.initArrayBuffer
 import gln.glf.glf
 import gln.glf.semantic
 import gln.program.usingProgram
 import gln.texture.glBindTexture2d
-import gln.texture.glGenerateMipmap
+import gln.texture.glGenerateMipmap2D
 import gln.texture.glTex2dParameter
 import gln.texture.glTexImage2D
 import gln.vertexArray.initVertexArray
-import openvr.lib.ETrackedDeviceClass
+import kool.intBufferBig
 import openvr.lib.EVREye
-import openvr.lib.maxTrackedDeviceCount
-import openvr.lib.trackedDeviceIndex_Hmd
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT
-import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE
 import org.lwjgl.opengl.GL13.GL_TEXTURE0
 import org.lwjgl.opengl.GL13.glActiveTexture
-import org.lwjgl.opengl.GL15.GL_STATIC_DRAW
 import org.lwjgl.opengl.GL20.*
-import org.lwjgl.opengl.GL30.glClearBufferfv
 import uno.buffer.toBuffer
 import uno.buffer.use
 import uno.kotlin.url
@@ -69,7 +64,7 @@ class Scene {
 
             glTexImage2D(GL_RGB8, image.width, image.height, GL_RGB, GL_UNSIGNED_BYTE, it)
 
-            glGenerateMipmap()
+            glGenerateMipmap2D()
 
             glTex2dParameter(GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
             glTex2dParameter(GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
@@ -114,7 +109,7 @@ class Scene {
 
                 vertDataArray.toFloatArray().toBuffer().use { vertices ->
 
-                    data(vertices, GL_STATIC_DRAW)
+                    data(vertices, Usage.StaticDraw)
 
                     array(bufferName, glf.pos3_tc2)
                 }
