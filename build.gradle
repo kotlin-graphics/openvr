@@ -38,7 +38,7 @@ dependencies {
 
     testCompile 'io.kotlintest:kotlintest-runner-junit5:3.1.10'
 
-    compile "com.github.kotlin-graphics:uno-sdk:293da8d6b5b1be0fa10c9060b4c6c7e98e2823c4"
+    compile "com.github.kotlin-graphics:uno-sdk:b45cd3d472fad746915a95c2c2e986dc1decd337"
 
     compile "net.java.dev.jna:jna:4.5.2"
 
