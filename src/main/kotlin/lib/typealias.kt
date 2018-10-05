@@ -1,7 +1,12 @@
-package vr_
+package lib
 
-import glm_.i
+import glm_.b
+import glm_.set
+import kool.Ptr
+import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil.NULL
+import org.lwjgl.system.Pointer
+import java.nio.ByteBuffer
 import java.nio.LongBuffer
 
 
@@ -34,7 +39,6 @@ typealias PropertyTypeTag = Int
 
 
 typealias DriverHandle = PropertyContainerHandle
-
 
 
 /** used to refer to a single VR overlay */
@@ -100,3 +104,17 @@ typealias IOBufferHandle = Long
 typealias VRActionHandleBuffer = LongBuffer
 typealias VRActionSetHandleBuffer = LongBuffer
 typealias VRInputValueHandleBuffer = LongBuffer
+
+// temp
+
+inline val Pointer.adr: Ptr
+    get() = address()
+
+fun MemoryStack.bufferOfAscii(string: String, nullTerminated: Boolean = true): ByteBuffer {
+    val bytes = malloc(string.length + if (nullTerminated) 1 else 0)
+    for (i in string.indices)
+        bytes[i] = string[i].b
+    if (nullTerminated)
+        bytes[string.length] = 0
+    return bytes
+}

@@ -1,4 +1,4 @@
-package vr_
+package lib
 
 import ab.appBuffer
 import glm_.buffer.adr
@@ -40,8 +40,8 @@ val IVRCompositor.trackingSpace: TrackingUniverseOrigin
  * @param gamePoseArray
  */
 fun IVRCompositor.waitGetPoses(renderPoseArray: TrackedDevicePose.Buffer, gamePoseArray: TrackedDevicePose.Buffer? = null): EVRCompositorError {
-    return EVRCompositorError of VRCompositor.nVRCompositor_WaitGetPoses(renderPoseArray.adr, renderPoseArray.remaining(), gamePoseArray?.adr
-            ?: NULL, gamePoseArray?.remaining() ?: 0)
+    return EVRCompositorError of VRCompositor.nVRCompositor_WaitGetPoses(renderPoseArray.adr, renderPoseArray.rem, gamePoseArray?.adr
+            ?: NULL, gamePoseArray?.rem ?: 0)
 }
 
 /**
@@ -51,7 +51,7 @@ fun IVRCompositor.waitGetPoses(renderPoseArray: TrackedDevicePose.Buffer, gamePo
  * @param gamePoseArray
  */
 fun IVRCompositor.getLastPoses(renderPoseArray: TrackedDevicePose.Buffer, gamePoseArray: TrackedDevicePose.Buffer): EVRCompositorError {
-    return EVRCompositorError of VRCompositor.nVRCompositor_GetLastPoses(renderPoseArray.adr, renderPoseArray.remaining(), gamePoseArray.adr, gamePoseArray.remaining())
+    return EVRCompositorError of VRCompositor.nVRCompositor_GetLastPoses(renderPoseArray.adr, renderPoseArray.rem, gamePoseArray.adr, gamePoseArray.rem)
 }
 
 /**
@@ -123,7 +123,7 @@ fun IVRCompositor.postPresentHandoff() = VRCompositor.VRCompositor_PostPresentHa
  * @param timing
  */
 infix fun IVRCompositor.getFrameTiming(timing: CompositorFrameTiming.Buffer): Boolean {
-    return VRCompositor.nVRCompositor_GetFrameTiming(timing.adr, timing.remaining())
+    return VRCompositor.nVRCompositor_GetFrameTiming(timing.adr, timing.rem)
 }
 
 /**
@@ -133,7 +133,7 @@ infix fun IVRCompositor.getFrameTiming(timing: CompositorFrameTiming.Buffer): Bo
  * @param timing
  */
 infix fun IVRCompositor.getFrameTimings(timing: CompositorFrameTiming.Buffer): Int {
-    return VRCompositor.nVRCompositor_GetFrameTimings(timing.adr, timing.remaining())
+    return VRCompositor.nVRCompositor_GetFrameTimings(timing.adr, timing.rem)
 }
 
 /**
@@ -204,7 +204,7 @@ val IVRCompositor.currentGridAlpha: Float
  * @param textures
  */
 infix fun IVRCompositor.setSkyboxOverride(textures: Texture.Buffer): EVRCompositorError {
-    return EVRCompositorError of VRCompositor.nVRCompositor_SetSkyboxOverride(textures.adr, textures.remaining())
+    return EVRCompositorError of VRCompositor.nVRCompositor_SetSkyboxOverride(textures.adr, textures.rem)
 }
 
 /** Resets compositor skybox back to defaults. */

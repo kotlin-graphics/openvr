@@ -1,4 +1,4 @@
-package vr_
+package lib
 
 import ab.appBuffer
 import glm_.buffer.adr
@@ -39,7 +39,7 @@ fun IVRScreenshots.requestScreenshot(outScreenshotHandle: IntBuffer, type: EVRSc
  * @param supportedTypes ~EVRScreenshotType *
  */
 infix fun IVRScreenshots.hookScreenshot(supportedTypes: IntBuffer): EVRScreenshotError {
-    return EVRScreenshotError of VRScreenshots.nVRScreenshots_HookScreenshot(supportedTypes.adr, supportedTypes.remaining())
+    return EVRScreenshotError of VRScreenshots.nVRScreenshots_HookScreenshot(supportedTypes.adr, supportedTypes.rem)
 }
 
 /** When your application receives a {@link VR#EVREventType_VREvent_RequestScreenshot} event, call these functions to get the details of the screenshot request.

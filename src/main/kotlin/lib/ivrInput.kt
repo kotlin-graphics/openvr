@@ -1,4 +1,4 @@
-package vr_
+package lib
 
 import ab.appBuffer
 import glm_.buffer.adr
@@ -80,7 +80,7 @@ infix fun IVRInput.updateActionState(set: VRActiveActionSet): EVRInputError {
  * {@code UpdateActionState}.
  */
 infix fun IVRInput.updateActionState(sets: VRActiveActionSet.Buffer): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_UpdateActionState(sets.adr, VRActiveActionSet.SIZEOF, sets.remaining())
+    return EVRInputError of VRInput.nVRInput_UpdateActionState(sets.adr, VRActiveActionSet.SIZEOF, sets.rem)
 }
 
 /**
@@ -96,7 +96,7 @@ fun IVRInput.getDigitalActionData(action: VRActionHandle, actionData: InputDigit
  * than digital.
  */
 fun IVRInput.getDigitalActionData(action: VRActionHandle, actionData: InputDigitalActionData.Buffer): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_GetDigitalActionData(action, actionData.adr, actionData.remaining())
+    return EVRInputError of VRInput.nVRInput_GetDigitalActionData(action, actionData.adr, actionData.rem)
 }
 
 /**
@@ -112,7 +112,7 @@ fun IVRInput.getAnalogActionData(action: VRActionHandle, actionData: InputAnalog
  * than analog.
  */
 fun IVRInput.getAnalogActionData(action: VRActionHandle, actionData: InputAnalogActionData.Buffer): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_GetAnalogActionData(action, actionData.adr, actionData.remaining())
+    return EVRInputError of VRInput.nVRInput_GetAnalogActionData(action, actionData.adr, actionData.rem)
 }
 
 /**
@@ -130,7 +130,7 @@ fun IVRInput.getPoseActionData(action: VRActionHandle, origin: ETrackingUniverse
  * @param origin one of:<br><table><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseSeated}</td></tr><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseStanding}</td></tr><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseRawAndUncalibrated}</td></tr></table>
  */
 fun IVRInput.getPoseActionData(action: VRActionHandle, origin: ETrackingUniverseOrigin, predictedSecondsFromNow: Float, actionData: InputPoseActionData.Buffer): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_GetPoseActionData(action, origin.i, predictedSecondsFromNow, actionData.adr, actionData.remaining())
+    return EVRInputError of VRInput.nVRInput_GetPoseActionData(action, origin.i, predictedSecondsFromNow, actionData.adr, actionData.rem)
 }
 
 /**
@@ -139,7 +139,7 @@ fun IVRInput.getPoseActionData(action: VRActionHandle, origin: ETrackingUniverse
  * @param boneParent one of:<br><table><tr><td>{@link VR#EVRSkeletalTransformSpace_VRSkeletalTransformSpace_Action}</td></tr><tr><td>{@link VR#EVRSkeletalTransformSpace_VRSkeletalTransformSpace_Parent}</td></tr><tr><td>{@link VR#EVRSkeletalTransformSpace_VRSkeletalTransformSpace_Additive}</td></tr></table>
  */
 fun IVRInput.getSkeletalActionData(action: VRActionHandle, boneParent: EVRSkeletalTransformSpace, predictedSecondsFromNow: Float, actionData: InputSkeletonActionData.Buffer, transformArray: VRBoneTransform.Buffer): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_GetSkeletalActionData(action, boneParent.i, predictedSecondsFromNow, actionData.adr, actionData.remaining(), transformArray.adr, transformArray.remaining())
+    return EVRInputError of VRInput.nVRInput_GetSkeletalActionData(action, boneParent.i, predictedSecondsFromNow, actionData.adr, actionData.rem, transformArray.adr, transformArray.rem)
 }
 
 /**
@@ -150,14 +150,14 @@ fun IVRInput.getSkeletalActionData(action: VRActionHandle, boneParent: EVRSkelet
  * @param requiredCompressedSize ~ uint32 *
  */
 fun IVRInput.getSkeletalActionDataCompressed(action: VRActionHandle, boneParent: EVRSkeletalTransformSpace, predictedSecondsFromNow: Float, compressedData: ByteBuffer?, requiredCompressedSize: IntBuffer?): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_GetSkeletalActionDataCompressed(action, boneParent.i, predictedSecondsFromNow, compressedData?.adr ?: NULL, compressedData?.remaining() ?: 0, requiredCompressedSize?.adr ?: NULL)
+    return EVRInputError of VRInput.nVRInput_GetSkeletalActionDataCompressed(action, boneParent.i, predictedSecondsFromNow, compressedData?.adr ?: NULL, compressedData?.rem ?: 0, requiredCompressedSize?.adr ?: NULL)
 }
 
 /** Turns a compressed buffer from {@link #VRInput_GetSkeletalActionDataCompressed GetSkeletalActionDataCompressed} and turns it back into a bone transform array.
  *  @param boneParent ~ EVRSkeletalTransformSpace *
  *  */
 fun IVRInput.uncompressSkeletalActionData(compressedBuffer: ByteBuffer, boneParent: IntBuffer, transformArray: VRBoneTransform.Buffer): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_UncompressSkeletalActionData(compressedBuffer.adr, compressedBuffer.remaining(), boneParent.adr, transformArray.adr, transformArray.remaining())
+    return EVRInputError of VRInput.nVRInput_UncompressSkeletalActionData(compressedBuffer.adr, compressedBuffer.rem, boneParent.adr, transformArray.adr, transformArray.rem)
 }
 
 /** Triggers a haptic event as described by the specified action. */
@@ -169,12 +169,12 @@ fun IVRInput.triggerHapticVibrationAction(action: VRActionHandle, startSecondsFr
  *  @param originsOut ~ VRInputValueHandle *
  *  */
 fun IVRInput.getActionOrigins(actionSetHandle: VRActionSetHandle, digitalActionHandle: VRActionHandle, originsOut: LongBuffer): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_GetActionOrigins(actionSetHandle, digitalActionHandle, originsOut.adr, originsOut.remaining())
+    return EVRInputError of VRInput.nVRInput_GetActionOrigins(actionSetHandle, digitalActionHandle, originsOut.adr, originsOut.rem)
 }
 
 /** Retrieves the name of the origin in the current language. */
 fun IVRInput.getOriginLocalizedName(origin: VRInputValueHandle, nameArray: ByteBuffer): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_GetOriginLocalizedName(origin, nameArray.adr, nameArray.remaining())
+    return EVRInputError of VRInput.nVRInput_GetOriginLocalizedName(origin, nameArray.adr, nameArray.rem)
 }
 
 /** Retrieves useful information for the origin of this action. */
@@ -184,7 +184,7 @@ fun IVRInput.getOriginTrackedDeviceInfo(origin: VRInputValueHandle, originInfo: 
 
 /** Retrieves useful information for the origin of this action. */
 fun IVRInput.getOriginTrackedDeviceInfo(origin: VRInputValueHandle, originInfo: InputOriginInfo.Buffer): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_GetOriginTrackedDeviceInfo(origin, originInfo.adr, originInfo.remaining())
+    return EVRInputError of VRInput.nVRInput_GetOriginTrackedDeviceInfo(origin, originInfo.adr, originInfo.rem)
 }
 
 /** Shows the current binding for the action in-headset. */
@@ -194,5 +194,5 @@ fun IVRInput.showActionOrigins(actionSetHandle: VRActionSetHandle, actionHandle:
 
 /** Shows the current binding all the actions in the specified action sets. */
 fun IVRInput.showBindingsForActionSet(sets: VRActiveActionSet.Buffer, originToHighlight: VRInputValueHandle): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_ShowBindingsForActionSet(sets.adr, VRActiveActionSet.SIZEOF, sets.remaining(), originToHighlight)
+    return EVRInputError of VRInput.nVRInput_ShowBindingsForActionSet(sets.adr, VRActiveActionSet.SIZEOF, sets.rem, originToHighlight)
 }

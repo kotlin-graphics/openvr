@@ -1,4 +1,4 @@
-package vr_
+package lib
 
 import ab.appBuffer
 import glm_.vec2.Vec2i
@@ -55,7 +55,7 @@ infix fun IVRChaperone.setSceneColor(color: HmdColor) = VRChaperone.nVRChaperone
  * @param outputCameraColor
  */
 fun IVRChaperone.getBoundsColor(outputColorArray: HmdColor.Buffer, collisionBoundsFadeDistance: Float, outputCameraColor: HmdColor) {
-    VRChaperone.nVRChaperone_GetBoundsColor(outputColorArray.adr, outputColorArray.remaining(), collisionBoundsFadeDistance, outputCameraColor.adr)
+    VRChaperone.nVRChaperone_GetBoundsColor(outputColorArray.adr, outputColorArray.rem, collisionBoundsFadeDistance, outputCameraColor.adr)
 }
 
 /** Determine whether the bounds are showing right now. */

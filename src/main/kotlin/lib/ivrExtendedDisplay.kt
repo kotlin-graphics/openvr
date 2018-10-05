@@ -1,4 +1,4 @@
-package vr_
+package lib
 
 import ab.appBuffer
 import glm_.buffer.adr

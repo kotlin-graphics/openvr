@@ -1,4 +1,4 @@
-package vr_
+package lib
 
 import ab.appBuffer
 import glm_.buffer.adr
@@ -130,7 +130,7 @@ fun IVROverlay.setOverlayName(overlayHandle: VROverlayHandle, name: String): EVR
 fun IVROverlay.getOverlayImageData(overlayHandle: VROverlayHandle, buffer: ByteBuffer, size: Vec2i): EVROverlayError {
     val pWidth = appBuffer.int
     val pHeight = appBuffer.int
-    return EVROverlayError of VROverlay.nVROverlay_GetOverlayImageData(overlayHandle, buffer.adr, buffer.remaining(), pWidth, pHeight).also {
+    return EVROverlayError of VROverlay.nVROverlay_GetOverlayImageData(overlayHandle, buffer.adr, buffer.rem, pWidth, pHeight).also {
         size(MemoryUtil.memGetInt(pWidth), MemoryUtil.memGetInt(pHeight))
     }
 }
@@ -391,7 +391,7 @@ fun IVROverlay.getOverlayTextureBounds(overlayHandle: VROverlayHandle, overlayTe
  * @param error ~EVROverlayError*
  */
 fun IVROverlay.getOverlayRenderModel(overlayHandle: VROverlayHandle, value: ByteBuffer, color: HmdColor, error: IntBuffer): Int {
-    return VROverlay.nVROverlay_GetOverlayRenderModel(overlayHandle, value.adr, value.remaining(), color.adr, error.adr)
+    return VROverlay.nVROverlay_GetOverlayRenderModel(overlayHandle, value.adr, value.rem, color.adr, error.adr)
 }
 
 fun IVROverlay.setOverlayRenderModel(overlayHandle: VROverlayHandle, renderModel: String, color: HmdColor): EVROverlayError {
@@ -482,7 +482,7 @@ fun IVROverlay.setOverlayTransformTrackedDeviceComponent(overlayHandle: VROverla
  * @param componentName ~ char *
  */
 fun IVROverlay.getOverlayTransformTrackedDeviceComponent(overlayHandle: VROverlayHandle, deviceIndex: IntBuffer, componentName: ByteBuffer): EVROverlayError {
-    return EVROverlayError of VROverlay.nVROverlay_GetOverlayTransformTrackedDeviceComponent(overlayHandle, deviceIndex.adr, componentName.adr, componentName.remaining())
+    return EVROverlayError of VROverlay.nVROverlay_GetOverlayTransformTrackedDeviceComponent(overlayHandle, deviceIndex.adr, componentName.adr, componentName.rem)
 }
 
 fun IVROverlay.getOverlayTransformOverlayRelative(overlayHandle: VROverlayHandle, overlayHandleParent: LongBuffer, matParentOverlayToOverlayTransform: Mat4): EVROverlayError {
@@ -917,7 +917,7 @@ fun IVROverlay.setKeyboardPositionForOverlay(overlayHandle: VROverlayHandle, avo
  * @param maskPrimitives
  */
 fun IVROverlay.setOverlayIntersectionMask(overlayHandle: VROverlayHandle, maskPrimitives: VROverlayIntersectionMaskPrimitive.Buffer): EVROverlayError {
-    return EVROverlayError of VROverlay.nVROverlay_SetOverlayIntersectionMask(overlayHandle, maskPrimitives.adr, maskPrimitives.remaining(), VROverlayIntersectionMaskPrimitive.SIZEOF)
+    return EVROverlayError of VROverlay.nVROverlay_SetOverlayIntersectionMask(overlayHandle, maskPrimitives.adr, maskPrimitives.rem, VROverlayIntersectionMaskPrimitive.SIZEOF)
 }
 
 fun IVROverlay.getOverlayFlags(overlayHandle: VROverlayHandle, flags: IntBuffer): EVROverlayError {

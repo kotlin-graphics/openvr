@@ -1,6 +1,4 @@
-package vr_
-
-import org.lwjgl.openvr.VR
+package lib
 
 enum class VREye(@JvmField val i: Int) {
     Left(0),

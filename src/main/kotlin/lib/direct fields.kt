@@ -1,28 +1,27 @@
-package vr_
+package lib
 
-import ab.appBuffer
 import glm_.BYTES
 import glm_.L
-import glm_.buffer.cap
 import glm_.i
 import glm_.mat4x4.Mat4
 import glm_.quat.Quat
-import glm_.set
+import glm_.quat.QuatD
 import glm_.vec2.Vec2
 import glm_.vec2.Vec2i
 import glm_.vec3.Vec3
+import glm_.vec3.Vec3d
 import glm_.vec4.Vec4
 import glm_.vec4.Vec4ub
-import openvr.lib.ETrackingUniverseOrigin
-import openvr.lib.EVREventType
-import openvr.lib.VRMessageOverlayResponse
+import kool.Ptr
+import kool.cap
 import org.lwjgl.openvr.*
+import org.lwjgl.system.MemoryUtil.memGetFloat
 import org.lwjgl.system.MemoryUtil.memPutFloat
 import org.lwjgl.vulkan.*
-import vkk.VkFormat
-import vkk.VkImage
-import vkk.VkSampleCount
-import vkk.adr
+//import vkk.VkFormat
+//import vkk.VkImage
+//import vkk.VkSampleCount
+//import vkk.adr
 import java.nio.ByteBuffer
 import java.nio.FloatBuffer
 import java.nio.ShortBuffer
@@ -31,37 +30,80 @@ import java.nio.ShortBuffer
 var HmdMatrix34.m: FloatBuffer
     get() = HmdMatrix34.nm(adr)
     set(value) = HmdMatrix34.nm(adr, value)
-val HmdMatrix34.asMat4: Mat4
-    get() = Mat4(
+
+fun HmdMatrix34.toMat4(): Mat4 = to(Mat4())
+
+infix fun HmdMatrix34.to(mat: Mat4): Mat4 {
+    return mat(
             m[0], m[4], m[8], 0f,
             m[1], m[5], m[9], 0f,
             m[2], m[6], m[10], 0f,
             m[3], m[7], m[11], 1f)
+}
 
-infix fun HmdMatrix34.to(mat: Mat4) {
-    mat.put(m[0], m[4], m[8], 0f,
-            m[1], m[5], m[9], 0f,
-            m[2], m[6], m[10], 0f,
-            m[3], m[7], m[11], 1f)
+fun mat4FromHmdMatrix34(ptr: Ptr): Mat4 {
+    return Mat4(
+            memGetFloat(ptr + Float.BYTES * 0), memGetFloat(ptr + Float.BYTES * 4), memGetFloat(ptr + Float.BYTES * 8), 0f,
+            memGetFloat(ptr + Float.BYTES * 1), memGetFloat(ptr + Float.BYTES * 5), memGetFloat(ptr + Float.BYTES * 9), 0f,
+            memGetFloat(ptr + Float.BYTES * 2), memGetFloat(ptr + Float.BYTES * 6), memGetFloat(ptr + Float.BYTES * 10), 0f,
+            memGetFloat(ptr + Float.BYTES * 3), memGetFloat(ptr + Float.BYTES * 7), memGetFloat(ptr + Float.BYTES * 11), 1f)
+}
+
+infix fun Mat4.toHmdMatrix34(ptr: Ptr) {
+    memPutFloat(ptr + Float.BYTES * 0, this[0, 0])
+    memPutFloat(ptr + Float.BYTES * 1, this[1, 0])
+    memPutFloat(ptr + Float.BYTES * 2, this[2, 0])
+    memPutFloat(ptr + Float.BYTES * 3, this[3, 0])
+    memPutFloat(ptr + Float.BYTES * 4, this[0, 1])
+    memPutFloat(ptr + Float.BYTES * 5, this[1, 1])
+    memPutFloat(ptr + Float.BYTES * 6, this[2, 1])
+    memPutFloat(ptr + Float.BYTES * 7, this[3, 1])
+    memPutFloat(ptr + Float.BYTES * 8, this[0, 2])
+    memPutFloat(ptr + Float.BYTES * 9, this[1, 2])
+    memPutFloat(ptr + Float.BYTES * 10, this[2, 2])
+    memPutFloat(ptr + Float.BYTES * 11, this[3, 2])
 }
 
 
 var HmdMatrix44.m: FloatBuffer
     get() = HmdMatrix44.nm(adr)
     set(value) = HmdMatrix44.nm(adr, value)
-val HmdMatrix44.asMat4: Mat4
-    get() = Mat4(
+
+fun HmdMatrix44.toMat4(): Mat4 = to(Mat4())
+infix fun HmdMatrix44.to(mat: Mat4): Mat4 {
+    return mat(
             m[0], m[4], m[8], m[12],
             m[1], m[5], m[9], m[13],
             m[2], m[6], m[10], m[14],
             m[3], m[7], m[11], m[15])
-
-infix fun HmdMatrix44.to(mat: Mat4) {
-    mat.put(m[0], m[4], m[8], m[12],
-            m[1], m[5], m[9], m[13],
-            m[2], m[6], m[10], m[14],
-            m[3], m[7], m[11], m[15])
 }
+
+//fun mat4FromHmdMatrix44(ptr: Ptr): Mat4 {
+//    return Mat4(
+//            memGetFloat(ptr + Float.BYTES * 0), memGetFloat(ptr + Float.BYTES * 4), memGetFloat(ptr + Float.BYTES * 8), memGetFloat(ptr + Float.BYTES * 12),
+//            memGetFloat(ptr + Float.BYTES * 1), memGetFloat(ptr + Float.BYTES * 5), memGetFloat(ptr + Float.BYTES * 9), memGetFloat(ptr + Float.BYTES * 13),
+//            memGetFloat(ptr + Float.BYTES * 2), memGetFloat(ptr + Float.BYTES * 6), memGetFloat(ptr + Float.BYTES * 10), memGetFloat(ptr + Float.BYTES * 14),
+//            memGetFloat(ptr + Float.BYTES * 3), memGetFloat(ptr + Float.BYTES * 7), memGetFloat(ptr + Float.BYTES * 11), memGetFloat(ptr + Float.BYTES * 15))
+//}
+//
+//infix fun Mat4.toHmdMatrix44(ptr: Ptr) {
+//    memPutFloat(ptr + Float.BYTES * 0, this[0, 0])
+//    memPutFloat(ptr + Float.BYTES * 1, this[1, 0])
+//    memPutFloat(ptr + Float.BYTES * 2, this[2, 0])
+//    memPutFloat(ptr + Float.BYTES * 3, this[3, 0])
+//    memPutFloat(ptr + Float.BYTES * 4, this[0, 1])
+//    memPutFloat(ptr + Float.BYTES * 5, this[1, 1])
+//    memPutFloat(ptr + Float.BYTES * 6, this[2, 1])
+//    memPutFloat(ptr + Float.BYTES * 7, this[3, 1])
+//    memPutFloat(ptr + Float.BYTES * 8, this[0, 2])
+//    memPutFloat(ptr + Float.BYTES * 9, this[1, 2])
+//    memPutFloat(ptr + Float.BYTES * 10, this[2, 2])
+//    memPutFloat(ptr + Float.BYTES * 11, this[3, 2])
+//    memPutFloat(ptr + Float.BYTES * 12, this[0, 3])
+//    memPutFloat(ptr + Float.BYTES * 13, this[1, 3])
+//    memPutFloat(ptr + Float.BYTES * 14, this[2, 3])
+//    memPutFloat(ptr + Float.BYTES * 15, this[3, 3])
+//}
 
 
 var HmdVector3.x: Float
@@ -73,6 +115,9 @@ var HmdVector3.y: Float
 var HmdVector3.z: Float
     get() = HmdVector3.nv(adr, 2)
     set(value) = HmdVector3.nv(adr, 2, value)
+
+fun HmdVector3.toVec3(): Vec3 = to(Vec3())
+infix fun HmdVector3.to(vec: Vec3): Vec3 = vec(x, y, z)
 
 
 var HmdVector4.x: Float
@@ -88,6 +133,8 @@ var HmdVector4.w: Float
     get() = HmdVector4.nv(adr, 3)
     set(value) = HmdVector4.nv(adr, 3, value)
 
+fun HmdVector4.toVec4(): Vec4 = to(Vec4())
+infix fun HmdVector4.to(vec: Vec4): Vec4 = vec(x, y, z, w)
 
 var HmdVector3d.x: Double
     get() = HmdVector3d.nv(adr, 0)
@@ -99,6 +146,8 @@ var HmdVector3d.z: Double
     get() = HmdVector3d.nv(adr, 2)
     set(value) = HmdVector3d.nv(adr, 2, value)
 
+fun HmdVector3d.toVec3d(): Vec3d = to(Vec3d())
+infix fun HmdVector3d.to(vec: Vec3d): Vec3d = vec(x, y, z)
 
 var HmdVector2.x: Float
     get() = HmdVector2.nv(adr, 0)
@@ -106,7 +155,9 @@ var HmdVector2.x: Float
 var HmdVector2.y: Float
     get() = HmdVector2.nv(adr, 1)
     set(value) = HmdVector2.nv(adr, 1, value)
-infix fun HmdVector2.to(vec2: Vec2) = vec2.put(x, y)
+
+fun HmdVector2.toVec2(): Vec2 = to(Vec2())
+infix fun HmdVector2.to(vec: Vec2): Vec2 = vec(x, y)
 
 
 var HmdQuaternion.w: Double
@@ -122,6 +173,8 @@ var HmdQuaternion.z: Double
     get() = HmdQuaternion.nz(adr)
     set(value) = HmdQuaternion.nz(adr, value)
 
+fun HmdQuaternion.toQuatD(): QuatD = to(QuatD())
+infix fun HmdQuaternion.to(quat: QuatD): QuatD = quat.put(w, x, y, z)
 
 var HmdQuaternionf.w: Float
     get() = HmdQuaternionf.nw(adr)
@@ -136,6 +189,8 @@ var HmdQuaternionf.z: Float
     get() = HmdQuaternionf.nz(adr)
     set(value) = HmdQuaternionf.nz(adr, value)
 
+fun HmdQuaternionf.toQuat(): Quat = to(Quat())
+infix fun HmdQuaternionf.to(quat: Quat): Quat = quat.put(w, x, y, z)
 
 var HmdColor.r: Float
     get() = HmdColor.nr(adr)
@@ -150,30 +205,28 @@ var HmdColor.a: Float
     get() = HmdColor.na(adr)
     set(value) = HmdColor.na(adr, value)
 
+fun HmdColor.toVec4(): Vec4 = to(Vec4())
+infix fun HmdColor.to(vec: Vec4): Vec4 = vec(r, g, b, a)
 
 var HmdQuad.corners: Array<Vec3>
-    get() {
-        val vecs = HmdQuad.nvCorners(adr)
-        return Array(vecs.capacity()) {
-            Vec3(vecs[it].x, vecs[it].y, vecs[it].z)
-        }
-    }
+    get() = HmdQuad.nvCorners(adr).map { it.toVec3() }.toTypedArray()
     set(value) {
-        val ofs = adr + HmdQuad.VCORNERS
-        for(v in value) {
+        var ofs: Ptr = adr + HmdQuad.VCORNERS
+        for (v in value) {
             memPutFloat(ofs, v.x)
             memPutFloat(ofs + Float.BYTES, v.y)
             memPutFloat(ofs + Float.BYTES * 2, v.z)
+            ofs += Vec3.size
         }
     }
 
 
-var HmdRect2.topLeft: HmdVector2
-    get() = HmdRect2.nvTopLeft(adr)
-    set(value) = HmdRect2.nvTopLeft(adr, value)
-var HmdRect2.bottomRight: HmdVector2
-    get() = HmdRect2.nvBottomRight(adr)
-    set(value) = HmdRect2.nvBottomRight(adr, value)
+var HmdRect2.topLeft: Vec2
+    get() = Vec2.fromPointer(adr + HmdRect2.VTOPLEFT)
+    set(value) = value.to(adr + HmdRect2.VTOPLEFT)
+var HmdRect2.bottomRight: Vec2
+    get() = Vec2.fromPointer(adr + HmdRect2.VBOTTOMRIGHT)
+    set(value) = value.to(adr + HmdRect2.VBOTTOMRIGHT)
 
 
 val DistortionCoordinates.red: FloatBuffer
@@ -196,28 +249,14 @@ var Texture.colorSpace: ColorSpace
 
 
 var TrackedDevicePose.deviceToAbsoluteTracking: Mat4
-    get() = TrackedDevicePose.nmDeviceToAbsoluteTracking(adr).asMat4
-    set(value) {
-        val ofs = adr + TrackedDevicePose.MDEVICETOABSOLUTETRACKING
-        memPutFloat(ofs + Float.BYTES * 0, value[0, 0])
-        memPutFloat(ofs + Float.BYTES * 1, value[1, 0])
-        memPutFloat(ofs + Float.BYTES * 2, value[2, 0])
-        memPutFloat(ofs + Float.BYTES * 3, value[3, 0])
-        memPutFloat(ofs + Float.BYTES * 4, value[0, 1])
-        memPutFloat(ofs + Float.BYTES * 5, value[1, 1])
-        memPutFloat(ofs + Float.BYTES * 6, value[2, 1])
-        memPutFloat(ofs + Float.BYTES * 7, value[3, 1])
-        memPutFloat(ofs + Float.BYTES * 8, value[0, 2])
-        memPutFloat(ofs + Float.BYTES * 9, value[1, 2])
-        memPutFloat(ofs + Float.BYTES * 10, value[2, 2])
-        memPutFloat(ofs + Float.BYTES * 11, value[3, 2])
-    }
-var TrackedDevicePose.velocity: HmdVector3
-    get() = TrackedDevicePose.nvVelocity(adr)
-    set(value) = TrackedDevicePose.nvVelocity(adr, value)
-var TrackedDevicePose.angularVelocity: HmdVector3
-    get() = TrackedDevicePose.nvAngularVelocity(adr)
-    set(value) = TrackedDevicePose.nvAngularVelocity(adr, value)
+    get() = mat4FromHmdMatrix34(adr + TrackedDevicePose.MDEVICETOABSOLUTETRACKING)
+    set(value) = value.toHmdMatrix34(adr + TrackedDevicePose.MDEVICETOABSOLUTETRACKING)
+var TrackedDevicePose.velocity: Vec3
+    get() = Vec3.fromPointer(adr + TrackedDevicePose.VVELOCITY)
+    set(value) = value.to(adr + TrackedDevicePose.VVELOCITY)
+var TrackedDevicePose.angularVelocity: Vec3
+    get() = Vec3.fromPointer(adr + TrackedDevicePose.VANGULARVELOCITY)
+    set(value) = value.to(adr + TrackedDevicePose.VANGULARVELOCITY)
 var TrackedDevicePose.trackingResult: TrackingResult
     get() = TrackingResult of TrackedDevicePose.neTrackingResult(adr)
     set(value) = TrackedDevicePose.neTrackingResult(adr, value.i)
@@ -243,20 +282,20 @@ var VRTextureBounds.vMax: Float
     set(value) = VRTextureBounds.nvMax(adr, value)
 
 
-var VRTextureWithPose.deviceToAbsoluteTracking: HmdMatrix34
-    get() = VRTextureWithPose.nmDeviceToAbsoluteTracking(adr)
-    set(value) = VRTextureWithPose.nmDeviceToAbsoluteTracking(adr, value)
+var VRTextureWithPose.deviceToAbsoluteTracking: Mat4
+    get() = mat4FromHmdMatrix34(adr + VRTextureWithPose.MDEVICETOABSOLUTETRACKING)
+    set(value) = value.to(adr + VRTextureWithPose.MDEVICETOABSOLUTETRACKING)
 
 
-var VRTextureDepthInfo.handle: Long
+var VRTextureDepthInfo.handle: Ptr
     get() = VRTextureDepthInfo.nhandle(adr)
     set(value) = VRTextureDepthInfo.nhandle(adr, value)
-var VRTextureDepthInfo.projection: HmdMatrix44
-    get() = VRTextureDepthInfo.nmProjection(adr)
-    set(value) = VRTextureDepthInfo.nmProjection(adr, value)
-var VRTextureDepthInfo.range: HmdVector2
-    get() = VRTextureDepthInfo.nvRange(adr)
-    set(value) = VRTextureDepthInfo.nvRange(adr, value)
+var VRTextureDepthInfo.projection: Mat4
+    get() = Mat4.fromPointer(adr + VRTextureDepthInfo.MPROJECTION, true)
+    set(value) = value.to(adr + VRTextureDepthInfo.MPROJECTION, true)
+var VRTextureDepthInfo.range: Vec2
+    get() = Vec2.fromPointer(adr + VRTextureDepthInfo.VRANGE)
+    set(value) = value.to(adr + VRTextureDepthInfo.VRANGE)
 
 
 var VRTextureWithDepth.depth: VRTextureDepthInfo
@@ -269,9 +308,9 @@ var VRTextureWithPoseAndDepth.depth: VRTextureDepthInfo
     set(value) = VRTextureWithPoseAndDepth.ndepth(adr, value)
 
 
-var VRVulkanTextureData.image: VkImage
-    get() = VRVulkanTextureData.nm_nImage(adr)
-    set(value) = VRVulkanTextureData.nm_nImage(adr, value)
+//var VRVulkanTextureData.image: VkImage
+//    get() = VRVulkanTextureData.nm_nImage(adr)
+//    set(value) = VRVulkanTextureData.nm_nImage(adr, value)
 
 fun VRVulkanTextureData.device(physicalDevice: VkPhysicalDevice, ci: VkDeviceCreateInfo): VkDevice {
     return VkDevice(VRVulkanTextureData.nm_pDevice(adr), physicalDevice, ci)
@@ -307,12 +346,12 @@ var VRVulkanTextureData.size: Vec2i
         VRVulkanTextureData.nm_nWidth(adr, value.x)
         VRVulkanTextureData.nm_nHeight(adr, value.y)
     }
-var VRVulkanTextureData.format: VkFormat
-    get() = VkFormat of VRVulkanTextureData.nm_nFormat(adr)
-    set(value) = VRVulkanTextureData.nm_nFormat(adr, value.i)
-var VRVulkanTextureData.sampleCount: VkSampleCount
-    get() = VkSampleCount of VRVulkanTextureData.nm_nSampleCount(adr)
-    set(value) = VRVulkanTextureData.nm_nSampleCount(adr, value.i)
+//var VRVulkanTextureData.format: VkFormat
+//    get() = VkFormat of VRVulkanTextureData.nm_nFormat(adr)
+//    set(value) = VRVulkanTextureData.nm_nFormat(adr, value.i)
+//var VRVulkanTextureData.sampleCount: VkSampleCount
+//    get() = VkSampleCount of VRVulkanTextureData.nm_nSampleCount(adr)
+//    set(value) = VRVulkanTextureData.nm_nSampleCount(adr, value.i)
 
 
 //var D3D12TextureData.sampleCount
@@ -346,7 +385,7 @@ val VREventTouchPadMove.valueRaw: Vec2
     get() = Vec2(VREventTouchPadMove.nfValueXRaw(adr), VREventTouchPadMove.nfValueYRaw(adr))
 
 
-val VREventNotification.userValue: Long
+val VREventNotification.userValue: Ptr
     get() = VREventNotification.nulUserValue(adr)
 val VREventNotification.notificationId: Int
     get() = VREventNotification.nnotificationId(adr)
@@ -360,7 +399,7 @@ val VREventProcess.forced: Boolean
     get() = VREventProcess.nbForced(adr)
 
 
-val VREventOverlay.overlayHandle: Long
+val VREventOverlay.overlayHandle: Ptr
     get() = VREventOverlay.noverlayHandle(adr)
 val VREventOverlay.devicePath: Long
     get() = VREventOverlay.ndevicePath(adr)
@@ -376,7 +415,7 @@ val VREventKeyboard.newInput: String
         val chars = ByteArray(ni.cap) { ni[it] }
         return String(chars)
     }
-val VREventKeyboard.userValue: Long
+val VREventKeyboard.userValue: Ptr
     get() = VREventKeyboard.nuUserValue(adr)
 
 
@@ -424,7 +463,7 @@ val VREventApplicationLaunch.argsHandle: Int
     get() = VREventApplicationLaunch.nunArgsHandle(adr)
 
 
-val VREventEditingCameraSurface.overlayHandle: Long
+val VREventEditingCameraSurface.overlayHandle: Ptr
     get() = VREventEditingCameraSurface.noverlayHandle(adr)
 val VREventEditingCameraSurface.visualMode: Int
     get() = VREventEditingCameraSurface.nnVisualMode(adr)
@@ -440,9 +479,9 @@ val VREventProperty.prop: TrackedDeviceProperty
     get() = TrackedDeviceProperty of VREventProperty.nprop(adr)
 
 
-val VREventHapticVibration.containerHandle: Long
+val VREventHapticVibration.containerHandle: Ptr
     get() = VREventHapticVibration.ncontainerHandle(adr)
-val VREventHapticVibration.componentHandle: Long
+val VREventHapticVibration.componentHandle: Ptr
     get() = VREventHapticVibration.ncomponentHandle(adr)
 val VREventHapticVibration.durationSeconds: Float
     get() = VREventHapticVibration.nfDurationSeconds(adr)
@@ -475,8 +514,10 @@ val VREvent.data: VREventData
     get() = VREvent.ndata(adr)
 
 
-val HiddenAreaMesh.data: HmdVector2.Buffer?
-    get() = HiddenAreaMesh.npVertexData(adr)
+val HiddenAreaMesh.data: Array<Vec2>
+    get() = Array(triangleCount) {
+        Vec2.fromPointer(adr + HiddenAreaMesh.PVERTEXDATA + Vec2.size * it)
+    }
 val HiddenAreaMesh.triangleCount: Int
     get() = HiddenAreaMesh.nunTriangleCount(adr)
 
@@ -543,32 +584,14 @@ var CompositorOverlaySettings.gridScale: Float
     get() = CompositorOverlaySettings.ngridScale(adr)
     set(value) = CompositorOverlaySettings.ngridScale(adr, value)
 var CompositorOverlaySettings.transform: Mat4
-    get() = CompositorOverlaySettings.ntransform(adr).asMat4
-    set(value) {
-        val ofs = adr + CompositorOverlaySettings.TRANSFORM
-        memPutFloat(ofs + Float.BYTES * 0, value[0, 0])
-        memPutFloat(ofs + Float.BYTES * 1, value[1, 0])
-        memPutFloat(ofs + Float.BYTES * 2, value[2, 0])
-        memPutFloat(ofs + Float.BYTES * 3, value[3, 0])
-        memPutFloat(ofs + Float.BYTES * 4, value[0, 1])
-        memPutFloat(ofs + Float.BYTES * 5, value[1, 1])
-        memPutFloat(ofs + Float.BYTES * 6, value[2, 1])
-        memPutFloat(ofs + Float.BYTES * 7, value[3, 1])
-        memPutFloat(ofs + Float.BYTES * 8, value[0, 2])
-        memPutFloat(ofs + Float.BYTES * 9, value[1, 2])
-        memPutFloat(ofs + Float.BYTES * 10, value[2, 2])
-        memPutFloat(ofs + Float.BYTES * 11, value[3, 2])
-        memPutFloat(ofs + Float.BYTES * 12, value[0, 3])
-        memPutFloat(ofs + Float.BYTES * 13, value[1, 3])
-        memPutFloat(ofs + Float.BYTES * 14, value[2, 3])
-        memPutFloat(ofs + Float.BYTES * 15, value[3, 3])
-    }
+    get() = Mat4.fromPointer(adr + CompositorOverlaySettings.TRANSFORM, true)
+    set(value) = value.to(adr + CompositorOverlaySettings.TRANSFORM, true)
 
 
 val VRBoneTransform.position: Vec4
-    get() = VRBoneTransform.`nposition$`(adr).let { Vec4(it.x, it.y, it.z, it.w) }
+    get() = Vec4.fromPointer(adr + VRBoneTransform.POSITION)
 val VRBoneTransform.orientation: Quat
-    get() = VRBoneTransform.norientation(adr).let { Quat(it.w, it.x, it.y, it.z) }
+    get() = Quat.fromPointer(adr + VRBoneTransform.ORIENTATION)
 
 
 val CameraVideoStreamFrameHeader.frameType: EVRTrackedCameraFrameType
@@ -598,9 +621,9 @@ val DriverDirectModeFrameTiming.reprojectionFlags: Int
 val ImuSample.sampleTime: Double
     get() = ImuSample.nfSampleTime(adr)
 val ImuSample.accel: Vec3
-    get() = ImuSample.nvAccel(adr).let { Vec3(it.x, it.y, it.z) }
+    get() = Vec3.fromPointer(adr + ImuSample.VACCEL)
 val ImuSample.gyro: Vec3
-    get() = ImuSample.nvGyro(adr).let { Vec3(it.x, it.y, it.z) }
+    get() = Vec3.fromPointer(adr + ImuSample.VGYRO)
 val ImuSample.offScaleFlags: Int
     get() = ImuSample.nunOffScaleFlags(adr)
 
@@ -611,10 +634,11 @@ val ImuSample.offScaleFlags: Int
 
 var AppOverrideKeys.key: String
     get() = pchKeyString()
-    set(value) {
-        val encoded = appBuffer.bufferOfAscii(value)
-        AppOverrideKeys.npchKey(adr, encoded)
-    }
+    set(value) = TODO()
+//stak {
+//        val encoded = it.bufferOfAscii(value)
+//        AppOverrideKeys.npchKey(adr, encoded)
+//    }
 var AppOverrideKeys.value: String
     get() = TODO()//pchString()
     set(value) = TODO()
@@ -735,30 +759,22 @@ var NotificationBitmap.bytesPerPixel: Int
 // ivroverlay.h
 
 var VROverlayIntersectionParams.source: Vec3
-    get() = VROverlayIntersectionParams.nvSource(adr).let { Vec3(it.x, it.y, it.z) }
-    set(value) {
-        memPutFloat(adr + VROverlayIntersectionParams.VSOURCE, value.x)
-        memPutFloat(adr + VROverlayIntersectionParams.VSOURCE + Float.BYTES, value.y)
-        memPutFloat(adr + VROverlayIntersectionParams.VSOURCE + Float.BYTES * 2, value.z)
-    }
+    get() = Vec3.fromPointer(adr + VROverlayIntersectionParams.VSOURCE)
+    set(value) = value.to(adr + VROverlayIntersectionParams.VSOURCE)
 var VROverlayIntersectionParams.direction: Vec3
-    get() = VROverlayIntersectionParams.nvDirection(adr).let { Vec3(it.x, it.y, it.z) }
-    set(value) {
-        memPutFloat(adr + VROverlayIntersectionParams.VDIRECTION, value.x)
-        memPutFloat(adr + VROverlayIntersectionParams.VDIRECTION + Float.BYTES, value.y)
-        memPutFloat(adr + VROverlayIntersectionParams.VDIRECTION + Float.BYTES * 2, value.z)
-    }
+    get() = Vec3.fromPointer(adr + VROverlayIntersectionParams.VDIRECTION)
+    set(value) = value.to(adr + VROverlayIntersectionParams.VDIRECTION)
 var VROverlayIntersectionParams.origin: ETrackingUniverseOrigin
     get() = ETrackingUniverseOrigin of VROverlayIntersectionParams.neOrigin(adr)
     set(value) = VROverlayIntersectionParams.neOrigin(adr, value.i)
 
 
 val VROverlayIntersectionResults.point: Vec3
-    get() = VROverlayIntersectionResults.nvPoint(adr).let { Vec3(it.x, it.y, it.z) }
+    get() = Vec3.fromPointer(adr + VROverlayIntersectionResults.VPOINT)
 val VROverlayIntersectionResults.normal: Vec3
-    get() = VROverlayIntersectionResults.nvNormal(adr).let { Vec3(it.x, it.y, it.z) }
+    get() = Vec3.fromPointer(adr + VROverlayIntersectionResults.VNORMAL)
 val VROverlayIntersectionResults.uv: Vec2
-    get() = VROverlayIntersectionResults.nvNormal(adr).let { Vec2(it.x, it.y) }
+    get() = Vec2.fromPointer(adr + VROverlayIntersectionResults.VUVS)
 val VROverlayIntersectionResults.distance: Float
     get() = VROverlayIntersectionResults.nfDistance(adr)
 
@@ -791,7 +807,6 @@ var IntersectionMaskRectangle.size: Vec2
     }
 
 
-
 var IntersectionMaskCircle.centerX: Float
     get() = IntersectionMaskCircle.nm_flCenterX(adr)
     set(value) = IntersectionMaskCircle.nm_flCenterX(adr, value)
@@ -810,18 +825,18 @@ var IntersectionMaskCircle.radius: Float
     set(value) = IntersectionMaskCircle.nm_flRadius(adr, value)
 
 
-var VROverlayIntersectionMaskPrimitiveData.rectangle : IntersectionMaskRectangle
+var VROverlayIntersectionMaskPrimitiveData.rectangle: IntersectionMaskRectangle
     get() = VROverlayIntersectionMaskPrimitiveData.nm_Rectangle(adr)
     set(value) = VROverlayIntersectionMaskPrimitiveData.nm_Rectangle(adr, value)
-var VROverlayIntersectionMaskPrimitiveData.circle : IntersectionMaskCircle
+var VROverlayIntersectionMaskPrimitiveData.circle: IntersectionMaskCircle
     get() = VROverlayIntersectionMaskPrimitiveData.nm_Circle(adr)
     set(value) = VROverlayIntersectionMaskPrimitiveData.nm_Circle(adr, value)
 
 
-var VROverlayIntersectionMaskPrimitive.primitiveType : EVROverlayIntersectionMaskPrimitiveType
+var VROverlayIntersectionMaskPrimitive.primitiveType: EVROverlayIntersectionMaskPrimitiveType
     get() = EVROverlayIntersectionMaskPrimitiveType of VROverlayIntersectionMaskPrimitive.nm_nPrimitiveType(adr)
     set(value) = VROverlayIntersectionMaskPrimitive.nm_nPrimitiveType(adr, value.i)
-var VROverlayIntersectionMaskPrimitive.primitive : VROverlayIntersectionMaskPrimitiveData
+var VROverlayIntersectionMaskPrimitive.primitive: VROverlayIntersectionMaskPrimitiveData
     get() = VROverlayIntersectionMaskPrimitive.nm_Primitive(adr)
     set(value) = VROverlayIntersectionMaskPrimitive.nm_Primitive(adr, value)
 
@@ -829,71 +844,26 @@ var VROverlayIntersectionMaskPrimitive.primitive : VROverlayIntersectionMaskPrim
 // ivrrendermodels.h
 
 
-var RenderModelComponentState.trackingToComponentRenderModel : Mat4
-    get() = RenderModelComponentState.nmTrackingToComponentRenderModel(adr).asMat4
-    set(value) {
-        val ofs = adr + RenderModelComponentState.MTRACKINGTOCOMPONENTRENDERMODEL
-        memPutFloat(ofs + Float.BYTES * 0, value[0, 0])
-        memPutFloat(ofs + Float.BYTES * 1, value[1, 0])
-        memPutFloat(ofs + Float.BYTES * 2, value[2, 0])
-        memPutFloat(ofs + Float.BYTES * 3, value[3, 0])
-        memPutFloat(ofs + Float.BYTES * 4, value[0, 1])
-        memPutFloat(ofs + Float.BYTES * 5, value[1, 1])
-        memPutFloat(ofs + Float.BYTES * 6, value[2, 1])
-        memPutFloat(ofs + Float.BYTES * 7, value[3, 1])
-        memPutFloat(ofs + Float.BYTES * 8, value[0, 2])
-        memPutFloat(ofs + Float.BYTES * 9, value[1, 2])
-        memPutFloat(ofs + Float.BYTES * 10, value[2, 2])
-        memPutFloat(ofs + Float.BYTES * 11, value[3, 2])
-    }
-var RenderModelComponentState.mTrackingToComponentLocal : Mat4
-    get() = RenderModelComponentState.nmTrackingToComponentLocal(adr).asMat4
-    set(value) {
-        val ofs = adr + RenderModelComponentState.MTRACKINGTOCOMPONENTLOCAL
-        memPutFloat(ofs + Float.BYTES * 0, value[0, 0])
-        memPutFloat(ofs + Float.BYTES * 1, value[1, 0])
-        memPutFloat(ofs + Float.BYTES * 2, value[2, 0])
-        memPutFloat(ofs + Float.BYTES * 3, value[3, 0])
-        memPutFloat(ofs + Float.BYTES * 4, value[0, 1])
-        memPutFloat(ofs + Float.BYTES * 5, value[1, 1])
-        memPutFloat(ofs + Float.BYTES * 6, value[2, 1])
-        memPutFloat(ofs + Float.BYTES * 7, value[3, 1])
-        memPutFloat(ofs + Float.BYTES * 8, value[0, 2])
-        memPutFloat(ofs + Float.BYTES * 9, value[1, 2])
-        memPutFloat(ofs + Float.BYTES * 10, value[2, 2])
-        memPutFloat(ofs + Float.BYTES * 11, value[3, 2])
-    }
-val RenderModelComponentState.properties : VRComponentProperties
+var RenderModelComponentState.trackingToComponentRenderModel: Mat4
+    get() = mat4FromHmdMatrix34(adr + RenderModelComponentState.MTRACKINGTOCOMPONENTRENDERMODEL)
+    set(value) = value.toHmdMatrix34(adr + RenderModelComponentState.MTRACKINGTOCOMPONENTRENDERMODEL)
+var RenderModelComponentState.mTrackingToComponentLocal: Mat4
+    get() = mat4FromHmdMatrix34(adr + RenderModelComponentState.MTRACKINGTOCOMPONENTLOCAL)
+    set(value) = value.toHmdMatrix34(adr + RenderModelComponentState.MTRACKINGTOCOMPONENTLOCAL)
+val RenderModelComponentState.properties: VRComponentProperties
     get() = RenderModelComponentState.nuProperties(adr)
 
 
 /** position in meters in device space */
 var RenderModelVertex.position: Vec3
-    get() = RenderModelVertex.nvPosition(adr).let { Vec3(it.x, it.y, it.z) }
-    set(value) {
-        RenderModelVertex.nvPosition(adr).apply {
-            x = value.x
-            y = value.y
-            z = value.z
-        }
-    }
+    get() = Vec3.fromPointer(adr + RenderModelVertex.VPOSITION)
+    set(value) = value.to(adr + RenderModelVertex.VPOSITION)
 var RenderModelVertex.normal: Vec3
-    get() = RenderModelVertex.nvNormal(adr).let { Vec3(it.x, it.y, it.z) }
-    set(value) {
-        RenderModelVertex.nvNormal(adr).apply {
-            x = value.x
-            y = value.y
-            z = value.z
-        }
-    }
+    get() = Vec3.fromPointer(adr + RenderModelVertex.VNORMAL)
+    set(value) = value.to(adr + RenderModelVertex.VNORMAL)
 var RenderModelVertex.textureCoord: Vec2
-    get() = RenderModelVertex.nrfTextureCoord(adr).let { Vec2(it) }
-    set(value) {
-        RenderModelVertex.nrfTextureCoord(adr).apply {
-            set(0, value.x)
-            set(1, value.y)
-        }
-    }
+    get() = Vec2(adr + RenderModelVertex.RFTEXTURECOORD)
+    set(value) = value.to(adr + RenderModelVertex.RFTEXTURECOORD)
 
 /** texture map size in pixels */
 val RenderModelTextureMap.width: Int
@@ -1031,13 +1001,12 @@ val InputPoseActionData.pose: TrackedDevicePose
 
 
 /** Whether or not this action is currently available to be bound in the active action set */
-val InputSkeletonActionData.active: Boolean
-    get() = InputSkeletonActionData.nbActive(adr)
+val InputSkeletalActionData.active: Boolean
+    get() = InputSkeletalActionData.nbActive(adr)
 
 /** Whether or not this action is currently available to be bound in the active action set */
-val InputSkeletonActionData.activeOrigin: VRInputValueHandle
-    get() = InputSkeletonActionData.nactiveOrigin(adr)
-
+val InputSkeletalActionData.activeOrigin: VRInputValueHandle
+    get() = InputSkeletalActionData.nactiveOrigin(adr)
 
 
 val InputOriginInfo.devicePath: VRInputValueHandle

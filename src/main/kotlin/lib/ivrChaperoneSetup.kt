@@ -1,4 +1,4 @@
-package vr_
+package lib
 
 import ab.appBuffer
 import glm_.buffer.adr
@@ -113,7 +113,7 @@ infix fun IVRChaperoneSetup.setWorkingPlayAreaSize(size: Vec2) = VRChaperoneSetu
  * @param quadsBuffer
  */
 infix fun IVRChaperoneSetup.setWorkingCollisionBoundsInfo(quadsBuffer: HmdQuad.Buffer) {
-    VRChaperoneSetup.nVRChaperoneSetup_SetWorkingCollisionBoundsInfo(quadsBuffer.adr, quadsBuffer.remaining())
+    VRChaperoneSetup.nVRChaperoneSetup_SetWorkingCollisionBoundsInfo(quadsBuffer.adr, quadsBuffer.rem)
 }
 
 /**
@@ -154,7 +154,7 @@ infix fun IVRChaperoneSetup.getLiveSeatedZeroPoseToRawTrackingPose(matSeatedZero
 }
 
 infix fun IVRChaperoneSetup.setWorkingCollisionBoundsTagsInfo(tagsBuffer: ByteBuffer) {
-    VRChaperoneSetup.nVRChaperoneSetup_SetWorkingCollisionBoundsTagsInfo(tagsBuffer.adr, tagsBuffer.remaining())
+    VRChaperoneSetup.nVRChaperoneSetup_SetWorkingCollisionBoundsTagsInfo(tagsBuffer.adr, tagsBuffer.rem)
 }
 
 fun IVRChaperoneSetup.getLiveCollisionBoundsTagsInfo(tagsBuffer: ByteBuffer?, tagCount: IntBuffer): Boolean {
@@ -162,7 +162,7 @@ fun IVRChaperoneSetup.getLiveCollisionBoundsTagsInfo(tagsBuffer: ByteBuffer?, ta
 }
 
 infix fun IVRChaperoneSetup.setWorkingPhysicalBoundsInfo(quadsBuffer: HmdQuad.Buffer): Boolean {
-    return VRChaperoneSetup.nVRChaperoneSetup_SetWorkingPhysicalBoundsInfo(quadsBuffer.adr, quadsBuffer.remaining())
+    return VRChaperoneSetup.nVRChaperoneSetup_SetWorkingPhysicalBoundsInfo(quadsBuffer.adr, quadsBuffer.rem)
 }
 
 fun IVRChaperoneSetup.getLivePhysicalBoundsInfo(quadsBuffer: HmdQuad.Buffer?, quadsCount: IntBuffer): Boolean {

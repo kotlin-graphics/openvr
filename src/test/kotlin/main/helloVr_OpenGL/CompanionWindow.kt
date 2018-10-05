@@ -5,7 +5,6 @@ import glm_.BYTES
 import glm_.L
 import glm_.buffer.intBufferBig
 import glm_.i
-import glm_.size
 import glm_.vec2.Vec2
 import glm_.vec2.Vec2i
 import gln.buffer.glArrayBufferData
@@ -30,8 +29,8 @@ import org.lwjgl.opengl.GL20
 import org.lwjgl.opengl.GL30.glGenVertexArrays
 import uno.glfw.GlfwWindow
 import uno.glfw.glfw
-import vr_.TrackedDeviceProperty
-import vr_.getStringTrackedDeviceProperty
+import lib.TrackedDeviceProperty
+import lib.getStringTrackedDeviceProperty
 
 class CompanionWindow {
 

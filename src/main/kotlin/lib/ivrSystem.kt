@@ -1,10 +1,9 @@
-package vr_
+package lib
 
 import ab.advance
 import ab.appBuffer
 import glm_.buffer.adr
 import glm_.mat4x4.Mat4
-import glm_.set
 import glm_.vec2.Vec2i
 import openvr.lib.EVREye
 import org.lwjgl.openvr.*
@@ -12,7 +11,6 @@ import org.lwjgl.openvr.OpenVR.IVRSystem
 import org.lwjgl.system.MemoryUtil.*
 import org.lwjgl.vulkan.VkInstance
 import uno.kotlin.buffers.remaining
-import uno.kotlin.buffers.toByteArray
 import vkk.adr
 import java.nio.ByteBuffer
 import java.nio.FloatBuffer
@@ -217,7 +215,7 @@ infix fun IVRSystem.setDisplayVisibility(isVisibleOnDesktop: Boolean): Boolean {
  * @param trackedDevicePoseArray
  */
 fun IVRSystem.getDeviceToAbsoluteTrackingPose(origin: TrackingUniverseOrigin, predictedSecondsToPhotonsFromNow: Float, trackedDevicePoseArray: TrackedDevicePose.Buffer) {
-    VRSystem.nVRSystem_GetDeviceToAbsoluteTrackingPose(origin.i, predictedSecondsToPhotonsFromNow, trackedDevicePoseArray.adr, trackedDevicePoseArray.remaining())
+    VRSystem.nVRSystem_GetDeviceToAbsoluteTrackingPose(origin.i, predictedSecondsToPhotonsFromNow, trackedDevicePoseArray.adr, trackedDevicePoseArray.rem)
 }
 
 /**
@@ -278,7 +276,7 @@ val IVRSystem.rawZeroPoseToStandingAbsoluteTrackingPose: Mat4
  */
 fun IVRSystem.getSortedTrackedDeviceIndicesOfClass(trackedDeviceClass: TrackedDeviceClass, trackedDeviceIndexArray: IntBuffer?, relativeToTrackedDeviceIndex: TrackedDeviceIndex = vr.trackedDeviceIndex_Hmd): Int {
     return VRSystem.nVRSystem_GetSortedTrackedDeviceIndicesOfClass(trackedDeviceClass.i, trackedDeviceIndexArray?.adr
-            ?: NULL, trackedDeviceIndexArray?.remaining() ?: 0, relativeToTrackedDeviceIndex)
+            ?: NULL, trackedDeviceIndexArray?.rem ?: 0, relativeToTrackedDeviceIndex)
 }
 
 /**

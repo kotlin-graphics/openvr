@@ -1,4 +1,4 @@
-package vr_
+package lib
 
 import ab.appBuffer
 import glm_.buffer.adr
@@ -27,12 +27,12 @@ infix fun IVRIOBuffer.close(buffer: IOBufferHandle): EIOBufferError {
 
 /** Reads up to {@code unBytes} from buffer into {@code *dst}, returning number of bytes read in {@code *read} */
 fun IVRIOBuffer.read(buffer: IOBufferHandle, dst: ByteBuffer, @NativeType("uint32_t *") read: IntBuffer): EIOBufferError {
-    return EIOBufferError of VRIOBuffer.nVRIOBuffer_Read(buffer, dst.adr, dst.remaining(), read.adr);
+    return EIOBufferError of VRIOBuffer.nVRIOBuffer_Read(buffer, dst.adr, dst.rem, read.adr);
 }
 
 /** Writes {@code unBytes} of data from {@code *src} into a buffer. */
 fun IVRIOBuffer.write(buffer: IOBufferHandle, @NativeType("void *") src: ByteBuffer): EIOBufferError {
-    return EIOBufferError of VRIOBuffer.nVRIOBuffer_Write(buffer, src.adr, src.remaining())
+    return EIOBufferError of VRIOBuffer.nVRIOBuffer_Write(buffer, src.adr, src.rem)
 }
 
 /** Retrieves the property container of a buffer. */

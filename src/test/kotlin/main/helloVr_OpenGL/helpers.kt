@@ -20,11 +20,8 @@ import gln.vertexArray.withVertexArray
 import openvr.lib.EVREye
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT
-import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE
 import org.lwjgl.opengl.GL12.GL_TEXTURE_MAX_LEVEL
-import org.lwjgl.opengl.GL13.*
-import org.lwjgl.opengl.GL15.*
 import org.lwjgl.opengl.GL20.glEnableVertexAttribArray
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.opengl.GL32.GL_TEXTURE_2D_MULTISAMPLE
@@ -32,7 +29,7 @@ import org.lwjgl.opengl.GL32.glTexImage2DMultisample
 import org.lwjgl.openvr.RenderModel
 import org.lwjgl.openvr.RenderModelTextureMap
 import org.lwjgl.openvr.RenderModelVertex
-import vr_.*
+import lib.*
 import java.nio.ByteBuffer
 
 class FrameBufferDesc(val size: Vec2i) {

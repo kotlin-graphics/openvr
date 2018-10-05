@@ -1,4 +1,4 @@
-package vr_
+package lib
 
 import ab.appBuffer
 import glm_.buffer.adr
@@ -96,7 +96,7 @@ fun IVRSettings.getFloat(section: String, settingsKey: String, error: IntBuffer?
 fun IVRSettings.getString(section: String, settingsKey: String, value: ByteBuffer, error: IntBuffer? = null) {
     val sectionEncoded = appBuffer.bufferOfAscii(section)
     val settingsKeyEncoded = appBuffer.bufferOfAscii(settingsKey)
-    VRSettings.nVRSettings_GetString(sectionEncoded.adr, settingsKeyEncoded.adr, value.adr, value.remaining(), error?.adr
+    VRSettings.nVRSettings_GetString(sectionEncoded.adr, settingsKeyEncoded.adr, value.adr, value.rem, error?.adr
             ?: NULL)
 }
 

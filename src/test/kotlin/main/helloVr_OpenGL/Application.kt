@@ -2,7 +2,6 @@ package main.helloVr_OpenGL
 
 import ab.advance
 import ab.appBuffer
-import glm_.L
 import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2
 import glm_.vec4.Vec4
@@ -17,22 +16,16 @@ import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.KHRDebug.GL_DEBUG_OUTPUT_SYNCHRONOUS
 import org.lwjgl.opengl.KHRDebug.glDebugMessageControl
 import org.lwjgl.openvr.*
-import org.lwjgl.openvr.InputAnalogActionData
-import org.lwjgl.openvr.InputDigitalActionData
-import org.lwjgl.openvr.InputOriginInfo
-import org.lwjgl.openvr.InputPoseActionData
-import org.lwjgl.openvr.Texture
 import org.lwjgl.openvr.TrackedDevicePose
-import org.lwjgl.openvr.VRActiveActionSet
 import org.lwjgl.openvr.VREvent
 import org.lwjgl.system.MemoryUtil.NULL
 import uno.glfw.GlfwWindow
 import uno.glfw.glfw
-import vr_.*
-import vr_.EVREventType
-import vr_.TrackedDeviceProperty
-import vr_.VRActionHandle
-import vr_.VRInputValueHandle
+import lib.*
+import lib.EVREventType
+import lib.TrackedDeviceProperty
+import lib.VRActionHandle
+import lib.VRInputValueHandle
 import java.nio.IntBuffer
 import kotlin.properties.Delegates
 import kotlin.reflect.KMutableProperty0

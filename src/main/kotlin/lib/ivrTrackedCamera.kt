@@ -1,4 +1,4 @@
-package vr_
+package lib
 
 import ab.appBuffer
 import glm_.buffer.adr
@@ -83,7 +83,7 @@ fun IVRTrackedCamera.releaseVideoStreamingService(trackedCamera: TrackedCameraHa
  * @param frameType one of:<br><table><tr><td>{@link VR#EVRTrackedCameraFrameType_VRTrackedCameraFrameType_Distorted}</td></tr><tr><td>{@link VR#EVRTrackedCameraFrameType_VRTrackedCameraFrameType_Undistorted}</td></tr><tr><td>{@link VR#EVRTrackedCameraFrameType_VRTrackedCameraFrameType_MaximumUndistorted}</td></tr><tr><td>{@link VR#EVRTrackedCameraFrameType_MAX_CAMERA_FRAME_TYPES}</td></tr></table>
  */
 fun IVRTrackedCamera.getVideoStreamFrameBuffer(trackedCamera: TrackedCameraHandle, frameType: EVRTrackedCameraFrameType, frameBuffer: ByteBuffer, frameHeader: CameraVideoStreamFrameHeader): EVRTrackedCameraError {
-    return EVRTrackedCameraError of VRTrackedCamera.nVRTrackedCamera_GetVideoStreamFrameBuffer(trackedCamera, frameType.i, frameBuffer.adr, frameBuffer.remaining(), frameHeader.adr, CameraVideoStreamFrameHeader.SIZEOF)
+    return EVRTrackedCameraError of VRTrackedCamera.nVRTrackedCamera_GetVideoStreamFrameBuffer(trackedCamera, frameType.i, frameBuffer.adr, frameBuffer.rem, frameHeader.adr, CameraVideoStreamFrameHeader.SIZEOF)
 }
 
 /**

@@ -1,20 +1,25 @@
-package vr_
+package lib
 
-import ab.appBuffer
-import glm_.buffer.adr
-import glm_.buffer.cap
+import kool.adr
+import kool.rem
+import kool.stak
 import org.lwjgl.openvr.AppOverrideKeys
 import org.lwjgl.openvr.OpenVR.IVRApplications
-import org.lwjgl.openvr.VRApplications
+import org.lwjgl.openvr.VRApplications.*
 import org.lwjgl.system.MemoryUtil.*
 import uno.kotlin.buffers.remaining
-import vkk.adr
 import java.nio.ByteBuffer
 import java.nio.IntBuffer
 
 
 // ---------------  Application management  --------------- //
 
+var applicationError = EVRApplicationError.None
+
+private fun setApplicationError_(error: EVRApplicationError) {
+    if (applicationError != EVRApplicationError.None)
+        applicationError = error
+}
 
 /**
  * Adds an application manifest to the list to load when building the list of installed applications.
@@ -24,9 +29,9 @@ import java.nio.IntBuffer
  * @param applicationManifestFullPath
  * @param temporary
  */
-fun IVRApplications.addApplicationManifest(applicationManifestFullPath: String, temporary: Boolean = false): EVRApplicationError {
-    val applicationManifestFullPathEncoded = appBuffer.bufferOfAscii(applicationManifestFullPath)
-    return EVRApplicationError of VRApplications.nVRApplications_AddApplicationManifest(applicationManifestFullPathEncoded.adr, temporary)
+fun IVRApplications.addApplicationManifest(applicationManifestFullPath: String, temporary: Boolean = false): EVRApplicationError = stak {
+    val applicationManifestFullPathEncoded = it.bufferOfAscii(applicationManifestFullPath)
+    return EVRApplicationError of nVRApplications_AddApplicationManifest(applicationManifestFullPathEncoded.adr, temporary)
 }
 
 /**
@@ -34,9 +39,9 @@ fun IVRApplications.addApplicationManifest(applicationManifestFullPath: String, 
  *
  * @param applicationManifestFullPath
  */
-infix fun IVRApplications.removeApplicationManifest(applicationManifestFullPath: String): EVRApplicationError {
-    val applicationManifestFullPathEncoded = appBuffer.bufferOfAscii(applicationManifestFullPath)
-    return EVRApplicationError of VRApplications.nVRApplications_RemoveApplicationManifest(applicationManifestFullPathEncoded.adr)
+infix fun IVRApplications.removeApplicationManifest(applicationManifestFullPath: String): EVRApplicationError = stak {
+    val applicationManifestFullPathEncoded = it.bufferOfAscii(applicationManifestFullPath)
+    return EVRApplicationError of nVRApplications_RemoveApplicationManifest(applicationManifestFullPathEncoded.adr)
 }
 
 /**
@@ -44,14 +49,14 @@ infix fun IVRApplications.removeApplicationManifest(applicationManifestFullPath:
  *
  * @param appKey
  */
-infix fun IVRApplications.isApplicationInstalled(appKey: String): Boolean {
-    val appKeyEncoded = appBuffer.bufferOfAscii(appKey)
-    return VRApplications.nVRApplications_IsApplicationInstalled(appKeyEncoded.adr)
+infix fun IVRApplications.isApplicationInstalled(appKey: String): Boolean = stak {
+    val appKeyEncoded = it.bufferOfAscii(appKey)
+    return nVRApplications_IsApplicationInstalled(appKeyEncoded.adr)
 }
 
 /** Returns the number of applications available in the list. */
 val IVRApplications.applicationCount: Int
-    get() = VRApplications.VRApplications_GetApplicationCount()
+    get() = VRApplications_GetApplicationCount()
 
 /**
  * Returns the key of the specified application. The index is at least 0 and is less than the return value of {@link #VRApplications_GetApplicationCount GetApplicationCount}. The buffer should be
@@ -61,8 +66,8 @@ val IVRApplications.applicationCount: Int
  * @param appKeyBuffer
  */
 fun IVRApplications.getApplicationKeyByIndex(applicationIndex: Int, appKeyBuffer: ByteBuffer?): EVRApplicationError {
-    return EVRApplicationError of VRApplications.nVRApplications_GetApplicationKeyByIndex(applicationIndex, appKeyBuffer?.adr
-            ?: NULL, appKeyBuffer?.remaining() ?: 0)
+    return EVRApplicationError of nVRApplications_GetApplicationKeyByIndex(applicationIndex, appKeyBuffer?.adr
+            ?: NULL, appKeyBuffer?.rem ?: 0)
 }
 
 /**
@@ -72,8 +77,8 @@ fun IVRApplications.getApplicationKeyByIndex(applicationIndex: Int, appKeyBuffer
  * @param appKeyBuffer
  */
 fun IVRApplications.getApplicationKeyByProcessId(processId: Int, appKeyBuffer: ByteBuffer?): EVRApplicationError {
-    return EVRApplicationError of VRApplications.nVRApplications_GetApplicationKeyByProcessId(processId, appKeyBuffer?.adr
-            ?: NULL, appKeyBuffer?.remaining() ?: 0)
+    return EVRApplicationError of nVRApplications_GetApplicationKeyByProcessId(processId, appKeyBuffer?.adr
+            ?: NULL, appKeyBuffer?.rem ?: 0)
 }
 
 /**
@@ -83,9 +88,9 @@ fun IVRApplications.getApplicationKeyByProcessId(processId: Int, appKeyBuffer: B
  *
  * @param appKey
  */
-infix fun IVRApplications.launchApplication(appKey: String): EVRApplicationError {
-    val appKeyEncoded = appBuffer.bufferOfAscii(appKey)
-    return EVRApplicationError of VRApplications.nVRApplications_LaunchApplication(appKeyEncoded.adr)
+infix fun IVRApplications.launchApplication(appKey: String): EVRApplicationError = stak {
+    val appKeyEncoded = it.bufferOfAscii(appKey)
+    return EVRApplicationError of nVRApplications_LaunchApplication(appKeyEncoded.adr)
 }
 
 /**
@@ -96,10 +101,10 @@ infix fun IVRApplications.launchApplication(appKey: String): EVRApplicationError
  * @param newAppKey
  * @param keys
  */
-fun IVRApplications.launchTemplateApplication(templateAppKey: String, newAppKey: String, keys: AppOverrideKeys.Buffer): EVRApplicationError {
-    val templateAppKeyEncoded = appBuffer.bufferOfAscii(templateAppKey)
-    val newAppKeyEncoded = appBuffer.bufferOfAscii(newAppKey)
-    return EVRApplicationError of VRApplications.nVRApplications_LaunchTemplateApplication(templateAppKeyEncoded.adr, newAppKeyEncoded.adr, keys.adr, keys.remaining())
+fun IVRApplications.launchTemplateApplication(templateAppKey: String, newAppKey: String, keys: AppOverrideKeys.Buffer): EVRApplicationError = stak {
+    val templateAppKeyEncoded = it.bufferOfAscii(templateAppKey)
+    val newAppKeyEncoded = it.bufferOfAscii(newAppKey)
+    return EVRApplicationError of nVRApplications_LaunchTemplateApplication(templateAppKeyEncoded.adr, newAppKeyEncoded.adr, keys.adr, keys.rem)
 }
 
 /**
@@ -109,10 +114,10 @@ fun IVRApplications.launchTemplateApplication(templateAppKey: String, newAppKey:
  * @param mimeType
  * @param args
  */
-fun IVRApplications.launchApplicationFromMimeType(mimeType: String, args: String): EVRApplicationError {
-    val mimeTypeEncoded = appBuffer.bufferOfAscii(mimeType)
-    val argsEncoded = appBuffer.bufferOfAscii(args)
-    return EVRApplicationError of VRApplications.nVRApplications_LaunchApplicationFromMimeType(mimeTypeEncoded.adr, argsEncoded.adr)
+fun IVRApplications.launchApplicationFromMimeType(mimeType: String, args: String): EVRApplicationError = stak {
+    val mimeTypeEncoded = it.bufferOfAscii(mimeType)
+    val argsEncoded = it.bufferOfAscii(args)
+    return EVRApplicationError of nVRApplications_LaunchApplicationFromMimeType(mimeTypeEncoded.adr, argsEncoded.adr)
 }
 
 /**
@@ -120,9 +125,9 @@ fun IVRApplications.launchApplicationFromMimeType(mimeType: String, args: String
  *
  * @param appKey
  */
-infix fun IVRApplications.launchDashboardOverlay(appKey: String): EVRApplicationError {
-    val appKeyEncoded = appBuffer.bufferOfAscii(appKey)
-    return EVRApplicationError of VRApplications.nVRApplications_LaunchDashboardOverlay(appKeyEncoded.adr)
+infix fun IVRApplications.launchDashboardOverlay(appKey: String): EVRApplicationError = stak {
+    val appKeyEncoded = it.bufferOfAscii(appKey)
+    return EVRApplicationError of nVRApplications_LaunchDashboardOverlay(appKeyEncoded.adr)
 }
 
 /**
@@ -130,9 +135,9 @@ infix fun IVRApplications.launchDashboardOverlay(appKey: String): EVRApplication
  *
  * @param appKey
  */
-infix fun IVRApplications.cancelApplicationLaunch(appKey: String): Boolean {
-    val appKeyEncoded = appBuffer.bufferOfAscii(appKey)
-    return VRApplications.nVRApplications_CancelApplicationLaunch(appKeyEncoded.adr)
+infix fun IVRApplications.cancelApplicationLaunch(appKey: String): Boolean = stak {
+    val appKeyEncoded = it.bufferOfAscii(appKey)
+    return nVRApplications_CancelApplicationLaunch(appKeyEncoded.adr)
 }
 
 /**
@@ -143,9 +148,9 @@ infix fun IVRApplications.cancelApplicationLaunch(appKey: String): Boolean {
  * @param processId
  * @param appKey
  */
-fun IVRApplications.identifyApplication(processId: Int, appKey: String): EVRApplicationError {
-    val appKeyEncoded = appBuffer.bufferOfAscii(appKey)
-    return EVRApplicationError of VRApplications.nVRApplications_IdentifyApplication(processId, appKeyEncoded.adr)
+fun IVRApplications.identifyApplication(processId: Int, appKey: String): EVRApplicationError = stak {
+    val appKeyEncoded = it.bufferOfAscii(appKey)
+    return EVRApplicationError of nVRApplications_IdentifyApplication(processId, appKeyEncoded.adr)
 }
 
 /**
@@ -153,13 +158,13 @@ fun IVRApplications.identifyApplication(processId: Int, appKey: String): EVRAppl
  *
  * @param appKey
  */
-infix fun IVRApplications.getApplicationProcessId(appKey: String): Int {
-    val appKeyEncoded = appBuffer.bufferOfAscii(appKey)
-    return VRApplications.nVRApplications_GetApplicationProcessId(appKeyEncoded.adr)
+infix fun IVRApplications.getApplicationProcessId(appKey: String): Int = stak {
+    val appKeyEncoded = it.bufferOfAscii(appKey)
+    return nVRApplications_GetApplicationProcessId(appKeyEncoded.adr)
 }
 
 /**
- * Useless on JVM
+ * Useless on JVM TODO check
  * Returns a string for an applications error.
  *
  * @param error one of:<br><table><tr><td>{@link VR#EVRApplicationError_VRApplicationError_None}</td></tr><tr><td>{@link VR#EVRApplicationError_VRApplicationError_AppKeyAlreadyExists}</td></tr><tr><td>{@link VR#EVRApplicationError_VRApplicationError_NoManifest}</td></tr><tr><td>{@link VR#EVRApplicationError_VRApplicationError_NoApplication}</td></tr><tr><td>{@link VR#EVRApplicationError_VRApplicationError_InvalidIndex}</td></tr><tr><td>{@link VR#EVRApplicationError_VRApplicationError_UnknownApplication}</td></tr><tr><td>{@link VR#EVRApplicationError_VRApplicationError_IPCFailed}</td></tr><tr><td>{@link VR#EVRApplicationError_VRApplicationError_ApplicationAlreadyRunning}</td></tr><tr><td>{@link VR#EVRApplicationError_VRApplicationError_InvalidManifest}</td></tr><tr><td>{@link VR#EVRApplicationError_VRApplicationError_InvalidApplication}</td></tr><tr><td>{@link VR#EVRApplicationError_VRApplicationError_LaunchFailed}</td></tr><tr><td>{@link VR#EVRApplicationError_VRApplicationError_ApplicationAlreadyStarting}</td></tr><tr><td>{@link VR#EVRApplicationError_VRApplicationError_LaunchInProgress}</td></tr><tr><td>{@link VR#EVRApplicationError_VRApplicationError_OldApplicationQuitting}</td></tr><tr><td>{@link VR#EVRApplicationError_VRApplicationError_TransitionAborted}</td></tr><tr><td>{@link VR#EVRApplicationError_VRApplicationError_IsTemplate}</td></tr><tr><td>{@link VR#EVRApplicationError_VRApplicationError_SteamVRIsExiting}</td></tr><tr><td>{@link VR#EVRApplicationError_VRApplicationError_BufferTooSmall}</td></tr><tr><td>{@link VR#EVRApplicationError_VRApplicationError_PropertyNotSet}</td></tr><tr><td>{@link VR#EVRApplicationError_VRApplicationError_UnknownProperty}</td></tr><tr><td>{@link VR#EVRApplicationError_VRApplicationError_InvalidParameter}</td></tr></table>
@@ -183,10 +188,10 @@ infix fun IVRApplications.getApplicationProcessId(appKey: String): Int {
  * @param propertyValueBufferLen
  * @param error ~ EVRApplicationError
  */
-fun IVRApplications.getApplicationPropertyString(appKey: String, property: EVRApplicationProperty, propertyValueBufferLen: Int = vr.maxPropertyStringSize, error: IntBuffer? = null): String {
-    val appKeyEncoded = appBuffer.bufferOfAscii(appKey)
-    val propertyValueBuffer = appBuffer.buffer(propertyValueBufferLen)
-    val result = VRApplications.nVRApplications_GetApplicationPropertyString(appKeyEncoded.adr, property.i, propertyValueBuffer.adr, propertyValueBufferLen, error?.adr
+fun IVRApplications.getApplicationPropertyString(appKey: String, property: EVRApplicationProperty, propertyValueBufferLen: Int = vr.maxPropertyStringSize, error: IntBuffer? = null): String = stak {
+    val appKeyEncoded = it.bufferOfAscii(appKey)
+    val propertyValueBuffer = it.malloc(propertyValueBufferLen)
+    val result = nVRApplications_GetApplicationPropertyString(appKeyEncoded.adr, property.i, propertyValueBuffer.adr, propertyValueBufferLen, error?.adr
             ?: NULL)
     return memASCII(propertyValueBuffer, result - 1)
 }
@@ -198,9 +203,9 @@ fun IVRApplications.getApplicationPropertyString(appKey: String, property: EVRAp
  * @param property one of:<br><table><tr><td>{@link VR#EVRApplicationProperty_VRApplicationProperty_IsDashboardOverlay_Bool}</td></tr><tr><td>{@link VR#EVRApplicationProperty_VRApplicationProperty_IsTemplate_Bool}</td></tr><tr><td>{@link VR#EVRApplicationProperty_VRApplicationProperty_IsInstanced_Bool}</td></tr><tr><td>{@link VR#EVRApplicationProperty_VRApplicationProperty_IsInternal_Bool}</td></tr><tr><td>{@link VR#EVRApplicationProperty_VRApplicationProperty_WantsCompositorPauseInStandby_Bool}</td></tr></table>
  * @param error  ~ EVRApplicationError
  */
-fun IVRApplications.getApplicationPropertyBool(appKey: String, property: EVRApplicationProperty, error: IntBuffer? = null): Boolean {
-    val appKeyEncoded = appBuffer.bufferOfAscii(appKey)
-    return VRApplications.nVRApplications_GetApplicationPropertyBool(appKeyEncoded.adr, property.i, error?.adr ?: NULL)
+fun IVRApplications.getApplicationPropertyBool(appKey: String, property: EVRApplicationProperty, error: IntBuffer? = null): Boolean = stak {
+    val appKeyEncoded = it.bufferOfAscii(appKey)
+    return nVRApplications_GetApplicationPropertyBool(appKeyEncoded.adr, property.i, error?.adr ?: NULL)
 }
 
 /**
@@ -210,10 +215,9 @@ fun IVRApplications.getApplicationPropertyBool(appKey: String, property: EVRAppl
  * @param property must be:<br><table><tr><td>{@link VR#EVRApplicationProperty_VRApplicationProperty_LastLaunchTime_Uint64}</td></tr></table>
  * @param error ~ EVRApplicationError
  */
-fun IVRApplications.getApplicationPropertyLong(appKey: String, property: EVRApplicationProperty, error: IntBuffer? = null): Long {
-    val appKeyEncoded = appBuffer.bufferOfAscii(appKey)
-    return VRApplications.nVRApplications_GetApplicationPropertyUint64(appKeyEncoded.adr, property.i, error?.adr
-            ?: NULL)
+fun IVRApplications.getApplicationPropertyLong(appKey: String, property: EVRApplicationProperty, error: IntBuffer? = null): Long = stak {
+    val appKeyEncoded = it.bufferOfAscii(appKey)
+    return nVRApplications_GetApplicationPropertyUint64(appKeyEncoded.adr, property.i, error?.adr ?: NULL)
 }
 
 /**
@@ -223,9 +227,9 @@ fun IVRApplications.getApplicationPropertyLong(appKey: String, property: EVRAppl
  * @param appKey
  * @param autoLaunch
  */
-fun IVRApplications.setApplicationAutoLaunch(appKey: String, autoLaunch: Boolean): EVRApplicationError {
-    val appKeyEncoded = appBuffer.bufferOfAscii(appKey)
-    return EVRApplicationError of VRApplications.nVRApplications_SetApplicationAutoLaunch(appKeyEncoded.adr, autoLaunch)
+fun IVRApplications.setApplicationAutoLaunch(appKey: String, autoLaunch: Boolean): EVRApplicationError = stak {
+    val appKeyEncoded = it.bufferOfAscii(appKey)
+    return EVRApplicationError of nVRApplications_SetApplicationAutoLaunch(appKeyEncoded.adr, autoLaunch)
 }
 
 /**
@@ -234,8 +238,8 @@ fun IVRApplications.setApplicationAutoLaunch(appKey: String, autoLaunch: Boolean
  *
  * @param appKey
  */
-infix fun IVRApplications.getApplicationAutoLaunch(appKey: String): Boolean {
-    val appKeyEncoded = appBuffer.bufferOfAscii(appKey)
+infix fun IVRApplications.getApplicationAutoLaunch(appKey: String): Boolean = stak {
+    val appKeyEncoded = it.bufferOfAscii(appKey)
     return VRApplications.nVRApplications_GetApplicationAutoLaunch(appKeyEncoded.adr)
 }
 
@@ -306,7 +310,7 @@ fun IVRApplications.getApplicationLaunchArguments(handle: Int, argsSize: Int): S
  * @param appKeyBuffer
  */
 infix fun IVRApplications.getStartingApplication(appKeyBuffer: ByteBuffer): EVRApplicationError {
-    return EVRApplicationError of VRApplications.nVRApplications_GetStartingApplication(appKeyBuffer.adr, appKeyBuffer.remaining())
+    return EVRApplicationError of VRApplications.nVRApplications_GetStartingApplication(appKeyBuffer.adr, appKeyBuffer.rem)
 }
 
 /** Returns the application transition state. */
