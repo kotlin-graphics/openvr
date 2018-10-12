@@ -226,7 +226,6 @@ class Scene {
                 continue
 
             rHand[hand].renderModel?.let {
-
                 val matDeviceToTracking = rHand[hand].rmat4Pose
                 val matMVP = getCurrentViewProjectionMatrix(eye) * matDeviceToTracking
                 glUniformMatrix4fv(modelProgram.matrix, false, matMVP.toFloatBufferStack())

@@ -219,12 +219,9 @@ class Application {
                 rHand[Hand.Right].showController = false
         }
 
-//        println("show (${rHand[Hand.Left].showController}, ${rHand[Hand.Right].showController})")
-
         for (hand in Hand.values()) {
             val poseData = vr.InputPoseActionData()
             val err = vrInput.getPoseActionData(rHand[hand].actionPose, TrackingUniverseOrigin.Standing, 0f, poseData, vr.invalidInputValueHandle)
-            println("err $err, active ${poseData.active}, valid ${poseData.pose.poseIsValid}")
             if (err != vrInput.Error.None || !poseData.active || !poseData.pose.poseIsValid)
                 rHand[hand].showController = false
             else {

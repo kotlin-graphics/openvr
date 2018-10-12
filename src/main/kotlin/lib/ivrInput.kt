@@ -144,7 +144,7 @@ object vrInput : vrInterface {
      * than analog. TODO more convenient?
      */
     fun getAnalogActionData(action: VRActionHandle, actionData: InputAnalogActionData, restrictToDevice: VRInputValueHandle): Error =
-            Error of nVRInput_GetAnalogActionData(action, actionData.adr, 1, restrictToDevice)
+            Error of nVRInput_GetAnalogActionData(action, actionData.adr, InputAnalogActionData.SIZEOF, restrictToDevice)
 
     /**
      * Reads the state of an analog action given its handle. This will return {@link VR#EVRInputError_VRInputError_WrongType} if the type of action is something other
@@ -209,7 +209,7 @@ object vrInput : vrInterface {
 
     /** Retrieves useful information for the origin of this action. TODO more convenient? */
     fun getOriginTrackedDeviceInfo(origin: VRInputValueHandle, originInfo: InputOriginInfo): Error =
-            Error of nVRInput_GetOriginTrackedDeviceInfo(origin, originInfo.adr, 1)
+            Error of nVRInput_GetOriginTrackedDeviceInfo(origin, originInfo.adr, InputOriginInfo.SIZEOF)
 
     /** Retrieves useful information for the origin of this action. TODO more convenient? */
     fun getOriginTrackedDeviceInfo(origin: VRInputValueHandle, originInfo: InputOriginInfo.Buffer): Error =
