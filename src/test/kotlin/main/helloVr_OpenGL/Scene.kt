@@ -214,7 +214,7 @@ class Scene {
         val isInputAvailable = hmd.isInputAvailable
 
         // draw the controller axis lines
-        if (!isInputAvailable)
+        if (isInputAvailable)
             controllerAxes.render(eye)
 
         // ----- Render Model rendering -----
@@ -343,7 +343,7 @@ class Scene {
         fun update() {
 
             // Don't attempt to update controllers if input is not available
-            if (hmd.isInputAvailable) return
+            if (!hmd.isInputAvailable) return
 
             vertCount = 0
             trackedControllerCount = 0
