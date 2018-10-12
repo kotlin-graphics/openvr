@@ -1,14 +1,13 @@
 package lib
 
-import glm_.b
-import glm_.set
-import kool.Ptr
-import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil.NULL
-import org.lwjgl.system.Pointer
-import java.nio.ByteBuffer
+import java.nio.IntBuffer
 import java.nio.LongBuffer
 
+
+/** A handle for a spatial anchor.  This handle is only valid during the session it was created in.
+ * Anchors that live beyond one session should be saved by their string descriptors. */
+typealias SpatialAnchorHandle = Int
 
 typealias glSharedTextureHandle = Long
 typealias glInt = Int
@@ -43,6 +42,7 @@ typealias DriverHandle = PropertyContainerHandle
 
 /** used to refer to a single VR overlay */
 typealias VROverlayHandle = Long
+typealias VROverlayHandleBuffer = LongBuffer
 
 
 typealias TrackedCameraHandle = Long
@@ -99,22 +99,28 @@ typealias VRInputValueHandle = Long
 
 typealias IOBufferHandle = Long
 
+// ivrspatialanchors.h
+
 // Utils
 
 typealias VRActionHandleBuffer = LongBuffer
 typealias VRActionSetHandleBuffer = LongBuffer
 typealias VRInputValueHandleBuffer = LongBuffer
+typealias VRScreenshotHandleBuffer = LongBuffer
 
-// temp
+// JVM custom, Errors
 
-inline val Pointer.adr: Ptr
-    get() = address()
+typealias VRApplicationErrorBuffer = IntBuffer
+typealias VROverlayErrorBuffer = IntBuffer
+typealias VRVRRenderModelsErrorBuffer = IntBuffer
+typealias VRScreenshotErrorBuffer = IntBuffer
+typealias VRSettingsErrorBuffer = IntBuffer
+typealias VRSpatialAnchorErrorBuffer = IntBuffer
+typealias VRInitErrorBuffer = IntBuffer
+typealias VRInputErrorBuffer = IntBuffer
+typealias TrackedPropertyErrorBuffer = IntBuffer
+typealias TrackedCameraErrorBuffer = IntBuffer
 
-fun MemoryStack.bufferOfAscii(string: String, nullTerminated: Boolean = true): ByteBuffer {
-    val bytes = malloc(string.length + if (nullTerminated) 1 else 0)
-    for (i in string.indices)
-        bytes[i] = string[i].b
-    if (nullTerminated)
-        bytes[string.length] = 0
-    return bytes
-}
+typealias TextureTypeBuffer = IntBuffer
+typealias ColorSpaceBuffer = IntBuffer
+typealias VROverlayInputBuffer = IntBuffer

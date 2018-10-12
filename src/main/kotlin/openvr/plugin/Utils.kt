@@ -3,8 +3,9 @@ package openvr.plugin
 import glm_.mat4x4.Mat4
 import glm_.quat.Quat
 import glm_.vec3.Vec3
-import openvr.lib.HmdMat34
-import openvr.lib.HmdMat44
+import lib.m
+import org.lwjgl.openvr.HmdMatrix34
+import org.lwjgl.openvr.HmdMatrix44
 
 object Utils {
 
@@ -20,7 +21,7 @@ object Utils {
             this.rot put rot
         }
 
-        constructor(pose: HmdMat34) {
+        constructor(pose: HmdMatrix34) {
 
             val m = Mat4()
 
@@ -43,7 +44,7 @@ object Utils {
             rot put m.toQuat()
         }
 
-        constructor(pose: HmdMat44) {
+        constructor(pose: HmdMatrix44) {
 
             val m = Mat4()
 
@@ -71,7 +72,7 @@ object Utils {
             rot put m.toQuat()
         }
 
-        fun toHmdMatrix44(): HmdMat44 {
+        fun toHmdMatrix44(): HmdMatrix44 {
             TODO()
 //            val m = Matrix4x4.TRS(pos, rot, Vector3.one)
 //            var pose = new HmdMat44 ()
@@ -99,7 +100,7 @@ object Utils {
 //            return pose
         }
 
-        fun toHmdMatrix34(): HmdMat34 {
+        fun toHmdMatrix34(): HmdMatrix34 {
             TODO()
 //            var m = Matrix4x4.TRS(pos, rot, Vector3.one)
 //            var pose = new HmdMat34 ()
@@ -139,7 +140,7 @@ object Utils {
             return this
         }
 
-        infix fun put(pose: HmdMat34): RigidTransform {
+        infix fun put(pose: HmdMatrix34): RigidTransform {
 
             val m = Mat4()
 
@@ -164,29 +165,30 @@ object Utils {
             return this
         }
 
-        infix fun put(pose: HmdMat44): RigidTransform {
-
-            val m = Mat4()
-
-            m[0, 0] = +pose.m[0]
-            m[0, 1] = +pose.m[1]
-            m[0, 2] = -pose.m[2]
-            m[0, 3] = +pose.m[3]
-
-            m[1, 0] = +pose.m[4]
-            m[1, 1] = +pose.m[5]
-            m[1, 2] = -pose.m[6]
-            m[1, 3] = +pose.m[7]
-
-            m[2, 0] = -pose.m[8]
-            m[2, 1] = -pose.m[9]
-            m[2, 2] = +pose.m[10]
-            m[2, 3] = -pose.m[11]
-
-            m[3, 0] = +pose.m[12]
-            m[3, 1] = +pose.m[13]
-            m[3, 2] = -pose.m[14]
-            m[3, 3] = +pose.m[15]
+        infix fun put(m: Mat4): RigidTransform {
+//        infix fun put(pose: HmdMatrix44): RigidTransform {
+//
+//            val m = Mat4()
+//
+//            m[0, 0] = +pose.m[0]
+//            m[0, 1] = +pose.m[1]
+//            m[0, 2] = -pose.m[2]
+//            m[0, 3] = +pose.m[3]
+//
+//            m[1, 0] = +pose.m[4]
+//            m[1, 1] = +pose.m[5]
+//            m[1, 2] = -pose.m[6]
+//            m[1, 3] = +pose.m[7]
+//
+//            m[2, 0] = -pose.m[8]
+//            m[2, 1] = -pose.m[9]
+//            m[2, 2] = +pose.m[10]
+//            m[2, 3] = -pose.m[11]
+//
+//            m[3, 0] = +pose.m[12]
+//            m[3, 1] = +pose.m[13]
+//            m[3, 2] = -pose.m[14]
+//            m[3, 3] = +pose.m[15]
 
             pos put m.position
             rot put m.toQuat()

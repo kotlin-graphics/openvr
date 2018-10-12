@@ -1,14 +1,9 @@
 package main.helloVr_OpenGL
 
-import glm_.buffer.free
-import glm_.buffer.intBufferBig
 import glm_.vec2.Vec2
 import glm_.vec2.Vec2i
 import glm_.vec3.Vec3
-import gln.buffer.glArrayBufferData
-import gln.buffer.glBindArrayBuffer
-import gln.buffer.glBindElementBuffer
-import gln.buffer.glElementBufferData
+import gln.buffer.*
 import gln.glf.semantic
 import gln.texture.glBindTexture2d
 import gln.texture.glGenerateMipmap2D
@@ -17,9 +12,12 @@ import gln.texture.glTexImage2D
 import gln.vertexArray.glBindVertexArray
 import gln.vertexArray.glVertexAttribPointer
 import gln.vertexArray.withVertexArray
-import openvr.lib.EVREye
+import kool.free
+import kool.intBufferBig
+import lib.*
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT
+import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE
 import org.lwjgl.opengl.GL12.GL_TEXTURE_MAX_LEVEL
 import org.lwjgl.opengl.GL20.glEnableVertexAttribArray
@@ -29,7 +27,6 @@ import org.lwjgl.opengl.GL32.glTexImage2DMultisample
 import org.lwjgl.openvr.RenderModel
 import org.lwjgl.openvr.RenderModelTextureMap
 import org.lwjgl.openvr.RenderModelVertex
-import lib.*
 import java.nio.ByteBuffer
 
 class FrameBufferDesc(val size: Vec2i) {
@@ -77,7 +74,7 @@ class FrameBufferDesc(val size: Vec2i) {
         glBindFramebuffer(GL_FRAMEBUFFER, 0)
     }
 
-    fun render(eye: EVREye) {
+    fun render(eye: VREye) {
 
         glEnable(GL_MULTISAMPLE)
 
@@ -96,9 +93,20 @@ class FrameBufferDesc(val size: Vec2i) {
         glBindFramebuffer(GL_READ_FRAMEBUFFER, 0)
         glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0)
     }
+
+    fun dispose() {
+
+        glDeleteRenderbuffers(depthRenderbufferName)
+        glDeleteTextures(textureName)
+        glDeleteFramebuffers(frameBufferName)
+
+        depthRenderbufferName.free()
+        textureName.free()
+        frameBufferName.free()
+    }
 }
 
-class CGLRenderModel(val renderModelName: String, vrModel: RenderModel, vrDiffuseTexture: RenderModelTextureMap) {
+class CGLRenderModel(val modelName: String, vrModel: RenderModel, vrDiffuseTexture: RenderModelTextureMap) {
 
     object Buffer {
         val VERTEX = 0
@@ -121,7 +129,7 @@ class CGLRenderModel(val renderModelName: String, vrModel: RenderModel, vrDiffus
         // Populate a vertex buffer
         glGenBuffers(bufferName)
         glBindArrayBuffer(bufferName[Buffer.VERTEX])
-        glArrayBufferData(vrModel.vertices, GL_STATIC_DRAW)
+        glArrayBufferData(vrModel.vertices, Usage.StaticDraw)
 
         // Identify the components in the vertex buffer
         glEnableVertexAttribArray(semantic.attr.POSITION)
@@ -131,7 +139,7 @@ class CGLRenderModel(val renderModelName: String, vrModel: RenderModel, vrDiffus
 
         // Create and populate the index buffer
         glBindElementBuffer(bufferName[Buffer.INDEX])
-        glElementBufferData(vrModel.indices, GL_STATIC_DRAW)
+        glElementBufferData(vrModel.indices, Usage.StaticDraw)
 
         glBindVertexArray()
 
@@ -170,15 +178,15 @@ class CGLRenderModel(val renderModelName: String, vrModel: RenderModel, vrDiffus
         }
     }
 
-    /**
-     * Purpose: Frees the GL resources for a render model
-     */
-    fun cleanUp() {
+    /** Purpose: Frees the GL resources for a render model     */
+    fun dispose() {
 
         glDeleteBuffers(bufferName)
         glDeleteVertexArrays(vertexArrayName)
+        GL11.glDeleteTextures(textureName)
 
         bufferName.free()
         vertexArrayName.free()
+        textureName.free()
     }
 }

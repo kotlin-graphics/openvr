@@ -1,40 +1,34 @@
 package main.helloVr_OpenGL
 
-import ab.advance
-import ab.appBuffer
 import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2
 import glm_.vec4.Vec4
 import gln.clear.glClearColorBuffer
 import gln.clear.glClearDepthBuffer
 import gln.debug.glDebugMessageCallback
-import openvr.lib.*
-import openvr.lib.VRApplication
-import org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE
-import org.lwjgl.glfw.GLFW.GLFW_KEY_Q
+import lib.*
+import lib.VREventType
+import lib.vrRenderModels.freeNative
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.KHRDebug.GL_DEBUG_OUTPUT_SYNCHRONOUS
 import org.lwjgl.opengl.KHRDebug.glDebugMessageControl
-import org.lwjgl.openvr.*
 import org.lwjgl.openvr.TrackedDevicePose
 import org.lwjgl.openvr.VREvent
 import org.lwjgl.system.MemoryUtil.NULL
-import uno.glfw.GlfwWindow
+import uno.glfw.GlfwWindow.CursorStatus
+import uno.glfw.Key
 import uno.glfw.glfw
-import lib.*
-import lib.EVREventType
-import lib.TrackedDeviceProperty
-import lib.VRActionHandle
-import lib.VRInputValueHandle
+import uno.glfw.windowHint.Profile
 import java.nio.IntBuffer
-import kotlin.properties.Delegates
+import java.nio.file.Paths
 import kotlin.reflect.KMutableProperty0
+import lib.TrackedDeviceClass as TDC
 import org.lwjgl.opengl.KHRDebug.glDebugMessageCallback as _
 
 fun main(args: Array<String>) {
 
     Application().apply {
-        loop()
+        runMainLoop()
         shutdown()
     }
 }
@@ -44,10 +38,10 @@ const val vBlank = true
 const val glFinishHack = true
 
 // Loading the SteamVR Runtime
-val hmd = vr.init(VRApplication.Scene) ?: throw Error("Unable to init VR runtime")
+val hmd = vrSystem
 lateinit var scene: Scene
 
-var eyeDesc: Array<FrameBufferDesc> by Delegates.notNull()
+lateinit var eyeDesc: Array<FrameBufferDesc>
 
 enum class Hand { Left, Right }
 
@@ -55,77 +49,33 @@ val clearColor = Vec4(0, 0, 0, 1)
 
 var showCubes = true
 
-val nearClip = 0.1f
-val farClip = 30f
-
-val projection = Array(2) {
-    // Gets a Matrix Projection Eye with respect to nEye.
-    hmd.getProjectionMatrix(EVREye of it, nearClip, farClip)
-}
-val eyePos = Array(2) {
-    // Purpose: Gets an HMDMatrixPoseEye with respect to nEye.
-    hmd.getEyeToHeadTransform(EVREye of it).inverse()
-}
+lateinit var projection: Array<Mat4>
+lateinit var eyePos: Array<Mat4>
 
 var hmdPose = Mat4()
 
+var trackedControllerCount = 0
+var trackedControllerCount_Last = -1
+
+class ControllerInfo {
+    var source = vr.invalidInputValueHandle
+    var actionPose = vr.invalidActionHandle
+    var actionHaptic = vr.invalidActionHandle
+    val rmat4Pose = Mat4()
+    var renderModel: CGLRenderModel? = null
+    var renderModelName = ""
+    var showController = false
+}
+
+val rHand = Array(2) { ControllerInfo() }
+operator fun Array<ControllerInfo>.get(hand: Hand) = get(hand.ordinal)
+
+
 class Application {
 
-    val trackedDevicePose = TrackedDevicePose.calloc(maxTrackedDeviceCount)
+    val trackedDevicePose = TrackedDevicePose.calloc(vr.maxTrackedDeviceCount)
 
-    val rmat4DevicePose = Array(maxTrackedDeviceCount) { Mat4() }
-
-    class ControllerInfo {
-        var source = vr.invalidInputValueHandle
-        var actionPose = vr.invalidActionHandle
-        var actionHaptic = vr.invalidActionHandle
-        val rmat4Pose = Mat4()
-        var renderModel: CGLRenderModel? = null
-        var renderModelName = ""
-        var showController = false
-    }
-
-    val rHand = Array(2) { ControllerInfo() }
-    operator fun Array<ControllerInfo>.get(hand: Hand) = get(hand.ordinal)
-
-    init {
-        with(glfw) {
-            init()
-            windowHint {
-                context.version = "4.1"
-                profile = "core"
-                debug = debugOpenGL
-            }
-        }
-    }
-
-    // GLFW bookkeeping
-    val companionWindow = CompanionWindow()
-
-    init {
-        if (debugOpenGL) {
-            glDebugMessageCallback { source, type, id, severity, message ->
-                println("$id: $type of $severity severity, raised from $source: $message")
-            }
-            glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, null as IntBuffer?, true)
-            glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS)
-        }
-        scene = Scene()
-        eyeDesc = Array(2) { FrameBufferDesc(hmd.recommendedRenderTargetSize) }
-    }
-
-    var trackedControllerCount = 0
-    var trackedControllerCount_Last = 0
-    var validPoseCount = 0
-    var validPoseCount_Last = 0
-    val analogValue = Vec2()
-
-    /** what classes we saw poses for this frame */
-    var strPoseClasses = ""
-    /** for each device, a character representing its class */
-    val devClassChar = CharArray(maxTrackedDeviceCount)
-
-//    std::vector< CGLRenderModel * > m_vecRenderModels;
+    val rmat4DevicePose = Array(vr.maxTrackedDeviceCount) { Mat4() }
 
     var actionHideCubes = vr.invalidActionHandle
     var actionHideThisController = vr.invalidActionHandle
@@ -135,13 +85,27 @@ class Application {
     var actionsetDemo = vr.invalidActionSetHandle
 
     init {
+        with(glfw) {
+            init()
+            windowHint {
+                context.version = "4.1"
+                profile = Profile.core
+                debug = debugOpenGL
+            }
+        }
 
-        if (!initCompositor())
-            throw Error("Application::init() - Failed to initialize VR Compositor!")
+        // Loading the SteamVR Runtime
+        val err = vr.init()
+
+        if (err != VRInitError.None)
+            throw Error("Unable to init VR runtime: ${err.asEnglishDescription}")
+
+        if (!vrCompositor.isInterfaceVersionValid)
+            throw Error("Application::init - Failed to initialize VR Compositor!")
 
         vrInput.apply {
 
-            setActionManifestPath("$assetPath/hellovr_actions.json")
+            setActionManifestPath(javaClass.classLoader.getResource("hellovr_actions.json"))
 
             actionHideCubes = getActionHandle("/actions/demo/in/HideCubes")
             actionHideThisController = getActionHandle("/actions/demo/in/HideThisController")
@@ -161,29 +125,53 @@ class Application {
                 actionPose = getActionHandle("/actions/demo/in/Hand_Right")
             }
         }
+
+        val nearClip = 0.1f
+        val farClip = 30f
+
+        // Gets a Matrix Projection Eye with respect to nEye.
+        projection = Array(2) { hmd.getProjectionMatrix(VREye of it, nearClip, farClip) }
+
+        // Purpose: Gets an HMDMatrixPoseEye with respect to nEye.
+        eyePos = Array(2) { hmd.getEyeToHeadTransform(VREye of it).inverse() }
     }
 
-    /** -----------------------------------------------------------------------------
-     *  Purpose: Initialize Compositor. Returns true if the compositor was successfully initialized, false otherwise.
-     *  ----------------------------------------------------------------------------- */
-    fun initCompositor(): Boolean = when(OpenVR.VRCompositor) {
-        null -> {
-            System.err.println("Compositor initialization failed. See log file for details")
-            false
-        }
-        else -> true
-    }
+    // GLFW bookkeeping
+    val companionWindow = CompanionWindow() // gl resources
 
-    fun loop() {
+    val window
+        get() = companionWindow.window
 
-        companionWindow.window.apply {
-
-            cursor = GlfwWindow.Cursor.Hidden
-
-            loop {
-                handleInput()
-                renderFrame()
+    init {
+        if (debugOpenGL) {
+            glDebugMessageCallback { source, type, id, severity, message ->
+                println("$id: $type of $severity severity, raised from $source: $message")
             }
+            glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, null as IntBuffer?, true)
+            glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS)
+        }
+        scene = Scene() // gl resources
+        eyeDesc = Array(2) { FrameBufferDesc(hmd.recommendedRenderTargetSize) }
+    }
+
+    var validPoseCount = 0
+    var validPoseCount_Last = 0
+    val analogValue = Vec2()
+
+    /** what classes we saw poses for this frame */
+    var strPoseClasses = ""
+    /** for each device, a character representing its class */
+    val devClassChar = CharArray(vr.maxTrackedDeviceCount)
+
+    val renderModels = ArrayList<CGLRenderModel>()
+
+    fun runMainLoop() {
+
+        window.cursorStatus = CursorStatus.Hidden
+
+        window.loop {
+            handleInput()
+            renderFrame()
         }
     }
 
@@ -192,41 +180,37 @@ class Application {
 
     fun handleInput() {
 
-        companionWindow.window.apply {
-            if (pressed(GLFW_KEY_ESCAPE) || pressed(GLFW_KEY_Q))
+        window.apply {
+            if (isPressed(Key.ESCAPE) || isPressed(Key.Q))
                 shouldClose = true
-            else if (pressed(GLFW_KEY_ESCAPE))
+            else if (isPressed(Key.C))
                 showCubes = !showCubes
         }
 
         // Process SteamVR events
-        val event = VREvent.create(appBuffer.ptr.advance(VREvent.SIZEOF))
-        while (hmd.pollNextEvent(event))
-            event.process()
+        hmd.pollingEvents { event -> event.process() }
 
         /*  Process SteamVR action state
             UpdateActionState is called each frame to update the state of the actions themselves. The application
             controls which action sets are active with the provided array of VRActiveActionSet_t structs. */
-        val actionSet = vr.VRActiveActionSet()
-        actionSet.actionSet = actionsetDemo
+        val actionSet = vr.VRActiveActionSet().apply { actionSet = actionsetDemo }
         vrInput updateActionState actionSet
 
         showCubes = !getDigitalActionState(actionHideCubes)
 
         if (getDigitalActionRisingEdge(actionTriggerHaptic, ::hapticDevice)) {
             if (hapticDevice == rHand[Hand.Left].source)
-                vrInput.triggerHapticVibrationAction(rHand[Hand.Left].actionHaptic, 0f, 1f, 4f, 1f)
+                vrInput.triggerHapticVibrationAction(rHand[Hand.Left].actionHaptic, 0f, 1f, 4f, 1f, vr.invalidInputValueHandle)
             if (hapticDevice == rHand[Hand.Right].source)
-                vrInput.triggerHapticVibrationAction(rHand[Hand.Right].actionHaptic, 0f, 1f, 4f, 1f)
+                vrInput.triggerHapticVibrationAction(rHand[Hand.Right].actionHaptic, 0f, 1f, 4f, 1f, vr.invalidInputValueHandle)
         }
 
         val analogData = vr.InputAnalogActionData()
-        if (vrInput.getAnalogActionData(actionAnalongInput, analogData) == EVRInputError.None && analogData.bActive())
-            analogValue.put(analogData.x(), analogData.y())
+        if (vrInput.getAnalogActionData(actionAnalongInput, analogData, vr.invalidInputValueHandle) == vrInput.Error.None && analogData.active)
+            analogValue.put(analogData.x, analogData.y)
 
         rHand[Hand.Left].showController = true
         rHand[Hand.Right].showController = true
-
 
         if (getDigitalActionState(actionHideThisController, ::hideDevice)) {
             if (hideDevice == rHand[Hand.Left].source)
@@ -235,21 +219,23 @@ class Application {
                 rHand[Hand.Right].showController = false
         }
 
+//        println("show (${rHand[Hand.Left].showController}, ${rHand[Hand.Right].showController})")
+
         for (hand in Hand.values()) {
             val poseData = vr.InputPoseActionData()
-            if (vrInput.getPoseActionData(rHand[hand].actionPose, ETrackingUniverseOrigin.Standing, 0f, poseData) != EVRInputError.None
-                    || !poseData.active || !poseData.pose.poseIsValid) {
+            val err = vrInput.getPoseActionData(rHand[hand].actionPose, TrackingUniverseOrigin.Standing, 0f, poseData, vr.invalidInputValueHandle)
+            println("err $err, active ${poseData.active}, valid ${poseData.pose.poseIsValid}")
+            if (err != vrInput.Error.None || !poseData.active || !poseData.pose.poseIsValid)
                 rHand[hand].showController = false
-            } else {
+            else {
                 rHand[hand].rmat4Pose put poseData.pose.deviceToAbsoluteTracking
 
                 val originInfo = vr.InputOriginInfo()
-                if (vrInput.getOriginTrackedDeviceInfo(poseData.activeOrigin(), originInfo) == EVRInputError.None
-                        && originInfo.trackedDeviceIndex != trackedDeviceIndexInvalid) {
-                    val renderModelName = hmd.getStringTrackedDeviceProperty(originInfo.trackedDeviceIndex(), TrackedDeviceProperty.RenderModelName_String)
+                if (vrInput.getOriginTrackedDeviceInfo(poseData.activeOrigin, originInfo) == vrInput.Error.None
+                        && originInfo.trackedDeviceIndex != vr.trackedDeviceIndexInvalid) {
+                    val renderModelName = hmd.getStringTrackedDeviceProperty(originInfo.trackedDeviceIndex, TrackedDeviceProperty.RenderModelName_String)
                     if (renderModelName != rHand[hand].renderModelName) {
-//                        rHand[hand].renderModel = findOrLoadRenderModel(renderModelName)
-                        rHand[hand].renderModelName = renderModelName
+                        rHand[hand].renderModel = findOrLoadRenderModel(renderModelName)
                     }
                 }
             }
@@ -258,71 +244,94 @@ class Application {
 
     /** Purpose: Processes a single VR event */
     fun VREvent.process() = when (eventType) {
-        EVREventType.TrackedDeviceDeactivated -> println("Device $trackedDeviceIndex detached.")
-        EVREventType.TrackedDeviceUpdated -> println("Device $trackedDeviceIndex updated.")
+        VREventType.TrackedDeviceDeactivated -> println("Device $trackedDeviceIndex detached.")
+        VREventType.TrackedDeviceUpdated -> println("Device $trackedDeviceIndex updated.")
+        VREventType.TrackedDeviceActivated -> println("Device $trackedDeviceIndex activated.")
         else -> Unit
     }
 
     /** Purpose: Returns true if the action is active and had a rising edge */
-    fun getDigitalActionRisingEdge(action: VRActionHandle, devicePath: KMutableProperty0<VRInputValueHandle>? = null): Boolean {
+    fun getDigitalActionRisingEdge(action: VRActionHandle, pDevicePath: KMutableProperty0<VRInputValueHandle>? = null): Boolean {
         val actionData = vr.InputDigitalActionData()
-        vrInput.getDigitalActionData(action, actionData)
-        devicePath?.let {
-            it.set(invalidInputValueHandle)
+        vrInput.getDigitalActionData(action, actionData, vr.invalidInputValueHandle)
+        pDevicePath?.let {
+            var devicePath by it
+            devicePath = vr.invalidInputValueHandle
             if (actionData.active) {
                 val originInfo = vr.InputOriginInfo()
-                if (EVRInputError.None == vrInput.getOriginTrackedDeviceInfo(actionData.activeOrigin, originInfo))
-                    it.set(originInfo.devicePath)
+                if (vrInput.Error.None == vrInput.getOriginTrackedDeviceInfo(actionData.activeOrigin, originInfo))
+                    devicePath = originInfo.devicePath
             }
         }
         return actionData.active && actionData.changed && actionData.state
     }
 
-
     /** Purpose: Returns true if the action is active and had a falling edge */
-    fun getDigitalActionFallingEdge(action: VRActionHandle, devicePath: KMutableProperty0<VRInputValueHandle>? = null): Boolean {
+    fun getDigitalActionFallingEdge(action: VRActionHandle, pDevicePath: KMutableProperty0<VRInputValueHandle>? = null): Boolean {
         val actionData = vr.InputDigitalActionData()
-        vrInput.getDigitalActionData(action, actionData)
-        devicePath?.let{
-            it.set(vr.invalidInputValueHandle)
+        vrInput.getDigitalActionData(action, actionData, vr.invalidInputValueHandle)
+        pDevicePath?.let {
+            var devicePath by it
+            devicePath = vr.invalidInputValueHandle
             if (actionData.active) {
                 val originInfo = vr.InputOriginInfo()
-                if (EVRInputError.None == vrInput.getOriginTrackedDeviceInfo(actionData.activeOrigin, originInfo))
-                    it.set(originInfo.devicePath)
+                if (vrInput.Error.None == vrInput.getOriginTrackedDeviceInfo(actionData.activeOrigin, originInfo))
+                    devicePath = originInfo.devicePath
             }
         }
         return actionData.active && actionData.changed && !actionData.state
     }
 
-
     /** Purpose: Returns true if the action is active and its state is true */
-    fun getDigitalActionState(action: VRActionHandle, devicePath: KMutableProperty0<VRInputValueHandle>? = null): Boolean {
+    fun getDigitalActionState(action: VRActionHandle, pDevicePath: KMutableProperty0<VRInputValueHandle>? = null): Boolean {
         val actionData = vr.InputDigitalActionData()
-        vrInput.getDigitalActionData(action, actionData)
-        devicePath?.let {
-            devicePath.set(invalidInputValueHandle)
+        val err = vrInput.getDigitalActionData(action, actionData, vr.invalidInputValueHandle)
+        pDevicePath?.let {
+            var devicePath by it
+            devicePath = vr.invalidInputValueHandle
             if (actionData.active) {
                 val originInfo = vr.InputOriginInfo()
-                if (EVRInputError.None == vrInput.getOriginTrackedDeviceInfo(actionData.activeOrigin, originInfo))
-                    devicePath.set(originInfo.devicePath)
+                if (vrInput.Error.None == vrInput.getOriginTrackedDeviceInfo(actionData.activeOrigin, originInfo))
+                    devicePath = originInfo.devicePath
             }
         }
         return actionData.active && actionData.state
     }
 
+    /** Purpose: Finds a render model we've already loaded or loads a new one */
+    fun findOrLoadRenderModel(renderModelName: String): CGLRenderModel? =
+            renderModels.find { it.modelName == renderModelName } ?: run {
+
+                // load the model if we didn't find one
+
+                val model = vrRenderModels.loadRenderModel(renderModelName) ?: run {
+                    println("Unable to load render model $renderModelName - ${vrRenderModels.error}")
+                    return null // move on to the next tracked device
+                }
+
+                val texture = vrRenderModels.loadTexture(model.diffuseTextureId) ?: run {
+                    println("Unable to load render texture id:${model.diffuseTextureId} for render model $renderModelName")
+                    model.freeNative()
+                    return null // move on to the next tracked device
+                }
+
+                return CGLRenderModel(renderModelName, model, texture).also {
+                    renderModels += it
+                    model.freeNative()
+                    texture.freeNative()
+                }
+            }
+
     fun renderFrame() {
 
         // for now as fast as possible
-//        RenderControllerAxes()
         renderStereoTargets()
         companionWindow.render()
 
-        val leftEyeTexture = vr.Texture().set(
-                eyeDesc[0].textureName[FrameBufferDesc.Target.RESOLVE].L, ETextureType.OpenGL.i, EColorSpace.Gamma.i)
-        vrCompositor.submit(EVREye.Left, leftEyeTexture)
-        val rightEyeTexture = vr.Texture().set(
-                eyeDesc[1].textureName[FrameBufferDesc.Target.RESOLVE].L, ETextureType.OpenGL.i, EColorSpace.Gamma.i)
-        vrCompositor.submit(EVREye.Right, rightEyeTexture)
+        val leftEyeTexture = vr.Texture(eyeDesc[0].textureName[FrameBufferDesc.Target.RESOLVE], TextureType.OpenGL, ColorSpace.Gamma)
+        vrCompositor.submit(VREye.Left, leftEyeTexture)
+        val rightEyeTexture = vr.Texture(eyeDesc[1].textureName[FrameBufferDesc.Target.RESOLVE], TextureType.OpenGL, ColorSpace.Gamma)
+        vrCompositor.submit(VREye.Right, rightEyeTexture)
 
         if (vBlank && glFinishHack)
         /*  HACKHACK. From gpuview profiling, it looks like there is a bug where two renders and a present happen
@@ -332,15 +341,13 @@ class Application {
             glFinish()
 
         // SwapWindow
-        companionWindow.window.present()
+        window.present()
 
-        // Clear
-        run {
-            /*  We want to make sure the glFinish waits for the entire present to complete, not just the submission
-                of the command. So, we do a clear here right here so the glFinish will wait fully for the swap.             */
-            glClearColorBuffer(clearColor)
-            glClearDepthBuffer()
-        }
+        /*  Clear
+            We want to make sure the glFinish waits for the entire present to complete, not just the submission
+            of the command. So, we do a clear here right here so the glFinish will wait fully for the swap.             */
+        glClearColorBuffer(clearColor)
+        glClearDepthBuffer()
 
         // Flush and wait for swap.
         if (vBlank) {
@@ -363,7 +370,7 @@ class Application {
 
         glClearColorBuffer()
 
-        for (eye in EVREye.values())
+        for (eye in VREye.values())
             eyeDesc[eye.i].render(eye)
     }
 
@@ -373,95 +380,41 @@ class Application {
 
         validPoseCount = 0
         strPoseClasses = ""
-        for (device in 0 until maxTrackedDeviceCount) {
-            if (trackedDevicePose[device].bPoseIsValid()) {
+        for (device in 0 until vr.maxTrackedDeviceCount) {
+            if (trackedDevicePose[device].poseIsValid) {
                 validPoseCount++
-                rmat4DevicePose[device] = trackedDevicePose[device].mDeviceToAbsoluteTracking().asMat4
+                rmat4DevicePose[device] = trackedDevicePose[device].deviceToAbsoluteTracking
                 if (devClassChar[device] == NUL)
-                    devClassChar[device] = when (hmd.getTrackedDeviceClass(device)) {
-                        ETrackedDeviceClass.Controller -> 'C'
-                        ETrackedDeviceClass.HMD -> 'H'
-                        ETrackedDeviceClass.Invalid -> 'I'
-                        ETrackedDeviceClass.GenericTracker -> 'G'
-                        ETrackedDeviceClass.TrackingReference -> 'T'
+                    devClassChar[device] = when (hmd getTrackedDeviceClass device) {
+                        TDC.Controller -> 'C'
+                        TDC.HMD -> 'H'
+                        TDC.Invalid -> 'I'
+                        TDC.GenericTracker -> 'G'
+                        TDC.TrackingReference -> 'T'
                         else -> '?'
                     }
                 strPoseClasses += devClassChar[device]
             }
         }
 
-        if (trackedDevicePose[trackedDeviceIndex_Hmd].bPoseIsValid())
-            hmdPose = rmat4DevicePose[trackedDeviceIndex_Hmd].inverse()
+        if (trackedDevicePose[vr.trackedDeviceIndex_Hmd].poseIsValid)
+            rmat4DevicePose[vr.trackedDeviceIndex_Hmd] inverse hmdPose
     }
 
     fun shutdown() {
 
         vr.shutdown()
-//
-//        for( std::vector< CGLRenderModel * >::iterator i = m_vecRenderModels.begin(); i != m_vecRenderModels.end(); i++ )
-//        {
-//            delete (*i);
-//        }
-//        m_vecRenderModels.clear();
-//
-//        if( m_pContext )
-//        {
-//            if( m_bDebugOpenGL )
-//            {
-//                glDebugMessageControl( GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_FALSE );
-//                glDebugMessageCallback(nullptr, nullptr);
-//            }
-//            glDeleteBuffers(1, &m_glSceneVertBuffer);
-//
-//            if ( m_unSceneProgramID )
-//            {
-//                glDeleteProgram( m_unSceneProgramID );
-//            }
-//            if ( m_unControllerTransformProgramID )
-//            {
-//                glDeleteProgram( m_unControllerTransformProgramID );
-//            }
-//            if ( m_unRenderModelProgramID )
-//            {
-//                glDeleteProgram( m_unRenderModelProgramID );
-//            }
-//            if ( m_unCompanionWindowProgramID )
-//            {
-//                glDeleteProgram( m_unCompanionWindowProgramID );
-//            }
-//
-//            glDeleteRenderbuffers( 1, &leftEyeDesc.m_nDepthBufferId );
-//            glDeleteTextures( 1, &leftEyeDesc.m_nRenderTextureId );
-//            glDeleteFramebuffers( 1, &leftEyeDesc.m_nRenderFramebufferId );
-//            glDeleteTextures( 1, &leftEyeDesc.m_nResolveTextureId );
-//            glDeleteFramebuffers( 1, &leftEyeDesc.m_nResolveFramebufferId );
-//
-//            glDeleteRenderbuffers( 1, &rightEyeDesc.m_nDepthBufferId );
-//            glDeleteTextures( 1, &rightEyeDesc.m_nRenderTextureId );
-//            glDeleteFramebuffers( 1, &rightEyeDesc.m_nRenderFramebufferId );
-//            glDeleteTextures( 1, &rightEyeDesc.m_nResolveTextureId );
-//            glDeleteFramebuffers( 1, &rightEyeDesc.m_nResolveFramebufferId );
-//
-//            if( m_unCompanionWindowVAO != 0 )
-//            {
-//                glDeleteVertexArrays( 1, &m_unCompanionWindowVAO );
-//            }
-//            if( m_unSceneVAO != 0 )
-//            {
-//                glDeleteVertexArrays( 1, &m_unSceneVAO );
-//            }
-//            if( m_unControllerVAO != 0 )
-//            {
-//                glDeleteVertexArrays( 1, &m_unControllerVAO );
-//            }
-//        }
-//
-//        if( m_pCompanionWindow )
-//        {
-//            SDL_DestroyWindow(m_pCompanionWindow);
-//            m_pCompanionWindow = NULL;
-//        }
-//
-//        SDL_Quit();
+
+        renderModels.forEach { it.dispose() }
+
+        scene.dispose()
+
+        eyeDesc.forEach { it.dispose() }
+
+        companionWindow.dispose()
+
+        glfw.terminate()
     }
 }
+
+val assetPath = Paths.get("").toAbsolutePath().toString() + "/src/main/resources"

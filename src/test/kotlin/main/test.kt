@@ -62,7 +62,7 @@
 //            val name = "systemOverlay"
 //            val key = "sample.$name"
 //            val overlayError = it.createDashboardOverlay(key, name, overlayHandle, overlayThumbnailHandle)
-//            overlayError shouldBe EVROverlayError.None
+//            overlayError shouldBe Error.None
 //        }
 //
 //        val listener = Listener(hmd)
@@ -104,7 +104,7 @@
 //    override fun trackedDeviceDeactivated(left: Boolean) = println("deactivated $left")
 //    override fun trackedDeviceRoleChanged(left: Boolean) = println("role changed $left")
 //    override fun trackedDeviceUpdated(left: Boolean) = println("updated $left")
-//    override fun buttonPress(left: Boolean, button: EVRButtonId) {
+//    override fun buttonPress(left: Boolean, button: VRButtonId) {
 //        println("pressed $button, id ${event.trackedDeviceIndex}")
 //    }
 //

@@ -292,7 +292,7 @@ enum ETrackedDeviceProperty
 	Prop_InputProfilePath_String				= 1037, // input profile to use for this device in the input system. Will default to tracking system name if this isn't provided
 	Prop_NeverTracked_Bool						= 1038, // Used for devices that will never have a valid pose by design
 	Prop_NumCameras_Int32						= 1039,
-	Prop_CameraFrameLayout_Int32				= 1040, // EVRTrackedCameraFrameLayout value
+	Prop_CameraFrameLayout_Int32				= 1040, // FrameLayout value
 
 	// Properties that are unique to TrackedDeviceClass_HMD
 	Prop_ReportsTimeSinceVSync_Bool				= 2000,
@@ -365,11 +365,11 @@ enum ETrackedDeviceProperty
 	// Properties that are unique to TrackedDeviceClass_Controller
 	Prop_AttachedDeviceId_String				= 3000,
 	Prop_SupportedButtons_Uint64				= 3001,
-	Prop_Axis0Type_Int32						= 3002, // Return value is of type EVRControllerAxisType
-	Prop_Axis1Type_Int32						= 3003, // Return value is of type EVRControllerAxisType
-	Prop_Axis2Type_Int32						= 3004, // Return value is of type EVRControllerAxisType
-	Prop_Axis3Type_Int32						= 3005, // Return value is of type EVRControllerAxisType
-	Prop_Axis4Type_Int32						= 3006, // Return value is of type EVRControllerAxisType
+	Prop_Axis0Type_Int32						= 3002, // Return value is of type VRControllerAxisType
+	Prop_Axis1Type_Int32						= 3003, // Return value is of type VRControllerAxisType
+	Prop_Axis2Type_Int32						= 3004, // Return value is of type VRControllerAxisType
+	Prop_Axis3Type_Int32						= 3005, // Return value is of type VRControllerAxisType
+	Prop_Axis4Type_Int32						= 3006, // Return value is of type VRControllerAxisType
 	Prop_ControllerRoleHint_Int32				= 3007, // Return value is of type ETrackedControllerRole
 
 	// Properties that are unique to TrackedDeviceClass_TrackingReference
@@ -758,7 +758,7 @@ inline uint64_t ButtonMaskFromId( EVRButtonId id ) { return 1ull << id; }
 /** used for controller button events */
 struct VREvent_Controller_t
 {
-	uint32_t button; // EVRButtonId enum
+	uint32_t button; // VRButtonId enum
 };
 
 
@@ -775,7 +775,7 @@ enum EVRMouseButton
 struct VREvent_Mouse_t
 {
 	float x, y; // co-ords are in GL space, bottom left of the texture is 0,0
-	uint32_t button; // EVRMouseButton enum
+	uint32_t button; // VRMouseButton enum
 };
 
 /** used for simulated mouse wheel scroll in overlay space */
@@ -833,7 +833,7 @@ struct VREvent_Overlay_t
 /** Used for a few events about overlays */
 struct VREvent_Status_t
 {
-	uint32_t statusState; // EVRState enum
+	uint32_t statusState; // VRState enum
 };
 
 /** Used for keyboard events **/
@@ -898,7 +898,7 @@ struct VREvent_EditingCameraSurface_t
 
 struct VREvent_MessageOverlay_t
 {
-	uint32_t unVRMessageOverlayResponse; // vr::VRMessageOverlayResponse enum
+	uint32_t unVRMessageOverlayResponse; // vr::MessageResponse enum
 };
 
 struct VREvent_Property_t
@@ -981,7 +981,7 @@ typedef union
 /** An event posted by the server to all running applications */
 struct VREvent_t
 {
-	uint32_t eventType; // EVREventType enum
+	uint32_t eventType; // VREventType enum
 	TrackedDeviceIndex_t trackedDeviceIndex;
 	float eventAgeSeconds;
 	// event data must be the end of the struct as its size is variable
@@ -1712,10 +1712,10 @@ public:
 	* and axis combination for 5ms. */
 	virtual void TriggerHapticPulse( vr::TrackedDeviceIndex_t unControllerDeviceIndex, uint32_t unAxisId, unsigned short usDurationMicroSec ) = 0;
 
-	/** returns the name of an EVRButtonId enum value */
+	/** returns the name of an VRButtonId enum value */
 	virtual const char *GetButtonIdNameFromEnum( EVRButtonId eButtonId ) = 0;
 
-	/** returns the name of an EVRControllerAxisType enum value */
+	/** returns the name of an VRControllerAxisType enum value */
 	virtual const char *GetControllerAxisTypeNameFromEnum( EVRControllerAxisType eAxisType ) = 0;
 
 	/** Returns true if this application is receiving input from the system. This would return false if 
@@ -2167,7 +2167,7 @@ namespace vr
 	static const char * const k_pch_Camera_EnableCameraInDashboard_Bool = "enableCameraInDashboard";
 	static const char * const k_pch_Camera_EnableCameraForCollisionBounds_Bool = "enableCameraForCollisionBounds";
 	static const char * const k_pch_Camera_EnableCameraForRoomView_Bool = "enableCameraForRoomView";
-	static const char * const k_pch_Camera_BoundsColorGammaR_Int32 = "cameraBoundsColorGammaR";
+	static const char * const k_pch_Camera_BoundsColorGammaR_Int32 = "enableCameraForRoomView";
 	static const char * const k_pch_Camera_BoundsColorGammaG_Int32 = "cameraBoundsColorGammaG";
 	static const char * const k_pch_Camera_BoundsColorGammaB_Int32 = "cameraBoundsColorGammaB";
 	static const char * const k_pch_Camera_BoundsColorGammaA_Int32 = "cameraBoundsColorGammaA";

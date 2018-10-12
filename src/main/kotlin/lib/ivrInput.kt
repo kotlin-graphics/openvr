@@ -1,198 +1,228 @@
 package lib
 
-import ab.appBuffer
-import glm_.buffer.adr
-import openvr.lib.ETrackingUniverseOrigin
+import glm_.set
+import kool.adr
+import kool.rem
+import kool.stak
 import org.lwjgl.openvr.*
-import org.lwjgl.openvr.OpenVR.IVRInput
+import org.lwjgl.openvr.VRInput.*
 import org.lwjgl.system.MemoryUtil.NULL
-import org.lwjgl.system.MemoryUtil.memGetLong
-import vkk.adr
+import org.lwjgl.system.MemoryUtil.memCallocInt
+import java.io.File
+import java.net.URL
 import java.nio.ByteBuffer
 import java.nio.IntBuffer
-import java.nio.LongBuffer
 
+object vrInput : vrInterface {
 
-/**
- * Sets the path to the action manifest JSON file that is used by this application. If this information was set on the Steam partner site, calls to this
- * function are ignored. If the Steam partner site setting and the path provided by this call are different,
- * {@link VR#EVRInputError_VRInputError_MismatchedActionManifest} is returned.
- *
- * <p>This call must be made before the first call to {@link #VRInput_UpdateActionState UpdateActionState} or {@link VRSystem#VRSystem_PollNextEvent PollNextEvent}.</p>
- */
-fun IVRInput.setActionManifestPath(actionManifestPath: String): EVRInputError {
-    val actionManifestPathEncoded = appBuffer.bufferOfAscii(actionManifestPath)
-    return EVRInputError of VRInput.nVRInput_SetActionManifestPath(actionManifestPathEncoded.adr)
-}
+    val maxActionNameLength = 64
+    val maxActionSetNameLength = 64
+    val maxActionOriginCount = 16
 
-/** Returns a handle for an action set. This handle is used for all performance-sensitive calls. */
-fun IVRInput.getActionSetHandle(actionSetName: String, handle: VRActionSetHandleBuffer): EVRInputError {
-    val actionSetNameEncoded = appBuffer.bufferOfAscii(actionSetName)
-    return EVRInputError of VRInput.nVRInput_GetActionSetHandle(actionSetNameEncoded.adr, handle.adr)
-}
+    enum class Error {
+        None,
+        NameNotFound,
+        WrongType,
+        InvalidHandle,
+        InvalidParam,
+        NoSteam,
+        MaxCapacityReached,
+        IPCError,
+        NoActiveActionSet,
+        InvalidDevice,
+        InvalidSkeleton,
+        InvalidBoneCount,
+        InvalidCompressedData,
+        NoData,
+        BufferTooSmall,
+        MismatchedActionManifest,
+        MissingSkeletonData;
 
-/** Returns a handle for an action set. This handle is used for all performance-sensitive calls. */
-infix fun IVRInput.getActionSetHandle(actionSetName: String): VRActionSetHandle {
-    val actionSetNameEncoded = appBuffer.bufferOfAscii(actionSetName)
-    val handle = appBuffer.long
-    VRInput.nVRInput_GetActionSetHandle(actionSetNameEncoded.adr, handle)
-    return memGetLong(handle)
-}
+        val i = ordinal
 
-/** Returns a handle for an action. This handle is used for all performance-sensitive calls. */
-fun IVRInput.getActionHandle(actionName: String, handle: VRActionHandleBuffer): EVRInputError {
-    val actionNameEncoded = appBuffer.bufferOfAscii(actionName)
-    return EVRInputError of VRInput.nVRInput_GetActionHandle(actionNameEncoded.adr, handle.adr)
-}
+        companion object {
+            infix fun of(i: Int) = values().first { it.i == i }
+        }
 
-/** Returns a handle for an action. This handle is used for all performance-sensitive calls. */
-infix fun IVRInput.getActionHandle(actionName: String): VRActionHandle {
-    val actionNameEncoded = appBuffer.bufferOfAscii(actionName)
-    val handle = appBuffer.long
-    VRInput.nVRInput_GetActionHandle(actionNameEncoded.adr, handle)
-    return memGetLong(handle)
-}
+        fun check() {
+            if (this != None)
+                throw kotlin.Error(toString())
+        }
+    }
 
-/** Returns a handle for any path in the input system. E.g. {@code /user/hand/right}. */
-fun IVRInput.getInputSourceHandle(inputSourcePath: String, handle: VRInputValueHandleBuffer): EVRInputError {
-    val inputSourcePathEncoded = appBuffer.bufferOfAscii(inputSourcePath)
-    return EVRInputError of VRInput.nVRInput_GetInputSourceHandle(inputSourcePathEncoded.adr, handle.adr)
-}
+    val pError = memCallocInt(1)
 
-/** Returns a handle for any path in the input system. E.g. {@code /user/hand/right}. */
-infix fun IVRInput.getInputSourceHandle(inputSourcePath: String): VRInputValueHandle {
-    val inputSourcePathEncoded = appBuffer.bufferOfAscii(inputSourcePath)
-    val handle = appBuffer.long
-    VRInput.nVRInput_GetInputSourceHandle(inputSourcePathEncoded.adr, handle)
-    return memGetLong(handle)
-}
+    var error: Error
+        get() = Error of pError[0]
+        set(value) {
+            pError[0] = value.i
+        }
 
-/**
- * Reads the current state into all actions. After this call, the results of {@code Get*Action} calls will be the same until the next call to
- * {@code UpdateActionState}.
- */
-infix fun IVRInput.updateActionState(set: VRActiveActionSet): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_UpdateActionState(set.adr, VRActiveActionSet.SIZEOF, 1)
-}
+    enum class FilterCancelType { Timers, Momentum;
 
-/**
- * Reads the current state into all actions. After this call, the results of {@code Get*Action} calls will be the same until the next call to
- * {@code UpdateActionState}.
- */
-infix fun IVRInput.updateActionState(sets: VRActiveActionSet.Buffer): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_UpdateActionState(sets.adr, VRActiveActionSet.SIZEOF, sets.rem)
-}
+        val i = ordinal
 
-/**
- * Reads the state of a digital action given its handle. This will return {@link VR#EVRInputError_VRInputError_WrongType} if the type of action is something other
- * than digital.
- */
-fun IVRInput.getDigitalActionData(action: VRActionHandle, actionData: InputDigitalActionData): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_GetDigitalActionData(action, actionData.adr, 1)
-}
+        companion object {
+            infix fun of(i: Int) = values().first { it.i == i }
+        }
+    }
 
-/**
- * Reads the state of a digital action given its handle. This will return {@link VR#EVRInputError_VRInputError_WrongType} if the type of action is something other
- * than digital.
- */
-fun IVRInput.getDigitalActionData(action: VRActionHandle, actionData: InputDigitalActionData.Buffer): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_GetDigitalActionData(action, actionData.adr, actionData.rem)
-}
+    /**
+     * Sets the path to the action manifest JSON file that is used by this application. If this information was set on the Steam partner site, calls to this
+     * function are ignored. If the Steam partner site setting and the path provided by this call are different,
+     * {@link VR#EVRInputError_VRInputError_MismatchedActionManifest} is returned.
+     *
+     * <p>This call must be made before the first call to {@link #VRInput_UpdateActionState UpdateActionState} or {@link VRSystem#VRSystem_PollNextEvent PollNextEvent}.</p>
+     */
+    fun setActionManifestPath(actionManifestPath: URL): Error {
+        val file = File(actionManifestPath.file)
+        val pPath = addressOfAscii(file.absolutePath)
+        return Error of nVRInput_SetActionManifestPath(pPath)
+    }
 
-/**
- * Reads the state of an analog action given its handle. This will return {@link VR#EVRInputError_VRInputError_WrongType} if the type of action is something other
- * than analog.
- */
-fun IVRInput.getAnalogActionData(action: VRActionHandle, actionData: InputAnalogActionData): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_GetAnalogActionData(action, actionData.adr, 1)
-}
+    /**
+     * JVM custom
+     *
+     * Returns a handle for an action set. This handle is used for all performance-sensitive calls.
+     *
+     * Note: Multi-thread unsafe if reading the error from the class property. */
+    fun getActionSetHandle(actionSetName: String, pErr: VRInputErrorBuffer = pError): VRActionSetHandle =
+            stak.longAddress {
+                pErr[0] = nVRInput_GetActionSetHandle(addressOfAscii(actionSetName), it)
+            }
 
-/**
- * Reads the state of an analog action given its handle. This will return {@link VR#EVRInputError_VRInputError_WrongType} if the type of action is something other
- * than analog.
- */
-fun IVRInput.getAnalogActionData(action: VRActionHandle, actionData: InputAnalogActionData.Buffer): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_GetAnalogActionData(action, actionData.adr, actionData.rem)
-}
+    /** JVM custom
+     *
+     *  Returns a handle for an action. This handle is used for all performance-sensitive calls.
+     *
+     *  Note: Multi-thread unsafe if reading the error from the class property.     */
+    fun getActionHandle(actionName: String, pErr: VRInputErrorBuffer = pError): VRActionHandle =
+            stak.longAddress {
+                pErr[0] = nVRInput_GetActionHandle(addressOfAscii(actionName), it)
+            }
 
-/**
- * Reads the state of a pose action given its handle.
- *
- * @param origin one of:<br><table><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseSeated}</td></tr><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseStanding}</td></tr><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseRawAndUncalibrated}</td></tr></table>
- */
-fun IVRInput.getPoseActionData(action: VRActionHandle, origin: ETrackingUniverseOrigin, predictedSecondsFromNow: Float, actionData: InputPoseActionData): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_GetPoseActionData(action, origin.i, predictedSecondsFromNow, actionData.adr, 1)
-}
+    /** JVM custom
+     *
+     * Returns a handle for any path in the input system. E.g. {@code /user/hand/right}.
+     *
+     * Note: Multi-thread unsafe if reading the error from the class property.     */
+    fun getInputSourceHandle(inputSourcePath: String, pErr: VRInputErrorBuffer = pError): VRInputValueHandle =
+            stak.longAddress {
+                pErr[0] = nVRInput_GetInputSourceHandle(addressOfAscii(inputSourcePath), it)
+            }
 
-/**
- * Reads the state of a pose action given its handle.
- *
- * @param origin one of:<br><table><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseSeated}</td></tr><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseStanding}</td></tr><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseRawAndUncalibrated}</td></tr></table>
- */
-fun IVRInput.getPoseActionData(action: VRActionHandle, origin: ETrackingUniverseOrigin, predictedSecondsFromNow: Float, actionData: InputPoseActionData.Buffer): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_GetPoseActionData(action, origin.i, predictedSecondsFromNow, actionData.adr, actionData.rem)
-}
+    /**
+     * Reads the current state into all actions. After this call, the results of {@code Get*Action} calls will be the same until the next call to
+     * {@code UpdateActionState}.
+     */
+    infix fun updateActionState(set: VRActiveActionSet): Error =
+            Error of nVRInput_UpdateActionState(set.adr, VRActiveActionSet.SIZEOF, 1)
 
-/**
- * Reads the state of a skeletal action given its handle.
- *
- * @param boneParent one of:<br><table><tr><td>{@link VR#EVRSkeletalTransformSpace_VRSkeletalTransformSpace_Action}</td></tr><tr><td>{@link VR#EVRSkeletalTransformSpace_VRSkeletalTransformSpace_Parent}</td></tr><tr><td>{@link VR#EVRSkeletalTransformSpace_VRSkeletalTransformSpace_Additive}</td></tr></table>
- */
-fun IVRInput.getSkeletalActionData(action: VRActionHandle, boneParent: EVRSkeletalTransformSpace, predictedSecondsFromNow: Float, actionData: InputSkeletonActionData.Buffer, transformArray: VRBoneTransform.Buffer): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_GetSkeletalActionData(action, boneParent.i, predictedSecondsFromNow, actionData.adr, actionData.rem, transformArray.adr, transformArray.rem)
-}
+    /**
+     * Reads the current state into all actions. After this call, the results of {@code Get*Action} calls will be the same until the next call to
+     * {@code UpdateActionState}.
+     */
+    infix fun updateActionState(sets: VRActiveActionSet.Buffer): Error =
+            Error of nVRInput_UpdateActionState(sets.adr, VRActiveActionSet.SIZEOF, sets.rem)
 
-/**
- * Reads the state of a skeletal action given its handle in a compressed form that is suitable for sending over the network. The required buffer size will
- * never exceed ({@code sizeof(VR_BoneTransform_t)*boneCount + 2}). Usually the size will be much smaller.
- *
- * @param boneParent one of:<br><table><tr><td>{@link VR#EVRSkeletalTransformSpace_VRSkeletalTransformSpace_Action}</td></tr><tr><td>{@link VR#EVRSkeletalTransformSpace_VRSkeletalTransformSpace_Parent}</td></tr><tr><td>{@link VR#EVRSkeletalTransformSpace_VRSkeletalTransformSpace_Additive}</td></tr></table>
- * @param requiredCompressedSize ~ uint32 *
- */
-fun IVRInput.getSkeletalActionDataCompressed(action: VRActionHandle, boneParent: EVRSkeletalTransformSpace, predictedSecondsFromNow: Float, compressedData: ByteBuffer?, requiredCompressedSize: IntBuffer?): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_GetSkeletalActionDataCompressed(action, boneParent.i, predictedSecondsFromNow, compressedData?.adr ?: NULL, compressedData?.rem ?: 0, requiredCompressedSize?.adr ?: NULL)
-}
+    /**
+     * Reads the state of a digital action given its handle. This will return {@link VR#EVRInputError_VRInputError_WrongType} if the type of action is something other
+     * than digital. TODO more convenient?
+     */
+    fun getDigitalActionData(action: VRActionHandle, actionData: InputDigitalActionData, restrictToDevice: VRInputValueHandle): Error =
+            Error of nVRInput_GetDigitalActionData(action, actionData.adr, actionData.sizeof(), restrictToDevice)
 
-/** Turns a compressed buffer from {@link #VRInput_GetSkeletalActionDataCompressed GetSkeletalActionDataCompressed} and turns it back into a bone transform array.
- *  @param boneParent ~ EVRSkeletalTransformSpace *
- *  */
-fun IVRInput.uncompressSkeletalActionData(compressedBuffer: ByteBuffer, boneParent: IntBuffer, transformArray: VRBoneTransform.Buffer): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_UncompressSkeletalActionData(compressedBuffer.adr, compressedBuffer.rem, boneParent.adr, transformArray.adr, transformArray.rem)
-}
+    /**
+     * Reads the state of a digital action given its handle. This will return {@link VR#EVRInputError_VRInputError_WrongType} if the type of action is something other
+     * than digital. TODO more convenient?
+     */
+    fun getDigitalActionData(action: VRActionHandle, actionData: InputDigitalActionData.Buffer, restrictToDevice: VRInputValueHandle): Error =
+            Error of nVRInput_GetDigitalActionData(action, actionData.adr, actionData.rem, restrictToDevice)
 
-/** Triggers a haptic event as described by the specified action. */
-fun IVRInput.triggerHapticVibrationAction(action: VRActionHandle, startSecondsFromNow: Float, durationSeconds: Float, frequency: Float, amplitude: Float): EVRInputError {
-    return EVRInputError of VRInput.VRInput_TriggerHapticVibrationAction(action, startSecondsFromNow, durationSeconds, frequency, amplitude)
-}
+    /**
+     * Reads the state of an analog action given its handle. This will return {@link VR#EVRInputError_VRInputError_WrongType} if the type of action is something other
+     * than analog. TODO more convenient?
+     */
+    fun getAnalogActionData(action: VRActionHandle, actionData: InputAnalogActionData, restrictToDevice: VRInputValueHandle): Error =
+            Error of nVRInput_GetAnalogActionData(action, actionData.adr, 1, restrictToDevice)
 
-/** Retrieve origin handles for an action.
- *  @param originsOut ~ VRInputValueHandle *
- *  */
-fun IVRInput.getActionOrigins(actionSetHandle: VRActionSetHandle, digitalActionHandle: VRActionHandle, originsOut: LongBuffer): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_GetActionOrigins(actionSetHandle, digitalActionHandle, originsOut.adr, originsOut.rem)
-}
+    /**
+     * Reads the state of an analog action given its handle. This will return {@link VR#EVRInputError_VRInputError_WrongType} if the type of action is something other
+     * than analog. TODO more convenient?
+     */
+    fun getAnalogActionData(action: VRActionHandle, actionData: InputAnalogActionData.Buffer, restrictToDevice: VRInputValueHandle): Error =
+            Error of nVRInput_GetAnalogActionData(action, actionData.adr, actionData.rem, restrictToDevice)
 
-/** Retrieves the name of the origin in the current language. */
-fun IVRInput.getOriginLocalizedName(origin: VRInputValueHandle, nameArray: ByteBuffer): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_GetOriginLocalizedName(origin, nameArray.adr, nameArray.rem)
-}
+    /**
+     * Reads the state of a pose action given its handle. TODO more convenient?
+     *
+     * @param origin one of:<br><table><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseSeated}</td></tr><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseStanding}</td></tr><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseRawAndUncalibrated}</td></tr></table>
+     */
+    fun getPoseActionData(action: VRActionHandle, origin: TrackingUniverseOrigin, predictedSecondsFromNow: Float,
+                          actionData: InputPoseActionData, restrictToDevice: VRInputValueHandle): Error =
+            Error of nVRInput_GetPoseActionData(action, origin.i, predictedSecondsFromNow, actionData.adr, InputPoseActionData.SIZEOF, restrictToDevice)
 
-/** Retrieves useful information for the origin of this action. */
-fun IVRInput.getOriginTrackedDeviceInfo(origin: VRInputValueHandle, originInfo: InputOriginInfo): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_GetOriginTrackedDeviceInfo(origin, originInfo.adr, 1)
-}
+    /**
+     * Reads the state of a pose action given its handle. TODO more convenient?
+     *
+     * @param origin one of:<br><table><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseSeated}</td></tr><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseStanding}</td></tr><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseRawAndUncalibrated}</td></tr></table>
+     */
+    fun getPoseActionData(action: VRActionHandle, origin: TrackingUniverseOrigin, predictedSecondsFromNow: Float,
+                          actionData: InputPoseActionData.Buffer, restrictToDevice: VRInputValueHandle): Error =
+            Error of VRInput.nVRInput_GetPoseActionData(action, origin.i, predictedSecondsFromNow, actionData.adr, actionData.rem, restrictToDevice)
 
-/** Retrieves useful information for the origin of this action. */
-fun IVRInput.getOriginTrackedDeviceInfo(origin: VRInputValueHandle, originInfo: InputOriginInfo.Buffer): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_GetOriginTrackedDeviceInfo(origin, originInfo.adr, originInfo.rem)
-}
+    /**
+     * Reads the state of a skeletal action given its handle. TODO more convenient?
+     */
+    fun getSkeletalActionData(action: VRActionHandle, actionData: InputSkeletalActionData.Buffer, restrictToDevice: VRInputValueHandle): Error =
+            Error of nVRInput_GetSkeletalActionData(action, actionData.adr, actionData.rem, restrictToDevice)
 
-/** Shows the current binding for the action in-headset. */
-fun IVRInput.showActionOrigins(actionSetHandle: VRActionSetHandle, actionHandle: VRActionHandle): EVRInputError {
-    return EVRInputError of VRInput.VRInput_ShowActionOrigins(actionSetHandle, actionHandle)
-}
+// --------------- Skeletal Bone Data ------------------- //
 
-/** Shows the current binding all the actions in the specified action sets. */
-fun IVRInput.showBindingsForActionSet(sets: VRActiveActionSet.Buffer, originToHighlight: VRInputValueHandle): EVRInputError {
-    return EVRInputError of VRInput.nVRInput_ShowBindingsForActionSet(sets.adr, VRActiveActionSet.SIZEOF, sets.rem, originToHighlight)
+    /** Reads the state of the skeletal bone data associated with this action and copies it into the given buffer. */
+    fun getSkeletalBoneData(action: VRActionHandle, transformSpace: VRSkeletalTransformSpace, motionRange: VRSkeletalMotionRange, transformArray: VRBoneTransform.Buffer, restrictToDevice: VRInputValueHandle): Error =
+            Error of nVRInput_GetSkeletalBoneData(action, transformSpace.i, motionRange.i, transformArray.adr, transformArray.rem, restrictToDevice)
+
+    /**
+     * Reads the state of the skeletal bone data in a compressed form that is suitable for sending over the network. The required buffer size will never
+     * exceed ({@code sizeof(VR_BoneTransform_t)*boneCount + 2}). Usually the size will be much smaller.
+     */
+    fun getSkeletalBoneDataCompressed(action: VRActionHandle, transformSpace: VRSkeletalTransformSpace, motionRange: VRSkeletalMotionRange, compressedData: ByteBuffer?, requiredCompressedSize: IntBuffer?, restrictToDevice: VRInputValueHandle): Error =
+            Error of nVRInput_GetSkeletalBoneDataCompressed(action, transformSpace.i, motionRange.i, compressedData?.adr
+                    ?: NULL, compressedData?.rem ?: 0, requiredCompressedSize?.adr ?: NULL, restrictToDevice)
+
+    /** Turns a compressed buffer from GetSkeletalBoneDataCompressed and turns it back into a bone transform array. */
+//    virtual EVRInputError DecompressSkeletalBoneData( void *pvCompressedBuffer, uint32_t unCompressedBufferSize, EVRSkeletalTransformSpace *peTransformSpace, VR_ARRAY_COUNT( unTransformArrayCount ) VRBoneTransform_t *pTransformArray, uint32_t unTransformArrayCount ) = 0
+
+    /** Triggers a haptic event as described by the specified action. */
+    fun triggerHapticVibrationAction(action: VRActionHandle, startSecondsFromNow: Float, durationSeconds: Float, frequency: Float,
+                                     amplitude: Float, restrictToDevice: VRInputValueHandle): Error =
+            Error of VRInput_TriggerHapticVibrationAction(action, startSecondsFromNow, durationSeconds, frequency, amplitude, restrictToDevice)
+
+    /** Retrieve origin handles for an action. TODO more convenient? */
+    fun getActionOrigins(actionSetHandle: VRActionSetHandle, digitalActionHandle: VRActionHandle, originsOut: VRInputValueHandleBuffer): Error =
+            Error of nVRInput_GetActionOrigins(actionSetHandle, digitalActionHandle, originsOut.adr, originsOut.rem)
+
+    /** Retrieves the name of the origin in the current language. TODO more convenient? */
+    fun getOriginLocalizedName(origin: VRInputValueHandle, nameArray: ByteBuffer): Error =
+            Error of nVRInput_GetOriginLocalizedName(origin, nameArray.adr, nameArray.rem)
+
+    /** Retrieves useful information for the origin of this action. TODO more convenient? */
+    fun getOriginTrackedDeviceInfo(origin: VRInputValueHandle, originInfo: InputOriginInfo): Error =
+            Error of nVRInput_GetOriginTrackedDeviceInfo(origin, originInfo.adr, 1)
+
+    /** Retrieves useful information for the origin of this action. TODO more convenient? */
+    fun getOriginTrackedDeviceInfo(origin: VRInputValueHandle, originInfo: InputOriginInfo.Buffer): Error =
+            Error of nVRInput_GetOriginTrackedDeviceInfo(origin, originInfo.adr, originInfo.rem)
+
+    /** Shows the current binding for the action in-headset. */
+    fun showActionOrigins(actionSetHandle: VRActionSetHandle, actionHandle: VRActionHandle): Error =
+            Error of VRInput_ShowActionOrigins(actionSetHandle, actionHandle)
+
+    /** Shows the current binding all the actions in the specified action sets. */
+    fun showBindingsForActionSet(sets: VRActiveActionSet.Buffer, originToHighlight: VRInputValueHandle): Error =
+            Error of nVRInput_ShowBindingsForActionSet(sets.adr, VRActiveActionSet.SIZEOF, sets.rem, originToHighlight)
+
+    override val version: String
+        get() = "IVRInput_004"
 }

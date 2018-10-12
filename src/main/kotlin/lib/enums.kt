@@ -1,5 +1,11 @@
 package lib
 
+import kool.stak
+import org.lwjgl.openvr.VR.VR_GetVRInitErrorAsEnglishDescription
+import org.lwjgl.openvr.VR.VR_GetVRInitErrorAsSymbol
+import org.lwjgl.openvr.VRSystem.*
+import org.lwjgl.system.MemoryUtil.memASCII
+
 enum class VREye(@JvmField val i: Int) {
     Left(0),
     Right(1);
@@ -14,21 +20,27 @@ enum class VREye(@JvmField val i: Int) {
 
 /** This texture is used directly by our renderer, so only perform atomic (copyresource or resolve) on it   */
 enum class TextureType {
+    /** Handle has been invalidated */
+    Invalid,
     /** Handle is an ID3D11Texture  */
     DirectX,
     /** Handle is an OpenGL texture name or an OpenGL render buffer name, depending on submit flags */
     OpenGL,
     /** Handle is a pointer to a VRVulkanTextureData_t structure    */
     Vulkan,
-    /** Handle is a macOS cross-process-sharable IOSurfaceRef   */
+    /** Handle is a macOS cross-process-sharable IOSurfaceRef, deprecated in favor of TextureType_Metal on supported platforms   */
     IOSurface,
     /** Handle is a pointer to a D3D12TextureData_t structure   */
     DirectX12,
     /** Handle is a HANDLE DXGI share handle, only supported for Overlay render targets.    */
-    DXGISharedHandle;
+    DXGISharedHandle,
+    /** Handle is a MTLTexture conforming to the MTLSharedTexture protocol. Textures submitted to IVRCompositor::Submit which
+     *  are of type MTLTextureType2DArray assume layer 0 is the left eye texture (vr::EVREye::Eye_left), layer 1 is the right
+     *  eye texture (vr::EVREye::Eye_Right); */
+    Metal;
 
     @JvmField
-    val i = ordinal
+    val i = ordinal - 1
 
     companion object {
         infix fun of(i: Int) = values().first { it.i == i }
@@ -168,7 +180,7 @@ enum class TrackedDeviceProperty(@JvmField val i: Int) {
     /** Used for devices that will never have a valid pose by design    */
     NeverTracked_Bool(1038),
     NumCameras_Int32(1039),
-    /** EVRTrackedCameraFrameLayout value */
+    /** FrameLayout value */
     CameraFrameLayout_Int32(1040),
 
     // Properties that are unique to TrackedDeviceClass_HMD
@@ -244,19 +256,31 @@ enum class TrackedDeviceProperty(@JvmField val i: Int) {
     ImuFactoryGyroScale_Vector3(2065),
     ImuFactoryAccelerometerBias_Vector3(2066),
     ImuFactoryAccelerometerScale_Vector3(2067),
+    // reserved 2068
+    ConfigurationIncludesLighthouse20Features_Bool(2069),
+    // Driver requested mura correction properties
+    DriverRequestedMuraCorrectionMode_Int32(2200),
+    DriverRequestedMuraFeather_InnerLeft_Int32(2201),
+    DriverRequestedMuraFeather_InnerRight_Int32(2202),
+    DriverRequestedMuraFeather_InnerTop_Int32(2203),
+    DriverRequestedMuraFeather_InnerBottom_Int32(2204),
+    DriverRequestedMuraFeather_OuterLeft_Int32(2205),
+    DriverRequestedMuraFeather_OuterRight_Int32(2206),
+    DriverRequestedMuraFeather_OuterTop_Int32(2207),
+    DriverRequestedMuraFeather_OuterBottom_Int32(2208),
 
     // Properties that are unique to TrackedDeviceClass_Controller
     AttachedDeviceId_String(3000),
     SupportedButtons_Uint64(3001),
-    /** Return value is of value openvr.lib.EVRControllerAxisType   */
+    /** Return value is of value openvr.lib.VRControllerAxisType   */
     Axis0Type_Int32(3002),
-    /** Return value is of value openvr.lib.EVRControllerAxisType   */
+    /** Return value is of value openvr.lib.VRControllerAxisType   */
     Axis1Type_Int32(3003),
-    /** Return value is of value openvr.lib.EVRControllerAxisType   */
+    /** Return value is of value openvr.lib.VRControllerAxisType   */
     Axis2Type_Int32(3004),
-    /** Return value is of value openvr.lib.EVRControllerAxisType   */
+    /** Return value is of value openvr.lib.VRControllerAxisType   */
     Axis3Type_Int32(3005),
-    /** Return value is of value openvr.lib.EVRControllerAxisType   */
+    /** Return value is of value openvr.lib.VRControllerAxisType   */
     Axis4Type_Int32(3006),
     /** Return value is of value openvr.lib.TrackedControllerRole  */
     ControllerRoleHint_Int32(3007),
@@ -305,6 +329,7 @@ enum class TrackedDeviceProperty(@JvmField val i: Int) {
     HasCameraComponent_Bool(6004),
     HasDriverDirectModeComponent_Bool(6005),
     HasVirtualDisplayComponent_Bool(6006),
+    HasSpatialAnchorsSupport_Bool(6007),
 
     // Properties that are set internally based on other information provided by drivers
     ControllerType_String(7000),
@@ -343,6 +368,9 @@ enum class TrackedPropertyError(@JvmField val i: Int) {
     companion object {
         infix fun of(i: Int) = values().first { it.i == i }
     }
+
+    /** Returns a string that corresponds with the specified property error. The string will be the name of the error enum value for all valid error codes. */
+    override fun toString(): String = stak { memASCII(nVRSystem_GetPropErrorNameFromEnum(i)) }
 }
 
 /** Allows the application to control how scene textures are used by the compositor when calling Submit. */
@@ -372,7 +400,7 @@ enum class SubmitFlags(@JvmField val i: Int) {
 }
 
 /** Status of the overall system or tracked objects */
-enum class EVRState(@JvmField val i: Int) {
+enum class VRState(@JvmField val i: Int) {
 
     Undefined(-1),
     Off(0),
@@ -390,7 +418,7 @@ enum class EVRState(@JvmField val i: Int) {
 }
 
 /** The types of events that could be posted (and what the parameters mean for each event value) */
-enum class EVREventType(@JvmField val i: Int) {
+enum class VREventType(@JvmField val i: Int) {
 
     None(0),
 
@@ -572,6 +600,7 @@ enum class EVREventType(@JvmField val i: Int) {
     PerfSectionSettingChanged(863),
     DashboardSectionSettingChanged(864),
     WebInterfaceSectionSettingChanged(865),
+    TrackersSectionSettingChanged(866),
 
     StatusUpdate(900),
 
@@ -615,10 +644,22 @@ enum class EVREventType(@JvmField val i: Int) {
     MessageOverlayCloseRequested(1651),
     /** data is hapticVibration */
     Input_HapticVibration(1700),
-    /** data is process */
+    /** data is inputBinding */
     BindingLoadFailed(1701),
-    /** data is process */
+    /** data is inputBinding */
     BindingLoadSuccessful(1702),
+    /** no data */
+    Input_ActionManifestReloaded(1703),
+    /** data is actionManifest */
+    Input_ActionManifestLoadFailed(1704),
+    /** data is spatialAnchor. broadcast */
+    SpatialAnchors_PoseUpdated(1800),
+    /** data is spatialAnchor. broadcast */
+    SpatialAnchors_DescriptorUpdated(1801),
+    /** data is spatialAnchor. sent to specific driver */
+    SpatialAnchors_RequestPoseUpdate(1802),
+    /** data is spatialAnchor. sent to specific driver */
+    SpatialAnchors_RequestDescriptorUpdate(1803),
 
     // Vendors are free to expose private events in this reserved region
     VendorSpecific_Reserved_Start(10000),
@@ -627,6 +668,9 @@ enum class EVREventType(@JvmField val i: Int) {
     companion object {
         infix fun of(i: Int) = values().first { it.i == i }
     }
+
+    /** Returns the name of an {@code EVREvent} enum value. */
+    override fun toString(): String = stak { memASCII(nVRSystem_GetEventTypeNameFromEnum(i)) }
 }
 
 /** Level of Hmd activity
@@ -635,7 +679,7 @@ enum class EVREventType(@JvmField val i: Int) {
  *  VREvent_TrackedDeviceUserInteractionStarted fires when the devices transitions from Standby -> UserInteraction or
  *  Idle -> UserInteraction.
  *  VREvent_TrackedDeviceUserInteractionEnded fires when the devices transitions from UserInteraction_Timeout -> Idle   */
-enum class EDeviceActivityLevel(@JvmField val i: Int) {
+enum class DeviceActivityLevel(@JvmField val i: Int) {
 
     Unknown(-1),
     /** No activity for the last 10 seconds */
@@ -653,7 +697,7 @@ enum class EDeviceActivityLevel(@JvmField val i: Int) {
 }
 
 /** VR controller button and axis IDs */
-enum class EVRButtonId(@JvmField val i: Int) {
+enum class VRButtonId(@JvmField val i: Int) {
 
     System(0),
     ApplicationMenu(1),
@@ -678,6 +722,10 @@ enum class EVRButtonId(@JvmField val i: Int) {
 
     Dashboard_Back(Grip.i),
 
+    Knuckles_A(Grip.i),
+    Knuckles_B(ApplicationMenu.i),
+    Knuckles_JoyStick(Axis3.i),
+
     Max(64);
 
     companion object {
@@ -685,10 +733,14 @@ enum class EVRButtonId(@JvmField val i: Int) {
     }
 
     val mask get() = 1L shl i
+
+    /** Returns the name of an {@code EVREvent} enum value. */
+    @Deprecated("This function is deprecated in favor of the new IVRInput system.")
+    override fun toString(): String = stak { memASCII(nVRSystem_GetButtonIdNameFromEnum(i)) }
 }
 
 /** used for simulated mouse events in overlay space */
-enum class EVRMouseButton(@JvmField val i: Int) {
+enum class VRMouseButton(@JvmField val i: Int) {
 
     Left(0x0001),
     Right(0x0002),
@@ -699,7 +751,7 @@ enum class EVRMouseButton(@JvmField val i: Int) {
     }
 }
 
-enum class EDualAnalogWhich {
+enum class DualAnalogWhich {
     Left, Right;
 
     val i = ordinal
@@ -709,32 +761,7 @@ enum class EDualAnalogWhich {
     }
 }
 
-enum class EVRInputError {
-    None,
-    NameNotFound,
-    WrongType,
-    InvalidHandle,
-    InvalidParam,
-    NoSteam,
-    MaxCapacityReached,
-    IPCError,
-    NoActiveActionSet,
-    InvalidDevice,
-    InvalidSkeleton,
-    InvalidBoneCount,
-    InvalidCompressedData,
-    NoData,
-    BufferTooSmall,
-    MismatchedActionManifest;
-
-    val i = ordinal
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
-
-enum class EHiddenAreaMeshType(@JvmField val i: Int) {
+enum class HiddenAreaMeshType(@JvmField val i: Int) {
 
     Standard(0),
     Inverse(1),
@@ -747,7 +774,7 @@ enum class EHiddenAreaMeshType(@JvmField val i: Int) {
 }
 
 /** Identifies what kind of axis is on the controller at index n. Read this value with pVRSystem->Get( nControllerDeviceIndex, Prop_Axis0Type_Int32 + n );   */
-enum class EVRControllerAxisType(@JvmField val i: Int) {
+enum class VRControllerAxisType(@JvmField val i: Int) {
 
     None(0),
     TrackPad(1),
@@ -758,10 +785,14 @@ enum class EVRControllerAxisType(@JvmField val i: Int) {
     companion object {
         infix fun of(i: Int) = values().first { it.i == i }
     }
+
+    /** Returns the name of an {@code EVREvent} enum value. */
+    @Deprecated("This function is deprecated in favor of the new IVRInput system.")
+    override fun toString(): String = stak { memASCII(nVRSystem_GetControllerAxisTypeNameFromEnum(i)) }
 }
 
 /** determines how to provide output to the application of various event processing functions. */
-enum class EVRControllerEventOutputType(@JvmField val i: Int) {
+enum class VRControllerEventOutputType(@JvmField val i: Int) {
 
     OSEvents(0),
     VREvents(1);
@@ -772,7 +803,7 @@ enum class EVRControllerEventOutputType(@JvmField val i: Int) {
 }
 
 /** Collision Bounds Style */
-enum class ECollisionBoundsStyle(@JvmField val i: Int) {
+enum class CollisionBoundsStyle(@JvmField val i: Int) {
 
     BEGINNER(0),
     INTERMEDIATE(1),
@@ -781,41 +812,6 @@ enum class ECollisionBoundsStyle(@JvmField val i: Int) {
     NONE(4),
 
     COUNT(5);
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
-
-/** Errors that can occur around VR overlays */
-enum class EVROverlayError(@JvmField val i: Int) {
-
-    None(0),
-
-    UnknownOverlay(10),
-    InvalidHandle(11),
-    PermissionDenied(12),
-    /** No more overlays could be created because the maximum number already exist  */
-    OverlayLimitExceeded(13),
-    WrongVisibilityType(14),
-    KeyTooLong(15),
-    NameTooLong(16),
-    KeyInUse(17),
-    WrongTransformType(18),
-    InvalidTrackedDevice(19),
-    InvalidParameter(20),
-    ThumbnailCantBeDestroyed(21),
-    ArrayTooSmall(22),
-    RequestFailed(23),
-    InvalidTexture(24),
-    UnableToLoadFile(25),
-    KeyboardAlreadyInUse(26),
-    NoNeighbor(27),
-    TooManyMaskPrimitives(29),
-    BadMaskPrimitive(30),
-    TextureAlreadyLocked(31),
-    TextureLockCapacityReached(32),
-    TextureNotLocked(33);
 
     companion object {
         infix fun of(i: Int) = values().first { it.i == i }
@@ -851,7 +847,7 @@ enum class VRApplication(@JvmField val i: Int) {
 }
 
 /** error codes for firmware */
-enum class EVRFirmwareError(@JvmField val i: Int) {
+enum class VRFirmwareError(@JvmField val i: Int) {
 
     None(0),
     Success(1),
@@ -862,18 +858,18 @@ enum class EVRFirmwareError(@JvmField val i: Int) {
     }
 }
 
-/** error codes for notifications */
-enum class EVRNotificationError(@JvmField val i: Int) {
 
-    OK(0),
-    InvalidNotificationId(100),
-    NotificationQueueFull(101),
-    InvalidOverlayHandle(102),
-    SystemWithUserValueAlreadyExists(103);
+enum class VRSkeletalMotionRange {
+    /** The range of motion of the skeleton takes into account any physical limits imposed by
+     *  the controller itself.  This will tend to be the most accurate pose compared to the user's
+     *  actual hand pose, but might not allow a closed fist for example */
+    WithController,
+    /** Retarget the range of motion provided by the input device to make the hand appear to move
+     *  as if it was not holding a controller.  eg: map "hand grasping controller" to "closed fist" */
+    WithoutController;
 
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
+    @JvmField
+    val i = ordinal
 }
 
 /** error codes returned by Vr_Init */
@@ -927,6 +923,7 @@ enum class VRInitError(@JvmField val i: Int) {
     Init_FirmwareRecoveryBusy(139),
     Init_USBServiceBusy(140),
     VRWebHelperStartupFailed(141),
+    TrackerManagerInitFailed(142),
 
     Driver_Failed(200),
     Driver_Unknown(201),
@@ -981,88 +978,30 @@ enum class VRInitError(@JvmField val i: Int) {
     companion object {
         infix fun of(i: Int) = values().first { it.i == i }
     }
+
+    /** Returns the name of the enum value for an EVRInitError. This function may be called outside of VR_Init()/VR_Shutdown().
+     *  Also VRInitError::asSymbol */
+    val asSymbol: String
+        get() = VR_GetVRInitErrorAsSymbol(i)!!
+
+    /** Returns an English string for an EVRInitError. Applications should call VR_GetVRInitErrorAsSymbol instead and
+     * use that as a key to look up their own localized error message. This function may be called outside of VR_Init()/VR_Shutdown(). */
+    val asEnglishDescription: String
+        get() = VR_GetVRInitErrorAsEnglishDescription(i)!!
 }
 
-enum class EVRScreenshotType(@JvmField val i: Int) {
-
-    None(0),
-    /** left eye only   */
-    Mono(1),
-    Stereo(2),
-    Cubemap(3),
-    MonoPanorama(4),
-    StereoPanorama(5);
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
-
-enum class EVRScreenshotPropertyFilenames(@JvmField val i: Int) {
-
-    Preview(0),
-    VR(1);
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
-
-enum class EVRTrackedCameraError(@JvmField val i: Int) {
-
-    None(0),
-    OperationFailed(100),
-    InvalidHandle(101),
-    InvalidFrameHeaderVersion(102),
-    OutOfHandles(103),
-    IPCFailure(104),
-    NotSupportedForThisDevice(105),
-    SharedMemoryFailure(106),
-    FrameBufferingFailure(107),
-    StreamSetupFailure(108),
-    InvalidGLTextureId(109),
-    InvalidSharedTextureHandle(110),
-    FailedToGetGLTextureId(111),
-    SharedTextureFailure(112),
-    NoFrameAvailable(113),
-    InvalidArgument(114),
-    InvalidFrameBufferSize(115);
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
-
-enum class EVRTrackedCameraFrameLayout(@JvmField val i: Int) {
-    Mono(0x0001),
-    Stereo(0x0002),
-    /** Stereo frames are Top/Bottom (left/right) */
-    VerticalLayout(0x0010),
-    /** Stereo frames are Left/Right */
-    HorizontalLayout(0x0020), ;
-}
-
-enum class EVRTrackedCameraFrameType(@JvmField val i: Int) {
-    /** This is the camera video frame size in pixels), still distorted.    */
-    Distorted(0),
-    /** In pixels), an undistorted inscribed rectangle region without invalid regions. This size is subject to changes
-     *  shortly. */
-    Undistorted(1),
-    /** In pixels), maximum undistorted with invalid regions. Non zero alpha component identifies valid regions.    */
-    MaximumUndistorted(2),
-    MAX(3);
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
-
-enum class EVSync {
+enum class VSync {
     None,
     /** block following render work until vsync */
     WaitRender,
     /** do not block following render work (allow to get started early) */
     NoWaitRender
+}
+
+enum class VRMuraCorrectionMode { Default, NoCorrection;
+
+    @JvmField
+    val i = ordinal
 }
 
 /** raw IMU data provided by IVRIOBuffer from paths to tracked devices with IMUs */
@@ -1077,349 +1016,28 @@ enum class ImuOffScaleFlags(val i: Int) {
 
 // ivrsystem.h
 
-// ivrapplications.h
+// ivrapplications.h -> class
 
-/** Used for all errors reported by the openvr.lib.IVRApplications interface */
-enum class EVRApplicationError(@JvmField val i: Int) {
+// ivrsettings.h -> class
 
-    None(0),
-    /** Only one application can use any given key  */
-    AppKeyAlreadyExists(100),
-    /** the running application does not have a manifest    */
-    NoManifest(101),
-    /** No application is running   */
-    NoApplication(102),
-    InvalidIndex(103),
-    /** the application could not be found  */
-    UnknownApplication(104),
-    /** An IPC failure caused the request to fail   */
-    IPCFailed(105),
-    ApplicationAlreadyRunning(106),
-    InvalidManifest(107),
-    InvalidApplication(108),
-    /** the process didn't start    */
-    LaunchFailed(109),
-    /** the system was already starting the same application    */
-    ApplicationAlreadyStarting(110),
-    /** The system was already starting a different application */
-    LaunchInProgress(111),
-    OldApplicationQuitting(112),
-    TransitionAborted(113),
-    /** error when you try to call LaunchApplication() on a template value app (use LaunchTemplateApplication)  */
-    IsTemplate(114),
-    SteamVRIsExiting(115),
-    /** The provided buffer was too small to fit the requested data */
-    BufferTooSmall(200),
-    /** The requested property was not set  */
-    PropertyNotSet(201),
-    UnknownProperty(202),
-    InvalidParameter(203);
+// ivrchaperone.h -> class
 
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
+// ivrchaperonesetup.h -> class
 
-/** these are the properties available on applications. */
-enum class EVRApplicationProperty(@JvmField val i: Int) {
+// ivrcompositor.h -> class
 
-    Name_String(0),
+// ivrnotifications.h -> class
 
-    LaunchType_String(11),
-    WorkingDirectory_String(12),
-    BinaryPath_String(13),
-    Arguments_String(14),
-    URL_String(15),
+// ivroverlay.h -> class
 
-    Description_String(50),
-    NewsURL_String(51),
-    ImagePath_String(52),
-    Source_String(53),
-    ActionManifestURL_String(54),
+enum class VRSkeletalTransformSpace { Model, Parent, Additive;
 
-    IsDashboardOverlay_Bool(60),
-    IsTemplate_Bool(61),
-    IsInstanced_Bool(62),
-    IsInternal_Bool(63),
-    WantsCompositorPauseInStandby_Bool(64),
-
-    LastLaunchTime_Uint64(70);
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
-
-/** These are states the scene application startup process will go through. */
-enum class EVRApplicationTransitionState(@JvmField val i: Int) {
-
-    None(0),
-
-    OldAppQuitSent(10),
-    WaitingForExternalLaunch(11),
-
-    NewAppLaunched(20);
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
-
-// ivrsettings.h
-
-enum class EVRSettingsError(@JvmField val i: Int) {
-
-    None(0),
-    IPCFailed(1),
-    WriteFailed(2),
-    ReadFailed(3),
-    JsonParseFailed(4),
-    /** This will be returned if the setting does not appear in the appropriate default file and has not been set   */
-    UnsetSettingHasNoDefault(5);
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
-
-// ivrchaperone.h =================================================================================================================================================
-
-enum class ChaperoneCalibrationState(@JvmField val i: Int) {
-
-    // OK!
-    /**  Chaperone is fully calibrated and working correctly     */
-    OK(1),
-
-    // Warnings
-    Warning(100),
-    /** A base station thinks that it might have moved  */
-    Warning_BaseStationMayHaveMoved(101),
-    /** There are less base stations than when calibrated   */
-    Warning_BaseStationRemoved(102),
-    /** Seated bounds haven't been calibrated for the current tracking center   */
-    Warning_SeatedBoundsInvalid(103),
-
-    // Errors
-    /** The UniverseID is invalid   */
-    Error(200),
-    /** Tracking center hasn't be calibrated for at least one of the base stations  */
-    Error_BaseStationUninitialized(201),
-    /** Tracking center is calibrated), but base stations disagree on the tracking space    */
-    Error_BaseStationConflict(202),
-    /** Play Area hasn't been calibrated for the current tracking center    */
-    Error_PlayAreaInvalid(203),
-    /** Collision Bounds haven't been calibrated for the current tracking center    */
-    Error_CollisionBoundsInvalid(204);
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
-
-// ivrchaperonesetup.h
-
-enum class EChaperoneConfigFile(@JvmField val i: Int) {
-    /** The live chaperone config, used by most applications and games  */
-    Live(1),
-    /** The temporary chaperone config, used to live-preview collision bounds in room setup */
-    Temp(2);
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
-
-enum class EChaperoneImportFlags(@JvmField val i: Int) {
-
-    BoundsOnly(0x0001);
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
-
-// ivrcompositor.h ================================================================================================================================================
-
-/** Errors that can occur with the VR compositor */
-enum class EVRCompositorError(@JvmField val i: Int) {
-
-    None(0),
-    RequestFailed(1),
-    IncompatibleVersion(100),
-    DoNotHaveFocus(101),
-    InvalidTexture(102),
-    IsNotSceneApplication(103),
-    TextureIsOnWrongDevice(104),
-    TextureUsesUnsupportedFormat(105),
-    SharedTexturesNotSupported(106),
-    IndexOutOfRange(107),
-    AlreadySubmitted(108),
-    InvalidBounds(109);
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
-
-/** Timing mode passed to SetExplicitTimingMode(); see that function for documentation */
-enum class EVRCompositorTimingMode {
-    Implicit, RuntimePerformsPostPresentHandoff, ApplicationPerformsPostPresentHandoff;
-
+    @JvmField
     val i = ordinal
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
-
-// ivrnotifications.h
-
-/** Be aware that the notification value is used as 'priority' to pick the next notification */
-enum class EVRNotificationType(@JvmField val i: Int) {
-
-    /** Transient notifications are automatically hidden after a period of time set by the user.
-     *  They are used for things like information and chat messages that do not require user interaction. */
-    Transient(0),
-
-    /** Persistent notifications are shown to the user until they are hidden by calling RemoveNotification().
-     *  They are used for things like phone calls and alarms that require user interaction. */
-    Persistent(1),
-
-    /** System notifications are shown no matter what. It is expected), that the ::userValue is used as ID.
-     *  If there is already a system notification in the queue with that ID it is not accepted into the queue to
-     *  prevent spamming with system notification */
-    Transient_SystemWithUserValue(2);
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
-
-enum class EVRNotificationStyle(@JvmField val i: Int) {
-
-    /** Creates a notification with minimal external styling. */
-    None(0),
-
-    /** Used for notifications about overlay-level status. In Steam this is used for events like downloads completing. */
-    Application(100),
-
-    /** Used for notifications about contacts that are unknown or not available. In Steam this is used for friend
-     * invitations and offline friends. */
-    Contact_Disabled(200),
-
-    /** Used for notifications about contacts that are available but inactive. In Steam this is used for friends that
-     * are online but not playing a game. */
-    Contact_Enabled(201),
-
-    /** Used for notifications about contacts that are available and active. In Steam this is used for friends that
-     * are online and currently running a game. */
-    Contact_Active(202);
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
-
-// ivroverlay.h
-
-/** Types of input supported by VR Overlays */
-enum class VROverlayInputMethod {
-    /** No input events will be generated automatically for this overlay    */
-    None,
-    /** Tracked controllers will get mouse events automatically */
-    Mouse,
-    /** Analog inputs from tracked controllers are turned into DualAnalog events */
-    DualAnalog;
-
-    val i = ordinal
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
-
-/** Allows the caller to figure out which overlay transform getter to call. */
-enum class VROverlayTransformType(@JvmField val i: Int) {
-
-    Absolute(0),
-    TrackedDeviceRelative(1),
-    SystemOverlay(2),
-    TrackedComponent(3);
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
-
-/** Overlay control settings */
-enum class VROverlayFlags(@JvmField val i: Int) {
-
-    None(0),
-
-    /** The following only take effect when rendered using the high quality render path (see SetHighQualityOverlay).    */
-    Curved(1),
-    RGSS4X(2),
-
-    /** Set this flag on a dashboard overlay to prevent a tab from showing up for that overlay  */
-    NoDashboardTab(3),
-
-    /** Set this flag on a dashboard that is able to deal with gamepad focus events */
-    AcceptsGamepadEvents(4),
-
-    /** Indicates that the overlay should dim/brighten to show gamepad focus    */
-    ShowGamepadFocus(5),
-
-    /** When in VROverlayInputMethod_Mouse you can optionally enable sending VRScroll */
-    SendVRScrollEvents(6),
-    SendVRTouchpadEvents(7),
-
-    /** If set this will render a vertical scroll wheel on the primary controller), only needed if not using
-     *  SendVRScrollEvents but you still want to represent a scroll wheel   */
-    ShowTouchPadScrollWheel(8),
-
-    /** If this is set ownership and render access to the overlay are transferred to the new scene process on a call
-     *  to openvr.lib.IVRApplications::LaunchInternalProcess    */
-    TransferOwnershipToInternalProcess(9),
-
-    // If set), renders 50% of the texture in each eye), side by side
-    /** Texture is left/right   */
-    SideBySide_Parallel(10),
-    /** Texture is crossed and right/left   */
-    SideBySide_Crossed(11),
-    /** Texture is a panorama   */
-    Panorama(12),
-    /** Texture is a stereo panorama    */
-    StereoPanorama(13),
-
-    /** If this is set on an overlay owned by the scene application that overlay will be sorted with the "Other"
-     *  overlays on top of all other scene overlays */
-    SortWithNonSceneOverlays(14),
-
-    /** If set, the overlay will be shown in the dashboard, otherwise it will be hidden.    */
-    VisibleInDashboard(15);
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
-
-enum class VRMessageOverlayResponse(@JvmField val i: Int) {
-
-    ButtonPress_0(0),
-    ButtonPress_1(1),
-    ButtonPress_2(2),
-    ButtonPress_3(3),
-    CouldntFindSystemOverlay(4),
-    CouldntFindOrCreateClientOverlay(5),
-    ApplicationQuit(6);
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
 }
 
 /** Input modes for the Big Picture gamepad text entry */
-enum class EGamepadTextInputMode(@JvmField val i: Int) {
+enum class GamepadTextInputMode(@JvmField val i: Int) {
 
     Normal(0),
     Password(1),
@@ -1431,7 +1049,7 @@ enum class EGamepadTextInputMode(@JvmField val i: Int) {
 }
 
 /** Controls number of allowed lines for the Big Picture gamepad text entry */
-enum class EGamepadTextInputLineMode(@JvmField val i: Int) {
+enum class GamepadTextInputLineMode(@JvmField val i: Int) {
 
     SingleLine(0),
     MultipleLines(1);
@@ -1442,7 +1060,7 @@ enum class EGamepadTextInputLineMode(@JvmField val i: Int) {
 }
 
 /** Directions for changing focus between overlays with the gamepad */
-enum class EOverlayDirection(@JvmField val i: Int) {
+enum class OverlayDirection(@JvmField val i: Int) {
 
     Up(0),
     Down(1),
@@ -1456,7 +1074,7 @@ enum class EOverlayDirection(@JvmField val i: Int) {
     }
 }
 
-enum class EVROverlayIntersectionMaskPrimitiveType(@JvmField val i: Int) {
+enum class VROverlayIntersectionMaskPrimitiveType(@JvmField val i: Int) {
 
     Rectangle(0),
     Circle(1);
@@ -1466,35 +1084,9 @@ enum class EVROverlayIntersectionMaskPrimitiveType(@JvmField val i: Int) {
     }
 }
 
-// ivrrendermodels.h
+// ivrrendermodels.h -> class
 
-/** Errors that can occur with the VR compositor */
-enum class EVRRenderModelError(@JvmField val i: Int) {
-
-    None(0),
-    Loading(100),
-    NotSupported(200),
-    InvalidArg(300),
-    InvalidModel(301),
-    NoShapes(302),
-    MultipleShapes(303),
-    TooManyVertices(304),
-    MultipleTextures(305),
-    BufferTooSmall(306),
-    NotEnoughNormals(307),
-    NotEnoughTexCoords(308),
-
-    InvalidTexture(400);
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-
-    /** Note: can't use `val name` because you can't overwrite the Enum::name   */
-    fun getName() = vrRenderModels.getRenderModelErrorNameFromEnum(this)
-}
-
-enum class EVRComponentProperty(@JvmField val i: Int) {
+enum class VRComponentProperty(@JvmField val i: Int) {
 
     IsStatic(1 shl 0),
     IsVisible(1 shl 1),
@@ -1511,68 +1103,10 @@ enum class EVRComponentProperty(@JvmField val i: Int) {
 
 // ivrtrackedcamera.h
 
-// ivrscreenshots.h
-
-/** Errors that can occur with the VR compositor */
-enum class EVRScreenshotError(@JvmField val i: Int) {
-
-    None(0),
-    RequestFailed(1),
-    IncompatibleVersion(100),
-    NotFound(101),
-    BufferTooSmall(102),
-    ScreenshotAlreadyInProgress(108);
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
+// ivrscreenshots.h -> class
 
 // ivrdrivermanager.h
 
-// ivrinput.h
+// ivrinput.h -> class
 
-enum class EVRSkeletalTransformSpace { Action, Parent, Additive;
-
-    val i = ordinal
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
-
-enum class EVRInputFilterCancelType { Timers, Momentum;
-
-    val i = ordinal
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
-
-
-// ivriobuffer.h
-
-enum class EIOBufferError(@JvmField val i: Int) {
-    Success(0),
-    OperationFailed(100),
-    InvalidHandle(101),
-    InvalidArgument(102),
-    PathExists(103),
-    PathDoesNotExist(104),
-    Permission(105);
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
-
-enum class EIOBufferMode(@JvmField val i: Int) {
-    Read(0x0001),
-    Write(0x0002),
-    Create(0x0200);
-
-    companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
-    }
-}
+// ivriobuffer.h -> class

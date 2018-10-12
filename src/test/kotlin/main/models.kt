@@ -1,8 +1,7 @@
 package main
 
-import com.sun.jna.ptr.PointerByReference
 import io.kotlintest.specs.StringSpec
-import openvr.lib.*
+import lib.vrRenderModels
 
 class models : StringSpec() {
 
@@ -26,33 +25,33 @@ class models : StringSpec() {
     fun loadRenderModel(renderModelName: String) {
 
         // load the model if we didn't find one
-        var error: EVRRenderModelError
-
-        val rm = vrRenderModels!!
-
-        val pModel = PointerByReference()
-        while (true) {
-            error = rm.loadRenderModel_Async(renderModelName, pModel)
-            if (error != EVRRenderModelError.Loading) break
-            Thread.sleep(1)
-        }
-        val model = RenderModel.ByReference(pModel.value)
-
-        if (error != EVRRenderModelError.None) {
-            System.err.println("Unable to load render model $renderModelName - ${error.getName()}")
-            return // move on to the next tracked device
-        }
+//        var error: vrRenderModels.Error
+//
+//        val rm = vrRenderModels!!
+//
+//        val pModel = PointerByReference()
+//        while (true) {
+//            error = rm.loadRenderModel_Async(modelName, pModel)
+//            if (error != EVRRenderModelError.Loading) break
+//            Thread.sleep(1)
+//        }
+//        val model = RenderModel.ByReference(pModel.value)
+//
+//        if (error != EVRRenderModelError.None) {
+//            System.err.println("Unable to load render model $modelName - ${error.getName()}")
+//            return // move on to the next tracked device
+//        }
 
 //        val pTexture = PointerByReference()
 //        while (true) {
-//            if (rm.loadTexture_Async(model.diffuseTextureId, pTexture) != EVRRenderModelError.Loading)
+//            if (rm.loadTexture_Async(model.diffuseTextureId, pTexture) != Error.Loading)
 //                break
 //            Thread.sleep(1)
 //        }
 //        val texture = RenderModel_TextureMap.ByReference(pTexture.value)
 //
-//        if (error != EVRRenderModelError.None) {
-//            System.err.println("Unable to load render texture id:${model.diffuseTextureId} for render model $renderModelName")
+//        if (error != Error.None) {
+//            System.err.println("Unable to load render texture id:${model.diffuseTextureId} for render model $modelName")
 //            rm freeRenderModel model
 //            return // move on to the next tracked device
 //        }
@@ -64,20 +63,20 @@ class models : StringSpec() {
 //        model.write()
 //        texture.read()
 //        texture.write()
-        println(model.pointer)
+//        println(model.pointer)
 //        println("   " + model.rVertexData?.pointer)
 //        println("   " + model.vertexCount)
 //        println("   " + model.rIndexData?.pointer)
 //        println("   " + model.triangleCount)
 //        println("   " + model.diffuseTextureId)
 //        println(texture.pointer)
-
-        try {
-            rm freeRenderModel model
-//            rm freeTexture texture
-        } catch (e: Error) {
-            System.err.println(e)
-        }
+//
+//        try {
+//            rm freeRenderModel model
+////            rm freeTexture texture
+//        } catch (e: Error) {
+//            System.err.println(e)
+//        }
         println()
     }
 }

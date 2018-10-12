@@ -1,5 +1,7 @@
 package openvr;
 
+import org.lwjgl.system.MemoryStack;
+
 /**
  * Created by GBarbieri on 06.02.2017.
  */
@@ -22,6 +24,6 @@ public class Test {
 //        val h = IntByReference(0)
 //        hmd.getRecommendedRenderTargetSize(w, h)
 //        println("resolution: ${w.value} x ${h.value}")
-        int a = openvr.lib.OpenvrKt.getMaxTrackedDeviceCount();
+        lib.vr vr = lib.vr.INSTANCE;
     }
 }

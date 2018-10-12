@@ -3,6 +3,7 @@ package lib
 import glm_.BYTES
 import glm_.L
 import glm_.i
+import glm_.mat3x3.Mat3
 import glm_.mat4x4.Mat4
 import glm_.quat.Quat
 import glm_.quat.QuatD
@@ -64,6 +65,18 @@ infix fun Mat4.toHmdMatrix34(ptr: Ptr) {
     memPutFloat(ptr + Float.BYTES * 11, this[3, 2])
 }
 
+
+var HmdMatrix33.m: FloatBuffer
+    get() = HmdMatrix33.nm(adr)
+    set(value) = HmdMatrix33.nm(adr, value)
+
+fun HmdMatrix33.toMat3(): Mat3 = to(Mat3())
+infix fun HmdMatrix33.to(mat: Mat3): Mat3 {
+    return mat(
+            m[0], m[3], m[6],
+            m[1], m[4], m[7],
+            m[2], m[5], m[8])
+}
 
 var HmdMatrix44.m: FloatBuffer
     get() = HmdMatrix44.nm(adr)
@@ -359,14 +372,14 @@ var VRVulkanTextureData.size: Vec2i
 //    set(value) = VRVulkanTextureData.nm_nSampleCount(adr, value)
 
 
-val VREventController.button: EVRButtonId
-    get() = EVRButtonId of VREventController.nbutton(adr)
+val VREventController.button: VRButtonId
+    get() = VRButtonId of VREventController.nbutton(adr)
 
 /** JVM custom */
 val VREventMouse.pos: Vec2
     get() = Vec2(VREventMouse.nx(adr), VREventMouse.ny(adr))
-val VREventMouse.button: EVRMouseButton
-    get() = EVRMouseButton of VREventMouse.nbutton(adr)
+val VREventMouse.button: VRMouseButton
+    get() = VRMouseButton of VREventMouse.nbutton(adr)
 
 
 val VREventScroll.delta: Vec2
@@ -405,8 +418,8 @@ val VREventOverlay.devicePath: Long
     get() = VREventOverlay.ndevicePath(adr)
 
 
-val VREventStatus.statusState: EVRState
-    get() = EVRState of VREventStatus.nstatusState(adr)
+val VREventStatus.statusState: VRState
+    get() = VRState of VREventStatus.nstatusState(adr)
 
 
 val VREventKeyboard.newInput: String
@@ -469,8 +482,8 @@ val VREventEditingCameraSurface.visualMode: Int
     get() = VREventEditingCameraSurface.nnVisualMode(adr)
 
 
-val VREventMessageOverlay.response: VRMessageOverlayResponse
-    get() = VRMessageOverlayResponse of VREventMessageOverlay.nunVRMessageOverlayResponse(adr)
+val VREventMessageOverlay.response: vrOverlay.MessageResponse
+    get() = vrOverlay.MessageResponse of VREventMessageOverlay.nunVRMessageOverlayResponse(adr)
 
 
 val VREventProperty.container: PropertyContainerHandle
@@ -503,8 +516,8 @@ val VREventInputBindingLoad.pathUrl: Long
     get() = VREventInputBindingLoad.npathUrl(adr)
 
 
-val VREvent.eventType: EVREventType
-    get() = EVREventType of VREvent.neventType(adr)
+val VREvent.eventType: VREventType
+    get() = VREventType of VREvent.neventType(adr)
 val VREvent.trackedDeviceIndex: TrackedDeviceIndex
     get() = VREvent.ntrackedDeviceIndex(adr)
 val VREvent.eventAgeSeconds: Float
@@ -522,6 +535,12 @@ val HiddenAreaMesh.triangleCount: Int
     get() = HiddenAreaMesh.nunTriangleCount(adr)
 
 
+inline var VRControllerAxis.x: Float
+    get() = memGetFloat(adr + VRControllerAxis.X)
+    set(value) = memPutFloat(adr + VRControllerAxis.X, value)
+inline var VRControllerAxis.y: Float
+    get() = memGetFloat(adr + VRControllerAxis.Y)
+    set(value) = memPutFloat(adr + VRControllerAxis.Y, value)
 var VRControllerAxis.pos: Vec2
     get() = Vec2(VRControllerAxis.nx(adr), VRControllerAxis.ny(adr))
     set(value) {
@@ -594,8 +613,8 @@ val VRBoneTransform.orientation: Quat
     get() = Quat.fromPointer(adr + VRBoneTransform.ORIENTATION)
 
 
-val CameraVideoStreamFrameHeader.frameType: EVRTrackedCameraFrameType
-    get() = EVRTrackedCameraFrameType of CameraVideoStreamFrameHeader.neFrameType(adr)
+val CameraVideoStreamFrameHeader.frameType: vrTrackedCamera.FrameType
+    get() = vrTrackedCamera.FrameType of CameraVideoStreamFrameHeader.neFrameType(adr)
 val CameraVideoStreamFrameHeader.resolution: Vec2i
     get() = Vec2i(CameraVideoStreamFrameHeader.nnWidth(adr), CameraVideoStreamFrameHeader.nnHeight(adr))
 val CameraVideoStreamFrameHeader.bytePerPixel: Int
@@ -764,8 +783,8 @@ var VROverlayIntersectionParams.source: Vec3
 var VROverlayIntersectionParams.direction: Vec3
     get() = Vec3.fromPointer(adr + VROverlayIntersectionParams.VDIRECTION)
     set(value) = value.to(adr + VROverlayIntersectionParams.VDIRECTION)
-var VROverlayIntersectionParams.origin: ETrackingUniverseOrigin
-    get() = ETrackingUniverseOrigin of VROverlayIntersectionParams.neOrigin(adr)
+var VROverlayIntersectionParams.origin: TrackingUniverseOrigin
+    get() = TrackingUniverseOrigin of VROverlayIntersectionParams.neOrigin(adr)
     set(value) = VROverlayIntersectionParams.neOrigin(adr, value.i)
 
 
@@ -833,8 +852,8 @@ var VROverlayIntersectionMaskPrimitiveData.circle: IntersectionMaskCircle
     set(value) = VROverlayIntersectionMaskPrimitiveData.nm_Circle(adr, value)
 
 
-var VROverlayIntersectionMaskPrimitive.primitiveType: EVROverlayIntersectionMaskPrimitiveType
-    get() = EVROverlayIntersectionMaskPrimitiveType of VROverlayIntersectionMaskPrimitive.nm_nPrimitiveType(adr)
+var VROverlayIntersectionMaskPrimitive.primitiveType: VROverlayIntersectionMaskPrimitiveType
+    get() = VROverlayIntersectionMaskPrimitiveType of VROverlayIntersectionMaskPrimitive.nm_nPrimitiveType(adr)
     set(value) = VROverlayIntersectionMaskPrimitive.nm_nPrimitiveType(adr, value.i)
 var VROverlayIntersectionMaskPrimitive.primitive: VROverlayIntersectionMaskPrimitiveData
     get() = VROverlayIntersectionMaskPrimitive.nm_Primitive(adr)

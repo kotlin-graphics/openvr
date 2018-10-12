@@ -1,27 +1,45 @@
 package main.helloVr_OpenGL
 
 import glm_.bool
+import kool.stak
 import org.lwjgl.opengl.*
-import org.lwjgl.opengl.GL11.GL_FALSE
 import org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER
 import org.lwjgl.opengl.GL20.GL_VERTEX_SHADER
+import org.lwjgl.opengl.GL32C.GL_GEOMETRY_SHADER
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
+import java.nio.file.Paths
 import java.util.stream.Collectors
 
-open class Program {
 
-    @JvmField
-    var name = GL20.glCreateProgram()
+fun main(args: Array<String>) {
+    A()
+}
+
+class A {
+
+    init {
+
+        val a = Paths.get(".")
+        val b = ClassLoader.getSystemResource("cube_texture.png").toURI()
+//        val c = javaClass.getResource("cube_texture.png").toURI()
+        val d = javaClass.classLoader.getResource("cube_texture.png").toURI()
+        println(a)
+        println(b)
+//        println(c)
+        println(d)
+    }
+}
+
+open class Program(
+        @JvmField
+        var name: Int = 0) {
+
     val uniforms = HashMap<String, Int>()
 
-    constructor()
-
-    // for Learn OpenGL
-
-    /** (root, vertex, fragment) or (vertex, fragment)  */
-    constructor(context: Class<*>, vararg strings: String) {
+    /** (root, vertex, fragment) or (root0/vertex, root1/fragment)  */
+    constructor(context: Class<*>, vararg strings: String) : this(GL20.glCreateProgram()) {
 
         val root =
                 if (strings[0].isShaderPath())
@@ -58,21 +76,18 @@ open class Program {
         }
     }
 
-    constructor(vertSrc: String, fragSrc: String) {
 
-//        var root = ""
-//
-//        if (!strings[0].isShaderPath() && !strings[0].contains("#version")) { // TODO passing directly srcs
-//            root = strings[0]
-//            if (!root.endsWith('/'))
-//                root = "$root/"
-//        }
+
+    @JvmOverloads
+    constructor(vertSrc: String, fragSrc: String, geomSrc: String? = null) : this(GL20.glCreateProgram()){
 
         val vert = createShader(vertSrc, GL_VERTEX_SHADER)
         val frag = createShader(fragSrc, GL_FRAGMENT_SHADER)
+        val geom = geomSrc?.let { createShader(it, GL_GEOMETRY_SHADER) }
 
         attach(vert)
         attach(frag)
+        geom?.let(::attach)
 
         link()
 
@@ -81,9 +96,11 @@ open class Program {
 
         detach(vert)
         detach(frag)
+        geom?.let(::detach)
 
         delete(vert)
         delete(frag)
+        geom?.let(::delete)
     }
 
     operator fun get(s: String): Int = uniforms[s]!!
@@ -94,19 +111,19 @@ open class Program {
     }
 
 
-    fun createShaderFromPath(context: Class<*>, path: String): Int {
+    fun createShaderFromPath(clazz: Class<*>, path: String): Int {
 
         val shader = GL20.glCreateShader(path.type)
 
-        val url = context::class.java.getResource(path)
+        val url = clazz.classLoader.getResource(path)
         val lines = File(url.toURI()).readLines()
 
         var source = ""
         lines.forEach {
-            if (it.startsWith("#include "))
-                source += parseInclude(context, path.substringBeforeLast('/'), it.substring("#include ".length).trim())
-            else
-                source += it
+            source += when {
+                it.startsWith("#include ") -> parseInclude(clazz, path.substringBeforeLast('/'), it.substring("#include ".length).trim())
+                else -> it
+            }
             source += '\n'
         }
 
@@ -163,6 +180,8 @@ open class Program {
     val linkStatus get() = GL20.glGetProgrami(name, GL20.GL_LINK_STATUS).bool
 
     val infoLog get() = GL20.glGetProgramInfoLog(name)
+
+    fun delete() = GL20.glDeleteProgram(name)
 
     companion object {
 
@@ -226,7 +245,7 @@ open class Program {
         }
 
         @Throws(Error::class)
-        fun createShader(source: Array<String>, type: Int): Int {
+        fun createShader(source: Array<String>, type: Int): Int = stak {
 
             val shader = GL20.glCreateShader(type)
 

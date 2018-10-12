@@ -1,31 +1,38 @@
 package main.helloVr_OpenGL
 
-import glm_.buffer.intBufferBig
+import glm_.L
 import glm_.f
 import glm_.mat4x4.Mat4
-import glm_.vec2.Vec2
+import glm_.size
 import glm_.vec3.Vec3
 import glm_.vec3.Vec3i
 import glm_.vec4.Vec4
+import gln.buffer.Usage
+import gln.buffer.initArrayBuffer
 import gln.clear.glClearColorBuffer
 import gln.clear.glClearDepthBuffer
+import gln.glf.glf
 import gln.glf.semantic
 import gln.program.usingProgram
 import gln.texture.glBindTexture2d
 import gln.uniform.glUniform
 import gln.vertexArray.glBindVertexArray
-import openvr.lib.EVREye
-import openvr.lib.maxTrackedDeviceCount
+import gln.vertexArray.initVertexArray
+import kool.floatBufferBig
+import kool.free
+import kool.intBufferBig
+import lib.VREye
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT
 import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE
 import org.lwjgl.opengl.GL13.GL_TEXTURE0
 import org.lwjgl.opengl.GL13.glActiveTexture
+import org.lwjgl.opengl.GL15
 import org.lwjgl.opengl.GL30.*
 import uno.buffer.toBuffer
 import uno.buffer.use
+import uno.kotlin.buffers.isNotEmpty
 import uno.kotlin.url
-import lib.isInputAvailable
 import java.awt.image.DataBufferByte
 import javax.imageio.ImageIO
 
@@ -53,7 +60,10 @@ class Scene {
 //        val texture = gli.load(ClassLoader.getSystemResource("cube_texture.png").toURI())
 //
 //        initTexture2d(textureName) {
+//            image(texture)
 //
+//            wrap(clampToEdge, clampToEdge)
+//            filter(linear, linear_mmLinear)
 //        }
         val image = ImageIO.read("cube_texture.png".url)
         (image.raster.dataBuffer as DataBufferByte).data.toBuffer().use {
@@ -103,47 +113,17 @@ class Scene {
         }
         vertexCount = vertDataArray.size / 5
 
-//        initArrayBuffer(bufferName) {
-//
-//            initVertexArray(vertexArrayName) {
-//
-//                vertDataArray.toFloatArray().toBuffer().use { vertices ->
-//
-//                    data(vertices, GL_STATIC_DRAW)
-//
-//                    array(bufferName, glf.pos3_tc2)
-//                }
-//            }
-//        }
+        initArrayBuffer(bufferName) {
 
-        glGenVertexArrays(vertexArrayName)
-        glBindVertexArray(vertexArrayName[0])
+            vertDataArray.toFloatArray().toBuffer().use { vertices ->
 
-        vertDataArray.toFloatArray().toBuffer().use {
-
-            glGenBuffers(bufferName)
-            glBindBuffer(GL_ARRAY_BUFFER, bufferName[0])
-            glBufferData(GL_ARRAY_BUFFER, it, GL_STATIC_DRAW)
-
-            val stride = VertexData.SIZE
-            var offset = 0L
-
-            glEnableVertexAttribArray(semantic.attr.POSITION)
-            glVertexAttribPointer(semantic.attr.POSITION, Vec3.length, GL_FLOAT, false, stride, offset)
-
-            offset += Vec3.size
-            glEnableVertexAttribArray(semantic.attr.TEX_COORD)
-            glVertexAttribPointer(semantic.attr.TEX_COORD, Vec2.length, GL_FLOAT, false, stride, offset)
-
-            glBindVertexArray(0)
-            glDisableVertexAttribArray(semantic.attr.POSITION)
-            glDisableVertexAttribArray(semantic.attr.TEX_COORD)
+                data(vertices, Usage.StaticDraw)
+            }
         }
-    }
 
-    class VertexData(val position: Vec3, val texCoord: Vec2) {
-        companion object {
-            val SIZE = Vec3.size + Vec2.size
+        initVertexArray(vertexArrayName) {
+
+            array(bufferName, glf.pos3_tc2)
         }
     }
 
@@ -215,7 +195,7 @@ class Scene {
     val modelProgram = ProgramModel()
 
     /** Purpose: Renders a scene with respect to nEye.  */
-    fun render(eye: EVREye) {
+    fun render(eye: VREye) {
 
         glClearColorBuffer(clearColor)
         glClearDepthBuffer()
@@ -234,36 +214,47 @@ class Scene {
         val isInputAvailable = hmd.isInputAvailable
 
         // draw the controller axis lines
-//        if (!isInputAvailable)
-//            controllerAxes.render(eye)
+        if (!isInputAvailable)
+            controllerAxes.render(eye)
 
         // ----- Render Model rendering -----
         glUseProgram(modelProgram.name)
 
-        for (trackedDevice in 0 until maxTrackedDeviceCount) {
+        for (hand in Hand.values()) {
 
-//            if (!trackedDeviceToRenderModel.contains(trackedDevice) || !showTrackedDevice[trackedDevice])
-//                continue
-//
-//            if (!trackedDevicePose[trackedDevice].poseIsValid)
-//                continue
-//
-//            if (isInputAvailable && hmd.getTrackedDeviceClass(trackedDevice) == TrackedDeviceClass.Controller)
-//                continue
-//
-//            val deviceToTracking = devicesPoses[trackedDevice]
-//            val mvp = getCurrentViewProjectionMatrix(eye) * deviceToTracking
-//            glUniformMatrix4fv(modelProgram.matrix, 1, false, mvp to bufferMat)
-//
-//            trackedDeviceToRenderModel[trackedDevice]!!.draw()
+            if (!rHand[hand].showController)
+                continue
+
+            rHand[hand].renderModel?.let {
+
+                val matDeviceToTracking = rHand[hand].rmat4Pose
+                val matMVP = getCurrentViewProjectionMatrix(eye) * matDeviceToTracking
+                glUniformMatrix4fv(modelProgram.matrix, false, matMVP.toFloatBufferStack())
+
+                it.draw()
+            }
         }
         glUseProgram(0)
     }
 
     /** Purpose: Gets a Current View Projection Matrix with respect to nEye, which may be an Eye_Left or an Eye_Right.  */
-    fun getCurrentViewProjectionMatrix(eye: EVREye) = projection[eye.i] * eyePos[eye.i] * hmdPose
+    fun getCurrentViewProjectionMatrix(eye: VREye) = projection[eye.i] * eyePos[eye.i] * hmdPose
 
-    class ProgramScene : ProgramA(
+    fun dispose() {
+
+        glDeleteVertexArrays(vertexArrayName)
+        glDeleteBuffers(bufferName)
+        glDeleteTextures(textureName)
+        program.delete()
+        controllerAxes.dispose()
+        modelProgram.delete()
+
+        vertexArrayName.free()
+        bufferName.free()
+        textureName.free()
+    }
+
+    class ProgramScene : ProgramBase(
             vertSrc = """
                 #version 410
                 uniform mat4 matrix;
@@ -288,16 +279,16 @@ class Scene {
         }
     }
 
-    class ProgramModel : ProgramA(
+    class ProgramModel : ProgramBase(
             vertSrc = """
                 #version 410
                 uniform mat4 matrix;
-                layout(location = ${semantic.attr.POSITION}) in vec4 position;
+                layout(location = ${semantic.attr.POSITION}) in vec3 position;
                 layout(location = ${semantic.attr.TEX_COORD}) in vec2 uvCoords;
                 out vec2 uv;
                 void main() {
                     uv = uvCoords;
-                    gl_Position = matrix * vec4(position.xyz, 1);
+                    gl_Position = matrix * vec4(position, 1);
                 }""",
             fragSrc = """
                 #version 410 core
@@ -313,117 +304,135 @@ class Scene {
         }
     }
 
-    open class ProgramA(vertSrc: String, fragSrc: String) : Program(vertSrc, fragSrc) {
+    open class ProgramBase(vertSrc: String, fragSrc: String) : Program(vertSrc, fragSrc) {
         val matrix = glGetUniformLocation(name, "matrix")
     }
 
-    class ControllerAxes {
+    inner class ControllerAxes {
 
-//        val program = ProgramA("controller")
-//        val vertexArrayName = intBufferBig(1)
-//        val bufferName = intBufferBig(1)
-//        val vertexBuffer = floatBufferBig(3 * 4 * 3 + 3 * 4)
-//        var vertCount = 0
-//
-//        init {
-//            // Setup the VAO the first time through.
-//            with(gl) {
-//
-//                glGenVertexArrays(1, vertexArrayName)
-//                glBindVertexArray(vertexArrayName[0])
-//
-//                glGenBuffers(1, bufferName)
-//                glBindBuffer(GL_ARRAY_BUFFER, bufferName[0])
-//
-//                glBufferData(GL.GL_ARRAY_BUFFER, vertexBuffer.capacity() * Float.BYTES.L, null, GL_STREAM_DRAW)
-//
-//                val stride = 2 * Vec3.size
-//                var offset = 0L
-//
-//                glEnableVertexAttribArray(Semantic.Attr.POSITION)
-//                glVertexAttribPointer(Semantic.Attr.POSITION, Vec3.length, GL_FLOAT, false, stride, offset)
-//
-//                offset += Vec3.size
-//                glEnableVertexAttribArray(Semantic.Attr.COLOR)
-//                glVertexAttribPointer(Semantic.Attr.COLOR, Vec3.length, GL_FLOAT, false, stride, offset)
-//
-//                glBindVertexArray(0)
-//            }
-//        }
-//
-//        /** Purpose: Draw all of the controllers as X/Y/Z lines */
-//        fun update() {
-//
-//            // Don't attempt to update controllers if input is not available
-//            if (hmd.isInputAvailable) return
-//
-//            val vertDataArray = FloatArray(3 * 4 * Vec3.length + 3 * 4)
-//
-//            vertCount = 0
-//            trackedControllerCount = 0
-//
-//            for (trackedDevice in trackedDeviceIndex_Hmd + 1 until maxTrackedDeviceCount) {
-//
-//                if (!hmd.isTrackedDeviceConnected(trackedDevice)) continue
-//
-//                if (hmd.getTrackedDeviceClass(trackedDevice) != TrackedDeviceClass.Controller) continue
-//
-//                trackedControllerCount++
-//
-//                if (!trackedDevicePose[trackedDevice].poseIsValid) continue
-//
-//                val mat = devicesPoses[trackedDevice]
-//
-//                val center = mat * Vec4(0, 0, 0, 1)
-//
-//                val stride = 4 * Vec3.length
-//
-//                for (i in 0..2) {
-//
-//                    val color = Vec3(0)
-//                    val point = Vec4(0, 0, 0, 1)
-//                    point[i] += .05f  // offset in X, Y, Z
-//                    color[i] = 1  // R, G, B
-//                    point put (mat * point)
-//
-//                    center.to(vertDataArray, stride * i)
-//                    color.to(vertDataArray, stride * i + 3)
-//                    point.to(vertDataArray, stride * i + 6)
-//                    color.to(vertDataArray, stride * i + 9)
-//
-//                    vertCount += 2
-//                }
-//
-//                val start = mat * Vec4(0, 0, -.02f, 1)
-//                val end = mat * Vec4(0, 0, -39f, 1)
-//                val color = Vec3(.92f, .92f, .71f)
-//
-//                start.to(vertDataArray, stride * 3)
-//                color.to(vertDataArray, stride * 3 + 3)
-//
-//                end.to(vertDataArray, stride * 3 + 6)
-//                color.to(vertDataArray, stride * 3 + 9)
-//
-//                vertCount += 2
-//            }
-//
-//            with(gl) {
-//
-//                glBindBuffer(GL_ARRAY_BUFFER, bufferName[0])
-//                // set vertex data if we have some
-//                if (vertDataArray.isNotEmpty()) {
-//                    vertDataArray.forEachIndexed { i, it -> vertexBuffer[i] = it }
-//                    glBufferSubData(GL_ARRAY_BUFFER, 0, Float.BYTES * vertexBuffer.capacity().L, vertexBuffer)
-//                }
-//            }
-//        }
-//
-//        fun render(eye: EVREye) = with(gl) {
-//            glUseProgram(program.name)
-//            glUniformMatrix4fv(program.matrix, 1, false, getCurrentViewProjectionMatrix(eye) to bufferMat)
-//            glBindVertexArray(vertexArrayName[0])
-//            glDrawArrays(GL_LINES, 0, vertCount)
-//            glBindVertexArray(0)
-//        }
+        val program = Program()
+        val vertexArrayName = intBufferBig(1)
+        val bufferName = intBufferBig(1)
+        val vertexData = floatBufferBig(3 * 4 * 3 + 3 * 4)
+        var vertCount = 0
+
+        init {
+            // Setup the VAO the first time through.
+
+            glGenVertexArrays(vertexArrayName)
+            glBindVertexArray(vertexArrayName[0])
+
+            glGenBuffers(bufferName)
+            glBindBuffer(GL_ARRAY_BUFFER, bufferName[0])
+
+            glBufferData(GL_ARRAY_BUFFER, vertexData.size.L, GL_STREAM_DRAW)
+
+            val stride = 2 * Vec3.size
+            var offset = 0L
+
+            glEnableVertexAttribArray(semantic.attr.POSITION)
+            glVertexAttribPointer(semantic.attr.POSITION, Vec3.length, GL_FLOAT, false, stride, offset)
+
+            offset += Vec3.size
+            glEnableVertexAttribArray(semantic.attr.COLOR)
+            glVertexAttribPointer(semantic.attr.COLOR, Vec3.length, GL_FLOAT, false, stride, offset)
+
+            glBindVertexArray(0)
+        }
+
+        /** Purpose: Draw all of the controllers as X/Y/Z lines */
+        fun update() {
+
+            // Don't attempt to update controllers if input is not available
+            if (hmd.isInputAvailable) return
+
+            vertCount = 0
+            trackedControllerCount = 0
+
+            for (hand in Hand.values()) {
+
+                if (!rHand[hand].showController) continue
+
+                val mat = rHand[hand].rmat4Pose
+
+                val center = mat * Vec4(0, 0, 0, 1)
+
+                val stride = 4 * Vec3.length
+
+                for (i in 0..2) {
+
+                    val color = Vec3(0)
+                    val point = Vec4(0, 0, 0, 1)
+                    point[i] += .05f  // offset in X, Y, Z
+                    color[i] = 1  // R, G, B
+                    point put (mat * point)
+
+                    center.to(vertexData, stride * i)
+                    color.to(vertexData, stride * i + 3)
+                    point.to(vertexData, stride * i + 6)
+                    color.to(vertexData, stride * i + 9)
+
+                    vertCount += 2
+                }
+
+                val start = mat * Vec4(0, 0, -.02f, 1)
+                val end = mat * Vec4(0, 0, -39f, 1)
+                val color = Vec3(.92f, .92f, .71f)
+
+                start.to(vertexData, stride * 3)
+                color.to(vertexData, stride * 3 + 3)
+
+                end.to(vertexData, stride * 3 + 6)
+                color.to(vertexData, stride * 3 + 9)
+
+                vertCount += 2
+            }
+
+            glBindBuffer(GL_ARRAY_BUFFER, bufferName[0])
+            // set vertex data if we have some
+            if (vertexData.isNotEmpty())
+                glBufferSubData(GL_ARRAY_BUFFER, 0, vertexData)
+        }
+
+        fun render(eye: VREye) {
+
+            update()
+
+            glUseProgram(program.name)
+            glUniformMatrix4fv(program.matrix, false, getCurrentViewProjectionMatrix(eye).toFloatBufferStack())
+            glBindVertexArray(vertexArrayName[0])
+            glDrawArrays(GL_LINES, 0, vertCount)
+            glBindVertexArray(0)
+        }
+
+        fun dispose() {
+
+            glDeleteVertexArrays(vertexArrayName)
+            glDeleteBuffers(bufferName)
+            program.delete()
+
+            vertexArrayName.free()
+            bufferName.free()
+            vertexData.free()
+        }
+
+        inner class Program : ProgramBase(
+                vertSrc = """
+                #version 410
+                uniform mat4 matrix;
+                layout(location = ${semantic.attr.POSITION}) in vec4 position;
+                layout(location = ${semantic.attr.COLOR}) in vec3 color;
+                out vec4 Color;
+                void main() {
+                    Color = vec4(color, 1);
+                    gl_Position = matrix * position;
+                }""",
+                fragSrc = """
+                #version 410
+                in vec4 Color;
+                layout(location = ${semantic.frag.COLOR}) out vec4 outputColor;
+                void main() {
+                    outputColor = Color;
+                }""")
     }
 }

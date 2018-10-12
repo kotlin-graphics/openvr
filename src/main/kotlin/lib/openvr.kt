@@ -1,84 +1,96 @@
 package lib
 
+import glm_.BYTES
+import glm_.L
 import glm_.i
+import glm_.mat3x3.Mat3
 import glm_.mat4x4.Mat4
 import glm_.quat.Quat
 import glm_.quat.QuatD
-import glm_.set
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import glm_.vec3.Vec3d
 import glm_.vec4.Vec4
+import kool.Ptr
+import kool.adr
 import kool.stak
 import org.lwjgl.openvr.*
-import org.lwjgl.openvr.OpenVR.IVRSystem
-import org.lwjgl.system.MemoryUtil.NULL
-import java.nio.IntBuffer
-import java.nio.file.Paths
+import org.lwjgl.openvr.VR.*
+import org.lwjgl.system.MemoryStack
+import org.lwjgl.system.MemoryUtil.*
 
 
 object vr {
 
-    inline fun HmdMatrix34(): HmdMatrix34 = HmdMatrix34.callocStack()
-    inline fun HmdMatrix34(capacity: Int): HmdMatrix34.Buffer = HmdMatrix34.callocStack(capacity)
+    fun HmdMatrix34(): HmdMatrix34 = HmdMatrix34.callocStack()
+    fun HmdMatrix34(capacity: Int): HmdMatrix34.Buffer = HmdMatrix34.callocStack(capacity)
     inline fun HmdMatrix34(block: HmdMatrix34.() -> Unit): HmdMatrix34 = HmdMatrix34().also(block)
-    inline fun HmdMatrix34(mat: Mat4): HmdMatrix34 = HmdMatrix34().apply { mat.toHmdMatrix34(adr) }
+    fun HmdMatrix34(mat: Mat4): HmdMatrix34 = HmdMatrix34().apply { mat.toHmdMatrix34(adr) }
 
-    inline fun HmdMatrix44(): HmdMatrix44 = HmdMatrix44.callocStack()
-    inline fun HmdMatrix44(capacity: Int): HmdMatrix44.Buffer = HmdMatrix44.callocStack(capacity)
+    fun HmdMatrix33(): HmdMatrix33 = HmdMatrix33.callocStack()
+    fun HmdMatrix33(capacity: Int): HmdMatrix33.Buffer = HmdMatrix33.callocStack(capacity)
+    inline fun HmdMatrix33(block: HmdMatrix33.() -> Unit): HmdMatrix33 = HmdMatrix33().also(block)
+    fun HmdMatrix33(mat: Mat3): HmdMatrix33 = HmdMatrix33().apply { mat.to(adr, true) }
+
+    fun HmdMatrix44(): HmdMatrix44 = HmdMatrix44.callocStack()
+    fun HmdMatrix44(capacity: Int): HmdMatrix44.Buffer = HmdMatrix44.callocStack(capacity)
     inline fun HmdMatrix44(block: HmdMatrix44.() -> Unit): HmdMatrix44 = HmdMatrix44().also(block)
-    inline fun HmdMatrix44(mat: Mat4): HmdMatrix44 = HmdMatrix44().apply { mat.to(adr) }
+    fun HmdMatrix44(mat: Mat4): HmdMatrix44 = HmdMatrix44().apply { mat.to(adr, true) }
 
-    inline fun HmdVector3(): HmdVector3 = HmdVector3.callocStack()
-    inline fun HmdVector3(capacity: Int): HmdVector3.Buffer = HmdVector3.callocStack(capacity)
+    fun HmdVector3(): HmdVector3 = HmdVector3.callocStack()
+    fun HmdVector3(capacity: Int): HmdVector3.Buffer = HmdVector3.callocStack(capacity)
     inline fun HmdVector3(block: HmdVector3.() -> Unit): HmdVector3 = HmdVector3().also(block)
-    inline fun HmdVector3(vec: Vec3): HmdVector3 = HmdVector3().apply { vec to adr }
+    fun HmdVector3(vec: Vec3): HmdVector3 = HmdVector3().apply { vec to adr }
 
-    inline fun HmdVector4(): HmdVector4 = HmdVector4.callocStack()
-    inline fun HmdVector4(capacity: Int): HmdVector4.Buffer = HmdVector4.calloc(capacity)
+    fun HmdVector4(): HmdVector4 = HmdVector4.callocStack()
+    fun HmdVector4(capacity: Int): HmdVector4.Buffer = HmdVector4.callocStack(capacity)
     inline fun HmdVector4(block: HmdVector4.() -> Unit): HmdVector4 = HmdVector4().also(block)
-    inline fun HmdVector4(vec: Vec4): HmdVector4 = HmdVector4().apply { vec to adr }
+    fun HmdVector4(vec: Vec4): HmdVector4 = HmdVector4().apply { vec to adr }
 
-    inline fun HmdVector3d(): HmdVector3d = HmdVector3d.callocStack()
-    inline fun HmdVector3d(capacity: Int): HmdVector3d.Buffer = HmdVector3d.callocStack(capacity)
+    fun HmdVector3d(): HmdVector3d = HmdVector3d.callocStack()
+    fun HmdVector3d(capacity: Int): HmdVector3d.Buffer = HmdVector3d.callocStack(capacity)
     inline fun HmdVector3d(block: HmdVector3d.() -> Unit): HmdVector3d = HmdVector3d().also(block)
-    inline fun HmdVector3d(vec: Vec3d): HmdVector3d = HmdVector3d().apply { vec to adr }
+    fun HmdVector3d(vec: Vec3d): HmdVector3d = HmdVector3d().apply { vec to adr }
 
-    inline fun HmdVector2(): HmdVector2 = HmdVector2.callocStack()
-    inline fun HmdVector2(capacity: Int): HmdVector2.Buffer = HmdVector2.callocStack(capacity)
+    fun HmdVector2(): HmdVector2 = HmdVector2.callocStack()
+    fun HmdVector2(capacity: Int): HmdVector2.Buffer = HmdVector2.callocStack(capacity)
     inline fun HmdVector2(block: HmdVector2.() -> Unit): HmdVector2 = HmdVector2().also(block)
-    inline fun HmdVector2(vec: Vec2): HmdVector2 = HmdVector2().apply { vec to adr }
+    fun HmdVector2(vec: Vec2): HmdVector2 = HmdVector2().apply { vec to adr }
 
-    inline fun HmdQuaternion(): HmdQuaternion = HmdQuaternion.callocStack()
-    inline fun HmdQuaternion(capacity: Int): HmdQuaternion.Buffer = HmdQuaternion.callocStack(capacity)
+    fun HmdQuaternion(): HmdQuaternion = HmdQuaternion.callocStack()
+    fun HmdQuaternion(capacity: Int): HmdQuaternion.Buffer = HmdQuaternion.callocStack(capacity)
     inline fun HmdQuaternion(block: HmdQuaternion.() -> Unit): HmdQuaternion = HmdQuaternion().also(block)
-    inline fun HmdQuaternion(quat: QuatD): HmdQuaternion = HmdQuaternion().apply { quat to adr }
+    fun HmdQuaternion(quat: QuatD): HmdQuaternion = HmdQuaternion().apply { quat to adr }
 
-    inline fun HmdQuaternionf(): HmdQuaternionf = HmdQuaternionf.callocStack()
-    inline fun HmdQuaternionf(capacity: Int): HmdQuaternionf.Buffer = HmdQuaternionf.callocStack(capacity)
+    fun HmdQuaternionf(): HmdQuaternionf = HmdQuaternionf.callocStack()
+    fun HmdQuaternionf(capacity: Int): HmdQuaternionf.Buffer = HmdQuaternionf.callocStack(capacity)
     inline fun HmdQuaternionf(block: HmdQuaternionf.() -> Unit): HmdQuaternionf = HmdQuaternionf().also(block)
-    inline fun HmdQuaternionf(quat: Quat): HmdQuaternionf = HmdQuaternionf().apply { quat to adr }
+    fun HmdQuaternionf(quat: Quat): HmdQuaternionf = HmdQuaternionf().apply { quat to adr }
 
-    inline fun HmdColor(): HmdColor = HmdColor.callocStack()
-    inline fun HmdColor(capacity: Int): HmdColor.Buffer = HmdColor.callocStack(capacity)
+    fun HmdColor(): HmdColor = HmdColor.callocStack()
+    fun HmdColor(capacity: Int): HmdColor.Buffer = HmdColor.callocStack(capacity)
     inline fun HmdColor(block: HmdColor.() -> Unit): HmdColor = HmdColor().also(block)
     // TODO vec3/4?
 
-    inline fun HmdQuad(): HmdQuad = HmdQuad.callocStack()
-    inline fun HmdQuad(capacity: Int): HmdQuad.Buffer = HmdQuad.callocStack(capacity)
+    fun HmdQuad(): HmdQuad = HmdQuad.callocStack()
+    fun HmdQuad(capacity: Int): HmdQuad.Buffer = HmdQuad.callocStack(capacity)
     inline fun HmdQuad(block: HmdQuad.() -> Unit): HmdQuad = HmdQuad().also(block)
 
-    inline fun HmdRect2(): HmdRect2 = HmdRect2.callocStack()
-    inline fun HmdRect2(capacity: Int): HmdRect2.Buffer = HmdRect2.callocStack(capacity)
+    fun HmdRect2(): HmdRect2 = HmdRect2.callocStack()
+    fun HmdRect2(capacity: Int): HmdRect2.Buffer = HmdRect2.callocStack(capacity)
     inline fun HmdRect2(block: HmdRect2.() -> Unit): HmdRect2 = HmdRect2().also(block)
 
-    inline fun DistortionCoordinates(): DistortionCoordinates = DistortionCoordinates.callocStack()
-    inline fun DistortionCoordinates(capacity: Int): DistortionCoordinates.Buffer = DistortionCoordinates.callocStack(capacity)
+    fun DistortionCoordinates(): DistortionCoordinates = DistortionCoordinates.callocStack()
+    fun DistortionCoordinates(capacity: Int): DistortionCoordinates.Buffer = DistortionCoordinates.callocStack(capacity)
     inline fun DistortionCoordinates(block: DistortionCoordinates.() -> Unit): DistortionCoordinates = DistortionCoordinates().also(block)
 
-    inline fun Texture(): Texture = Texture.callocStack()
-    inline fun Texture(capacity: Int): Texture.Buffer = Texture.callocStack(capacity)
+    fun Texture(): Texture = Texture.callocStack()
+    fun Texture(capacity: Int): Texture.Buffer = Texture.callocStack(capacity)
     inline fun Texture(block: Texture.() -> Unit): Texture = Texture().also(block)
+
+
+    fun Texture(handle: Int, type: TextureType, colorSpace: ColorSpace): Texture = Texture().handle(handle.L).eType(type.i).eColorSpace(colorSpace.i)
+
 
     val driverNone = 0xFFFFFFFF.i
 
@@ -90,8 +102,8 @@ object vr {
     val trackedDeviceIndexInvalid = 0xFFFFFFFF.i
 
 
-    inline fun TrackedDevicePose(): TrackedDevicePose = TrackedDevicePose.callocStack()
-    inline fun TrackedDevicePose(capacity: Int): TrackedDevicePose.Buffer = TrackedDevicePose.callocStack(capacity)
+    fun TrackedDevicePose(): TrackedDevicePose = TrackedDevicePose.callocStack()
+    fun TrackedDevicePose(capacity: Int): TrackedDevicePose.Buffer = TrackedDevicePose.callocStack(capacity)
     inline fun TrackedDevicePose(block: TrackedDevicePose.() -> Unit): TrackedDevicePose = TrackedDevicePose().also(block)
 
 
@@ -120,6 +132,8 @@ object vr {
     val hapticVibrationPropertyTag: PropertyTypeTag = 35
     val skeletonPropertyTag: PropertyTypeTag = 36
 
+    val spatialAnchorPosePropertyTag = 40
+
     val openVRInternalReserved_Start: PropertyTypeTag = 1000
     val openVRInternalReserved_End: PropertyTypeTag = 10000
 
@@ -127,29 +141,32 @@ object vr {
     /** No string property will ever be longer than this length */
     val maxPropertyStringSize = 32 * 1024
 
+    val invalidActionHandle: VRActionHandle = NULL
+    val invalidActionSetHandle: VRActionSetHandle = NULL
+    val invalidInputValueHandle: VRInputValueHandle = NULL
 
-    inline fun TextureBounds(): VRTextureBounds = VRTextureBounds.callocStack()
-    inline fun TextureBounds(capacity: Int): VRTextureBounds.Buffer = VRTextureBounds.callocStack(capacity)
+    fun TextureBounds(): VRTextureBounds = VRTextureBounds.callocStack()
+    fun TextureBounds(capacity: Int): VRTextureBounds.Buffer = VRTextureBounds.callocStack(capacity)
     inline fun TextureBounds(block: VRTextureBounds.() -> Unit): VRTextureBounds = TextureBounds().also(block)
 
-    inline fun TextureWithPose(): VRTextureWithPose = VRTextureWithPose.callocStack()
-    inline fun TextureWithPose(capacity: Int): VRTextureWithPose.Buffer = VRTextureWithPose.callocStack(capacity)
+    fun TextureWithPose(): VRTextureWithPose = VRTextureWithPose.callocStack()
+    fun TextureWithPose(capacity: Int): VRTextureWithPose.Buffer = VRTextureWithPose.callocStack(capacity)
     inline fun TextureWithPose(block: VRTextureWithPose.() -> Unit): VRTextureWithPose = TextureWithPose().also(block)
 
-    inline fun TextureDepthInfo(): VRTextureDepthInfo = VRTextureDepthInfo.callocStack()
-    inline fun TextureDepthInfo(capacity: Int): VRTextureDepthInfo.Buffer = VRTextureDepthInfo.callocStack(capacity)
+    fun TextureDepthInfo(): VRTextureDepthInfo = VRTextureDepthInfo.callocStack()
+    fun TextureDepthInfo(capacity: Int): VRTextureDepthInfo.Buffer = VRTextureDepthInfo.callocStack(capacity)
     inline fun TextureDepthInfo(block: VRTextureDepthInfo.() -> Unit): VRTextureDepthInfo = TextureDepthInfo().also(block)
 
-    inline fun TextureWithDepth(): VRTextureWithDepth = VRTextureWithDepth.callocStack()
-    inline fun TextureWithDepth(capacity: Int): VRTextureWithDepth.Buffer = VRTextureWithDepth.callocStack(capacity)
+    fun TextureWithDepth(): VRTextureWithDepth = VRTextureWithDepth.callocStack()
+    fun TextureWithDepth(capacity: Int): VRTextureWithDepth.Buffer = VRTextureWithDepth.callocStack(capacity)
     inline fun TextureWithDepth(block: VRTextureWithDepth.() -> Unit): VRTextureWithDepth = TextureWithDepth().also(block)
 
-    inline fun TextureWithPoseAndDepth(): VRTextureWithPoseAndDepth = VRTextureWithPoseAndDepth.callocStack()
-    inline fun TextureWithPoseAndDepth(capacity: Int): VRTextureWithPoseAndDepth.Buffer = VRTextureWithPoseAndDepth.callocStack(capacity)
+    fun TextureWithPoseAndDepth(): VRTextureWithPoseAndDepth = VRTextureWithPoseAndDepth.callocStack()
+    fun TextureWithPoseAndDepth(capacity: Int): VRTextureWithPoseAndDepth.Buffer = VRTextureWithPoseAndDepth.callocStack(capacity)
     inline fun TextureWithPoseAndDepth(block: VRTextureWithPoseAndDepth.() -> Unit): VRTextureWithPoseAndDepth = TextureWithPoseAndDepth().also(block)
 
-    inline fun VRVulkanTextureData(): VRVulkanTextureData = VRVulkanTextureData.callocStack()
-    inline fun VRVulkanTextureData(capacity: Int): VRVulkanTextureData.Buffer = VRVulkanTextureData.callocStack(capacity)
+    fun VRVulkanTextureData(): VRVulkanTextureData = VRVulkanTextureData.callocStack()
+    fun VRVulkanTextureData(capacity: Int): VRVulkanTextureData.Buffer = VRVulkanTextureData.callocStack(capacity)
     inline fun VRVulkanTextureData(block: VRVulkanTextureData.() -> Unit): VRVulkanTextureData = VRVulkanTextureData().also(block)
 
 //    inline fun VREventController(): VREventController = TODO()// VREventController.
@@ -248,39 +265,39 @@ object vr {
 //    inline fun VREventInputBindingLoad(capacity: Int): VREventInputBindingLoad.Buffer = VREventInputBindingLoad.create(ptr.advance(VREventInputBindingLoad.SIZEOF * capacity), capacity)
 //    inline fun VREventInputBindingLoad(block: VREventInputBindingLoad.() -> Unit): VREventInputBindingLoad = VREventInputBindingLoad().also(block)
 
-    inline fun VREvent(): VREvent = VREvent.callocStack()
-    inline fun VREvent(capacity: Int): VREvent.Buffer = VREvent.callocStack(capacity)
+    fun VREvent(): VREvent = VREvent.callocStack()
+    fun VREvent(capacity: Int): VREvent.Buffer = VREvent.callocStack(capacity)
     inline fun VREvent(block: VREvent.() -> Unit): VREvent = VREvent().also(block)
 
-    inline fun HiddenAreaMesh(): HiddenAreaMesh = HiddenAreaMesh.callocStack()
-    inline fun HiddenAreaMesh(capacity: Int): HiddenAreaMesh.Buffer = HiddenAreaMesh.callocStack(capacity)
+    fun HiddenAreaMesh(): HiddenAreaMesh = HiddenAreaMesh.callocStack()
+    fun HiddenAreaMesh(capacity: Int): HiddenAreaMesh.Buffer = HiddenAreaMesh.callocStack(capacity)
     inline fun HiddenAreaMesh(block: HiddenAreaMesh.() -> Unit): HiddenAreaMesh = HiddenAreaMesh().also(block)
 
-    inline fun VRControllerAxis(): VRControllerAxis = VRControllerAxis.callocStack()
-    inline fun VRControllerAxis(capacity: Int): VRControllerAxis.Buffer = VRControllerAxis.callocStack(capacity)
+    fun VRControllerAxis(): VRControllerAxis = VRControllerAxis.callocStack()
+    fun VRControllerAxis(capacity: Int): VRControllerAxis.Buffer = VRControllerAxis.callocStack(capacity)
     inline fun VRControllerAxis(block: VRControllerAxis.() -> Unit): VRControllerAxis = VRControllerAxis().also(block)
 
     /** the number of axes in the controller state */
     val controllerStateAxisCount = 5
 
-    inline fun VRControllerState(): VRControllerState = VRControllerState.callocStack()
-    inline fun VRControllerState(capacity: Int): VRControllerState.Buffer = VRControllerState.callocStack(capacity)
+    fun VRControllerState(): VRControllerState = VRControllerState.callocStack()
+    fun VRControllerState(capacity: Int): VRControllerState.Buffer = VRControllerState.callocStack(capacity)
     inline fun VRControllerState(block: VRControllerState.() -> Unit): VRControllerState = VRControllerState().also(block)
 
-    inline fun CompositorOverlaySettings(): CompositorOverlaySettings = CompositorOverlaySettings.callocStack()
-    inline fun CompositorOverlaySettings(capacity: Int): CompositorOverlaySettings.Buffer = CompositorOverlaySettings.callocStack(capacity)
+    fun CompositorOverlaySettings(): CompositorOverlaySettings = CompositorOverlaySettings.callocStack()
+    fun CompositorOverlaySettings(capacity: Int): CompositorOverlaySettings.Buffer = CompositorOverlaySettings.callocStack(capacity)
     inline fun CompositorOverlaySettings(block: CompositorOverlaySettings.() -> Unit): CompositorOverlaySettings = CompositorOverlaySettings().also(block)
 
     val overlayHandleInvalid: VROverlayHandle = NULL
 
-    inline fun VRBoneTransform(): VRBoneTransform = VRBoneTransform.callocStack()
-    inline fun VRBoneTransform(capacity: Int): VRBoneTransform.Buffer = VRBoneTransform.callocStack(capacity)
+    fun VRBoneTransform(): VRBoneTransform = VRBoneTransform.callocStack()
+    fun VRBoneTransform(capacity: Int): VRBoneTransform.Buffer = VRBoneTransform.callocStack(capacity)
     inline fun VRBoneTransform(block: VRBoneTransform.() -> Unit): VRBoneTransform = VRBoneTransform().also(block)
 
     val INVALID_TRACKED_CAMERA_HANDLE: TrackedCameraHandle = NULL
 
-    inline fun CameraVideoStreamFrameHeader(): CameraVideoStreamFrameHeader = CameraVideoStreamFrameHeader.callocStack()
-    inline fun CameraVideoStreamFrameHeader(capacity: Int): CameraVideoStreamFrameHeader.Buffer = CameraVideoStreamFrameHeader.callocStack(capacity)
+    fun CameraVideoStreamFrameHeader(): CameraVideoStreamFrameHeader = CameraVideoStreamFrameHeader.callocStack()
+    fun CameraVideoStreamFrameHeader(capacity: Int): CameraVideoStreamFrameHeader.Buffer = CameraVideoStreamFrameHeader.callocStack(capacity)
     inline fun CameraVideoStreamFrameHeader(block: CameraVideoStreamFrameHeader.() -> Unit): CameraVideoStreamFrameHeader = CameraVideoStreamFrameHeader().also(block)
 
     val screenshotHandleInvalid: ScreenshotHandle = 0
@@ -293,400 +310,122 @@ object vr {
 //    inline fun ImuSample(capacity: Int): ImuSample.Buffer = ImuSample.create(ptr.advance(ImuSample.SIZEOF * capacity), capacity)
 //    inline fun ImuSample(block: ImuSample.() -> Unit): ImuSample = ImuSample().also(block)
 
-    // ivrsystem.h
+    // ivrsystem.h -> class
 
-    const val IVRSystem_Version = "IVRSystem_019"
+    // ivrapplications.h -> class
 
-    // ivrapplications.h
-
-    /** The maximum length of an application key */
-    const val maxApplicationKeyLength = 128
-
-    inline fun AppOverrideKeys(): AppOverrideKeys = AppOverrideKeys.callocStack()
-    inline fun AppOverrideKeys(capacity: Int): AppOverrideKeys.Buffer = AppOverrideKeys.callocStack(capacity)
+    fun AppOverrideKeys(): AppOverrideKeys = AppOverrideKeys.callocStack()
+    fun AppOverrideKeys(capacity: Int): AppOverrideKeys.Buffer = AppOverrideKeys.callocStack(capacity)
     inline fun AppOverrideKeys(block: AppOverrideKeys.() -> Unit): AppOverrideKeys = AppOverrideKeys().also(block)
 
     /** Currently recognized mime types */
     const val mimeType_HomeApp = "vr/home"
     const val mimeType_GameTheater = "vr/game_theater"
 
-    const val IVRApplications_Version = "IVRApplications_006"
+    // ivrsettings.h -> class
 
-    // ivrsettings.h
+    // ivrchaperone.h -> class
 
-    /** The maximum length of a settings key */
-    const val maxSettingsKeyLength = 128
+    // ivrchaperonesetup.h -> class
 
-    //-----------------------------------------------------------------------------
-    val IVRSettings_Version = "IVRSettings_002"
+    // ivrcompositor.h -> class
 
-    //-----------------------------------------------------------------------------
-    // steamvr keys
-
-    val SteamVR_Section = "steamvr"
-    val SteamVR_RequireHmd_String = "requireHmd"
-    val SteamVR_ForcedDriverKey_String = "forcedDriver"
-    val SteamVR_ForcedHmdKey_String = "forcedHmd"
-    val SteamVR_DisplayDebug_Bool = "displayDebug"
-    val SteamVR_DebugProcessPipe_String = "debugProcessPipe"
-    val SteamVR_EnableDistortion_Bool = "enableDistortion"
-    val SteamVR_DisplayDebugX_Int32 = "displayDebugX"
-    val SteamVR_DisplayDebugY_Int32 = "displayDebugY"
-    val SteamVR_SendSystemButtonToAllApps_Bool = "sendSystemButtonToAllApps"
-    val SteamVR_LogLevel_Int32 = "loglevel"
-    val SteamVR_IPD_Float = "ipd"
-    val SteamVR_Background_String = "background"
-    val SteamVR_BackgroundUseDomeProjection_Bool = "backgroundUseDomeProjection"
-    val SteamVR_BackgroundCameraHeight_Float = "backgroundCameraHeight"
-    val SteamVR_BackgroundDomeRadius_Float = "backgroundDomeRadius"
-    val SteamVR_GridColor_String = "gridColor"
-    val SteamVR_PlayAreaColor_String = "playAreaColor"
-    val SteamVR_ShowStage_Bool = "showStage"
-    val SteamVR_ActivateMultipleDrivers_Bool = "activateMultipleDrivers"
-    val SteamVR_DirectMode_Bool = "directMode"
-    val SteamVR_DirectModeEdidVid_Int32 = "directModeEdidVid"
-    val SteamVR_DirectModeEdidPid_Int32 = "directModeEdidPid"
-    val SteamVR_UsingSpeakers_Bool = "usingSpeakers"
-    val SteamVR_SpeakersForwardYawOffsetDegrees_Float = "speakersForwardYawOffsetDegrees"
-    val SteamVR_BaseStationPowerManagement_Bool = "basestationPowerManagement"
-    val SteamVR_NeverKillProcesses_Bool = "neverKillProcesses"
-    val SteamVR_SupersampleScale_Float = "supersampleScale"
-    val SteamVR_AllowAsyncReprojection_Bool = "allowAsyncReprojection"
-    val SteamVR_AllowReprojection_Bool = "allowInterleavedReprojection"
-    val SteamVR_ForceReprojection_Bool = "forceReprojection"
-    val SteamVR_ForceFadeOnBadTracking_Bool = "forceFadeOnBadTracking"
-    val SteamVR_DefaultMirrorView_Int32 = "defaultMirrorView"
-    val SteamVR_ShowMirrorView_Bool = "showMirrorView"
-    val SteamVR_MirrorViewGeometry_String = "mirrorViewGeometry"
-    val SteamVR_StartMonitorFromAppLaunch = "startMonitorFromAppLaunch"
-    val SteamVR_StartCompositorFromAppLaunch_Bool = "startCompositorFromAppLaunch"
-    val SteamVR_StartDashboardFromAppLaunch_Bool = "startDashboardFromAppLaunch"
-    val SteamVR_StartOverlayAppsFromDashboard_Bool = "startOverlayAppsFromDashboard"
-    val SteamVR_EnableHomeApp = "enableHomeApp"
-    val SteamVR_CycleBackgroundImageTimeSec_Int32 = "CycleBackgroundImageTimeSec"
-    val SteamVR_RetailDemo_Bool = "retailDemo"
-    val SteamVR_IpdOffset_Float = "ipdOffset"
-    val SteamVR_AllowSupersampleFiltering_Bool = "allowSupersampleFiltering"
-    val SteamVR_SupersampleManualOverride_Bool = "supersampleManualOverride"
-    val SteamVR_EnableLinuxVulkanAsync_Bool = "enableLinuxVulkanAsync"
-    val SteamVR_AllowDisplayLockedMode_Bool = "allowDisplayLockedMode"
-    val SteamVR_HaveStartedTutorialForNativeChaperoneDriver_Bool = "haveStartedTutorialForNativeChaperoneDriver"
-    val SteamVR_ForceWindows32bitVRMonitor = "forceWindows32BitVRMonitor"
-    val SteamVR_DebugInput = "debugInput"
-    val SteamVR_LegacyInputRebinding = "legacyInputRebinding"
-    val SteamVR_DebugInputBinding = "debugInputBinding"
-
-    //-----------------------------------------------------------------------------
-    // lighthouse keys
-
-    val Lighthouse_Section = "driver_lighthouse"
-    val Lighthouse_DisableIMU_Bool = "disableimu"
-    val DisableIMUExceptHMD_Bool = "disableimuexcepthmd"
-    val Lighthouse_UseDisambiguation_String = "usedisambiguation"
-    val Lighthouse_DisambiguationDebug_Int32 = "disambiguationdebug"
-    val Lighthouse_PrimaryBasestation_Int32 = "primarybasestation"
-    val Lighthouse_DBHistory_Bool = "dbhistory"
-    val Lighthouse_EnableBluetooth_Bool = "enableBluetooth"
-    val Lighthouse_PowerManagedBaseStations_String = "PowerManagedBaseStations"
-
-    //-----------------------------------------------------------------------------
-    // null keys
-
-    val Null_Section = "driver_null"
-    val Null_SerialNumber_String = "serialNumber"
-    val Null_ModelNumber_String = "modelNumber"
-    val Null_WindowX_Int32 = "windowX"
-    val Null_WindowY_Int32 = "windowY"
-    val Null_WindowWidth_Int32 = "windowWidth"
-    val Null_WindowHeight_Int32 = "windowHeight"
-    val Null_RenderWidth_Int32 = "renderWidth"
-    val Null_RenderHeight_Int32 = "renderHeight"
-    val Null_SecondsFromVsyncToPhotons_Float = "secondsFromVsyncToPhotons"
-    val Null_DisplayFrequency_Float = "displayFrequency"
-
-    //-----------------------------------------------------------------------------
-    // user interface keys
-    val UserInterface_Section = "userinterface"
-    val UserInterface_StatusAlwaysOnTop_Bool = "StatusAlwaysOnTop"
-    val UserInterface_MinimizeToTray_Bool = "MinimizeToTray"
-    val UserInterface_Screenshots_Bool = "screenshots"
-    val UserInterface_ScreenshotType_Int = "screenshotType"
-
-    //-----------------------------------------------------------------------------
-    // notification keys
-    val Notifications_Section = "notifications"
-    val Notifications_DoNotDisturb_Bool = "DoNotDisturb"
-
-    //-----------------------------------------------------------------------------
-    // keyboard keys
-    val Keyboard_Section = "keyboard"
-    val Keyboard_TutorialCompletions = "TutorialCompletions"
-    val Keyboard_ScaleX = "ScaleX"
-    val Keyboard_ScaleY = "ScaleY"
-    val Keyboard_OffsetLeftX = "OffsetLeftX"
-    val Keyboard_OffsetRightX = "OffsetRightX"
-    val Keyboard_OffsetY = "OffsetY"
-    val Keyboard_Smoothing = "Smoothing"
-
-    //-----------------------------------------------------------------------------
-    // perf keys
-    val Perf_Section = "perfcheck"
-    val Perf_HeuristicActive_Bool = "heuristicActive"
-    val Perf_NotifyInHMD_Bool = "warnInHMD"
-    val Perf_NotifyOnlyOnce_Bool = "warnOnlyOnce"
-    val Perf_AllowTimingStore_Bool = "allowTimingStore"
-    val Perf_SaveTimingsOnExit_Bool = "saveTimingsOnExit"
-    val Perf_TestData_Float = "perfTestData"
-    val Perf_LinuxGPUProfiling_Bool = "linuxGPUProfiling"
-
-    //-----------------------------------------------------------------------------
-    // collision bounds keys
-    val CollisionBounds_Section = "collisionBounds"
-    val CollisionBounds_Style_Int32 = "CollisionBoundsStyle"
-    val CollisionBounds_GroundPerimeterOn_Bool = "CollisionBoundsGroundPerimeterOn"
-    val CollisionBounds_CenterMarkerOn_Bool = "CollisionBoundsCenterMarkerOn"
-    val CollisionBounds_PlaySpaceOn_Bool = "CollisionBoundsPlaySpaceOn"
-    val CollisionBounds_FadeDistance_Float = "CollisionBoundsFadeDistance"
-    val CollisionBounds_ColorGammaR_Int32 = "CollisionBoundsColorGammaR"
-    val CollisionBounds_ColorGammaG_Int32 = "CollisionBoundsColorGammaG"
-    val CollisionBounds_ColorGammaB_Int32 = "CollisionBoundsColorGammaB"
-    val CollisionBounds_ColorGammaA_Int32 = "CollisionBoundsColorGammaA"
-
-    //-----------------------------------------------------------------------------
-    // camera keys
-    val Camera_Section = "camera"
-    val Camera_EnableCamera_Bool = "enableCamera"
-    val Camera_EnableCameraInDashboard_Bool = "enableCameraInDashboard"
-    val Camera_EnableCameraForCollisionBounds_Bool = "enableCameraForCollisionBounds"
-    val Camera_EnableCameraForRoomView_Bool = "enableCameraForRoomView"
-    val Camera_BoundsColorGammaR_Int32 = "cameraBoundsColorGammaR"
-    val Camera_BoundsColorGammaG_Int32 = "cameraBoundsColorGammaG"
-    val Camera_BoundsColorGammaB_Int32 = "cameraBoundsColorGammaB"
-    val Camera_BoundsColorGammaA_Int32 = "cameraBoundsColorGammaA"
-    val Camera_BoundsStrength_Int32 = "cameraBoundsStrength"
-    val Camera_RoomViewMode_Int32 = "cameraRoomViewMode"
-
-    //-----------------------------------------------------------------------------
-    // audio keys
-    val audio_Section = "audio"
-    val audio_OnPlaybackDevice_String = "onPlaybackDevice"
-    val audio_OnRecordDevice_String = "onRecordDevice"
-    val audio_OnPlaybackMirrorDevice_String = "onPlaybackMirrorDevice"
-    val audio_OffPlaybackDevice_String = "offPlaybackDevice"
-    val audio_OffRecordDevice_String = "offRecordDevice"
-    val audio_VIVEHDMIGain = "viveHDMIGain"
-
-    //-----------------------------------------------------------------------------
-    // power management keys
-    val Power_Section = "power"
-    val Power_PowerOffOnExit_Bool = "powerOffOnExit"
-    val Power_TurnOffScreensTimeout_Float = "turnOffScreensTimeout"
-    val Power_TurnOffControllersTimeout_Float = "turnOffControllersTimeout"
-    val Power_ReturnToWatchdogTimeout_Float = "returnToWatchdogTimeout"
-    val Power_AutoLaunchSteamVROnButtonPress = "autoLaunchSteamVROnButtonPress"
-    val Power_PauseCompositorOnStandby_Bool = "pauseCompositorOnStandby"
-
-    //-----------------------------------------------------------------------------
-    // dashboard keys
-    val Dashboard_Section = "dashboard"
-    val Dashboard_EnableDashboard_Bool = "enableDashboard"
-    val Dashboard_ArcadeMode_Bool = "arcadeMode"
-    val Dashboard_EnableWebUI = "webUI"
-    val Dashboard_EnableWebUIDevTools = "webUIDevTools"
-
-    //-----------------------------------------------------------------------------
-    // model skin keys
-    val modelskin_Section = "modelskins"
-
-    //-----------------------------------------------------------------------------
-    // driver keys - These could be checked in any driver_<name> section
-    val Driver_Enable_Bool = "enable"
-
-    //-----------------------------------------------------------------------------
-    // web interface keys
-    val WebInterface_Section = "WebInterface"
-    val WebInterface_WebPort_String = "WebPort"
-
-    //-----------------------------------------------------------------------------
-    // tracking overrides - keys are device paths, values are the device paths their tracking/pose information overrides
-    val TrackingOverride_Section = "TrackingOverrides"
-
-    //-----------------------------------------------------------------------------
-    // per-app keys - the section name for these is the app key itself. Some of these are prefixed by the controller type
-    val App_BindingAutosaveURLSuffix_String = "AutosaveURL"
-    val App_BindingCurrentURLSuffix_String = "CurrentURL"
-    val App_NeedToUpdateAutosaveSuffix_Bool = "NeedToUpdateAutosave"
-    val App_ActionManifestURL_String = "ActionManifestURL"
-
-    // ivrchaperone.h =================================================================================================================================================
-
-    const val IVRChaperone_Version = "IVRChaperone_003"
-
-    // ivrchaperonesetup.h
-
-    const val IVRChaperoneSetup_Version = "IVRChaperoneSetup_005"
-
-    // ivrcompositor.h ================================================================================================================================================
-
-    val VRCompositor_ReprojectionReason_Cpu = 0x01
-    val VRCompositor_ReprojectionReason_Gpu = 0x02
-    /**
-     *  This flag indicates the async reprojection mode is active, but does not indicate if reprojection actually happened or not.
-     *  Use the ReprojectionReason flags above to check if reprojection was actually applied (i.e. scene texture was reused).
-     *  NumFramePresents > 1 also indicates the scene texture was reused, and also the number of times that it was presented in total.  */
-    val VRCompositor_ReprojectionAsync = 0x04
-
-    inline fun CompositorFrameTiming(): CompositorFrameTiming = CompositorFrameTiming.callocStack()
-    inline fun CompositorFrameTiming(capacity: Int): CompositorFrameTiming.Buffer = CompositorFrameTiming.callocStack(capacity)
+    fun CompositorFrameTiming(): CompositorFrameTiming = CompositorFrameTiming.callocStack()
+    fun CompositorFrameTiming(capacity: Int): CompositorFrameTiming.Buffer = CompositorFrameTiming.callocStack(capacity)
     inline fun CompositorFrameTiming(block: CompositorFrameTiming.() -> Unit): CompositorFrameTiming = CompositorFrameTiming().also(block)
 
-    inline fun CompositorCumulativeStats(): CompositorCumulativeStats = CompositorCumulativeStats.callocStack()
-    inline fun CompositorCumulativeStats(capacity: Int): CompositorCumulativeStats.Buffer = CompositorCumulativeStats.callocStack(capacity)
+    fun CompositorCumulativeStats(): CompositorCumulativeStats = CompositorCumulativeStats.callocStack()
+    fun CompositorCumulativeStats(capacity: Int): CompositorCumulativeStats.Buffer = CompositorCumulativeStats.callocStack(capacity)
     inline fun CompositorCumulativeStats(block: CompositorCumulativeStats.() -> Unit): CompositorCumulativeStats = CompositorCumulativeStats().also(block)
 
-    const val IVRCompositor_Version = "IVRCompositor_022"
+    // ivrnotifications.h -> class
 
+    // ivroverlay.h -> class
 
-    // ivrnotifications.h
-
-    const val notificationTextMaxSize = 256
-
-    const val IVRNotifications_Version = "IVRNotifications_002"
-
-
-    // ivroverlay.h
-
-    /** The maximum length of an overlay key in bytes, counting the terminating null character. */
-    const val vrOverlayMaxKeyLength = 128
-
-    /** The maximum length of an overlay name in bytes, counting the terminating null character. */
-    const val vrOverlayMaxNameLength = 128
-
-    /** The maximum number of overlays that can exist in the system at one time. */
-    const val maxOverlayCount = 64
-
-    /** The maximum number of overlay intersection mask primitives per overlay */
-    const val maxOverlayIntersectionMaskPrimitivesCount = 32
-
-    inline fun VROverlayIntersectionParams(): VROverlayIntersectionParams = VROverlayIntersectionParams.callocStack()
-    inline fun VROverlayIntersectionParams(capacity: Int): VROverlayIntersectionParams.Buffer = VROverlayIntersectionParams.callocStack(capacity)
+    fun VROverlayIntersectionParams(): VROverlayIntersectionParams = VROverlayIntersectionParams.callocStack()
+    fun VROverlayIntersectionParams(capacity: Int): VROverlayIntersectionParams.Buffer = VROverlayIntersectionParams.callocStack(capacity)
     inline fun VROverlayIntersectionParams(block: VROverlayIntersectionParams.() -> Unit): VROverlayIntersectionParams = VROverlayIntersectionParams().also(block)
 
-    inline fun VROverlayIntersectionResults(): VROverlayIntersectionResults = VROverlayIntersectionResults.callocStack()
-    inline fun VROverlayIntersectionResults(capacity: Int): VROverlayIntersectionResults.Buffer = VROverlayIntersectionResults.callocStack(capacity)
+    fun VROverlayIntersectionResults(): VROverlayIntersectionResults = VROverlayIntersectionResults.callocStack()
+    fun VROverlayIntersectionResults(capacity: Int): VROverlayIntersectionResults.Buffer = VROverlayIntersectionResults.callocStack(capacity)
     inline fun VROverlayIntersectionResults(block: VROverlayIntersectionResults.() -> Unit): VROverlayIntersectionResults = VROverlayIntersectionResults().also(block)
 
-    inline fun IntersectionMaskRectangle(): IntersectionMaskRectangle = IntersectionMaskRectangle.callocStack()
-    inline fun IntersectionMaskRectangle(capacity: Int): IntersectionMaskRectangle.Buffer = IntersectionMaskRectangle.callocStack(capacity)
+    fun IntersectionMaskRectangle(): IntersectionMaskRectangle = IntersectionMaskRectangle.callocStack()
+    fun IntersectionMaskRectangle(capacity: Int): IntersectionMaskRectangle.Buffer = IntersectionMaskRectangle.callocStack(capacity)
     inline fun IntersectionMaskRectangle(block: IntersectionMaskRectangle.() -> Unit): IntersectionMaskRectangle = IntersectionMaskRectangle().also(block)
 
-    inline fun IntersectionMaskCircle(): IntersectionMaskCircle = IntersectionMaskCircle.callocStack()
-    inline fun IntersectionMaskCircle(capacity: Int): IntersectionMaskCircle.Buffer = IntersectionMaskCircle.callocStack(capacity)
+    fun IntersectionMaskCircle(): IntersectionMaskCircle = IntersectionMaskCircle.callocStack()
+    fun IntersectionMaskCircle(capacity: Int): IntersectionMaskCircle.Buffer = IntersectionMaskCircle.callocStack(capacity)
     inline fun IntersectionMaskCircle(block: IntersectionMaskCircle.() -> Unit): IntersectionMaskCircle = IntersectionMaskCircle().also(block)
 
-    inline fun VROverlayIntersectionMaskPrimitiveData(): VROverlayIntersectionMaskPrimitiveData = VROverlayIntersectionMaskPrimitiveData.callocStack()
-    inline fun VROverlayIntersectionMaskPrimitiveData(capacity: Int): VROverlayIntersectionMaskPrimitiveData.Buffer = VROverlayIntersectionMaskPrimitiveData.callocStack(capacity)
+    fun VROverlayIntersectionMaskPrimitiveData(): VROverlayIntersectionMaskPrimitiveData = VROverlayIntersectionMaskPrimitiveData.callocStack()
+    fun VROverlayIntersectionMaskPrimitiveData(capacity: Int): VROverlayIntersectionMaskPrimitiveData.Buffer = VROverlayIntersectionMaskPrimitiveData.callocStack(capacity)
     inline fun VROverlayIntersectionMaskPrimitiveData(block: VROverlayIntersectionMaskPrimitiveData.() -> Unit): VROverlayIntersectionMaskPrimitiveData = VROverlayIntersectionMaskPrimitiveData().also(block)
 
-    inline fun VROverlayIntersectionMaskPrimitive(): VROverlayIntersectionMaskPrimitive = VROverlayIntersectionMaskPrimitive.callocStack()
-    inline fun VROverlayIntersectionMaskPrimitive(capacity: Int): VROverlayIntersectionMaskPrimitive.Buffer = VROverlayIntersectionMaskPrimitive.callocStack(capacity)
+    fun VROverlayIntersectionMaskPrimitive(): VROverlayIntersectionMaskPrimitive = VROverlayIntersectionMaskPrimitive.callocStack()
+    fun VROverlayIntersectionMaskPrimitive(capacity: Int): VROverlayIntersectionMaskPrimitive.Buffer = VROverlayIntersectionMaskPrimitive.callocStack(capacity)
     inline fun VROverlayIntersectionMaskPrimitive(block: VROverlayIntersectionMaskPrimitive.() -> Unit): VROverlayIntersectionMaskPrimitive = VROverlayIntersectionMaskPrimitive().also(block)
 
-    const val IVROverlay_Version = "IVROverlay_018"
+    // ivrrendermodels.h -> class
 
-    // ivrrendermodels.h
-
-    /** Canonical coordinate system of the gdc 2015 wired controller, provided for backwards compatibility */
-    val Controller_Component_GDC2015 = "gdc2015"
-    /** For controllers with an unambiguous 'base'. */
-    val Controller_Component_Base = "base"
-    /** For controllers with an unambiguous 'tip' (used for 'laser-pointing') */
-    val Controller_Component_Tip = "tip"
-    /** Neutral, ambidextrous hand-pose when holding controller. On plane between neutrally posed index finger and thumb */
-    val Controller_Component_HandGrip = "handgrip"
-    /** 1:1 aspect ratio status area, with canonical [0,1] uv mapping */
-    val Controller_Component_Status = "status"
-
-
-    inline fun RenderModelComponentState(): RenderModelComponentState = RenderModelComponentState.callocStack()
-    inline fun RenderModelComponentState(capacity: Int): RenderModelComponentState.Buffer = RenderModelComponentState.callocStack(capacity)
+    fun RenderModelComponentState(): RenderModelComponentState = RenderModelComponentState.callocStack()
+    fun RenderModelComponentState(capacity: Int): RenderModelComponentState.Buffer = RenderModelComponentState.callocStack(capacity)
     inline fun RenderModelComponentState(block: RenderModelComponentState.() -> Unit): RenderModelComponentState = RenderModelComponentState().also(block)
 
-    inline fun RenderModel(): RenderModel = RenderModel.callocStack()
-    inline fun RenderModel(capacity: Int): RenderModel.Buffer = RenderModel.callocStack()
+    fun RenderModel(): RenderModel = RenderModel.callocStack()
+    fun RenderModel(capacity: Int): RenderModel.Buffer = RenderModel.callocStack(capacity)
     inline fun RenderModel(block: RenderModel.() -> Unit): RenderModel = RenderModel().also(block)
 
-    inline fun RenderModelControllerModeState(): RenderModelControllerModeState = RenderModelControllerModeState.callocStack()
-    inline fun RenderModelControllerModeState(capacity: Int): RenderModelControllerModeState.Buffer = RenderModelControllerModeState.callocStack(capacity)
+    fun RenderModelControllerModeState(): RenderModelControllerModeState = RenderModelControllerModeState.callocStack()
+    fun RenderModelControllerModeState(capacity: Int): RenderModelControllerModeState.Buffer = RenderModelControllerModeState.callocStack(capacity)
     inline fun RenderModelControllerModeState(block: RenderModelControllerModeState.() -> Unit): RenderModelControllerModeState = RenderModelControllerModeState().also(block)
 
-    const val IVRRenderModels_Version = "IVRRenderModels_005"
+    // ivrextendeddisplay.h -> class
 
-    // ivrextendeddisplay.h
+    // ivrtrackedcamera.h -> class
 
-    const val IVRExtendedDisplay_Version = "IVRExtendedDisplay_001"
+    // ivrscreenshots.h -> class
 
-    // ivrtrackedcamera.h
+    // ivrresources.h -> class
 
-    const val IVRTrackedCamera_Version = "IVRTrackedCamera_003"
+    // ivrdrivermanager.h -> class
 
-    // ivrscreenshots.h
+    // ivrinput.h -> class
 
-    const val IVRScreenshots_Version = "IVRScreenshots_001"
-
-    // ivrresources.h
-
-    const val IVRResources_Version = "IVRResources_001"
-
-    // ivrdrivermanager.h
-
-    const val IVRDriverManager_Version = "IVRDriverManager_001"
-
-    // ivrinput.h
-
-    val invalidActionHandle: VRActionHandle = NULL
-    val invalidActionSetHandle: VRActionSetHandle = NULL
-    val invalidInputValueHandle: VRInputValueHandle = NULL
-
-    val maxActionNameLength = 64
-    val maxActionSetNameLength = 64
-    val maxActionOriginCount = 16
-
-    inline fun InputAnalogActionData(): InputAnalogActionData = InputAnalogActionData.callocStack()
-    inline fun InputAnalogActionData(capacity: Int): InputAnalogActionData.Buffer = InputAnalogActionData.callocStack(capacity)
+    fun InputAnalogActionData(): InputAnalogActionData = InputAnalogActionData.callocStack()
+    fun InputAnalogActionData(capacity: Int): InputAnalogActionData.Buffer = InputAnalogActionData.callocStack(capacity)
     inline fun InputAnalogActionData(block: InputAnalogActionData.() -> Unit): InputAnalogActionData = InputAnalogActionData().also(block)
 
-    inline fun InputDigitalActionData(): InputDigitalActionData = InputDigitalActionData.callocStack()
-    inline fun InputDigitalActionData(capacity: Int): InputDigitalActionData.Buffer = InputDigitalActionData.callocStack(capacity)
+    fun InputDigitalActionData(): InputDigitalActionData = InputDigitalActionData.callocStack()
+    fun InputDigitalActionData(capacity: Int): InputDigitalActionData.Buffer = InputDigitalActionData.callocStack(capacity)
     inline fun InputDigitalActionData(block: InputDigitalActionData.() -> Unit): InputDigitalActionData = InputDigitalActionData().also(block)
 
-    inline fun InputPoseActionData(): InputPoseActionData = InputPoseActionData.callocStack()
-    inline fun InputPoseActionData(capacity: Int): InputPoseActionData.Buffer = InputPoseActionData.callocStack(capacity)
+    fun InputPoseActionData(): InputPoseActionData = InputPoseActionData.callocStack()
+    fun InputPoseActionData(capacity: Int): InputPoseActionData.Buffer = InputPoseActionData.callocStack(capacity)
     inline fun InputPoseActionData(block: InputPoseActionData.() -> Unit): InputPoseActionData = InputPoseActionData().also(block)
 
 
-    inline fun InputSkeletonActionData(): InputSkeletonActionData = InputSkeletonActionData.create(ptr.advance(InputSkeletonActionData.SIZEOF))
-    inline fun InputSkeletonActionData(capacity: Int): InputSkeletonActionData.Buffer = InputSkeletonActionData.create(ptr.advance(InputSkeletonActionData.SIZEOF * capacity), capacity)
-    inline fun InputSkeletonActionData(block: InputSkeletonActionData.() -> Unit): InputSkeletonActionData = InputSkeletonActionData().also(block)
+    fun InputSkeletalActionData(): InputSkeletalActionData = InputSkeletalActionData.callocStack()
+    fun InputSkeletalActionData(capacity: Int): InputSkeletalActionData.Buffer = InputSkeletalActionData.callocStack(capacity)
+    inline fun InputSkeletalActionData(block: InputSkeletalActionData.() -> Unit): InputSkeletalActionData = InputSkeletalActionData().also(block)
 
 
-    inline fun InputOriginInfo(): InputOriginInfo = InputOriginInfo.callocStack()
-    inline fun InputOriginInfo(capacity: Int): InputOriginInfo.Buffer = InputOriginInfo.callocStack(capacity)
+    fun InputOriginInfo(): InputOriginInfo = InputOriginInfo.callocStack()
+    fun InputOriginInfo(capacity: Int): InputOriginInfo.Buffer = InputOriginInfo.callocStack(capacity)
     inline fun InputOriginInfo(block: InputOriginInfo.() -> Unit): InputOriginInfo = InputOriginInfo().also(block)
 
 
-    inline fun VRActiveActionSet(): VRActiveActionSet = VRActiveActionSet.callocStack()
-    inline fun VRActiveActionSet(capacity: Int): VRActiveActionSet.Buffer = VRActiveActionSet.callocStack(capacity)
+    fun VRActiveActionSet(): VRActiveActionSet = VRActiveActionSet.callocStack()
+    fun VRActiveActionSet(capacity: Int): VRActiveActionSet.Buffer = VRActiveActionSet.callocStack(capacity)
     inline fun VRActiveActionSet(block: VRActiveActionSet.() -> Unit): VRActiveActionSet = VRActiveActionSet().also(block)
 
+    // ivriobuffer.h -> class
 
-    const val IVRInput_Version = "IVRInput_003"
+    // ivrspatialanchors.h
+    fun SpatialAnchorPose(): SpatialAnchorPose = SpatialAnchorPose.callocStack()
 
-    // ivriobuffer.h
-
-    const val invalidIOBufferHandle = NULL
-
-    const val IVRIOBuffer_Version = "IVRIOBuffer_001"
+    fun SpatialAnchorPose(capacity: Int): SpatialAnchorPose.Buffer = SpatialAnchorPose.callocStack(capacity)
+    inline fun SpatialAnchorPose(block: SpatialAnchorPose.() -> Unit): SpatialAnchorPose = SpatialAnchorPose().also(block)
 
     /** Finds the active installation of the VR API and initializes it. The provided path must be absolute
      * or relative to the current working directory. These are the local install versions of the equivalent
@@ -697,91 +436,46 @@ object vr {
      *
      * startupInfo is reserved for future use.
      */
-    infix fun init(applicationType: VRApplication): IVRSystem? = stak { init(it.callocInt(1), applicationType) }
+    fun init(applicationType: VRApplication = VRApplication.Scene): VRInitError =
+            stak {
 
-    fun init(error: IntBuffer, applicationType: VRApplication): IVRSystem? {
+                val error = it.nmalloc(1, Int.BYTES)
+                val token = nVR_InitInternal(error, applicationType.i)
 
-        var vrSystem: IVRSystem? = null
+                if (memGetInt(error) == VRInitError.None.i) {
+                    OpenVR.create(token)
+                    if (!vrSystem.isInterfaceVersionValid) {
+                        VR_ShutdownInternal()
+                        return VRInitError.Init_InterfaceNotFound
+                    }
+                }
 
-        val token = VR.VR_InitInternal(error, applicationType.i)
-        OpenVR.create(token)
-
-        if (error[0] == VRInitError.None.i)
-            if (VR.VR_IsInterfaceVersionValid(IVRSystem_Version))
-                vrSystem = OpenVR.VRSystem
-            else {
-                VR.VR_ShutdownInternal()
-                error[0] = lib.VRInitError.Init_InterfaceNotFound.i
+                VRInitError of memGetInt(error)
             }
 
-        return vrSystem
-    }
-
     /** unloads vrclient.dll. Any interface pointers from the interface are invalid after this point */
-    fun shutdown() = VR.VR_ShutdownInternal()
+    fun shutdown() = VR_ShutdownInternal()
 
     /** Returns true if there is an HMD attached. This check is as lightweight as possible and
      *  can be called outside of VR_Init/VR_Shutdown. It should be used when an application wants
      *  to know if initializing VR is a possibility but isn't ready to take that step yet.     */
     val isHmdPresent: Boolean
-        get() = VR.VR_IsHmdPresent()
+        get() = VR_IsHmdPresent()
 
     /** Returns true if the OpenVR runtime is installed. */
     val isRuntimeInstalled: Boolean
-        get() = VR.VR_IsRuntimeInstalled()
+        get() = VR_IsRuntimeInstalled()
 
     /** Returns where the OpenVR runtime is installed. */
     val runtimePath: String?
-        get() = VR.VR_RuntimePath()
-
-    /** Returns the name of the enum value for an EVRInitError. This function may be called outside of VR_Init()/VR_Shutdown().
-     *  Also VRInitError::asSymbol */
-    fun getVRInitErrorAsSymbol(error: VRInitError): String? = VR.VR_GetVRInitErrorAsSymbol(error.i)
-
-    /** Returns an English string for an EVRInitError. Applications should call VR_GetVRInitErrorAsSymbol instead and
-     * use that as a key to look up their own localized error message. This function may be called outside of VR_Init()/VR_Shutdown(). */
-    fun getVRInitErrorAsEnglishDescription(error: VRInitError): String? = VR.VR_GetVRInitErrorAsEnglishDescription(error.i)
+        get() = memASCIISafe(nVR_RuntimePath())
 
     /** Returns the interface of the specified version. This method must be called after VR_Init. The
      * pointer returned is valid until VR_Shutdown is called.     */
-    fun getGenericInterface(interfaceVersion: String, error: IntBuffer): Long = VR.VR_GetGenericInterface(interfaceVersion, error)
-
-    /** Returns whether the interface of the specified version exists.     */
-    fun isInterfaceVersionValid(interfaceVersion: String): Boolean = VR.VR_IsInterfaceVersionValid(interfaceVersion)
+    fun getGenericInterface(interfaceVersion: String, error: VRInitErrorBuffer): Ptr =
+            nVR_GetGenericInterface(addressOfAscii(interfaceVersion), error.adr)
 
     /** Returns a token that represents whether the VR interface handles need to be reloaded */
     val initToken: Int
-        get () = VR.VR_GetInitToken()
+        get () = VR_GetInitToken()
 }
-
-var DEBUG = java.lang.management.ManagementFactory.getRuntimeMXBean().inputArguments.toString().indexOf("jdwp") >= 0
-
-var OPENVR_NO_EXCEPTIONS = false
-
-fun checkOpenVR(value: Int) {
-    if (DEBUG && value != 0)
-        if (OPENVR_NO_EXCEPTIONS)
-            System.err.println("Error $value")
-        else
-            throw Error("Error $value")
-}
-
-val NUL = '\u0000'
-
-val vrSystem = OpenVR.VRSystem!!
-val vrChaperone = OpenVR.VRChaperone!!
-val vrChaperoneSetup = OpenVR.VRChaperoneSetup!!
-val vrCompositor = OpenVR.VRCompositor!!
-val vrOverlay = OpenVR.VROverlay!!
-val vrResources = OpenVR.VRResources!!
-val vrRenderModels = OpenVR.VRRenderModels!!
-val vrExtendedDisplay = OpenVR.VRExtendedDisplay!!
-val vrSettings = OpenVR.VRSettings!!
-val vrApplications = OpenVR.VRApplications!!
-val vrTrackedCamera = OpenVR.VRTrackedCamera!!
-val vrScreenshots = OpenVR.VRScreenshots!!
-val vrDriverManager = OpenVR.VRDriverManager!!
-val vrInput = OpenVR.VRInput!!
-val vrioBuffer = OpenVR.VRIOBuffer!!
-
-val assetPath = Paths.get("").toAbsolutePath().toString() + "/src/main/resources"
