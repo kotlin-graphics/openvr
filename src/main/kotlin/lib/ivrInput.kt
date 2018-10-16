@@ -1,6 +1,7 @@
 package lib
 
 import glm_.set
+import glm_.size
 import kool.adr
 import kool.rem
 import kool.stak
@@ -130,7 +131,7 @@ object vrInput : vrInterface {
      * than digital. TODO more convenient?
      */
     fun getDigitalActionData(action: VRActionHandle, actionData: InputDigitalActionData, restrictToDevice: VRInputValueHandle): Error =
-            Error of nVRInput_GetDigitalActionData(action, actionData.adr, actionData.sizeof(), restrictToDevice)
+            Error of nVRInput_GetDigitalActionData(action, actionData.adr, InputDigitalActionData.SIZEOF, restrictToDevice)
 
     /**
      * Reads the state of a digital action given its handle. This will return {@link VR#EVRInputError_VRInputError_WrongType} if the type of action is something other
@@ -147,13 +148,6 @@ object vrInput : vrInterface {
             Error of nVRInput_GetAnalogActionData(action, actionData.adr, InputAnalogActionData.SIZEOF, restrictToDevice)
 
     /**
-     * Reads the state of an analog action given its handle. This will return {@link VR#EVRInputError_VRInputError_WrongType} if the type of action is something other
-     * than analog. TODO more convenient?
-     */
-    fun getAnalogActionData(action: VRActionHandle, actionData: InputAnalogActionData.Buffer, restrictToDevice: VRInputValueHandle): Error =
-            Error of nVRInput_GetAnalogActionData(action, actionData.adr, actionData.rem, restrictToDevice)
-
-    /**
      * Reads the state of a pose action given its handle. TODO more convenient?
      *
      * @param origin one of:<br><table><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseSeated}</td></tr><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseStanding}</td></tr><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseRawAndUncalibrated}</td></tr></table>
@@ -163,21 +157,12 @@ object vrInput : vrInterface {
             Error of nVRInput_GetPoseActionData(action, origin.i, predictedSecondsFromNow, actionData.adr, InputPoseActionData.SIZEOF, restrictToDevice)
 
     /**
-     * Reads the state of a pose action given its handle. TODO more convenient?
-     *
-     * @param origin one of:<br><table><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseSeated}</td></tr><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseStanding}</td></tr><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseRawAndUncalibrated}</td></tr></table>
-     */
-    fun getPoseActionData(action: VRActionHandle, origin: TrackingUniverseOrigin, predictedSecondsFromNow: Float,
-                          actionData: InputPoseActionData.Buffer, restrictToDevice: VRInputValueHandle): Error =
-            Error of VRInput.nVRInput_GetPoseActionData(action, origin.i, predictedSecondsFromNow, actionData.adr, actionData.rem, restrictToDevice)
-
-    /**
      * Reads the state of a skeletal action given its handle. TODO more convenient?
      */
     fun getSkeletalActionData(action: VRActionHandle, actionData: InputSkeletalActionData.Buffer, restrictToDevice: VRInputValueHandle): Error =
-            Error of nVRInput_GetSkeletalActionData(action, actionData.adr, actionData.rem, restrictToDevice)
+            Error of nVRInput_GetSkeletalActionData(action, actionData.adr, InputSkeletalActionData.SIZEOF, restrictToDevice)
 
-// --------------- Skeletal Bone Data ------------------- //
+    // --------------- Skeletal Bone Data ------------------- //
 
     /** Reads the state of the skeletal bone data associated with this action and copies it into the given buffer. */
     fun getSkeletalBoneData(action: VRActionHandle, transformSpace: VRSkeletalTransformSpace, motionRange: VRSkeletalMotionRange, transformArray: VRBoneTransform.Buffer, restrictToDevice: VRInputValueHandle): Error =
@@ -192,7 +177,8 @@ object vrInput : vrInterface {
                     ?: NULL, compressedData?.rem ?: 0, requiredCompressedSize?.adr ?: NULL, restrictToDevice)
 
     /** Turns a compressed buffer from GetSkeletalBoneDataCompressed and turns it back into a bone transform array. */
-//    virtual EVRInputError DecompressSkeletalBoneData( void *pvCompressedBuffer, uint32_t unCompressedBufferSize, EVRSkeletalTransformSpace *peTransformSpace, VR_ARRAY_COUNT( unTransformArrayCount ) VRBoneTransform_t *pTransformArray, uint32_t unTransformArrayCount ) = 0
+    fun decompressSkeletalBoneData(compressedBuffer: ByteBuffer, transformSpace: VRSkeletalTransformSpaceBuffer, transformArray: VRBoneTransform.Buffer): Error =
+            Error of nVRInput_DecompressSkeletalBoneData(compressedBuffer.adr, compressedBuffer.rem, transformSpace.adr, transformArray.adr, transformArray.rem)
 
     /** Triggers a haptic event as described by the specified action. */
     fun triggerHapticVibrationAction(action: VRActionHandle, startSecondsFromNow: Float, durationSeconds: Float, frequency: Float,
@@ -210,10 +196,6 @@ object vrInput : vrInterface {
     /** Retrieves useful information for the origin of this action. TODO more convenient? */
     fun getOriginTrackedDeviceInfo(origin: VRInputValueHandle, originInfo: InputOriginInfo): Error =
             Error of nVRInput_GetOriginTrackedDeviceInfo(origin, originInfo.adr, InputOriginInfo.SIZEOF)
-
-    /** Retrieves useful information for the origin of this action. TODO more convenient? */
-    fun getOriginTrackedDeviceInfo(origin: VRInputValueHandle, originInfo: InputOriginInfo.Buffer): Error =
-            Error of nVRInput_GetOriginTrackedDeviceInfo(origin, originInfo.adr, originInfo.rem)
 
     /** Shows the current binding for the action in-headset. */
     fun showActionOrigins(actionSetHandle: VRActionSetHandle, actionHandle: VRActionHandle): Error =

@@ -230,7 +230,7 @@ object vrRenderModels : vrInterface {
      * Otherwise, return true
      * Note: For dynamic objects, visibility may be dynamic. (I.e., true/false will be returned based on controller state and controller mode state ) */
     fun getComponentStateForDevicePath(renderModelName: CharSequence, componentName: CharSequence, devicePath: VRInputValueHandle, state: RenderModelControllerModeState, componentState: RenderModelComponentState): Boolean =
-            nVRRenderModels_GetComponentStateForDevicePath(addressOfAscii(renderModelName), addressOfAscii(componentName), devicePath, state.adr, componentState.adr).bool
+            nVRRenderModels_GetComponentStateForDevicePath(addressOfAscii(renderModelName), addressOfAscii(componentName), devicePath, state.adr, componentState.adr)
 
     /** This version of GetComponentState takes a controller state block instead of an action origin.     */
     @Deprecated("You should use the new input system and GetComponentStateForDevicePath instead.", ReplaceWith("getComponentStateForDevicePath"))

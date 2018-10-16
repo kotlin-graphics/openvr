@@ -108,6 +108,8 @@ typealias VRActionSetHandleBuffer = LongBuffer
 typealias VRInputValueHandleBuffer = LongBuffer
 typealias VRScreenshotHandleBuffer = LongBuffer
 
+typealias VRSkeletalTransformSpaceBuffer = IntBuffer
+
 // JVM custom, Errors
 
 typealias VRApplicationErrorBuffer = IntBuffer
