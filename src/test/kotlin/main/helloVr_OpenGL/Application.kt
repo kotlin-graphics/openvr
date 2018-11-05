@@ -27,6 +27,9 @@ import org.lwjgl.opengl.KHRDebug.glDebugMessageCallback as _
 
 fun main(args: Array<String>) {
 
+    if (System.getenv("TRAVIS") != "true") // for travis
+        return
+
     Application().apply {
         runMainLoop()
         shutdown()
