@@ -1,9 +1,9 @@
 package openvr.plugin
 
-import openvr.lib.ETrackingUniverseOrigin
+import lib.TrackingUniverseOrigin
 
 
 object Render {
 
-    var trackingSpace = ETrackingUniverseOrigin.Standing
+    var trackingSpace = TrackingUniverseOrigin.Standing
 }

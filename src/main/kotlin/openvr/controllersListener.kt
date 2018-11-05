@@ -34,7 +34,7 @@
 //
 //    fun update(event: VREvent) = when (event.eventType) {
 //
-//        EVREventType.TrackedDeviceActivated -> {
+//        VREventType.TrackedDeviceActivated -> {
 //
 //            if (vrSystem()!!.getControllerRoleForTrackedDeviceIndex(event.trackedDeviceIndex) == ETrackedControllerRole.LeftHand)
 //                leftIndex = event.trackedDeviceIndex
@@ -44,7 +44,7 @@
 //            trackedDeviceActivated(event)
 //        }
 //
-//        EVREventType.TrackedDeviceDeactivated -> {
+//        VREventType.TrackedDeviceDeactivated -> {
 //
 //            if (event.trackedDeviceIndex == leftIndex)
 //                leftIndex = trackedDeviceIndexInvalid
@@ -54,7 +54,7 @@
 //            trackedDeviceDeactivated(event)
 //        }
 //
-//        EVREventType.TrackedDeviceRoleChanged -> {
+//        VREventType.TrackedDeviceRoleChanged -> {
 //
 //            if (event.trackedDeviceIndex == leftIndex || event.trackedDeviceIndex == rightIndex)
 //
@@ -71,7 +71,7 @@
 //            trackedDeviceRoleChanged(event)
 //        }
 //
-//        EVREventType.PropertyChanged -> propertyChanged(event)
+//        VREventType.PropertyChanged -> propertyChanged(event)
 //
 //        else -> {
 //        }
