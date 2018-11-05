@@ -69,7 +69,9 @@ enum class TrackingResult(@JvmField val i: Int) {
     Calibrating_OutOfRange(101),
 
     Running_OK(200),
-    Running_OutOfRange(201);
+    Running_OutOfRange(201),
+
+    Fallback_RotationOnly(300);
 
     companion object {
         infix fun of(i: Int) = values().first { it.i == i }
@@ -182,6 +184,8 @@ enum class TrackedDeviceProperty(@JvmField val i: Int) {
     NumCameras_Int32(1039),
     /** FrameLayout value */
     CameraFrameLayout_Int32(1040),
+    /** ECameraVideoStreamFormat value */
+    CameraStreamFormat_Int32(1041),
 
     // Properties that are unique to TrackedDeviceClass_HMD
     ReportsTimeSinceVSync_Bool(2000),
@@ -334,6 +338,8 @@ enum class TrackedDeviceProperty(@JvmField val i: Int) {
     // Properties that are set internally based on other information provided by drivers
     ControllerType_String(7000),
     LegacyInputProfile_String(7001),
+    /** Allows hand assignments to prefer some controllers over others. High numbers are selected over low numbers */
+    ControllerHandSelectionPriority_Int32(7002),
 
     // Vendors are free to expose private debug data in this reserved region
     VendorSpecific_Reserved_Start(10000),
@@ -363,7 +369,8 @@ enum class TrackedPropertyError(@JvmField val i: Int) {
     NotYetAvailable(9),
     PermissionDenied(10),
     InvalidOperation(11),
-    CannotWriteToWildcards(12);
+    CannotWriteToWildcards(12),
+    IPCReadFailure(13);
 
     companion object {
         infix fun of(i: Int) = values().first { it.i == i }
@@ -652,6 +659,7 @@ enum class VREventType(@JvmField val i: Int) {
     Input_ActionManifestReloaded(1703),
     /** data is actionManifest */
     Input_ActionManifestLoadFailed(1704),
+    Input_TrackerActivated(1706),
     /** data is spatialAnchor. broadcast */
     SpatialAnchors_PoseUpdated(1800),
     /** data is spatialAnchor. broadcast */

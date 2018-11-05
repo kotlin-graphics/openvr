@@ -29,6 +29,7 @@ import org.lwjgl.opengl.GL30.glDeleteVertexArrays
 import org.lwjgl.opengl.GL30.glGenVertexArrays
 import uno.buffer.intBufferBig
 import uno.glfw.GlfwWindow
+import uno.glfw.VSync
 import uno.glfw.glfw
 import lib.TrackedDeviceProperty as TDP
 
@@ -44,7 +45,7 @@ class CompanionWindow {
     val window = GlfwWindow(resolution, "helloVr - $strDriver $strDisplay").also {
         it.pos = position
         it.makeContextCurrent()
-        glfw.swapInterval = vBlank.i
+        glfw.swapInterval = if (vBlank) VSync.ON else VSync.OFF
         it.show()
         GL.createCapabilities()
         it.autoSwap = false
@@ -97,8 +98,9 @@ class CompanionWindow {
             glVertexAttribPointer(glf.pos2_tc2)
 
             glBindVertexArray()
-
         }
+
+        window.framebufferSizeCallback = { size -> resolution put size }
     }
 
     fun render() {

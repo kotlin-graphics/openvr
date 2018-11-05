@@ -133,6 +133,7 @@ object vr {
     val skeletonPropertyTag: PropertyTypeTag = 36
 
     val spatialAnchorPosePropertyTag = 40
+    val jsonPropertyTag = 41
 
     val openVRInternalReserved_Start: PropertyTypeTag = 1000
     val openVRInternalReserved_End: PropertyTypeTag = 10000

@@ -154,6 +154,10 @@ object vrSettings : vrInterface {
             get() = getFloat(section, "supersampleScale")
             set(value) = setFloat(section, "supersampleScale", value)
 
+        var maxRecommendedResolution: Int
+            get() = getInt(section, "maxRecommendedResolution")
+            set(value) = setInt(section, "maxRecommendedResolution", value)
+
         var allowAsyncReprojection: Boolean
             get() = getBool(section, "allowAsyncReprojection")
             set(value) = setBool(section, "allowAsyncReprojection", value)
@@ -171,8 +175,8 @@ object vrSettings : vrInterface {
             set(value) = setBool(section, "forceFadeOnBadTracking", value)
 
         var defaultMirrorView: Int
-            get() = getInt(section, "defaultMirrorView")
-            set(value) = setInt(section, "defaultMirrorView", value)
+            get() = getInt(section, "mirrorView")
+            set(value) = setInt(section, "mirrorView", value)
 
         var showMirrorView: Boolean
             get() = getBool(section, "showMirrorView")
@@ -181,6 +185,10 @@ object vrSettings : vrInterface {
         var mirrorViewGeometry: String
             get() = getString(section, "mirrorViewGeometry")
             set(value) = setString(section, "mirrorViewGeometry", value)
+
+        var mirrorViewGeometryMaximized: String
+            get() = getString(section, "mirrorViewGeometryMaximized")
+            set(value) = setString(section, "mirrorViewGeometryMaximized", value)
 
         var startMonitorFromAppLaunch: Boolean
             get() = getBool(section, "startMonitorFromAppLaunch")
@@ -206,7 +214,7 @@ object vrSettings : vrInterface {
             get() = getBool(section, "retailDemo")
             set(value) = setBool(section, "retailDemo", value)
 
-        var CycleBackgroundImageTimeSec: Int
+        var cycleBackgroundImageTimeSec: Int
             get() = getInt(section, "CycleBackgroundImageTimeSec")
             set(value) = setInt(section, "CycleBackgroundImageTimeSec", value)
 
@@ -291,9 +299,13 @@ object vrSettings : vrInterface {
             get() = getBool(section, "enableBluetooth")
             set(value) = setBool(section, "enableBluetooth", value)
 
-        var PowerManagedBaseStations: String
+        var powerManagedBaseStations: String
             get() = getString(section, "PowerManagedBaseStations")
             set(value) = setString(section, "PowerManagedBaseStations", value)
+
+        var enableImuFallback: Boolean
+            get() = getBool(section, "enableImuFallback")
+            set(value) = setBool(section, "enableImuFallback", value)
 
         var enable: Boolean
             get() = getBool(section, "enable")
@@ -355,13 +367,17 @@ object vrSettings : vrInterface {
         val section = "userinterface"
 
 
-        var StatusAlwaysOnTop: Boolean
+        var statusAlwaysOnTop: Boolean
             get() = getBool(section, "StatusAlwaysOnTop")
             set(value) = setBool(section, "StatusAlwaysOnTop", value)
 
-        var MinimizeToTray: Boolean
+        var minimizeToTray: Boolean
             get() = getBool(section, "MinimizeToTray")
             set(value) = setBool(section, "MinimizeToTray", value)
+
+        var hidePopupsWhenStatusMinimized: Boolean
+            get() = getBool(section, "HidePopupsWhenStatusMinimized")
+            set(value) = setBool(section, "HidePopupsWhenStatusMinimized", value)
 
         var screenshots: Boolean
             get() = getBool(section, "screenshots")
@@ -377,7 +393,7 @@ object vrSettings : vrInterface {
         val section = "notifications"
 
 
-        var DoNotDisturb: Boolean
+        var doNotDisturb: Boolean
             get() = getBool(section, "DoNotDisturb")
             set(value) = setBool(section, "DoNotDisturb", value)
     }
@@ -386,31 +402,31 @@ object vrSettings : vrInterface {
 
         val section = "keyboard"
 
-        var TutorialCompletions: Int
+        var tutorialCompletions: Int
             get() = getInt(section, "TutorialCompletions")
             set(value) = setInt(section, "TutorialCompletions", value)
 
-        var ScaleX: Float
+        var scaleX: Float
             get() = getFloat(section, "ScaleX")
             set(value) = setFloat(section, "ScaleX", value)
 
-        var ScaleY: Float
+        var scaleY: Float
             get() = getFloat(section, "ScaleY")
             set(value) = setFloat(section, "ScaleY", value)
 
-        var OffsetLeftX: Float
+        var offsetLeftX: Float
             get() = getFloat(section, "OffsetLeftX")
             set(value) = setFloat(section, "OffsetLeftX", value)
 
-        var OffsetRightX: Float
+        var offsetRightX: Float
             get() = getFloat(section, "OffsetRightX")
             set(value) = setFloat(section, "OffsetRightX", value)
 
-        var OffsetY: Float
+        var offsetY: Float
             get() = getFloat(section, "OffsetY")
             set(value) = setFloat(section, "OffsetY", value)
 
-        var Smoothing: Boolean
+        var smoothing: Boolean
             get() = getBool(section, "Smoothing")
             set(value) = setBool(section, "Smoothing", value)
     }
@@ -420,17 +436,9 @@ object vrSettings : vrInterface {
         val section = "perfcheck"
 
 
-        var heuristicActive: Boolean
-            get() = getBool(section, "heuristicActive")
-            set(value) = setBool(section, "heuristicActive", value)
-
-        var warnInHMD: Boolean
-            get() = getBool(section, "warnInHMD")
-            set(value) = setBool(section, "warnInHMD", value)
-
-        var warnOnlyOnce: Boolean
-            get() = getBool(section, "warnOnlyOnce")
-            set(value) = setBool(section, "warnOnlyOnce", value)
+        var perfGraphInHMD: Boolean
+            get() = getBool(section, "perfGraphInHMD")
+            set(value) = setBool(section, "perfGraphInHMD", value)
 
         var allowTimingStore: Boolean
             get() = getBool(section, "allowTimingStore")
@@ -449,44 +457,58 @@ object vrSettings : vrInterface {
             set(value) = setBool(section, "linuxGPUProfiling", value)
     }
 
+    object vrWebHelper {
+
+        val section = "VRWebHelper"
+
+
+        var debuggerEnabled: Boolean
+            get() = getBool(section, "DebuggerEnabled")
+            set(value) = setBool(section, "DebuggerEnabled", value)
+
+        var debuggerPort: Int
+            get() = getInt(section, "DebuggerPort")
+            set(value) = setInt(section, "DebuggerPort", value)
+    }
+
     object collisionBounds {
 
         val section = "collisionBounds"
 
 
-        var CollisionBoundsStyle: Int
+        var collisionBoundsStyle: Int
             get() = getInt(section, "CollisionBoundsStyle")
             set(value) = setInt(section, "CollisionBoundsStyle", value)
 
-        var CollisionBoundsGroundPerimeterOn: Boolean
+        var collisionBoundsGroundPerimeterOn: Boolean
             get() = getBool(section, "CollisionBoundsGroundPerimeterOn")
             set(value) = setBool(section, "CollisionBoundsGroundPerimeterOn", value)
 
-        var CollisionBoundsCenterMarkerOn: Boolean
+        var collisionBoundsCenterMarkerOn: Boolean
             get() = getBool(section, "CollisionBoundsCenterMarkerOn")
             set(value) = setBool(section, "CollisionBoundsCenterMarkerOn", value)
 
-        var CollisionBoundsPlaySpaceOn: Boolean
+        var collisionBoundsPlaySpaceOn: Boolean
             get() = getBool(section, "CollisionBoundsPlaySpaceOn")
             set(value) = setBool(section, "CollisionBoundsPlaySpaceOn", value)
 
-        var CollisionBoundsFadeDistance: Float
+        var collisionBoundsFadeDistance: Float
             get() = getFloat(section, "CollisionBoundsFadeDistance")
             set(value) = setFloat(section, "CollisionBoundsFadeDistance", value)
 
-        var CollisionBoundsColorGammaR: Int
+        var collisionBoundsColorGammaR: Int
             get() = getInt(section, "CollisionBoundsColorGammaR")
             set(value) = setInt(section, "CollisionBoundsColorGammaR", value)
 
-        var CollisionBoundsColorGammaG: Int
+        var collisionBoundsColorGammaG: Int
             get() = getInt(section, "CollisionBoundsColorGammaG")
             set(value) = setInt(section, "CollisionBoundsColorGammaG", value)
 
-        var CollisionBoundsColorGammaB: Int
+        var collisionBoundsColorGammaB: Int
             get() = getInt(section, "CollisionBoundsColorGammaB")
             set(value) = setInt(section, "CollisionBoundsColorGammaB", value)
 
-        var CollisionBoundsColorGammaA: Int
+        var collisionBoundsColorGammaA: Int
             get() = getInt(section, "CollisionBoundsColorGammaA")
             set(value) = setInt(section, "CollisionBoundsColorGammaA", value)
     }
@@ -633,11 +655,11 @@ object vrSettings : vrInterface {
         val section = "WebInterface"
 
 
-        var WebEnable: Boolean
+        var webEnable: Boolean
             get() = getBool(section, "WebEnable")
             set(value) = setBool(section, "WebEnable", value)
 
-        var WebPort: String
+        var webPort: String
             get() = getString(section, "WebPort")
             set(value) = setString(section, "WebPort", value)
     }

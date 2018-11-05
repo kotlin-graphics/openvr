@@ -623,6 +623,9 @@ val CameraVideoStreamFrameHeader.frameSequence: Int
     get() = CameraVideoStreamFrameHeader.nnFrameSequence(adr)
 val CameraVideoStreamFrameHeader.standingTrackedDevicePos: TrackedDevicePose
     get() = CameraVideoStreamFrameHeader.nstandingTrackedDevicePose(adr)
+/** mid-point of the exposure of the image in host system ticks */
+val CameraVideoStreamFrameHeader.frameExposureTime: Long
+    get() = CameraVideoStreamFrameHeader.nulFrameExposureTime(adr)
 
 
 val DriverDirectModeFrameTiming.size: Int
@@ -881,7 +884,7 @@ var RenderModelVertex.normal: Vec3
     get() = Vec3.fromPointer(adr + RenderModelVertex.VNORMAL)
     set(value) = value.to(adr + RenderModelVertex.VNORMAL)
 var RenderModelVertex.textureCoord: Vec2
-    get() = Vec2(adr + RenderModelVertex.RFTEXTURECOORD)
+    get() = Vec2.fromPointer(adr + RenderModelVertex.RFTEXTURECOORD)
     set(value) = value.to(adr + RenderModelVertex.RFTEXTURECOORD)
 
 /** texture map size in pixels */

@@ -4,6 +4,7 @@ import glm_.vec2.Vec2
 import glm_.vec2.Vec2i
 import glm_.vec3.Vec3
 import gln.buffer.*
+import gln.get
 import gln.glf.semantic
 import gln.texture.glBindTexture2d
 import gln.texture.glGenerateMipmap2D
@@ -27,6 +28,7 @@ import org.lwjgl.opengl.GL32.glTexImage2DMultisample
 import org.lwjgl.openvr.RenderModel
 import org.lwjgl.openvr.RenderModelTextureMap
 import org.lwjgl.openvr.RenderModelVertex
+import uno.buffer.intBufferBig
 import java.nio.ByteBuffer
 
 class FrameBufferDesc(val size: Vec2i) {
@@ -108,13 +110,9 @@ class FrameBufferDesc(val size: Vec2i) {
 
 class CGLRenderModel(val modelName: String, vrModel: RenderModel, vrDiffuseTexture: RenderModelTextureMap) {
 
-    object Buffer {
-        val VERTEX = 0
-        val INDEX = 1
-        val MAX = 2
-    }
+    enum class Buffer { VERTEX, INDEX }
 
-    var bufferName = intBufferBig(Buffer.MAX)
+    var bufferName = intBufferBig<Buffer>()
     val vertexArrayName = intBufferBig(1)
     val textureName = intBufferBig(1)
     var vertexCount = 0
@@ -130,6 +128,8 @@ class CGLRenderModel(val modelName: String, vrModel: RenderModel, vrDiffuseTextu
         glGenBuffers(bufferName)
         glBindArrayBuffer(bufferName[Buffer.VERTEX])
         glArrayBufferData(vrModel.vertices, Usage.StaticDraw)
+        for(i in 0..9)
+            println("vert[$i]: " + vrModel.vertices[i])
 
         // Identify the components in the vertex buffer
         glEnableVertexAttribArray(semantic.attr.POSITION)
