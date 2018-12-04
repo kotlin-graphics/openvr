@@ -107,10 +107,20 @@ enum class TrackedControllerRole {
     /** Tracked device associated with the right hand   */
     RightHand,
     /** Tracked device is opting out of left/right hand selection   */
-    OptOut;
+    OptOut,
+    /** Tracked device is a treadmill */
+    Treadmill;
 
     @JvmField
     val i = ordinal
+
+    /** Returns true if the tracked controller role is allowed to be a hand
+     *  ~IsRoleAllowedAsHand     */
+    val isAllowedAsHand: Boolean
+        get() = when (this) {
+            Invalid, LeftHand, RightHand -> true
+            else -> false
+        }
 
     companion object {
         infix fun of(i: Int) = values().first { it.i == i }
@@ -186,6 +196,10 @@ enum class TrackedDeviceProperty(@JvmField val i: Int) {
     CameraFrameLayout_Int32(1040),
     /** ECameraVideoStreamFormat value */
     CameraStreamFormat_Int32(1041),
+    /** driver-relative path to additional device and global configuration settings */
+    AdditionalDeviceSettingsPath_String(1042),
+    /** Whether device supports being identified from vrmonitor (e.g. blink LED, vibrate haptics, etc) */
+    Identifiable_Bool(1043),
 
     // Properties that are unique to TrackedDeviceClass_HMD
     ReportsTimeSinceVSync_Bool(2000),
@@ -485,8 +499,9 @@ enum class VREventType(@JvmField val i: Int) {
     TouchPadMove(306),
     /** data is overlay, global event  */
     OverlayFocusChanged(307),
+    ReloadOverlays(308),
     /** JVM openvr custom   */
-    HairTriggerMove(308),
+    HairTriggerMove(309),
 
     /** data is process DEPRECATED  */
     InputFocusCaptured(400),
@@ -566,6 +581,8 @@ enum class VREventType(@JvmField val i: Int) {
     RoomViewShown(526),
     /** Sent by compositor whenever room-view is disabled   */
     RoomViewHidden(527),
+    /** data is showUi */
+    ShowUI(528),
 
     Notification_Shown(600),
     Notification_Hidden(601),
@@ -583,11 +600,14 @@ enum class VREventType(@JvmField val i: Int) {
     /** The driver has requested that SteamVR shut down */
     DriverRequestedQuit(704),
 
+    /**  Sent when the process needs to call VRChaperone()->ReloadInfo() */
     ChaperoneDataHasChanged(800),
     ChaperoneUniverseHasChanged(801),
     ChaperoneTempDataHasChanged(802),
     ChaperoneSettingsHaveChanged(803),
     SeatedZeroPoseReset(804),
+    /** Sent when the process needs to reload any cached data it retrieved from VRChaperone()   */
+    ChaperoneFlushCache(805),
 
     AudioSettingsHaveChanged(820),
 
@@ -608,6 +628,7 @@ enum class VREventType(@JvmField val i: Int) {
     DashboardSectionSettingChanged(864),
     WebInterfaceSectionSettingChanged(865),
     TrackersSectionSettingChanged(866),
+    LastKnownSectionSettingChanged(867),
 
     StatusUpdate(900),
 
@@ -659,6 +680,8 @@ enum class VREventType(@JvmField val i: Int) {
     Input_ActionManifestReloaded(1703),
     /** data is actionManifest */
     Input_ActionManifestLoadFailed(1704),
+    /** data is progressUpdate */
+    ProgressUpdate(1705),
     Input_TrackerActivated(1706),
     /** data is spatialAnchor. broadcast */
     SpatialAnchors_PoseUpdated(1800),
@@ -769,6 +792,16 @@ enum class DualAnalogWhich {
     }
 }
 
+enum class ShowUiType { ControllerBinding, ManageTrackers, QuickStart;
+
+    @JvmField
+    val i = ordinal
+
+    companion object {
+        infix fun of(i: Int) = values().first { it.i == i }
+    }
+}
+
 enum class HiddenAreaMeshType(@JvmField val i: Int) {
 
     Standard(0),
@@ -844,8 +877,10 @@ enum class VRApplication(@JvmField val i: Int) {
     VRMonitor(5),
     /** Reserved for Steam  */
     SteamWatchdog(6),
-    /** Start up SteamVR    */
+    /** reserved for vrstartup    */
     Bootstrapper(7),
+    /** reserved for vrwebhelper */
+    WebHelper(8),
 
     Max(7);
 
@@ -1037,12 +1072,6 @@ enum class ImuOffScaleFlags(val i: Int) {
 // ivrnotifications.h -> class
 
 // ivroverlay.h -> class
-
-enum class VRSkeletalTransformSpace { Model, Parent, Additive;
-
-    @JvmField
-    val i = ordinal
-}
 
 /** Input modes for the Big Picture gamepad text entry */
 enum class GamepadTextInputMode(@JvmField val i: Int) {

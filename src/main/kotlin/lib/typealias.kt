@@ -45,6 +45,10 @@ typealias VROverlayHandle = Long
 typealias VROverlayHandleBuffer = LongBuffer
 
 
+/** Type used for referring to bones by their index */
+typealias BoneIndex = Int
+
+
 typealias TrackedCameraHandle = Long
 
 // Screenshot types

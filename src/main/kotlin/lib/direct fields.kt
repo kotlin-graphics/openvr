@@ -14,6 +14,7 @@ import glm_.vec3.Vec3d
 import glm_.vec4.Vec4
 import glm_.vec4.Vec4ub
 import kool.Ptr
+import kool.adr
 import kool.cap
 import org.lwjgl.openvr.*
 import org.lwjgl.system.MemoryUtil.memGetFloat
@@ -450,6 +451,10 @@ val VREventReserved.reserved2: Long
     get() = VREventReserved.nreserved2(adr)
 val VREventReserved.reserved3: Long
     get() = VREventReserved.nreserved3(adr)
+val VREventReserved.reserved4: Long
+    get() = VREventReserved.nreserved4(adr)
+val VREventReserved.reserved5: Long
+    get() = VREventReserved.nreserved5(adr)
 
 
 val VREventPerformanceTest.fidelityLevel: Int
@@ -492,6 +497,22 @@ val VREventProperty.prop: TrackedDeviceProperty
     get() = TrackedDeviceProperty of VREventProperty.nprop(adr)
 
 
+/** coordinates are -1..1 analog values */
+val VREventDualAnalog.x: Float
+    get() = VREventDualAnalog.nx(adr)
+/** coordinates are -1..1 analog values */
+val VREventDualAnalog.y: Float
+    get() = VREventDualAnalog.ny(adr)
+/** transformed by the center and radius numbers provided by the overlay */
+val VREventDualAnalog.transformedX: Float
+    get() = VREventDualAnalog.ntransformedX(adr)
+/** transformed by the center and radius numbers provided by the overlay */
+val VREventDualAnalog.transformedY: Float
+    get() = VREventDualAnalog.ntransformedY(adr)
+val VREventDualAnalog.which: DualAnalogWhich
+    get() = DualAnalogWhich of VREventDualAnalog.nwhich(adr)
+
+
 val VREventHapticVibration.containerHandle: Ptr
     get() = VREventHapticVibration.ncontainerHandle(adr)
 val VREventHapticVibration.componentHandle: Ptr
@@ -514,6 +535,37 @@ val VREventInputBindingLoad.pathMessage: Long
     get() = VREventInputBindingLoad.npathMessage(adr)
 val VREventInputBindingLoad.pathUrl: Long
     get() = VREventInputBindingLoad.npathUrl(adr)
+
+
+val VREventShowUI.type: ShowUiType
+    get() = ShowUiType of VREventShowUI.neType(adr)
+
+
+val VREventInputActionManifestLoad.pathAppKey: Long
+    get() = VREventInputActionManifestLoad.npathAppKey(adr)
+val VREventInputActionManifestLoad.pathMessage: Long
+    get() = VREventInputActionManifestLoad.npathMessage(adr)
+val VREventInputActionManifestLoad.pathMessageParam: Long
+    get() = VREventInputActionManifestLoad.npathMessageParam(adr)
+val VREventInputActionManifestLoad.pathManifestParam: Long
+    get() = VREventInputActionManifestLoad.npathManifestPath(adr)
+
+val VREventSpatialAnchor.handle: SpatialAnchorHandle
+    get() = VREventSpatialAnchor.nunHandle(adr)
+
+
+val VREventProgressUpdate.applicationPropertyContainer: Long
+    get() = VREventProgressUpdate.nulApplicationPropertyContainer(adr)
+val VREventProgressUpdate.pathDevice: Long
+    get() = VREventProgressUpdate.npathDevice(adr)
+val VREventProgressUpdate.pathInputSource: Long
+    get() = VREventProgressUpdate.npathInputSource(adr)
+val VREventProgressUpdate.pathProgressAction: Long
+    get() = VREventProgressUpdate.npathProgressAction(adr)
+val VREventProgressUpdate.pathIcon: Long
+    get() = VREventProgressUpdate.npathIcon(adr)
+val VREventProgressUpdate.progress: Float
+    get() = VREventProgressUpdate.nfProgress(adr)
 
 
 val VREvent.eventType: VREventType
@@ -1057,6 +1109,19 @@ var VRActiveActionSet.restrictedToDevice: VRInputValueHandle
 var VRActiveActionSet.secondaryActionSet: VRActionSetHandle
     get() = VRActiveActionSet.nulSecondaryActionSet(adr)
     set(value) = VRActiveActionSet.nulSecondaryActionSet(adr, value)
+
+
+// Contains summary information about the current skeletal pose
+
+/** The amount that each finger is 'curled' inwards towards the palm.  In the case of the thumb,
+ * this represents how much the thumb is wrapped around the fist.
+ * 0 means straight, 1 means fully curled */
+val VRSkeletalSummaryData.fingerCurl: FloatBuffer
+    get() = VRSkeletalSummaryData.nflFingerCurl(adr)
+/** The amount that each pair of adjacent fingers are separated.
+ * 0 means the digits are touching, 1 means they are fully separated. */
+val VRSkeletalSummaryData.fingerSplay: FloatBuffer
+    get() = VRSkeletalSummaryData.nflFingerSplay(adr)
 
 
 // ivriobuffer.h

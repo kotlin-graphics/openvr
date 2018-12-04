@@ -122,18 +122,6 @@ object vrSettings : vrInterface {
             get() = getBool(section, "activateMultipleDrivers")
             set(value) = setBool(section, "activateMultipleDrivers", value)
 
-        var directMode: Boolean
-            get() = getBool(section, "directMode")
-            set(value) = setBool(section, "directMode", value)
-
-        var directModeEdidVid: Int
-            get() = getInt(section, "directModeEdidVid")
-            set(value) = setInt(section, "directModeEdidVid", value)
-
-        var directModeEdidPid: Int
-            get() = getInt(section, "directModeEdidPid")
-            set(value) = setInt(section, "directModeEdidPid", value)
-
         var usingSpeakers: Boolean
             get() = getBool(section, "usingSpeakers")
             set(value) = setBool(section, "usingSpeakers", value)
@@ -158,17 +146,13 @@ object vrSettings : vrInterface {
             get() = getInt(section, "maxRecommendedResolution")
             set(value) = setInt(section, "maxRecommendedResolution", value)
 
-        var allowAsyncReprojection: Boolean
-            get() = getBool(section, "allowAsyncReprojection")
-            set(value) = setBool(section, "allowAsyncReprojection", value)
+        var motionSmoothing: Boolean
+            get() = getBool(section, "motionSmoothing")
+            set(value) = setBool(section, "motionSmoothing", value)
 
-        var allowInterleavedReprojection: Boolean
-            get() = getBool(section, "allowInterleavedReprojection")
-            set(value) = setBool(section, "allowInterleavedReprojection", value)
-
-        var forceReprojection: Boolean
-            get() = getBool(section, "forceReprojection")
-            set(value) = setBool(section, "forceReprojection", value)
+        var motionSmoothingOverride: Int
+            get() = getInt(section, "motionSmoothingOverride")
+            set(value) = setInt(section, "motionSmoothingOverride", value)
 
         var forceFadeOnBadTracking: Boolean
             get() = getBool(section, "forceFadeOnBadTracking")
@@ -265,6 +249,39 @@ object vrSettings : vrInterface {
         var renderCameraMode: String
             get() = getString(section, "renderCameraMode")
             set(value) = setString(section, "renderCameraMode", value)
+
+        var enableSharedResourceJournaling: String
+            get() = getString(section, "enableSharedResourceJournaling")
+            set(value) = setString(section, "enableSharedResourceJournaling", value)
+
+        var enableSafeMode: String
+            get() = getString(section, "enableSafeMode")
+            set(value) = setString(section, "enableSafeMode", value)
+
+        var preferredRefreshRate: String
+            get() = getString(section, "preferredRefreshRate")
+            set(value) = setString(section, "preferredRefreshRate", value)
+    }
+
+    object directMode {
+
+        val section = "direct_mode"
+
+        var enable: Boolean
+            get() = getBool(section, "enable")
+            set(value) = setBool(section, "enable", value)
+
+        var count: Int
+            get() = getInt(section, "count")
+            set(value) = setInt(section, "count", value)
+
+        var edidVid: Int
+            get() = getInt(section, "edidVid")
+            set(value) = setInt(section, "edidVid", value)
+
+        var edidPid: Int
+            get() = getInt(section, "edidPid")
+            set(value) = setInt(section, "edidPid", value)
     }
 
     object lighthouse {
@@ -302,6 +319,11 @@ object vrSettings : vrInterface {
         var powerManagedBaseStations: String
             get() = getString(section, "PowerManagedBaseStations")
             set(value) = setString(section, "PowerManagedBaseStations", value)
+
+
+        var PowerManagedBaseStations2: String
+            get() = getString(section, "PowerManagedBaseStations2")
+            set(value) = setString(section, "PowerManagedBaseStations2", value)
 
         var enableImuFallback: Boolean
             get() = getBool(section, "enableImuFallback")
@@ -669,6 +691,25 @@ object vrSettings : vrInterface {
     object perApp // TODO
 
     object trackers
+
+    //-----------------------------------------------------------------------------
+    // configuration for desktop UI windows
+//    static const char * const k_pch_DesktopUI_Section = "DesktopUI";
+    //-----------------------------------------------------------------------------
+
+    /** Last known keys for righting recovery */
+    object lastKnown {
+
+        val section = "LastKnown"
+
+        var hmdManufacturer: String
+            get() = getString(section, "HMDManufacturer")
+            set(value) = setString(section, "HMDManufacturer", value)
+
+        var hmdModel: String
+            get() = getString(section, "HMDModel")
+            set(value) = setString(section, "HMDModel", value)
+    }
 
     /**
      * Returns true if file sync occurred (force or settings dirty).

@@ -24,6 +24,13 @@ object vrCompositor : vrInterface {
      *  NumFramePresents > 1 also indicates the scene texture was reused, and also the number of times that it was presented in total.  */
     const val ReprojectionAsync = 0x04
 
+    /** This flag indicates whether or not motion smoothing was triggered for this frame */
+    const val ReprojectionMotion = 0x08
+
+    /** The runtime may predict more than one frame (up to four) ahead if it detects the application is taking too long to render.
+     *  These two bits will contain the count of additional frames (normally zero). */
+    const val PredictionMask = 0x30
+
     /** Errors that can occur with the VR compositor */
     enum class Error(@JvmField val i: Int) {
 
@@ -400,6 +407,12 @@ object vrCompositor : vrInterface {
      * @return {@link VR#EVRCompositorError_VRCompositorError_RequestFailed} if {@code SetExplicitTimingMode} is not enabled
      */
     fun submitExplicitTimingData(): Error = Error of VRCompositor_SubmitExplicitTimingData()
+
+    /** Indicates whether or not motion smoothing is enabled by the user settings.
+     * If you want to know if motion smoothing actually triggered due to a late frame, check Compositor_FrameTiming
+     * m_nReprojectionFlags & VRCompositor_ReprojectionMotion instead. */
+    val isMotionSmoothingEnabled: Boolean
+        get() = VRCompositor_IsMotionSmoothingEnabled()
 
     override val version: String
         get() = "IVRCompositor_022"

@@ -6,6 +6,7 @@ import glm_.vec2.Vec2
 import kool.adr
 import kool.rem
 import org.lwjgl.openvr.HmdQuad
+import org.lwjgl.openvr.HmdVector2
 import org.lwjgl.openvr.VRChaperoneSetup
 import org.lwjgl.openvr.VRChaperoneSetup.*
 import org.lwjgl.system.MemoryStack
@@ -135,6 +136,10 @@ object vrChaperoneSetup : vrInterface {
     infix fun setWorkingCollisionBoundsInfo(quadsBuffer: HmdQuad.Buffer) =
             nVRChaperoneSetup_SetWorkingCollisionBoundsInfo(quadsBuffer.adr, quadsBuffer.rem)
 
+    /** Sets the Collision Bounds in the working copy. */
+    infix fun setWorkingPerimeter(pointBuffer: HmdVector2.Buffer) =
+        nVRChaperoneSetup_SetWorkingPerimeter(pointBuffer.adr, pointBuffer.rem)
+
     /**
      * Sets the preferred seated position in the working copy.
      *
@@ -166,24 +171,18 @@ object vrChaperoneSetup : vrInterface {
     infix fun getLiveSeatedZeroPoseToRawTrackingPose(matSeatedZeroPoseToRawTrackingPose: Mat4): Boolean =
         nVRChaperoneSetup_GetLiveSeatedZeroPoseToRawTrackingPose(vr.HmdMatrix34(matSeatedZeroPoseToRawTrackingPose).adr)
 
-    infix fun setWorkingCollisionBoundsTagsInfo(tagsBuffer: ByteBuffer) =
-            nVRChaperoneSetup_SetWorkingCollisionBoundsTagsInfo(tagsBuffer.adr, tagsBuffer.rem)
-
-    fun getLiveCollisionBoundsTagsInfo(tagsBuffer: ByteBuffer?, tagCount: IntBuffer): Boolean =
-            nVRChaperoneSetup_GetLiveCollisionBoundsTagsInfo(tagsBuffer?.adr ?: NULL, tagCount.adr)
-
-    infix fun setWorkingPhysicalBoundsInfo(quadsBuffer: HmdQuad.Buffer): Boolean =
-            nVRChaperoneSetup_SetWorkingPhysicalBoundsInfo(quadsBuffer.adr, quadsBuffer.rem)
-
-    fun getLivePhysicalBoundsInfo(quadsBuffer: HmdQuad.Buffer?, quadsCount: IntBuffer): Boolean =
-            nVRChaperoneSetup_GetLivePhysicalBoundsInfo(quadsBuffer?.adr ?: NULL, quadsCount.adr)
-
     fun exportLiveToBuffer(buffer: ByteBuffer?, bufferLength: IntBuffer): Boolean =
             VRChaperoneSetup.nVRChaperoneSetup_ExportLiveToBuffer(buffer?.adr ?: NULL, bufferLength.adr)
 
     fun importFromBufferToWorking(buffer: ByteBuffer, importFlags: Int): Boolean =
             nVRChaperoneSetup_ImportFromBufferToWorking(buffer.adr, importFlags)
 
+    /** Shows the chaperone data in the working set to preview in the compositor.*/
+    fun showWorkingSetPreview() = VRChaperoneSetup_ShowWorkingSetPreview()
+
+    /** Hides the chaperone data in the working set to preview in the compositor (if it was visible).*/
+    fun hideWorkingSetPreview() = VRChaperoneSetup_HideWorkingSetPreview()
+
     override val version: String
-        get() = "IVRChaperoneSetup_005"
+        get() = "IVRChaperoneSetup_006"
 }

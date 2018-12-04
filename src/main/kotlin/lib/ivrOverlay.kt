@@ -168,7 +168,11 @@ object vrOverlay : vrInterface {
         SortWithNonSceneOverlays(14),
 
         /** If set, the overlay will be shown in the dashboard, otherwise it will be hidden.    */
-        VisibleInDashboard(15);
+        VisibleInDashboard(15),
+
+        /** If this is set and the overlay's input method is not none, the system-wide laser mouse
+         *  mode will be activated whenever this overlay is visible. */
+        MakeOverlaysInteractiveIfVisible(16);
 
         companion object {
             infix fun of(i: Int) = values().first { it.i == i }
@@ -1034,5 +1038,5 @@ object vrOverlay : vrInterface {
     fun closeMessageOverlay() = VROverlay_CloseMessageOverlay()
 
     override val version: String
-        get() = "IVROverlay_018"
+        get() = "IVROverlay_019"
 }

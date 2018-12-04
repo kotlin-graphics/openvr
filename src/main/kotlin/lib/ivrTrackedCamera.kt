@@ -80,6 +80,10 @@ object vrTrackedCamera : vrInterface {
         }
     }
 
+    enum class VRDistortionFunctionType{None, FTheta, Extended_FTheta, MAX_DISTORTION_FUNCTION_TYPES }
+
+    const val maxDistortionFunctionParameters: Int = 8
+
     /**
      * Kind of useless on JVM, but it will be offered anyway on the enum itself
      * Returns a string for an error.
@@ -109,13 +113,15 @@ object vrTrackedCamera : vrInterface {
     }
 
     /** @param frameType one of:<br><table><tr><td>{@link VR#EVRTrackedCameraFrameType_VRTrackedCameraFrameType_Distorted}</td></tr><tr><td>{@link VR#EVRTrackedCameraFrameType_VRTrackedCameraFrameType_Undistorted}</td></tr><tr><td>{@link VR#EVRTrackedCameraFrameType_VRTrackedCameraFrameType_MaximumUndistorted}</td></tr><tr><td>{@link VR#EVRTrackedCameraFrameType_MAX_CAMERA_FRAME_TYPES}</td></tr></table> */
-    fun getCameraIntrinsics(deviceIndex: TrackedDeviceIndex, frameType: FrameType, focalLength: HmdVector2.Buffer, center: HmdVector2.Buffer): Error =
-            Error of nVRTrackedCamera_GetCameraIntrinsics(deviceIndex, frameType.i, focalLength.adr, center.adr)
+    fun getCameraIntrinsics(deviceIndex: TrackedDeviceIndex, cameraIndex: Int, frameType: FrameType,
+                            focalLength: HmdVector2.Buffer, center: HmdVector2.Buffer): Error =
+            Error of nVRTrackedCamera_GetCameraIntrinsics(deviceIndex, cameraIndex, frameType.i, focalLength.adr, center.adr)
 
     /** @param frameType one of:<br><table><tr><td>{@link VR#EVRTrackedCameraFrameType_VRTrackedCameraFrameType_Distorted}</td></tr><tr><td>{@link VR#EVRTrackedCameraFrameType_VRTrackedCameraFrameType_Undistorted}</td></tr><tr><td>{@link VR#EVRTrackedCameraFrameType_VRTrackedCameraFrameType_MaximumUndistorted}</td></tr><tr><td>{@link VR#EVRTrackedCameraFrameType_MAX_CAMERA_FRAME_TYPES}</td></tr></table> */
-    fun getCameraProjection(deviceIndex: TrackedDeviceIndex, frameType: FrameType, zNear: Float, zFar: Float, projection: Mat4): Error {
+    fun getCameraProjection(deviceIndex: TrackedDeviceIndex, cameraIndex: Int, frameType: FrameType, zNear: Float, zFar: Float,
+                            projection: Mat4): Error {
         val hmdMatrix34 = vr.HmdMatrix34()
-        return Error of nVRTrackedCamera_GetCameraProjection(deviceIndex, frameType.i, zNear, zFar, hmdMatrix34.adr).also {
+        return Error of nVRTrackedCamera_GetCameraProjection(deviceIndex, cameraIndex, frameType.i, zNear, zFar, hmdMatrix34.adr).also {
             hmdMatrix34 to projection
         }
     }
@@ -188,5 +194,5 @@ object vrTrackedCamera : vrInterface {
             Error of VRTrackedCamera_ReleaseVideoStreamTextureGL(trackedCamera, glTextureId)
 
     override val version: String
-        get() = "IVRTrackedCamera_003"
+        get() = "IVRTrackedCamera_005"
 }

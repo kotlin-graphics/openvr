@@ -22,6 +22,10 @@ import org.lwjgl.system.MemoryUtil.*
 
 object vr {
 
+    const val steamVRVersionMajor = 1
+    const val steamVRVersionMinor = 1
+    const val steamVRVersionBuild = 3
+
     fun HmdMatrix34(): HmdMatrix34 = HmdMatrix34.callocStack()
     fun HmdMatrix34(capacity: Int): HmdMatrix34.Buffer = HmdMatrix34.callocStack(capacity)
     inline fun HmdMatrix34(block: HmdMatrix34.() -> Unit): HmdMatrix34 = HmdMatrix34().also(block)
@@ -123,6 +127,8 @@ object vr {
     val hmdMatrix44PropertyTag: PropertyTypeTag = 21
     val hmdVector3PropertyTag: PropertyTypeTag = 22
     val hmdVector4PropertyTag: PropertyTypeTag = 23
+    val hmdVector2PropertyTag: PropertyTypeTag = 24
+    val hmdQuadPropertyTag: PropertyTypeTag = 25
 
     val hiddenAreaPropertyTag: PropertyTypeTag = 30
     val pathHandleInfoTag: PropertyTypeTag = 31
@@ -295,6 +301,8 @@ object vr {
     fun VRBoneTransform(capacity: Int): VRBoneTransform.Buffer = VRBoneTransform.callocStack(capacity)
     inline fun VRBoneTransform(block: VRBoneTransform.() -> Unit): VRBoneTransform = VRBoneTransform().also(block)
 
+    val invalidBoneIndex: BoneIndex = -1
+
     val INVALID_TRACKED_CAMERA_HANDLE: TrackedCameraHandle = NULL
 
     fun CameraVideoStreamFrameHeader(): CameraVideoStreamFrameHeader = CameraVideoStreamFrameHeader.callocStack()
@@ -420,6 +428,11 @@ object vr {
     fun VRActiveActionSet(capacity: Int): VRActiveActionSet.Buffer = VRActiveActionSet.callocStack(capacity)
     inline fun VRActiveActionSet(block: VRActiveActionSet.() -> Unit): VRActiveActionSet = VRActiveActionSet().also(block)
 
+
+    fun VRSkeletalSummaryData(): VRSkeletalSummaryData = VRSkeletalSummaryData.callocStack()
+    fun VRSkeletalSummaryData(capacity: Int): VRSkeletalSummaryData.Buffer = VRSkeletalSummaryData.callocStack(capacity)
+    inline fun VRSkeletalSummaryData(block: VRSkeletalSummaryData.() -> Unit): VRSkeletalSummaryData = VRSkeletalSummaryData().also(block)
+
     // ivriobuffer.h -> class
 
     // ivrspatialanchors.h
@@ -440,7 +453,7 @@ object vr {
     fun init(applicationType: VRApplication = VRApplication.Scene): VRInitError =
             stak {
 
-                val error = it.nmalloc(1, Int.BYTES)
+                val error = it.nmalloc(4, Int.BYTES)
                 val token = nVR_InitInternal(error, applicationType.i)
 
                 if (memGetInt(error) == VRInitError.None.i) {
@@ -480,5 +493,5 @@ object vr {
     val initToken: Int
         get () = VR_GetInitToken()
 
-    const val version = "1.0.17 beta 00"
+    const val version = "1.1.3b beta 00"
 }
