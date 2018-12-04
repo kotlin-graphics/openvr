@@ -1,4 +1,4 @@
-# JVM OpenVR Wrapper (synchronized with 1.0.17)
+# JVM OpenVR Wrapper (synchronized with 1.1.3b)
 
 [![Build Status](https://travis-ci.org/kotlin-graphics/openvr.svg?branch=master)](https://travis-ci.org/kotlin-graphics/openvr) 
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-orange.svg)](https://github.com/kotlin-graphics/openvr/blob/master/LICENSE.txt)
