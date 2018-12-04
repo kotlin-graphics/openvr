@@ -1,4 +1,4 @@
-# JVM OpenVR Binding (synchronized with 1.0.14)
+# JVM OpenVR Wrapper (synchronized with 1.0.17)
 
 [![Build Status](https://travis-ci.org/kotlin-graphics/openvr.svg?branch=master)](https://travis-ci.org/kotlin-graphics/openvr) 
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-orange.svg)](https://github.com/kotlin-graphics/openvr/blob/master/LICENSE.txt)
@@ -9,7 +9,7 @@
 OpenVR SDK
 ---
 
-This is the jvm port of [OpenVR](https://github.com/ValveSoftware/openvr), which is an API and runtime that allows access to VR hardware from multiple 
+This is a kotlin wrapper of [OpenVR](https://github.com/ValveSoftware/openvr), which is an API and runtime that allows access to VR hardware from multiple 
 vendors without requiring that applications have specific knowledge of the 
 hardware they are targeting. This repository is an SDK that contains the API 
 and samples. The runtime is under SteamVR in Tools on Steam. 
@@ -22,21 +22,18 @@ More information on OpenVR and SteamVR can be found on http://steamvr.com
 
 ## Binding Features:
 
-- using jna in direct mapping (~ jni performances)
 - original comments preserved and properly formatted
+- direct fields, e.g: `var TrackedDevicePose.poseIsValid: Boolean`
+- enumerators for type safety, e.g: `var Texture.type: TextureType`
 - every struct method is offered also much more user friendly offering also full interoperability with glm, `getProjectionMatrix` returns, for example, directly a glm `Mat4`
 ```kotlin
-IVRSystem.GetProjectionMatrix(eEye: Int, fNearZ: Float, fFarZ: Float): HmdMatrix44.ByValue
-``` 
-because of the jna binding requirements, shall be called as:
-```kotlin
-IVRSystem.GetProjectionMatrix.invoke(eEye: Int, fNearZ: Float, fFarZ: Float): HmdMatrix44.ByValue
-```
-but there is also the possibility to simply call:
-```kotlin
-IVRSystem.getProjectionMatrix(eEye: EVREye, fNearZ: Float, fFarZ: Float): Mat4
+vrSystem.getProjectionMatrix(eye: VREye, nearZ: Float, farZ: Float, res: Mat4 = Mat4()): Mat4
 ```
 that expects an `EVREye` enumerator type for `eEye` and returns directly a [glm](https://github.com/kotlin-graphics/glm) `Mat4`.
+instead of:
+```kotlin: 
+VRSystem.VRSystem_GetProjectionMatrix(eEye: Int, fNearZ: Float, fNear: Float, __result: HmdMatrix44): HmdMatrix44
+```
 Or for example:
 ```kotlin
 GetStringTrackedDeviceProperty.invoke(..): Int
@@ -49,12 +46,12 @@ getStringTrackedDeviceProperty(..): String
 that returns directly the resulting string, bringing down a lot of boilerplate code
 
 - array classes `[]` operator, included `RenderModel_Vertex`
-- concise enumerators, e.g. `EVRComponentProperty.VRComponentProperty_IsStatic` is `EVRComponentProperty.IsStatic`
-- `SteamVRListener` for event listener. Instantiate a class extending it, call `.poll()` on it at the begin of each frame and override the corresponding methods you are looking for, such as `buttonPress(left: Boolean, button: EVRButtonId)`
+- concise enumerators, e.g. `EVRComponentProperty.VRComponentProperty_IsStatic` is `VRComponentProperty.IsStatic`
+~- `SteamVRListener` for event listener. Instantiate a class extending it, call `.poll()` on it at the begin of each frame and override the corresponding methods you are looking for, such as `buttonPress(left: Boolean, button: EVRButtonId)`~ TO CHECK
 
 ### Sample:
 
-You can find the OpenGL sample (using jogl) [here](https://github.com/java-opengl-labs/jogl-hello-vr)
+You can find the OpenGL sample [here](src/test/kotlin/main/helloVr_OpenGL)
 
 ### Contributions:
 
