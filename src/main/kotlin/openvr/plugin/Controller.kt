@@ -3,7 +3,7 @@ package openvr.plugin
 import glm_.glm
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
-import lib.*
+import openvr.lib.*
 import org.lwjgl.openvr.TrackedDevicePose
 import org.lwjgl.openvr.VRControllerState
 

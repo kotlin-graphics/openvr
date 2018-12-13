@@ -1,6 +1,6 @@
 package openvr.plugin
 
-import lib.TrackingUniverseOrigin
+import openvr.lib.TrackingUniverseOrigin
 
 
 object Render {

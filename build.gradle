@@ -4,8 +4,8 @@ plugins {
     id 'maven'
     id 'java'
     id 'java-library'
-    id "org.jetbrains.kotlin.jvm" version "1.3.10"
-    id "com.github.johnrengelman.shadow" version '2.0.4'
+    id "org.jetbrains.kotlin.jvm" version "1.3.11"
+    id "com.github.johnrengelman.shadow" version '4.0.3'
 }
 
 // jitpack
@@ -13,26 +13,33 @@ group = 'com.github.kotlin-graphics'
 
 ext{
     moduleName = 'com.github.kotlin_graphics.openvr'
-    kotlin_version = '1.3.10'
-    kotlintest_version = '3.1.10'
+    kotlin = 'org.jetbrains.kotlin:kotlin'
+    kotlin_version = '1.3.11'
+    kotlintest_version = '3.1.11'
     uno_version = 'd04fa5dcb3735347e11cd3480615e574b1ffaa0b'
-    lwjgl_version = "3.2.1-SNAPSHOT"
+    lwjgl_version = "3.2.1"
     lwjgl_natives = current() == WINDOWS ? "windows" : current() == LINUX ? "linux" : "macos"
 }
 
 dependencies {
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "$kotlin-stdlib"
 
-    testImplementation 'io.kotlintest:kotlintest-runner-junit5:3.0.4'
+    testImplementation "io.kotlintest:kotlintest-runner-junit5:$kotlintest_version"
 
     ext.kx = "com.github.kotlin-graphics"
-    implementation "$kx:uno-sdk:81bb336edff6e557ce094ea0a51205015f9917ce"
+    implementation "$kx:uno-sdk:24550988e24b8fc99428e599b62f2e81a6f0b334"
 
     ["", "-glfw", "-jemalloc", "-openal", "-opengl", "-stb", "-openvr", "-vulkan"].each {
         implementation "org.lwjgl:lwjgl$it:$lwjgl_version"
         if (it != "-vulkan")
             runtime "org.lwjgl:lwjgl$it:$lwjgl_version:natives-$lwjgl_natives"
+    }
+
+    constraints {
+        testImplementation("$kotlin-stdlib:$kotlin_version")
+        testImplementation("$kotlin-stdlib-jdk7:$kotlin_version")
+        testImplementation("$kotlin-reflect:$kotlin_version")
     }
 }
 
@@ -56,6 +63,8 @@ artifacts {
     archives sourcesJar
     archives javadocJar
 }
+
+test.useJUnitPlatform()
 
 // https://stackoverflow.com/a/47458666/1047713
 //test {
