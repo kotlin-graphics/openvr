@@ -31,9 +31,15 @@ open class EventListener {
         left = -1
         right = -1
         for (i in 0 until maxTrackedDeviceCount) {
-            if (hmd.getTrackedDeviceClass(i) == TrackedDeviceClass.Controller && hmd.getControllerState(i, states[i]))
-                if (left == -1) left = i
-                else right = i
+            var dc:TrackedDeviceClass = hmd.getTrackedDeviceClass(i)
+            var cr:TrackedControllerRole = hmd.getControllerRoleForTrackedDeviceIndex(i)
+
+            if (dc == TrackedDeviceClass.Controller && hmd.getControllerState(i, states[i])) {
+                if (cr == TrackedControllerRole.LeftHand)
+                    left = i
+                else if (cr == TrackedControllerRole.RightHand)
+                    right = i
+            }
         }
         devices.getOrNull(left)?.left = true
         devices.getOrNull(right)?.left = false
