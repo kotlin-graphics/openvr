@@ -32,8 +32,8 @@ open class EventListener {
         left = -1
         right = -1
         for (i in 0 until maxTrackedDeviceCount) {
-            var dc:TrackedDeviceClass = hmd.getTrackedDeviceClass(i)
-            var cr:TrackedControllerRole = hmd.getControllerRoleForTrackedDeviceIndex(i)
+            var dc: TrackedDeviceClass = hmd.getTrackedDeviceClass(i)
+            var cr: TrackedControllerRole = hmd.getControllerRoleForTrackedDeviceIndex(i)
 
             if (dc == TrackedDeviceClass.Controller && hmd.getControllerState(i, states[i])) {
                 if (cr == TrackedControllerRole.LeftHand)
@@ -96,7 +96,7 @@ open class EventListener {
                 touchpadMove(event.trackedDeviceIndex == left, pos)
             }
             ET.OverlayFocusChanged.i -> overlayFocusChanged()
-        // VREventType.TriggerMove JVM specific
+            // VREventType.TriggerMove JVM specific
             ET.InputFocusCaptured.i -> inputFocusCaptured()
             ET.InputFocusReleased.i -> inputFocusReleased()
             ET.SceneFocusLost.i -> sceneFocusLost()
@@ -184,18 +184,12 @@ open class EventListener {
             ET.MessageOverlay_Closed.i -> messageOverlay_Closed()
 
             else -> {
-                var found:Boolean = false
-                for(eventT in openvr.lib.VREventType.values()){
-                    if(eventT.i == event.eventType()){
-                        found = true
-                        break
-                    }
-                }
+                val eventT = ET.values().find { it.i == event.eventType() }
 
-                if(found){
-                    println("WARNING:Eventtype "+event.eventType.name +"("+event.eventType()+") is not handled")
-                }else{
-                    println("WARNING:Eventtype("+event.eventType()+") is unknown")
+                if (eventT != null) {
+                    println("WARNING:Eventtype " + eventT.name + "(" + eventT.i + ") is not handled")
+                } else {
+                    println("WARNING:Eventtype(" + event.eventType() + ") is unknown")
                 }
             }   // None, VendorSpecific_Reserved_Start / End
         }
@@ -471,14 +465,14 @@ open class EventListener {
                         triggerState = true
                     triggerLimit = if (triggerState) glm.max(triggerLimit, value) else glm.min(triggerLimit, value)
                     if (when (triggerMode) {
-                        TriggerMode.OnState -> triggerPrevState != triggerState
-                        TriggerMode.OnLimit ->
-                            if (triggerPrevLimit != triggerLimit) {
-                                triggerPrevLimit = triggerLimit
-                                true
-                            } else false
-                        else -> true    // remains only Always at this point, Off has been excluded by the previous `when`
-                    })
+                                TriggerMode.OnState -> triggerPrevState != triggerState
+                                TriggerMode.OnLimit ->
+                                    if (triggerPrevLimit != triggerLimit) {
+                                        triggerPrevLimit = triggerLimit
+                                        true
+                                    } else false
+                                else -> true    // remains only Always at this point, Off has been excluded by the previous `when`
+                            })
                         triggerMove(left, triggerState, triggerLimit, value)
                 }
             }
