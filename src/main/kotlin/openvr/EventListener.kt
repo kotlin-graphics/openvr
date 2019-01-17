@@ -11,6 +11,7 @@ import openvr.plugin.Utils
 import org.lwjgl.openvr.VRControllerState
 import org.lwjgl.openvr.VREvent
 import org.lwjgl.openvr.VREventController
+import java.rmi.ServerError
 
 open class EventListener {
 
@@ -60,34 +61,33 @@ open class EventListener {
     }
 
     private fun process() {
-        if(event.eventType() == 10005) return // bug https://github.com/ValveSoftware/openvr/issues/420
-        if(event.eventType() == 1703) return
-        when (event.eventType) {
-            ET.TrackedDeviceActivated -> updateRoles().also { trackedDeviceActivated(event.trackedDeviceIndex == left) }
-            ET.TrackedDeviceDeactivated -> updateRoles().also { trackedDeviceDeactivated(event.trackedDeviceIndex == left) }
-            ET.TrackedDeviceUpdated -> updateRoles().also { trackedDeviceUpdated(event.trackedDeviceIndex == left) }
-            ET.TrackedDeviceUserInteractionStarted -> updateRoles().also { trackedDeviceUserInteractionStarted(event.trackedDeviceIndex == left) }
-            ET.TrackedDeviceUserInteractionEnded -> updateRoles().also { trackedDeviceUserInteractionEnded(event.trackedDeviceIndex == left) }
-            ET.IpdChanged -> ipdChanged()
-            ET.EnterStandbyMode -> enterStandbyMode()
-            ET.LeaveStandbyMode -> leaveStandbyMode()
-            ET.TrackedDeviceRoleChanged -> updateRoles().also { trackedDeviceRoleChanged(event.trackedDeviceIndex == left) }
-            ET.WatchdogWakeUpRequested -> watchdogWakeUpRequested()
-            ET.LensDistortionChanged -> lensDistortionChanged()
-            ET.PropertyChanged -> propertyChanged()
-            ET.WirelessDisconnect -> wirelessDisconnect()
-            ET.WirelessReconnect -> wirelessReconnect()
-            ET.ButtonPress -> buttonPress(event.trackedDeviceIndex == left, VREventController.create(event.data.adr).button)
-            ET.ButtonUnpress -> buttonUnpress(event.trackedDeviceIndex == left, VREventController.create(event.data.adr).button)
-            ET.ButtonTouch -> buttonTouch(event.trackedDeviceIndex == left, VREventController.create(event.data.adr).button)
-            ET.ButtonUntouch -> buttonUntouch(event.trackedDeviceIndex == left, VREventController.create(event.data.adr).button)
-            ET.MouseMove -> mouseMove()
-            ET.MouseButtonDown -> mouseButtonDown()
-            ET.MouseButtonUp -> mouseButtonUp()
-            ET.FocusEnter -> focusEnter()
-            ET.FocusLeave -> focusLeave()
-            ET.Scroll -> scroll()
-            ET.TouchPadMove -> {
+
+        when (event.eventType()) {
+            ET.TrackedDeviceActivated.i -> updateRoles().also { trackedDeviceActivated(event.trackedDeviceIndex == left) }
+            ET.TrackedDeviceDeactivated.i -> updateRoles().also { trackedDeviceDeactivated(event.trackedDeviceIndex == left) }
+            ET.TrackedDeviceUpdated.i -> updateRoles().also { trackedDeviceUpdated(event.trackedDeviceIndex == left) }
+            ET.TrackedDeviceUserInteractionStarted.i -> updateRoles().also { trackedDeviceUserInteractionStarted(event.trackedDeviceIndex == left) }
+            ET.TrackedDeviceUserInteractionEnded.i -> updateRoles().also { trackedDeviceUserInteractionEnded(event.trackedDeviceIndex == left) }
+            ET.IpdChanged.i -> ipdChanged()
+            ET.EnterStandbyMode.i -> enterStandbyMode()
+            ET.LeaveStandbyMode.i -> leaveStandbyMode()
+            ET.TrackedDeviceRoleChanged.i -> updateRoles().also { trackedDeviceRoleChanged(event.trackedDeviceIndex == left) }
+            ET.WatchdogWakeUpRequested.i -> watchdogWakeUpRequested()
+            ET.LensDistortionChanged.i -> lensDistortionChanged()
+            ET.PropertyChanged.i -> propertyChanged()
+            ET.WirelessDisconnect.i -> wirelessDisconnect()
+            ET.WirelessReconnect.i -> wirelessReconnect()
+            ET.ButtonPress.i -> buttonPress(event.trackedDeviceIndex == left, VREventController.create(event.data.adr).button)
+            ET.ButtonUnpress.i -> buttonUnpress(event.trackedDeviceIndex == left, VREventController.create(event.data.adr).button)
+            ET.ButtonTouch.i -> buttonTouch(event.trackedDeviceIndex == left, VREventController.create(event.data.adr).button)
+            ET.ButtonUntouch.i -> buttonUntouch(event.trackedDeviceIndex == left, VREventController.create(event.data.adr).button)
+            ET.MouseMove.i -> mouseMove()
+            ET.MouseButtonDown.i -> mouseButtonDown()
+            ET.MouseButtonUp.i -> mouseButtonUp()
+            ET.FocusEnter.i -> focusEnter()
+            ET.FocusLeave.i -> focusLeave()
+            ET.Scroll.i -> scroll()
+            ET.TouchPadMove.i -> {
                 val state = vr.VRControllerState()
                 val pos = when {
                     hmd.getControllerState(event.trackedDeviceIndex, state) -> Vec2()
@@ -95,94 +95,109 @@ open class EventListener {
                 }
                 touchpadMove(event.trackedDeviceIndex == left, pos)
             }
-            ET.OverlayFocusChanged -> overlayFocusChanged()
+            ET.OverlayFocusChanged.i -> overlayFocusChanged()
         // VREventType.TriggerMove JVM specific
-            ET.InputFocusCaptured -> inputFocusCaptured()
-            ET.InputFocusReleased -> inputFocusReleased()
-            ET.SceneFocusLost -> sceneFocusLost()
-            ET.SceneFocusGained -> sceneFocusGained()
-            ET.SceneApplicationChanged -> sceneApplicationChanged()
-            ET.SceneFocusChanged -> sceneFocusChanged()
-            ET.InputFocusChanged -> inputFocusChanged()
-            ET.SceneApplicationSecondaryRenderingStarted -> sceneApplicationSecondaryRenderingStarted()
-            ET.HideRenderModels -> hideRenderModels()
-            ET.ShowRenderModels -> showRenderModels()
-            ET.OverlayShown -> overlayShown()
-            ET.OverlayHidden -> overlayHidden()
-            ET.DashboardActivated -> dashboardActivated()
-            ET.DashboardDeactivated -> dashboardDeactivated()
-            ET.DashboardThumbSelected -> dashboardThumbSelected()
-            ET.DashboardRequested -> dashboardRequested()
-            ET.ResetDashboard -> resetDashboard()
-            ET.RenderToast -> renderToast()
-            ET.ImageLoaded -> imageLoaded()
-            ET.ShowKeyboard -> showKeyboard()
-            ET.HideKeyboard -> hideKeyboard()
-            ET.OverlayGamepadFocusGained -> overlayGamepadFocusGained()
-            ET.OverlayGamepadFocusLost -> overlayGamepadFocusLost()
+            ET.InputFocusCaptured.i -> inputFocusCaptured()
+            ET.InputFocusReleased.i -> inputFocusReleased()
+            ET.SceneFocusLost.i -> sceneFocusLost()
+            ET.SceneFocusGained.i -> sceneFocusGained()
+            ET.SceneApplicationChanged.i -> sceneApplicationChanged()
+            ET.SceneFocusChanged.i -> sceneFocusChanged()
+            ET.InputFocusChanged.i -> inputFocusChanged()
+            ET.SceneApplicationSecondaryRenderingStarted.i -> sceneApplicationSecondaryRenderingStarted()
+            ET.HideRenderModels.i -> hideRenderModels()
+            ET.ShowRenderModels.i -> showRenderModels()
+            ET.OverlayShown.i -> overlayShown()
+            ET.OverlayHidden.i -> overlayHidden()
+            ET.DashboardActivated.i -> dashboardActivated()
+            ET.DashboardDeactivated.i -> dashboardDeactivated()
+            ET.DashboardThumbSelected.i -> dashboardThumbSelected()
+            ET.DashboardRequested.i -> dashboardRequested()
+            ET.ResetDashboard.i -> resetDashboard()
+            ET.RenderToast.i -> renderToast()
+            ET.ImageLoaded.i -> imageLoaded()
+            ET.ShowKeyboard.i -> showKeyboard()
+            ET.HideKeyboard.i -> hideKeyboard()
+            ET.OverlayGamepadFocusGained.i -> overlayGamepadFocusGained()
+            ET.OverlayGamepadFocusLost.i -> overlayGamepadFocusLost()
 //            VREventType.OverlaySharedTextureChanged -> overlaySharedTextureChanged()
 //            VREventType.DashboardGuideButtonDown -> dashboardGuideButtonDown()
-            ET.DashboardGuideButtonUp -> dashboardGuideButtonUp()
-            ET.ScreenshotTriggered -> screenshotTriggered()
-            ET.ImageFailed -> imageFailed()
-            ET.DashboardOverlayCreated -> dashboardOverlayCreated()
-            ET.RequestScreenshot -> requestScreenshot()
-            ET.ScreenshotTaken -> screenshotTaken()
-            ET.ScreenshotFailed -> screenshotFailed()
-            ET.SubmitScreenshotToDashboard -> submitScreenshotToDashboard()
-            ET.ScreenshotProgressToDashboard -> screenshotProgressToDashboard()
-            ET.PrimaryDashboardDeviceChanged -> primaryDashboardDeviceChanged()
-            ET.Notification_Shown -> notification_Shown()
-            ET.Notification_Hidden -> notification_Hidden()
-            ET.Notification_BeginInteraction -> notification_BeginInteraction()
-            ET.Notification_Destroyed -> notification_Destroyed()
-            ET.Quit -> quit()
-            ET.ProcessQuit -> processQuit()
-            ET.QuitAborted_UserPrompt -> quitAborted_UserPrompt()
-            ET.QuitAcknowledged -> quitAcknowledged()
-            ET.DriverRequestedQuit -> driverRequestedQuit()
-            ET.ChaperoneDataHasChanged -> chaperoneDataHasChanged()
-            ET.ChaperoneUniverseHasChanged -> chaperoneUniverseHasChanged()
-            ET.ChaperoneTempDataHasChanged -> chaperoneTempDataHasChanged()
-            ET.ChaperoneSettingsHaveChanged -> chaperoneSettingsHaveChanged()
-            ET.SeatedZeroPoseReset -> seatedZeroPoseReset()
-            ET.AudioSettingsHaveChanged -> audioSettingsHaveChanged()
-            ET.BackgroundSettingHasChanged -> backgroundSettingHasChanged()
-            ET.CameraSettingsHaveChanged -> cameraSettingsHaveChanged()
-            ET.ReprojectionSettingHasChanged -> reprojectionSettingHasChanged()
-            ET.ModelSkinSettingsHaveChanged -> modelSkinSettingsHaveChanged()
-            ET.EnvironmentSettingsHaveChanged -> environmentSettingsHaveChanged()
-            ET.PowerSettingsHaveChanged -> powerSettingsHaveChanged()
-            ET.EnableHomeAppSettingsHaveChanged -> enableHomeAppSettingsHaveChanged()
-            ET.StatusUpdate -> statusUpdate()
-            ET.MCImageUpdated -> mcImageUpdated()
-            ET.FirmwareUpdateStarted -> firmwareUpdateStarted()
-            ET.FirmwareUpdateFinished -> firmwareUpdateFinished()
-            ET.KeyboardClosed -> keyboardClosed()
-            ET.KeyboardCharInput -> keyboardCharInput()
-            ET.KeyboardDone -> keyboardDone()
-            ET.ApplicationTransitionStarted -> applicationTransitionStarted()
-            ET.ApplicationTransitionAborted -> applicationTransitionAborted()
-            ET.ApplicationTransitionNewAppStarted -> applicationTransitionNewAppStarted()
-            ET.ApplicationListUpdated -> applicationListUpdated()
-            ET.ApplicationMimeTypeLoad -> applicationMimeTypeLoad()
-            ET.ApplicationTransitionNewAppLaunchComplete -> applicationTransitionNewAppLaunchComplete()
-            ET.ProcessConnected -> processConnected()
-            ET.ProcessDisconnected -> processDisconnected()
-            ET.Compositor_MirrorWindowShown -> compositor_MirrorWindowShown()
-            ET.Compositor_MirrorWindowHidden -> compositor_MirrorWindowHidden()
-            ET.Compositor_ChaperoneBoundsShown -> compositor_ChaperoneBoundsShown()
-            ET.Compositor_ChaperoneBoundsHidden -> compositor_ChaperoneBoundsHidden()
-            ET.TrackedCamera_StartVideoStream -> trackedCamera_StartVideoStream()
-            ET.TrackedCamera_StopVideoStream -> trackedCamera_StopVideoStream()
-            ET.TrackedCamera_PauseVideoStream -> trackedCamera_PauseVideoStream()
-            ET.TrackedCamera_ResumeVideoStream -> trackedCamera_ResumeVideoStream()
-            ET.TrackedCamera_EditingSurface -> trackedCamera_EditingSurface()
-            ET.PerformanceTest_EnableCapture -> performanceTest_EnableCapture()
-            ET.PerformanceTest_DisableCapture -> performanceTest_DisableCapture()
-            ET.PerformanceTest_FidelityLevel -> performanceTest_FidelityLevel()
-            ET.MessageOverlay_Closed -> messageOverlay_Closed()
-            else -> Unit   // None, VendorSpecific_Reserved_Start / End
+            ET.DashboardGuideButtonUp.i -> dashboardGuideButtonUp()
+            ET.ScreenshotTriggered.i -> screenshotTriggered()
+            ET.ImageFailed.i -> imageFailed()
+            ET.DashboardOverlayCreated.i -> dashboardOverlayCreated()
+            ET.RequestScreenshot.i -> requestScreenshot()
+            ET.ScreenshotTaken.i -> screenshotTaken()
+            ET.ScreenshotFailed.i -> screenshotFailed()
+            ET.SubmitScreenshotToDashboard.i -> submitScreenshotToDashboard()
+            ET.ScreenshotProgressToDashboard.i -> screenshotProgressToDashboard()
+            ET.PrimaryDashboardDeviceChanged.i -> primaryDashboardDeviceChanged()
+            ET.Notification_Shown.i -> notification_Shown()
+            ET.Notification_Hidden.i -> notification_Hidden()
+            ET.Notification_BeginInteraction.i -> notification_BeginInteraction()
+            ET.Notification_Destroyed.i -> notification_Destroyed()
+            ET.Quit.i -> quit()
+            ET.ProcessQuit.i -> processQuit()
+            ET.QuitAborted_UserPrompt.i -> quitAborted_UserPrompt()
+            ET.QuitAcknowledged.i -> quitAcknowledged()
+            ET.DriverRequestedQuit.i -> driverRequestedQuit()
+            ET.ChaperoneDataHasChanged.i -> chaperoneDataHasChanged()
+            ET.ChaperoneUniverseHasChanged.i -> chaperoneUniverseHasChanged()
+            ET.ChaperoneTempDataHasChanged.i -> chaperoneTempDataHasChanged()
+            ET.ChaperoneSettingsHaveChanged.i -> chaperoneSettingsHaveChanged()
+            ET.SeatedZeroPoseReset.i -> seatedZeroPoseReset()
+            ET.AudioSettingsHaveChanged.i -> audioSettingsHaveChanged()
+            ET.BackgroundSettingHasChanged.i -> backgroundSettingHasChanged()
+            ET.CameraSettingsHaveChanged.i -> cameraSettingsHaveChanged()
+            ET.ReprojectionSettingHasChanged.i -> reprojectionSettingHasChanged()
+            ET.ModelSkinSettingsHaveChanged.i -> modelSkinSettingsHaveChanged()
+            ET.EnvironmentSettingsHaveChanged.i -> environmentSettingsHaveChanged()
+            ET.PowerSettingsHaveChanged.i -> powerSettingsHaveChanged()
+            ET.EnableHomeAppSettingsHaveChanged.i -> enableHomeAppSettingsHaveChanged()
+            ET.StatusUpdate.i -> statusUpdate()
+            ET.MCImageUpdated.i -> mcImageUpdated()
+            ET.FirmwareUpdateStarted.i -> firmwareUpdateStarted()
+            ET.FirmwareUpdateFinished.i -> firmwareUpdateFinished()
+            ET.KeyboardClosed.i -> keyboardClosed()
+            ET.KeyboardCharInput.i -> keyboardCharInput()
+            ET.KeyboardDone.i -> keyboardDone()
+            ET.ApplicationTransitionStarted.i -> applicationTransitionStarted()
+            ET.ApplicationTransitionAborted.i -> applicationTransitionAborted()
+            ET.ApplicationTransitionNewAppStarted.i -> applicationTransitionNewAppStarted()
+            ET.ApplicationListUpdated.i -> applicationListUpdated()
+            ET.ApplicationMimeTypeLoad.i -> applicationMimeTypeLoad()
+            ET.ApplicationTransitionNewAppLaunchComplete.i -> applicationTransitionNewAppLaunchComplete()
+            ET.ProcessConnected.i -> processConnected()
+            ET.ProcessDisconnected.i -> processDisconnected()
+            ET.Compositor_MirrorWindowShown.i -> compositor_MirrorWindowShown()
+            ET.Compositor_MirrorWindowHidden.i -> compositor_MirrorWindowHidden()
+            ET.Compositor_ChaperoneBoundsShown.i -> compositor_ChaperoneBoundsShown()
+            ET.Compositor_ChaperoneBoundsHidden.i -> compositor_ChaperoneBoundsHidden()
+            ET.TrackedCamera_StartVideoStream.i -> trackedCamera_StartVideoStream()
+            ET.TrackedCamera_StopVideoStream.i -> trackedCamera_StopVideoStream()
+            ET.TrackedCamera_PauseVideoStream.i -> trackedCamera_PauseVideoStream()
+            ET.TrackedCamera_ResumeVideoStream.i -> trackedCamera_ResumeVideoStream()
+            ET.TrackedCamera_EditingSurface.i -> trackedCamera_EditingSurface()
+            ET.PerformanceTest_EnableCapture.i -> performanceTest_EnableCapture()
+            ET.PerformanceTest_DisableCapture.i -> performanceTest_DisableCapture()
+            ET.PerformanceTest_FidelityLevel.i -> performanceTest_FidelityLevel()
+            ET.MessageOverlay_Closed.i -> messageOverlay_Closed()
+
+            else -> {
+                var found:Boolean = false
+                for(eventT in openvr.lib.VREventType.values()){
+                    if(eventT.i == event.eventType()){
+                        found = true
+                        break
+                    }
+                }
+
+                if(found){
+                    println("WARNING:Eventtype "+event.eventType.name +"("+event.eventType()+") is not handled")
+                }else{
+                    println("WARNING:Eventtype("+event.eventType()+") is unknown")
+                }
+            }   // None, VendorSpecific_Reserved_Start / End
         }
     }
 
