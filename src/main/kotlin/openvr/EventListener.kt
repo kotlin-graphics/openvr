@@ -409,21 +409,21 @@ open class EventListener {
 
         }
 
-        val ButtonMask.press get() = update().let { _state.buttonPressed has this }
-        val ButtonMask.pressDown get() = update().let { _state.buttonPressed has this && _prevState.buttonPressed hasnt this }
-        val ButtonMask.pressUp get() = update().let { _state.buttonPressed hasnt this && _prevState.buttonPressed has this }
+        val ButtonMask.press get() = _state.buttonPressed has this
+        val ButtonMask.pressDown get() = _state.buttonPressed has this && _prevState.buttonPressed hasnt this
+        val ButtonMask.pressUp get() = _state.buttonPressed hasnt this && _prevState.buttonPressed has this
 
-        val VRButtonId.press get() = update().let { _state.buttonPressed has this }
-        val VRButtonId.pressDown get() = update().let { _state.buttonPressed has this && _prevState.buttonPressed hasnt this }
-        val VRButtonId.pressUp get() = update().let { _state.buttonPressed hasnt this && _prevState.buttonPressed has this }
+        val VRButtonId.press get() = _state.buttonPressed has this // if(buttonPressed && VRButtonId != 0)
+        val VRButtonId.pressDown get() = _state.buttonPressed has this && _prevState.buttonPressed hasnt this
+        val VRButtonId.pressUp get() = _state.buttonPressed hasnt this && _prevState.buttonPressed has this
 
-        val ButtonMask.touch get() = update().let { _state.buttonTouched has this }
-        val ButtonMask.touchDown get() = update().let { _state.buttonTouched has this && _prevState.buttonTouched hasnt this }
-        val ButtonMask.touchUp get() = update().let { _state.buttonTouched hasnt this && _prevState.buttonTouched has this }
+        val ButtonMask.touch get() = _state.buttonTouched has this
+        val ButtonMask.touchDown get() = _state.buttonTouched has this && _prevState.buttonTouched hasnt this
+        val ButtonMask.touchUp get() = _state.buttonTouched hasnt this && _prevState.buttonTouched has this
 
-        val VRButtonId.touch get() = update().let { _state.buttonTouched has this }
-        val VRButtonId.touchDown get() = update().let { _state.buttonTouched has this && _prevState.buttonTouched hasnt this }
-        val VRButtonId.touchUp get() = update().let { _state.buttonTouched hasnt this && _prevState.buttonTouched has this }
+        val VRButtonId.touch get() = _state.buttonTouched has this
+        val VRButtonId.touchDown get() = _state.buttonTouched has this && _prevState.buttonTouched hasnt this
+        val VRButtonId.touchUp get() = _state.buttonTouched hasnt this && _prevState.buttonTouched has this
 
         val _axis = Vec2()
         fun axis(buttonId: VRButtonId = VRButtonId.SteamVR_Touchpad): Vec2 {
