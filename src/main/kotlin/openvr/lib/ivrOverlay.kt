@@ -141,8 +141,11 @@ object vrOverlay : vrInterface {
         /** Indicates that the overlay should dim/brighten to show gamepad focus    */
         ShowGamepadFocus(5),
 
-        /** When in VROverlayInputMethod_Mouse you can optionally enable sending VRScroll */
-        SendVRScrollEvents(6),
+        /** When this is set the overlay will receive VREvent_ScrollDiscrete events like a mouse wheel.
+         *  Requires mouse input mode.  */
+        SendVRDiscreteScrollEvents(6),
+
+        /** Indicates that the overlay would like to receive */
         SendVRTouchpadEvents(7),
 
         /** If set this will render a vertical scroll wheel on the primary controller), only needed if not using
@@ -172,7 +175,11 @@ object vrOverlay : vrInterface {
 
         /** If this is set and the overlay's input method is not none, the system-wide laser mouse
          *  mode will be activated whenever this overlay is visible. */
-        MakeOverlaysInteractiveIfVisible(16);
+        MakeOverlaysInteractiveIfVisible(16),
+
+        /** If this is set the overlay will receive smooth VREvent_ScrollSmooth that emulate trackpad scrolling.
+         *  Requires mouse input mode.  */
+        SendVRSmoothScrollEvents(17);
 
         companion object {
             infix fun of(i: Int) = values().first { it.i == i }

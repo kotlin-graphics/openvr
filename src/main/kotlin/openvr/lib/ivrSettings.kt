@@ -234,10 +234,6 @@ object vrSettings : vrInterface {
             get() = getBool(section, "debugInput")
             set(value) = setBool(section, "debugInput", value)
 
-        var legacyInputRebinding: Boolean
-            get() = getBool(section, "legacyInputRebinding")
-            set(value) = setBool(section, "legacyInputRebinding", value)
-
         var debugInputBinding: Boolean
             get() = getBool(section, "debugInputBinding")
             set(value) = setBool(section, "debugInputBinding", value)
@@ -261,6 +257,14 @@ object vrSettings : vrInterface {
         var preferredRefreshRate: String
             get() = getString(section, "preferredRefreshRate")
             set(value) = setString(section, "preferredRefreshRate", value)
+
+        var lastVersionNotice: String // TODO check type
+            get() = getString(section, "lastVersionNotice")
+            set(value) = setString(section, "lastVersionNotice", value)
+
+        var lastVersionNoticeDate: String // TODO check type
+            get() = getString(section, "lastVersionNoticeDate")
+            set(value) = setString(section, "lastVersionNoticeDate", value)
     }
 
     object directMode {
@@ -710,6 +714,9 @@ object vrSettings : vrInterface {
             get() = getString(section, "HMDModel")
             set(value) = setString(section, "HMDModel", value)
     }
+
+    // Dismissed warnings
+//    static const char * const k_pch_DismissedWarnings_Section = "DismissedWarnings";
 
     /**
      * Returns true if file sync occurred (force or settings dirty).

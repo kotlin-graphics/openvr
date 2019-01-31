@@ -22,8 +22,8 @@ import org.lwjgl.system.MemoryUtil.*
 object vr {
 
     const val steamVrVersionMajor = 1
-    const val steamVrVersionMinor = 1
-    const val steamVrVersionBuild = "3b"
+    const val steamVrVersionMinor = 2
+    const val steamVrVersionBuild = 10
 
     const val steamVrVersion = "$steamVrVersionMajor.$steamVrVersionMinor.$steamVrVersionBuild beta 00"
 
@@ -141,6 +141,7 @@ object vr {
 
     const val spatialAnchorPosePropertyTag = 40
     const val jsonPropertyTag = 41
+    const val activeActionSetPropertyTag = 42
 
     const val openVRInternalReserved_Start: PropertyTypeTag = 1000
     const val openVRInternalReserved_End: PropertyTypeTag = 10000

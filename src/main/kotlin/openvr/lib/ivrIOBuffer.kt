@@ -58,6 +58,9 @@ object vrIOBuffer : vrInterface {
     /** Retrieves the property container of a buffer. */
     infix fun propertyContainer(buffer: IOBufferHandle): PropertyContainerHandle = VRIOBuffer_PropertyContainer(buffer)
 
+    /** inexpensively checks for readers to allow writers to fast-fail potentially expensive copies and writes. */
+    fun hasReaders(buffer: IOBufferHandle): Boolean = VRIOBuffer_HasReaders(buffer)
+
     override val version: String
-        get() = "IVRIOBuffer_001"
+        get() = "IVRIOBuffer_002"
 }

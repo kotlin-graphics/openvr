@@ -411,6 +411,9 @@ val VREventProcess.oldPid: Int
     get() = VREventProcess.noldPid(adr)
 val VREventProcess.forced: Boolean
     get() = VREventProcess.nbForced(adr)
+/** If the associated event was triggered by a connection loss */
+val VREventProcess.connectionLost: Boolean
+    get() = VREventProcess.nbConnectionLost(adr)
 
 
 val VREventOverlay.overlayHandle: Ptr

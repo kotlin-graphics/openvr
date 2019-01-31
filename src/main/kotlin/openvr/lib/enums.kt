@@ -142,6 +142,13 @@ enum class TrackingUniverseOrigin(@JvmField val i: Int) {
     }
 }
 
+enum class AdditionalRadioFeatures(@JvmField val i: Int) {
+    None(0x00000000),
+    HTCLinkBox(0x00000001),
+    InternalDongle(0x00000002),
+    ExternalDongle(0x00000004)
+}
+
 /** Each entry in this value represents a property that can be retrieved about a tracked device.
  *  Many fields are only valid for one openvr.lib.TrackedDeviceClass. */
 enum class TrackedDeviceProperty(@JvmField val i: Int) {
@@ -200,6 +207,7 @@ enum class TrackedDeviceProperty(@JvmField val i: Int) {
     AdditionalDeviceSettingsPath_String(1042),
     /** Whether device supports being identified from vrmonitor (e.g. blink LED, vibrate haptics, etc) */
     Identifiable_Bool(1043),
+    BootloaderVersion_Uint64(1044),
 
     // Properties that are unique to TrackedDeviceClass_HMD
     ReportsTimeSinceVSync_Bool(2000),
@@ -276,6 +284,15 @@ enum class TrackedDeviceProperty(@JvmField val i: Int) {
     ImuFactoryAccelerometerScale_Vector3(2067),
     // reserved 2068
     ConfigurationIncludesLighthouse20Features_Bool(2069),
+    AdditionalRadioFeatures_Uint64(2070),
+    /** Prop_NumCameras_Int32-sized array of float[4] RGBG white balance calibration data (max size is vr::k_unMaxCameras) */
+    CameraWhiteBalance_Vector4_Array(2071),
+    /** Prop_NumCameras_Int32-sized array of vr::EVRDistortionFunctionType values (max size is vr::k_unMaxCameras) */
+    CameraDistortionFunction_Int32_Array(2072),
+    /** Prop_NumCameras_Int32-sized array of double[vr::k_unMaxDistortionFunctionParameters] (max size is vr::k_unMaxCameras) */
+    CameraDistortionCoefficients_Float_Array(2073),
+    ExpectedControllerType_String(2074),
+
     // Driver requested mura correction properties
     DriverRequestedMuraCorrectionMode_Int32(2200),
     DriverRequestedMuraFeather_InnerLeft_Int32(2201),
@@ -493,15 +510,17 @@ enum class VREventType(@JvmField val i: Int) {
     FocusEnter(303),
     /** data is overlay */
     FocusLeave(304),
-    /** data is mouse   */
-    Scroll(305),
+    /** data is scroll   */
+    ScrollDiscrete(305),
     /** data is mouse   */
     TouchPadMove(306),
     /** data is overlay, global event  */
     OverlayFocusChanged(307),
     ReloadOverlays(308),
+    /** data is scroll */
+    ScrollSmooth(309),
     /** JVM openvr custom   */
-    HairTriggerMove(309),
+    HairTriggerMove(310),
 
     /** data is process DEPRECATED  */
     InputFocusCaptured(400),
@@ -629,6 +648,7 @@ enum class VREventType(@JvmField val i: Int) {
     WebInterfaceSectionSettingChanged(865),
     TrackersSectionSettingChanged(866),
     LastKnownSectionSettingChanged(867),
+    DismissedWarningsSectionSettingChanged(868),
 
     StatusUpdate(900),
 
@@ -683,6 +703,7 @@ enum class VREventType(@JvmField val i: Int) {
     /** data is progressUpdate */
     ProgressUpdate(1705),
     Input_TrackerActivated(1706),
+    Input_BindingsUpdated(1707),
     /** data is spatialAnchor. broadcast */
     SpatialAnchors_PoseUpdated(1800),
     /** data is spatialAnchor. broadcast */
@@ -792,7 +813,8 @@ enum class DualAnalogWhich {
     }
 }
 
-enum class ShowUiType { ControllerBinding, ManageTrackers, QuickStart;
+enum class ShowUiType {
+    ControllerBinding, ManageTrackers, QuickStart, Pairing;
 
     @JvmField
     val i = ordinal
@@ -998,6 +1020,85 @@ enum class VRInitError(@JvmField val i: Int) {
     Compositor_OverlayInitFailed(403),
     Compositor_ScreenshotsInitFailed(404),
     Compositor_UnableToCreateDevice(405),
+    Compositor_SharedStateIsNull(406),
+    Compositor_NotificationManagerIsNull(407),
+    Compositor_ResourceManagerClientIsNull(408),
+    Compositor_MessageOverlaySharedStateInitFailure(409),
+    Compositor_PropertiesInterfaceIsNull(410),
+    Compositor_CreateFullscreenWindowFailed(411),
+    Compositor_SettingsInterfaceIsNull(412),
+    Compositor_FailedToShowWindow(413),
+    Compositor_DistortInterfaceIsNull(414),
+    Compositor_DisplayFrequencyFailure(415),
+    Compositor_RendererInitializationFailed(416),
+    Compositor_DXGIFactoryInterfaceIsNull(417),
+    Compositor_DXGIFactoryCreateFailed(418),
+    Compositor_DXGIFactoryQueryFailed(419),
+    Compositor_InvalidAdapterDesktop(420),
+    Compositor_InvalidHmdAttachment(421),
+    Compositor_InvalidOutputDesktop(422),
+    Compositor_InvalidDeviceProvided(423),
+    Compositor_D3D11RendererInitializationFailed(424),
+    Compositor_FailedToFindDisplayMode(425),
+    Compositor_FailedToCreateSwapChain(426),
+    Compositor_FailedToGetBackBuffer(427),
+    Compositor_FailedToCreateRenderTarget(428),
+    Compositor_FailedToCreateDXGI2SwapChain(429),
+    Compositor_FailedtoGetDXGI2BackBuffer(430),
+    Compositor_FailedToCreateDXGI2RenderTarget(431),
+    Compositor_FailedToGetDXGIDeviceInterface(432),
+    Compositor_SelectDisplayMode(433),
+    Compositor_FailedToCreateNvAPIRenderTargets(434),
+    Compositor_NvAPISetDisplayMode(435),
+    Compositor_FailedToCreateDirectModeDisplay(436),
+    Compositor_InvalidHmdPropertyContainer(437),
+    Compositor_UpdateDisplayFrequency(438),
+    Compositor_CreateRasterizerState(439),
+    Compositor_CreateWireframeRasterizerState(440),
+    Compositor_CreateSamplerState(441),
+    Compositor_CreateClampToBorderSamplerState(442),
+    Compositor_CreateAnisoSamplerState(443),
+    Compositor_CreateOverlaySamplerState(444),
+    Compositor_CreatePanoramaSamplerState(445),
+    Compositor_CreateFontSamplerState(446),
+    Compositor_CreateNoBlendState(447),
+    Compositor_CreateBlendState(448),
+    Compositor_CreateAlphaBlendState(449),
+    Compositor_CreateBlendStateMaskR(450),
+    Compositor_CreateBlendStateMaskG(451),
+    Compositor_CreateBlendStateMaskB(452),
+    Compositor_CreateDepthStencilState(453),
+    Compositor_CreateDepthStencilStateNoWrite(454),
+    Compositor_CreateDepthStencilStateNoDepth(455),
+    Compositor_CreateFlushTexture(456),
+    Compositor_CreateDistortionSurfaces(457),
+    Compositor_CreateConstantBuffer(458),
+    Compositor_CreateHmdPoseConstantBuffer(459),
+    Compositor_CreateHmdPoseStagingConstantBuffer(460),
+    Compositor_CreateSharedFrameInfoConstantBuffer(461),
+    Compositor_CreateOverlayConstantBuffer(462),
+    Compositor_CreateSceneTextureIndexConstantBuffer(463),
+    Compositor_CreateReadableSceneTextureIndexConstantBuffer(464),
+    Compositor_CreateLayerGraphicsTextureIndexConstantBuffer(465),
+    Compositor_CreateLayerComputeTextureIndexConstantBuffer(466),
+    Compositor_CreateLayerComputeSceneTextureIndexConstantBuffer(467),
+    Compositor_CreateComputeHmdPoseConstantBuffer(468),
+    Compositor_CreateGeomConstantBuffer(469),
+    Compositor_CreatePanelMaskConstantBuffer(470),
+    Compositor_CreatePixelSimUBO(471),
+    Compositor_CreateMSAARenderTextures(472),
+    Compositor_CreateResolveRenderTextures(473),
+    Compositor_CreateComputeResolveRenderTextures(474),
+    Compositor_CreateDriverDirectModeResolveTextures(475),
+    Compositor_OpenDriverDirectModeResolveTextures(476),
+    Compositor_CreateFallbackSyncTexture(477),
+    Compositor_ShareFallbackSyncTexture(478),
+    Compositor_CreateOverlayIndexBuffer(479),
+    Compositor_CreateOverlayVertextBuffer(480),
+    Compositor_CreateTextVertexBuffer(481),
+    Compositor_CreateTextIndexBuffer(482),
+    Compositor_CreateMirrorTextures(483),
+    Compositor_CreateLastFrameRenderTexture(484),
 
     VendorSpecific_UnableToConnectToOculusRuntime(1000),
     VendorSpecific_WindowsNotInDevMode(1001),
@@ -1041,7 +1142,8 @@ enum class VSync {
     NoWaitRender
 }
 
-enum class VRMuraCorrectionMode { Default, NoCorrection;
+enum class VRMuraCorrectionMode {
+    Default, NoCorrection;
 
     @JvmField
     val i = ordinal

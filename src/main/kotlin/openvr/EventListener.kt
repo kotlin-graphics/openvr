@@ -11,7 +11,6 @@ import openvr.plugin.Utils
 import org.lwjgl.openvr.VRControllerState
 import org.lwjgl.openvr.VREvent
 import org.lwjgl.openvr.VREventController
-import java.rmi.ServerError
 
 open class EventListener {
 
@@ -86,7 +85,7 @@ open class EventListener {
             ET.MouseButtonUp.i -> mouseButtonUp()
             ET.FocusEnter.i -> focusEnter()
             ET.FocusLeave.i -> focusLeave()
-            ET.Scroll.i -> scroll()
+            ET.ScrollDiscrete.i -> scroll()
             ET.TouchPadMove.i -> {
                 val state = vr.VRControllerState()
                 val pos = when {
