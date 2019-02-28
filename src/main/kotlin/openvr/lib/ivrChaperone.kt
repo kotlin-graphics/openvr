@@ -2,11 +2,11 @@ package openvr.lib
 
 import glm_.BYTES
 import glm_.vec2.Vec2i
+import kool.stak
 import org.lwjgl.openvr.HmdColor
 import org.lwjgl.openvr.HmdQuad
 import org.lwjgl.openvr.VRChaperone
 import org.lwjgl.openvr.VRChaperone.*
-import org.lwjgl.system.MemoryStack.stackGet
 import org.lwjgl.system.MemoryUtil.memGetInt
 
 
@@ -53,13 +53,14 @@ object vrChaperone : vrInterface {
      *
      * @param size
      */
-    infix fun getPlayAreaSize(size: Vec2i): Boolean {
-        val x = stackGet().nmalloc(1, Vec2i.size)
-        val y = x + Int.BYTES
-        return nVRChaperone_GetPlayAreaSize(x, y).also {
-            size.put(memGetInt(x), memGetInt(y))
-        }
-    }
+    infix fun getPlayAreaSize(size: Vec2i): Boolean =
+            stak {
+                val x = it.nmalloc(1, Vec2i.size)
+                val y = x + Int.BYTES
+                nVRChaperone_GetPlayAreaSize(x, y).also {
+                    size.put(memGetInt(x), memGetInt(y))
+                }
+            }
 
     /**
      * Returns the 4 corner positions of the Play Area (formerly named Soft Bounds).
@@ -70,7 +71,7 @@ object vrChaperone : vrInterface {
      * @param rect
      */
     infix fun getPlayAreaRect(rect: HmdQuad): Boolean =
-        nVRChaperone_GetPlayAreaRect(rect.adr)
+            nVRChaperone_GetPlayAreaRect(rect.adr)
 
     /** Reload Chaperone data from the .vrchap file on disk. */
     fun reloadInfo() = VRChaperone_ReloadInfo()
@@ -90,7 +91,7 @@ object vrChaperone : vrInterface {
      * @param outputCameraColor
      */
     fun getBoundsColor(outputColorArray: HmdColor.Buffer, collisionBoundsFadeDistance: Float, outputCameraColor: HmdColor) =
-        nVRChaperone_GetBoundsColor(outputColorArray.adr, outputColorArray.rem, collisionBoundsFadeDistance, outputCameraColor.adr)
+            nVRChaperone_GetBoundsColor(outputColorArray.adr, outputColorArray.rem, collisionBoundsFadeDistance, outputCameraColor.adr)
 
     /** Determine whether the bounds are showing right now. */
     val areBoundsVisible: Boolean

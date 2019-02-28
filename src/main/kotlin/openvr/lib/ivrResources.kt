@@ -1,9 +1,9 @@
 package openvr.lib
 
 import kool.adr
+import kool.stak
 import org.lwjgl.openvr.VRResources.nVRResources_GetResourceFullPath
 import org.lwjgl.openvr.VRResources.nVRResources_LoadSharedResource
-import org.lwjgl.system.MemoryStack.stackGet
 import org.lwjgl.system.MemoryUtil.NULL
 import org.lwjgl.system.MemoryUtil.memASCII
 
@@ -16,10 +16,10 @@ object vrResources : vrInterface {
      * @return the size in bytes of the buffer required to hold the specified resource
      */
     infix fun loadSharedResource(resourceName: String): String =
-            stackGet().run {
-                val resourceNameEncoded = addressOfAscii(resourceName)
+            stak {
+                val resourceNameEncoded = it.addressOfAscii(resourceName)
                 val bufferLen = nVRResources_LoadSharedResource(resourceNameEncoded, NULL, 0)
-                val buffer = malloc(bufferLen)
+                val buffer = it.malloc(bufferLen)
                 val result = nVRResources_LoadSharedResource(resourceNameEncoded, buffer.adr, bufferLen)
                 memASCII(buffer, result - 1)
             }
@@ -29,11 +29,11 @@ object vrResources : vrInterface {
      * those and returns the actual physical path. {@code resourceTypeDirectory} is the subdirectory of resources to look in.
      */
     fun getResourceFullPath(resourceName: String, resourceTypeDirectory: String): String =
-            stackGet().run {
-                val resourceNameEncoded = addressOfAscii(resourceName)
-                val resourceTypeDirectoryEncoded = addressOfAscii(resourceTypeDirectory)
+            stak {
+                val resourceNameEncoded = it.addressOfAscii(resourceName)
+                val resourceTypeDirectoryEncoded = it.addressOfAscii(resourceTypeDirectory)
                 val bufferLen = nVRResources_GetResourceFullPath(resourceNameEncoded, resourceTypeDirectoryEncoded, NULL, 0)
-                val pathBuffer = malloc(bufferLen)
+                val pathBuffer = it.malloc(bufferLen)
                 val result = nVRResources_GetResourceFullPath(resourceNameEncoded, resourceTypeDirectoryEncoded, pathBuffer.adr, bufferLen)
                 memASCII(pathBuffer, result - 1)
             }

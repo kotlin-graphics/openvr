@@ -6,13 +6,10 @@ import glm_.mat4x4.Mat4
 import glm_.vec3.Vec3
 import glm_.vec3.Vec3i
 import glm_.vec4.Vec4
-import gln.buffer.Usage
-import gln.buffer.initArrayBuffer
 import gln.clear.glClearColorBuffer
 import gln.clear.glClearDepthBuffer
 import gln.glf.glf
 import gln.glf.semantic
-import gln.program.usingProgram
 import gln.texture.glBindTexture2d
 import gln.uniform.glUniform
 import gln.vertexArray.glBindVertexArray
@@ -25,7 +22,9 @@ import org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EX
 import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE
 import org.lwjgl.opengl.GL13.GL_TEXTURE0
 import org.lwjgl.opengl.GL13.glActiveTexture
-import org.lwjgl.opengl.GL30.*
+import org.lwjgl.opengl.GL15C
+import org.lwjgl.opengl.GL20C
+import org.lwjgl.opengl.GL30C.*
 import uno.kotlin.url
 import java.awt.image.DataBufferByte
 import javax.imageio.ImageIO
@@ -107,12 +106,10 @@ class Scene {
         }
         vertexCount = vertDataArray.size / 5
 
-        initArrayBuffer(bufferName) {
-
-            vertDataArray.toFloatArray().toBuffer().use { vertices ->
-
-                data(vertices, Usage.StaticDraw)
-            }
+        glGenBuffers(bufferName)
+        glBindBuffer(GL_ARRAY_BUFFER, bufferName[0])
+        vertDataArray.toFloatArray().toBuffer().use { vertices ->
+            GL15C.glBufferData(GL_ARRAY_BUFFER, vertices, GL15C.GL_STATIC_DRAW)
         }
 
         initVertexArray(vertexArrayName) {
@@ -268,7 +265,8 @@ class Scene {
                 }""") {
 
         init {
-            usingProgram(name) { "myTexture".unit = semantic.sampler.DIFFUSE }
+            glUseProgram(name)
+            glUniform1i(GL20C.glGetUniformLocation(name, "myTexture"), semantic.sampler.DIFFUSE)
         }
     }
 
@@ -293,7 +291,8 @@ class Scene {
                 }""") {
 
         init {
-            usingProgram(name) { "diffuse".unit = semantic.sampler.DIFFUSE }
+            glUseProgram(name)
+            glUniform1i(GL20C.glGetUniformLocation(name, "diffuse"), semantic.sampler.DIFFUSE)
         }
     }
 

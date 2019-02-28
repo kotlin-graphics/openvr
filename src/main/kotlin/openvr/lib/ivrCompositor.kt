@@ -3,10 +3,10 @@ package openvr.lib
 import glm_.vec4.Vec4
 import kool.adr
 import kool.cap
+import kool.stak
 import org.lwjgl.PointerBuffer
 import org.lwjgl.openvr.*
 import org.lwjgl.openvr.VRCompositor.*
-import org.lwjgl.system.MemoryStack.stackGet
 import org.lwjgl.system.MemoryUtil.NULL
 import org.lwjgl.system.MemoryUtil.memASCII
 import org.lwjgl.vulkan.VkPhysicalDevice
@@ -349,10 +349,10 @@ object vrCompositor : vrInterface {
      * The string will be a space separated list of-required instance extensions to enable in {@code VkCreateInstance}.
      */
     val vulkanInstanceExtensionsRequired: List<String>
-        get() {
+        get() = stak {
             val size = VRCompositor.nVRCompositor_GetVulkanInstanceExtensionsRequired(NULL, 0)
-            val buffer = stackGet().malloc(size)
-            return memASCII(buffer, buffer.cap - 1).split(' ')
+            val buffer = it.malloc(size)
+            memASCII(buffer, buffer.cap - 1).split(' ')
         }
 
     /**
@@ -362,11 +362,12 @@ object vrCompositor : vrInterface {
      * @param physicalDevice
      * @param unBufferSize
      */
-    infix fun getVulkanDeviceExtensionsRequired(physicalDevice: VkPhysicalDevice): List<String> {
-        val size = VRCompositor.nVRCompositor_GetVulkanDeviceExtensionsRequired(physicalDevice.adr, NULL, 0)
-        val buffer = stackGet().malloc(size)
-        return memASCII(buffer, size - 1).split(' ')
-    }
+    infix fun getVulkanDeviceExtensionsRequired(physicalDevice: VkPhysicalDevice): List<String> =
+            stak {
+                val size = VRCompositor.nVRCompositor_GetVulkanDeviceExtensionsRequired(physicalDevice.adr, NULL, 0)
+                val buffer = it.malloc(size)
+                memASCII(buffer, size - 1).split(' ')
+            }
 
     /**
      * <h3>Vulkan/D3D12 Only</h3>

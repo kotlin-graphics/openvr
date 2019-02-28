@@ -1,11 +1,11 @@
 package openvr.lib
 
+import glm_.BYTES
 import kool.set
+import kool.stak
 import org.lwjgl.openvr.SpatialAnchorPose
 import org.lwjgl.openvr.VRSpatialAnchors.*
-import org.lwjgl.system.MemoryStack.stackGet
-import org.lwjgl.system.MemoryUtil.memASCII
-import org.lwjgl.system.MemoryUtil.memCallocInt
+import org.lwjgl.system.MemoryUtil.*
 
 object vrSpatialAnchors : vrInterface {
 
@@ -55,8 +55,10 @@ object vrSpatialAnchors : vrInterface {
      */
     @JvmOverloads
     fun createSpatialAnchorFromDescriptor(descriptor: CharSequence, pErr: VRSpatialAnchorErrorBuffer = pError): SpatialAnchorHandle =
-            intAddress { pHandleOut ->
-                pErr[0] = nVRSpatialAnchors_CreateSpatialAnchorFromDescriptor(addressOfAscii(descriptor), pHandleOut)
+            stak {
+                val pHandleOut = it.nmalloc(4, Int.BYTES)
+                pErr[0] = nVRSpatialAnchors_CreateSpatialAnchorFromDescriptor(it.addressOfAscii(descriptor), pHandleOut)
+                memGetInt(pHandleOut)
             }
 
     /**
@@ -79,8 +81,10 @@ object vrSpatialAnchors : vrInterface {
      */
     @JvmOverloads
     fun createSpatialAnchorFromPose(deviceIndex: TrackedDeviceIndex, origin: TrackingUniverseOrigin, pose: SpatialAnchorPose, pErr: VRSpatialAnchorErrorBuffer = pError): SpatialAnchorHandle =
-            intAddress { pHandleOut ->
+            stak {
+                val pHandleOut = it.nmalloc(4, Int.BYTES)
                 pErr[0] = nVRSpatialAnchors_CreateSpatialAnchorFromPose(deviceIndex, origin.i, pose.adr, pHandleOut)
+                memGetInt(pHandleOut)
             }
 
     /**
@@ -104,12 +108,14 @@ object vrSpatialAnchors : vrInterface {
      * Note: Multi-thread unsafe if not passing a pError and reading it from the class property.
      */
     @JvmOverloads
-    fun getSpatialAnchorDescriptor(handle: SpatialAnchorHandle, pErr: VRSpatialAnchorErrorBuffer = pError): String {
-        val pDescr = stackGet().nmalloc(1, maxDescriptorSize)
-        val pDescrSize = pIntOf(maxDescriptorSize)
-        pErr[0] = nVRSpatialAnchors_GetSpatialAnchorDescriptor(handle, pDescr, pDescrSize)
-        return memASCII(pDescr)
-    }
+    fun getSpatialAnchorDescriptor(handle: SpatialAnchorHandle, pErr: VRSpatialAnchorErrorBuffer = pError): String =
+            stak {
+                val pDescr = it.nmalloc(1, maxDescriptorSize)
+                val pDescrSize = it.nmalloc(4, Int.BYTES)
+                memPutInt(pDescrSize, maxDescriptorSize)
+                pErr[0] = nVRSpatialAnchors_GetSpatialAnchorDescriptor(handle, pDescr, pDescrSize)
+                memASCII(pDescr)
+            }
 
     override val version: String
         get() = "IVRSpatialAnchors_001"

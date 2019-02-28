@@ -125,7 +125,7 @@ typealias VRSpatialAnchorErrorBuffer = IntBuffer
 typealias VRInitErrorBuffer = IntBuffer
 typealias VRInputErrorBuffer = IntBuffer
 typealias TrackedPropertyErrorBuffer = IntBuffer
-typealias TrackedCameraErrorBuffer = IntBuffer
+typealias VRTrackedCameraErrorBuffer = IntBuffer
 
 typealias TextureTypeBuffer = IntBuffer
 typealias ColorSpaceBuffer = IntBuffer

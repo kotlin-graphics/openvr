@@ -2,17 +2,16 @@ package openvr.lib
 
 import glm_.BYTES
 import glm_.mat4x4.Mat4
-import kool.set
 import glm_.vec2.Vec2i
 import kool.adr
 import kool.rem
+import kool.set
 import kool.stak
 import org.lwjgl.PointerBuffer
 import org.lwjgl.openvr.CameraVideoStreamFrameHeader
 import org.lwjgl.openvr.HmdVector2
 import org.lwjgl.openvr.VRTextureBounds
 import org.lwjgl.openvr.VRTrackedCamera.*
-import org.lwjgl.system.MemoryStack.stackGet
 import org.lwjgl.system.MemoryUtil.*
 import java.nio.ByteBuffer
 import java.nio.IntBuffer
@@ -80,7 +79,7 @@ object vrTrackedCamera : vrInterface {
         }
     }
 
-    enum class VRDistortionFunctionType{None, FTheta, Extended_FTheta, MAX_DISTORTION_FUNCTION_TYPES }
+    enum class VRDistortionFunctionType { None, FTheta, Extended_FTheta, MAX_DISTORTION_FUNCTION_TYPES }
 
     const val maxDistortionFunctionParameters: Int = 8
 
@@ -103,14 +102,16 @@ object vrTrackedCamera : vrInterface {
      * Gets size of the image frame.
      *
      * @param frameType one of:<br><table><tr><td>{@link VR#EVRTrackedCameraFrameType_VRTrackedCameraFrameType_Distorted}</td></tr><tr><td>{@link VR#EVRTrackedCameraFrameType_VRTrackedCameraFrameType_Undistorted}</td></tr><tr><td>{@link VR#EVRTrackedCameraFrameType_VRTrackedCameraFrameType_MaximumUndistorted}</td></tr><tr><td>{@link VR#EVRTrackedCameraFrameType_MAX_CAMERA_FRAME_TYPES}</td></tr></table>
+     *
+     * Note: Multi-thread unsafe if not passing a pError and reading it from the class property.
      */
-    fun getCameraFrameSize(deviceIndex: TrackedDeviceIndex, frameType: FrameType, size: Vec2i, frameBufferSize: IntBuffer): Error {
-        val width = stackGet().nmalloc(1, Vec2i.size)
-        val height = width + Int.BYTES
-        return Error of nVRTrackedCamera_GetCameraFrameSize(deviceIndex, frameType.i, width, height, frameBufferSize.adr).also {
-            size.put(memGetInt(width), memGetInt(height))
-        }
-    }
+    fun getCameraFrameSize(deviceIndex: TrackedDeviceIndex, frameType: FrameType, frameBufferSize: IntBuffer, pErr: VRTrackedCameraErrorBuffer = pError): Vec2i =
+            stak {
+                val width = it.nmalloc(1, Vec2i.size)
+                val height = width + Int.BYTES
+                pErr[0] = nVRTrackedCamera_GetCameraFrameSize(deviceIndex, frameType.i, width, height, frameBufferSize.adr)
+                Vec2i(memGetInt(width), memGetInt(height))
+            }
 
     /** @param frameType one of:<br><table><tr><td>{@link VR#EVRTrackedCameraFrameType_VRTrackedCameraFrameType_Distorted}</td></tr><tr><td>{@link VR#EVRTrackedCameraFrameType_VRTrackedCameraFrameType_Undistorted}</td></tr><tr><td>{@link VR#EVRTrackedCameraFrameType_VRTrackedCameraFrameType_MaximumUndistorted}</td></tr><tr><td>{@link VR#EVRTrackedCameraFrameType_MAX_CAMERA_FRAME_TYPES}</td></tr></table> */
     fun getCameraIntrinsics(deviceIndex: TrackedDeviceIndex, cameraIndex: Int, frameType: FrameType,
@@ -135,7 +136,7 @@ object vrTrackedCamera : vrInterface {
      * lack of active consumers or headset idleness.
      */
     @JvmOverloads
-    fun acquireVideoStreamingService(deviceIndex: TrackedDeviceIndex, pErr: TrackedCameraErrorBuffer = pError): TrackedCameraHandle =
+    fun acquireVideoStreamingService(deviceIndex: TrackedDeviceIndex, pErr: VRTrackedCameraErrorBuffer = pError): TrackedCameraHandle =
             stak.longAddress {
                 pErr[0] = nVRTrackedCamera_AcquireVideoStreamingService(deviceIndex, it)
             }
@@ -159,13 +160,13 @@ object vrTrackedCamera : vrInterface {
      *
      * @param frameType one of:<br><table><tr><td>{@link VR#EVRTrackedCameraFrameType_VRTrackedCameraFrameType_Distorted}</td></tr><tr><td>{@link VR#EVRTrackedCameraFrameType_VRTrackedCameraFrameType_Undistorted}</td></tr><tr><td>{@link VR#EVRTrackedCameraFrameType_VRTrackedCameraFrameType_MaximumUndistorted}</td></tr><tr><td>{@link VR#EVRTrackedCameraFrameType_MAX_CAMERA_FRAME_TYPES}</td></tr></table>
      */
-    fun getVideoStreamTextureSize(deviceIndex: TrackedDeviceIndex, frameType: FrameType, textureBounds: VRTextureBounds, size: Vec2i): Error {
-        val width = stackGet().nmalloc(1, Int.BYTES * 2)
-        val height = width + Int.BYTES
-        return Error of nVRTrackedCamera_GetVideoStreamTextureSize(deviceIndex, frameType.i, textureBounds.adr, width, height).also {
-            size.put(memGetInt(width), memGetInt(height))
-        }
-    }
+    fun getVideoStreamTextureSize(deviceIndex: TrackedDeviceIndex, frameType: FrameType, textureBounds: VRTextureBounds, pErr: VRTrackedCameraErrorBuffer = pError): Vec2i =
+            stak {
+                val width = it.nmalloc(1, Int.BYTES * 2)
+                val height = width + Int.BYTES
+                pErr[0] = nVRTrackedCamera_GetVideoStreamTextureSize(deviceIndex, frameType.i, textureBounds.adr, width, height)
+                Vec2i(memGetInt(width), memGetInt(height))
+            }
 
     /**
      * Access a shared D3D11 texture for the specified tracked camera stream.

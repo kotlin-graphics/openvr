@@ -3,14 +3,14 @@ package openvr.lib
 import glm_.BYTES
 import glm_.mat4x4.Mat4
 import glm_.s
-import kool.set
 import glm_.vec2.Vec2i
 import glm_.vec4.Vec4
 import kool.adr
 import kool.rem
+import kool.set
+import kool.stak
 import org.lwjgl.openvr.*
 import org.lwjgl.openvr.VRSystem.*
-import org.lwjgl.system.MemoryStack.stackGet
 import org.lwjgl.system.MemoryUtil.*
 import org.lwjgl.vulkan.VkInstance
 import java.nio.ByteBuffer
@@ -40,11 +40,11 @@ object vrSystem : vrInterface {
      * @param pnHeight recommended height for the offscreen render target
      */
     val recommendedRenderTargetSize: Vec2i
-        get() {
-            val width = stackGet().nmalloc(1, Vec2i.size)
+        get() = stak {
+            val width = it.nmalloc(1, Vec2i.size)
             val height = width + Int.BYTES
             nVRSystem_GetRecommendedRenderTargetSize(width, height)
-            return Vec2i(memGetInt(width), memGetInt(height))
+            Vec2i(memGetInt(width), memGetInt(height))
         }
 
     /**
@@ -67,14 +67,15 @@ object vrSystem : vrInterface {
      * @param eye    determines which eye the function should return the projection for. One of:<br><table><tr><td>{@link VR#EVREye_Eye_Left}</td><td>{@link VR#EVREye_Eye_Right}</td></tr></table>
      * @return [left, right, top, bottom] coordinate for the bottom clipping plane
      */
-    infix fun getProjectionRaw(eye: VREye): FloatArray {
-        val left = stackGet().nmalloc(1, Vec4.size)
-        val right = left + Float.BYTES
-        val top = right + Float.BYTES
-        val bottom = top + Float.BYTES
-        nVRSystem_GetProjectionRaw(eye.i, left, right, top, bottom)
-        return floatArrayOf(memGetFloat(left), memGetFloat(right), memGetFloat(top), memGetFloat(bottom))
-    }
+    infix fun getProjectionRaw(eye: VREye): FloatArray =
+            stak {
+                val left = it.nmalloc(1, Vec4.size)
+                val right = left + Float.BYTES
+                val top = right + Float.BYTES
+                val bottom = top + Float.BYTES
+                nVRSystem_GetProjectionRaw(eye.i, left, right, top, bottom)
+                floatArrayOf(memGetFloat(left), memGetFloat(right), memGetFloat(top), memGetFloat(bottom))
+            }
 
     /**
      * Gets the result of the distortion function for the specified eye and input UVs. UVs go from 0,0 in the upper left of that eye's viewport and 1,1 in the
@@ -439,22 +440,22 @@ object vrSystem : vrInterface {
      * @param pError        the error returned when attempting to fetch this property. This can be {@code NULL} if the caller doesn't care about the source of a property error.
      */
     @JvmOverloads
-    fun getStringTrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: TrackedDeviceProperty, pErr: TrackedPropertyErrorBuffer = pError): String = stackGet().run {
+    fun getStringTrackedDeviceProperty(deviceIndex: TrackedDeviceIndex, prop: TrackedDeviceProperty, pErr: TrackedPropertyErrorBuffer = pError): String =
+            stak {
+                val initialSize = 32
+                val bytes = it.malloc(initialSize)
+                val propLen = nVRSystem_GetStringTrackedDeviceProperty(deviceIndex, prop.i, bytes.adr, initialSize, pErr.adr)
 
-        val initialSize = 32
-        val bytes = malloc(initialSize)
-        val propLen = nVRSystem_GetStringTrackedDeviceProperty(deviceIndex, prop.i, bytes.adr, initialSize, pErr.adr)
-
-        when (pErr[0]) {
-            TrackedPropertyError.Success.i -> memASCII(bytes, propLen - 1)
-            TrackedPropertyError.BufferTooSmall.i -> {
-                val newBytes = malloc(propLen)
-                nVRSystem_GetStringTrackedDeviceProperty(deviceIndex, prop.i, newBytes.adr, propLen, pErr.adr)
-                memASCII(newBytes, propLen - 1)
+                when (pErr[0]) {
+                    TrackedPropertyError.Success.i -> memASCII(bytes, propLen - 1)
+                    TrackedPropertyError.BufferTooSmall.i -> {
+                        val newBytes = it.malloc(propLen)
+                        nVRSystem_GetStringTrackedDeviceProperty(deviceIndex, prop.i, newBytes.adr, propLen, pErr.adr)
+                        memASCII(newBytes, propLen - 1)
+                    }
+                    else -> throw Error(error.toString())
+                }
             }
-            else -> throw Error(error.toString())
-        }
-    }
 
     /**
      * Kind of useless on JVM, but it will be offered anyway on the enum itself
@@ -642,11 +643,13 @@ object vrSystem : vrInterface {
      *
      * @return the size of the response including its terminating null
      */
-    fun driverDebugRequest(deviceIndex: TrackedDeviceIndex, request: String, responseBufferSize: Int = vr.maxDriverDebugResponseSize): String {
-        val responseBuffer = stackGet().malloc(responseBufferSize)
-        val size = VRSystem.nVRSystem_DriverDebugRequest(deviceIndex, addressOfAscii(request), responseBuffer.adr, responseBufferSize)
-        return memASCII(responseBuffer, size - 1)
-    }
+    fun driverDebugRequest(deviceIndex: TrackedDeviceIndex, request: String, responseBufferSize: Int = vr.maxDriverDebugResponseSize): String =
+            stak {
+                val responseBuffer = it.malloc(responseBufferSize)
+                val pRequest = it.addressOfAscii(request)
+                val size = VRSystem.nVRSystem_DriverDebugRequest(deviceIndex, pRequest, responseBuffer.adr, responseBufferSize)
+                memASCII(responseBuffer, size - 1)
+            }
 
 
     // ------------------------------------

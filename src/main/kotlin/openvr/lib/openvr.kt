@@ -489,7 +489,7 @@ object vr {
     /** Returns the interface of the specified version. This method must be called after VR_Init. The
      * pointer returned is valid until VR_Shutdown is called.     */
     fun getGenericInterface(interfaceVersion: String, error: VRInitErrorBuffer): Ptr =
-            nVR_GetGenericInterface(addressOfAscii(interfaceVersion), error.adr)
+            stak { nVR_GetGenericInterface(it.addressOfAscii(interfaceVersion), error.adr) }
 
     /** Returns a token that represents whether the VR interface handles need to be reloaded */
     val initToken: Int

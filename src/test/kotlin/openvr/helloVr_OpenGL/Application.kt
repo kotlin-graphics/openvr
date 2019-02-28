@@ -10,9 +10,7 @@ import gln.debug.glDebugMessageCallback
 import openvr.lib.*
 import openvr.lib.VREventType
 import openvr.lib.vrRenderModels.freeNative
-import org.lwjgl.glfw.GLFWErrorCallback
 import org.lwjgl.opengl.GL11.*
-import org.lwjgl.opengl.GLUtil
 import org.lwjgl.opengl.KHRDebug.GL_DEBUG_OUTPUT_SYNCHRONOUS
 import org.lwjgl.opengl.KHRDebug.glDebugMessageControl
 import org.lwjgl.openvr.TrackedDevicePose
@@ -28,7 +26,7 @@ import kotlin.reflect.KMutableProperty0
 import openvr.lib.TrackedDeviceClass as TDC
 import org.lwjgl.opengl.KHRDebug.glDebugMessageCallback as _
 
-fun main(args: Array<String>) {
+fun main() {
 
     if (System.getenv("TRAVIS") == "true") // for travis
         return

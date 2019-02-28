@@ -5,11 +5,11 @@ import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2
 import kool.adr
 import kool.rem
+import kool.stak
 import org.lwjgl.openvr.HmdQuad
 import org.lwjgl.openvr.HmdVector2
 import org.lwjgl.openvr.VRChaperoneSetup
 import org.lwjgl.openvr.VRChaperoneSetup.*
-import org.lwjgl.system.MemoryStack.stackGet
 import org.lwjgl.system.MemoryUtil.NULL
 import org.lwjgl.system.MemoryUtil.memGetFloat
 import java.nio.ByteBuffer
@@ -59,13 +59,14 @@ object vrChaperoneSetup : vrInterface {
      *
      * @param size
      */
-    infix fun getWorkingPlayAreaSize(size: Vec2): Boolean {
-        val x = stackGet().nmalloc(1, Vec2.size)
-        val y = x + Int.BYTES
-        return nVRChaperoneSetup_GetWorkingPlayAreaSize(x, x + Int.BYTES).also {
-            size(memGetFloat(x), memGetFloat(y))
-        }
-    }
+    infix fun getWorkingPlayAreaSize(size: Vec2): Boolean =
+            stak {
+                val x = it.nmalloc(1, Vec2.size)
+                val y = x + Int.BYTES
+                nVRChaperoneSetup_GetWorkingPlayAreaSize(x, y).also {
+                    size(memGetFloat(x), memGetFloat(y))
+                }
+            }
 
     /**
      * Returns the 4 corner positions of the Play Area (formerly named Soft Bounds) from the working copy.
@@ -93,7 +94,7 @@ object vrChaperoneSetup : vrInterface {
      * @param quadsCount
      */
     fun getLiveCollisionBoundsInfo(quadsBuffer: HmdQuad.Buffer?, quadsCount: IntBuffer): Boolean =
-        nVRChaperoneSetup_GetLiveCollisionBoundsInfo(quadsBuffer?.adr ?: NULL, quadsCount.adr)
+            nVRChaperoneSetup_GetLiveCollisionBoundsInfo(quadsBuffer?.adr ?: NULL, quadsCount.adr)
 
     /**
      * Returns the preferred seated position from the working copy.
@@ -137,7 +138,7 @@ object vrChaperoneSetup : vrInterface {
 
     /** Sets the Collision Bounds in the working copy. */
     infix fun setWorkingPerimeter(pointBuffer: HmdVector2.Buffer) =
-        nVRChaperoneSetup_SetWorkingPerimeter(pointBuffer.adr, pointBuffer.rem)
+            nVRChaperoneSetup_SetWorkingPerimeter(pointBuffer.adr, pointBuffer.rem)
 
     /**
      * Sets the preferred seated position in the working copy.
@@ -145,7 +146,7 @@ object vrChaperoneSetup : vrInterface {
      * @param matSeatedZeroPoseToRawTrackingPose
      */
     infix fun setWorkingSeatedZeroPoseToRawTrackingPose(matSeatedZeroPoseToRawTrackingPose: Mat4) =
-        nVRChaperoneSetup_SetWorkingSeatedZeroPoseToRawTrackingPose(vr.HmdMatrix34(matSeatedZeroPoseToRawTrackingPose).adr)
+            nVRChaperoneSetup_SetWorkingSeatedZeroPoseToRawTrackingPose(vr.HmdMatrix34(matSeatedZeroPoseToRawTrackingPose).adr)
 
     /**
      * Sets the preferred standing position in the working copy.
@@ -153,7 +154,7 @@ object vrChaperoneSetup : vrInterface {
      * @param matStandingZeroPoseToRawTrackingPose
      */
     infix fun setWorkingStandingZeroPoseToRawTrackingPose(matStandingZeroPoseToRawTrackingPose: Mat4) =
-        nVRChaperoneSetup_SetWorkingStandingZeroPoseToRawTrackingPose(vr.HmdMatrix34(matStandingZeroPoseToRawTrackingPose).adr)
+            nVRChaperoneSetup_SetWorkingStandingZeroPoseToRawTrackingPose(vr.HmdMatrix34(matStandingZeroPoseToRawTrackingPose).adr)
 
     /**
      * Tear everything down and reload it from the file on disk.
@@ -168,7 +169,7 @@ object vrChaperoneSetup : vrInterface {
      * @param matSeatedZeroPoseToRawTrackingPose
      */
     infix fun getLiveSeatedZeroPoseToRawTrackingPose(matSeatedZeroPoseToRawTrackingPose: Mat4): Boolean =
-        nVRChaperoneSetup_GetLiveSeatedZeroPoseToRawTrackingPose(vr.HmdMatrix34(matSeatedZeroPoseToRawTrackingPose).adr)
+            nVRChaperoneSetup_GetLiveSeatedZeroPoseToRawTrackingPose(vr.HmdMatrix34(matSeatedZeroPoseToRawTrackingPose).adr)
 
     fun exportLiveToBuffer(buffer: ByteBuffer?, bufferLength: IntBuffer): Boolean =
             VRChaperoneSetup.nVRChaperoneSetup_ExportLiveToBuffer(buffer?.adr ?: NULL, bufferLength.adr)

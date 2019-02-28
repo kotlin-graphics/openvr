@@ -1,10 +1,10 @@
 package openvr.lib
 
 import kool.*
+import kool.lib.toByteArray
 import org.lwjgl.openvr.AppOverrideKeys
 import org.lwjgl.openvr.OpenVR.IVRApplications
 import org.lwjgl.openvr.VRApplications.*
-import org.lwjgl.system.MemoryStack.stackGet
 import org.lwjgl.system.MemoryUtil.*
 import java.nio.ByteBuffer
 
@@ -130,7 +130,7 @@ object vrApplications : vrInterface {
      * @param temporary
      */
     fun addApplicationManifest(applicationManifestFullPath: String, temporary: Boolean = false): Error =
-            Error of nVRApplications_AddApplicationManifest(addressOfAscii(applicationManifestFullPath), temporary)
+            stak { Error of nVRApplications_AddApplicationManifest(it.addressOfAscii(applicationManifestFullPath), temporary) }
 
     /**
      * Removes an application manifest from the list to load when building the list of installed applications.
@@ -138,7 +138,7 @@ object vrApplications : vrInterface {
      * @param applicationManifestFullPath
      */
     infix fun removeApplicationManifest(applicationManifestFullPath: String): Error =
-            Error of nVRApplications_RemoveApplicationManifest(addressOfAscii(applicationManifestFullPath))
+            stak { Error of nVRApplications_RemoveApplicationManifest(it.addressOfAscii(applicationManifestFullPath)) }
 
     /**
      * Returns true if an application is installed.
@@ -146,7 +146,7 @@ object vrApplications : vrInterface {
      * @param appKey
      */
     infix fun isApplicationInstalled(appKey: String): Boolean =
-            nVRApplications_IsApplicationInstalled(addressOfAscii(appKey))
+            stak { nVRApplications_IsApplicationInstalled(it.addressOfAscii(appKey)) }
 
     /** Returns the number of applications available in the list. */
     val applicationCount: Int
@@ -163,9 +163,11 @@ object vrApplications : vrInterface {
      * @param appKeyBuffer
      */
     @JvmOverloads
-    fun getApplicationKeyByIndex(applicationIndex: Int, pErr: VRApplicationErrorBuffer = pError): ByteBuffer =
-            stackGet().malloc(maxKeyLength).apply {
-                pErr[0] = nVRApplications_GetApplicationKeyByIndex(applicationIndex, adr, maxKeyLength)
+    fun getApplicationKeyByIndex(applicationIndex: Int, pErr: VRApplicationErrorBuffer = pError): ByteArray =
+            stak {
+                val buf = it.malloc(maxKeyLength)
+                pErr[0] = nVRApplications_GetApplicationKeyByIndex(applicationIndex, buf.adr, maxKeyLength)
+                buf.toByteArray()
             }
 
     /**
@@ -179,9 +181,11 @@ object vrApplications : vrInterface {
      * @param appKeyBuffer
      */
     @JvmOverloads
-    fun getApplicationKeyByProcessId(processId: Int, pErr: VRApplicationErrorBuffer = pError): ByteBuffer =
-            stackGet().malloc(maxKeyLength).apply {
-                pErr[0] = nVRApplications_GetApplicationKeyByProcessId(processId, adr, maxKeyLength)
+    fun getApplicationKeyByProcessId(processId: Int, pErr: VRApplicationErrorBuffer = pError): ByteArray =
+            stak {
+                val buf = it.malloc(maxKeyLength)
+                pErr[0] = nVRApplications_GetApplicationKeyByProcessId(processId, buf.adr, maxKeyLength)
+                buf.toByteArray()
             }
 
     /**
@@ -192,7 +196,7 @@ object vrApplications : vrInterface {
      * @param appKey
      */
     infix fun launchApplication(appKey: String): Error =
-            Error of nVRApplications_LaunchApplication(addressOfAscii(appKey))
+            stak { Error of nVRApplications_LaunchApplication(it.addressOfAscii(appKey)) }
 
     /**
      * Launches an instance of an application of type template, with its app key being {@code newAppKey} (which must be unique) and optionally override
@@ -203,7 +207,7 @@ object vrApplications : vrInterface {
      * @param keys
      */
     fun launchTemplateApplication(templateAppKey: String, newAppKey: String, keys: AppOverrideKeys.Buffer): Error =
-            Error of nVRApplications_LaunchTemplateApplication(addressOfAscii(templateAppKey), addressOfAscii(newAppKey), keys.adr, keys.rem)
+            stak { Error of nVRApplications_LaunchTemplateApplication(it.addressOfAscii(templateAppKey), it.addressOfAscii(newAppKey), keys.adr, keys.rem) }
 
     /**
      * Launches the application currently associated with this mime type and passes it the option args, typically the filename or object name of the item
@@ -213,7 +217,7 @@ object vrApplications : vrInterface {
      * @param args
      */
     fun launchApplicationFromMimeType(mimeType: String, args: String): Error =
-            Error of nVRApplications_LaunchApplicationFromMimeType(addressOfAscii(mimeType), addressOfAscii(args))
+            stak { Error of nVRApplications_LaunchApplicationFromMimeType(it.addressOfAscii(mimeType), it.addressOfAscii(args)) }
 
     /**
      * Launches the dashboard overlay application if it is not already running. This call is only valid for dashboard overlay applications.
@@ -221,7 +225,7 @@ object vrApplications : vrInterface {
      * @param appKey
      */
     infix fun launchDashboardOverlay(appKey: String): Error =
-            Error of nVRApplications_LaunchDashboardOverlay(addressOfAscii(appKey))
+            stak { Error of nVRApplications_LaunchDashboardOverlay(it.addressOfAscii(appKey)) }
 
     /**
      * Cancel a pending launch for an application.
@@ -229,7 +233,7 @@ object vrApplications : vrInterface {
      * @param appKey
      */
     infix fun cancelApplicationLaunch(appKey: String): Boolean =
-            nVRApplications_CancelApplicationLaunch(addressOfAscii(appKey))
+            stak { nVRApplications_CancelApplicationLaunch(it.addressOfAscii(appKey)) }
 
     /**
      * Identifies a running application. OpenVR can't always tell which process started in response to a URL. This function allows a URL handler (or the
@@ -240,7 +244,7 @@ object vrApplications : vrInterface {
      * @param appKey
      */
     fun identifyApplication(processId: Int, appKey: String): Error =
-            Error of nVRApplications_IdentifyApplication(processId, addressOfAscii(appKey))
+            stak { Error of nVRApplications_IdentifyApplication(processId, it.addressOfAscii(appKey)) }
 
     /**
      * Returns the process ID for an application. Return 0 if the application was not found or is not running.
@@ -248,7 +252,7 @@ object vrApplications : vrInterface {
      * @param appKey
      */
     infix fun getApplicationProcessId(appKey: String): Int =
-            nVRApplications_GetApplicationProcessId(addressOfAscii(appKey))
+            stak { nVRApplications_GetApplicationProcessId(it.addressOfAscii(appKey)) }
 
     /**
      * Kind of useless on JVM, but it will be offered anyway on the enum itself
@@ -280,12 +284,13 @@ object vrApplications : vrInterface {
      * @param error
      */
     @JvmOverloads
-    fun getApplicationPropertyString(appKey: String, property: Property, propertyValueBufferLen: Int = vr.maxPropertyStringSize, error: VRApplicationErrorBuffer = pError): String = stackGet().run {
-        val appKeyEncoded = addressOfAscii(appKey)
-        val propertyValueBuffer = malloc(propertyValueBufferLen)
-        val result = nVRApplications_GetApplicationPropertyString(appKeyEncoded, property.i, propertyValueBuffer.adr, propertyValueBufferLen, error.adr)
-        memASCII(propertyValueBuffer, result - 1)
-    }
+    fun getApplicationPropertyString(appKey: String, property: Property, propertyValueBufferLen: Int = vr.maxPropertyStringSize, error: VRApplicationErrorBuffer = pError): String =
+            stak {
+                val appKeyEncoded = it.addressOfAscii(appKey)
+                val propertyValueBuffer = it.malloc(propertyValueBufferLen)
+                val result = nVRApplications_GetApplicationPropertyString(appKeyEncoded, property.i, propertyValueBuffer.adr, propertyValueBufferLen, error.adr)
+                memASCII(propertyValueBuffer, result - 1)
+            }
 
     /**
      * Returns a bool value for an application property. Returns false in all error cases.
@@ -298,7 +303,7 @@ object vrApplications : vrInterface {
      */
     @JvmOverloads
     fun getApplicationPropertyBool(appKey: String, property: Property, error: VRApplicationErrorBuffer = pError): Boolean =
-            nVRApplications_GetApplicationPropertyBool(addressOfAscii(appKey), property.i, error.adr)
+            stak { nVRApplications_GetApplicationPropertyBool(it.addressOfAscii(appKey), property.i, error.adr) }
 
     /**
      * Returns a uint64 value for an application property. Returns 0 in all error cases.
@@ -311,7 +316,7 @@ object vrApplications : vrInterface {
      */
     @JvmOverloads
     fun getApplicationPropertyLong(appKey: String, property: Property, error: VRApplicationErrorBuffer = pError): Long =
-            nVRApplications_GetApplicationPropertyUint64(addressOfAscii(appKey), property.i, error.adr)
+            stak { nVRApplications_GetApplicationPropertyUint64(it.addressOfAscii(appKey), property.i, error.adr) }
 
     /**
      * Sets the application auto-launch flag. This is only valid for applications which return true for
@@ -321,7 +326,7 @@ object vrApplications : vrInterface {
      * @param autoLaunch
      */
     fun setApplicationAutoLaunch(appKey: String, autoLaunch: Boolean): Error =
-            Error of nVRApplications_SetApplicationAutoLaunch(addressOfAscii(appKey), autoLaunch)
+            stak { Error of nVRApplications_SetApplicationAutoLaunch(it.addressOfAscii(appKey), autoLaunch) }
 
     /**
      * Gets the application auto-launch flag. This is only valid for applications which return true for
@@ -330,7 +335,7 @@ object vrApplications : vrInterface {
      * @param appKey
      */
     infix fun getApplicationAutoLaunch(appKey: String): Boolean =
-            nVRApplications_GetApplicationAutoLaunch(addressOfAscii(appKey))
+            stak { nVRApplications_GetApplicationAutoLaunch(it.addressOfAscii(appKey)) }
 
     /**
      * Adds this mime-type to the list of supported mime types for this application.
@@ -339,7 +344,7 @@ object vrApplications : vrInterface {
      * @param mimeType
      */
     fun setDefaultApplicationForMimeType(appKey: String, mimeType: String): Error =
-            Error of nVRApplications_SetDefaultApplicationForMimeType(addressOfAscii(appKey), addressOfAscii(mimeType))
+            stak { Error of nVRApplications_SetDefaultApplicationForMimeType(it.addressOfAscii(appKey), it.addressOfAscii(mimeType)) }
 
     /**
      * Return the app key that will open this mime type. TODO offer a more convenient one?
@@ -348,8 +353,8 @@ object vrApplications : vrInterface {
      * @param appKeyBuffer
      */
     fun getDefaultApplicationForMimeType(mimeType: String, appKeyBuffer: ByteBuffer?): Boolean =
-            nVRApplications_GetDefaultApplicationForMimeType(addressOfAscii(mimeType), appKeyBuffer?.adr
-                    ?: NULL, appKeyBuffer?.cap ?: 0)
+            stak { nVRApplications_GetDefaultApplicationForMimeType(it.addressOfAscii(mimeType), appKeyBuffer?.adr
+                    ?: NULL, appKeyBuffer?.cap ?: 0) }
 
     /**
      * Get the list of supported mime types for this application, comma-delimited. TODO offer a more convenient one?
@@ -358,8 +363,8 @@ object vrApplications : vrInterface {
      * @param mimeTypesBuffer
      */
     fun getApplicationSupportedMimeTypes(appKey: String, mimeTypesBuffer: ByteBuffer?): Boolean =
-            nVRApplications_GetApplicationSupportedMimeTypes(addressOfAscii(appKey), mimeTypesBuffer?.adr
-                    ?: NULL, mimeTypesBuffer?.rem ?: 0)
+            stak { nVRApplications_GetApplicationSupportedMimeTypes(it.addressOfAscii(appKey), mimeTypesBuffer?.adr
+                    ?: NULL, mimeTypesBuffer?.rem ?: 0) }
 
     /**
      * Get the list of app-keys that support this mime type, comma-delimited, the return value is number of bytes you need to return the full string.
@@ -367,11 +372,13 @@ object vrApplications : vrInterface {
      * @param mimeType
      * @param appKeysThatSupportBufferSize
      */
-    fun getApplicationsThatSupportMimeType(mimeType: String, appKeysThatSupportBufferSize: Int): String {
-        val appKeysThatSupportBuffer = stackGet().malloc(appKeysThatSupportBufferSize)
-        val result = nVRApplications_GetApplicationsThatSupportMimeType(addressOfAscii(mimeType), appKeysThatSupportBuffer.adr, appKeysThatSupportBufferSize)
-        return memASCII(appKeysThatSupportBuffer, result - 1)
-    }
+    fun getApplicationsThatSupportMimeType(mimeType: String, appKeysThatSupportBufferSize: Int): String =
+            stak {
+                val appKeysThatSupportBuffer = it.malloc(appKeysThatSupportBufferSize)
+                val pMimeType = it.addressOfAscii(mimeType)
+                val result = nVRApplications_GetApplicationsThatSupportMimeType(pMimeType, appKeysThatSupportBuffer.adr, appKeysThatSupportBufferSize)
+                memASCII(appKeysThatSupportBuffer, result - 1)
+            }
 
     /**
      * Get the args list from an app launch that had the process already running, you call this when you get a {@link VR#EVREventType_VREvent_ApplicationMimeTypeLoad}.
@@ -379,11 +386,12 @@ object vrApplications : vrInterface {
      * @param handle
      * @param argsSize
      */
-    fun getApplicationLaunchArguments(handle: Int, argsSize: Int): String {
-        val args = stackGet().malloc(argsSize)
-        val result = nVRApplications_GetApplicationLaunchArguments(handle, args.adr, argsSize)
-        return memASCII(args, result - 1)
-    }
+    fun getApplicationLaunchArguments(handle: Int, argsSize: Int): String =
+            stak {
+                val args = it.malloc(argsSize)
+                val result = nVRApplications_GetApplicationLaunchArguments(handle, args.adr, argsSize)
+                memASCII(args, result - 1)
+            }
 
     /**
      * Returns the app key for the application that is starting up.
@@ -414,7 +422,7 @@ object vrApplications : vrInterface {
      * @param appKey
      */
     infix fun performApplicationPrelaunchCheck(appKey: String): Error =
-            Error of nVRApplications_PerformApplicationPrelaunchCheck(addressOfAscii(appKey))
+            stak { Error of nVRApplications_PerformApplicationPrelaunchCheck(it.addressOfAscii(appKey)) }
 
     /**
      * Kind of useless on JVM, but it will be offered anyway on the enum itself
@@ -441,7 +449,7 @@ object vrApplications : vrInterface {
      * @param workingDirectory
      */
     fun launchInternalProcess(binaryPath: String, arguments: String, workingDirectory: String): Error =
-            Error of nVRApplications_LaunchInternalProcess(addressOfAscii(binaryPath), addressOfAscii(arguments), addressOfAscii(workingDirectory))
+            stak { Error of nVRApplications_LaunchInternalProcess(it.addressOfAscii(binaryPath), it.addressOfAscii(arguments), it.addressOfAscii(workingDirectory)) }
 
     /**
      * Returns the current scene process ID according to the application system. A scene process will get scene focus once it starts rendering, but it will

@@ -2,18 +2,16 @@ package openvr.lib
 
 import glm_.BYTES
 import glm_.mat4x4.Mat4
-import kool.set
 import glm_.vec2.Vec2
 import glm_.vec2.Vec2i
 import glm_.vec3.Vec3
 import kool.adr
 import kool.rem
+import kool.set
 import kool.stak
 import org.lwjgl.PointerBuffer
 import org.lwjgl.openvr.*
 import org.lwjgl.openvr.VROverlay.*
-import org.lwjgl.system.MemoryStack.stackGet
-import org.lwjgl.system.MemoryUtil
 import org.lwjgl.system.MemoryUtil.*
 import java.nio.ByteBuffer
 import java.nio.FloatBuffer
@@ -198,7 +196,7 @@ object vrOverlay : vrInterface {
      * @param overlayHandle
      */
     fun findOverlay(overlayKey: String, overlayHandle: VROverlayHandleBuffer): Error =
-            Error of nVROverlay_FindOverlay(addressOfAscii(overlayKey), overlayHandle.adr)
+            stak { Error of nVROverlay_FindOverlay(it.addressOfAscii(overlayKey), overlayHandle.adr) }
 
     /**
      * Creates a new named overlay. All overlays start hidden and with default settings.
@@ -208,7 +206,7 @@ object vrOverlay : vrInterface {
      * @param overlayHandle ~VROverlayHandle
      */
     fun createOverlay(overlayKey: String, overlayName: String, overlayHandle: VROverlayHandleBuffer): Error =
-            Error of nVROverlay_CreateOverlay(addressOfAscii(overlayKey), addressOfAscii(overlayName), overlayHandle.adr)
+            stak { Error of nVROverlay_CreateOverlay(it.addressOfAscii(overlayKey), it.addressOfAscii(overlayName), overlayHandle.adr) }
 
     /**
      * Destroys the specified overlay. When an application calls {@link VR#VR_ShutdownInternal ShutdownInternal} all overlays created by that app are automatically destroyed.
@@ -257,11 +255,12 @@ object vrOverlay : vrInterface {
      * @param overlayHandle
      * @param pErr
      */
-    fun getOverlayKey(overlayHandle: VROverlayHandle, pErr: VROverlayErrorBuffer = pError): String {
-        val value = stackGet().malloc(1, MaxKeyLength)
-        val size = nVROverlay_GetOverlayKey(overlayHandle, value.adr, MaxKeyLength, pErr.adr)
-        return MemoryUtil.memASCII(value, size - 1)
-    }
+    fun getOverlayKey(overlayHandle: VROverlayHandle, pErr: VROverlayErrorBuffer = pError): String =
+            stak {
+                val value = it.malloc(1, MaxKeyLength)
+                val size = nVROverlay_GetOverlayKey(overlayHandle, value.adr, MaxKeyLength, pErr.adr)
+                memASCII(value, size - 1)
+            }
 
     /**
      * Fills the provided buffer with the friendly name of the overlay. Returns the size of buffer required to store the key, including the terminating null
@@ -272,11 +271,12 @@ object vrOverlay : vrInterface {
      * @param overlayHandle
      * @param error
      */
-    fun getOverlayName(overlayHandle: VROverlayHandle, error: VROverlayErrorBuffer = pError): String {
-        val value = stackGet().malloc(MaxNameLength)
-        val size = nVROverlay_GetOverlayName(overlayHandle, value.adr, MaxKeyLength, error.adr)
-        return MemoryUtil.memASCII(value, size - 1)
-    }
+    fun getOverlayName(overlayHandle: VROverlayHandle, error: VROverlayErrorBuffer = pError): String =
+            stak {
+                val value = it.malloc(MaxNameLength)
+                val size = nVROverlay_GetOverlayName(overlayHandle, value.adr, MaxKeyLength, error.adr)
+                memASCII(value, size - 1)
+            }
 
     /**
      * Sets the name to use for this overlay.
@@ -285,7 +285,7 @@ object vrOverlay : vrInterface {
      * @param name
      */
     fun setOverlayName(overlayHandle: VROverlayHandle, name: String): Error =
-            Error of nVROverlay_SetOverlayName(overlayHandle, addressOfAscii(name))
+            stak { Error of nVROverlay_SetOverlayName(overlayHandle, it.addressOfAscii(name)) }
 
     /**
      * Gets the raw image data from an overlay. Overlay image data is always returned as RGBA data, 4 bytes per pixel. If the buffer is not large enough,
@@ -296,13 +296,14 @@ object vrOverlay : vrInterface {
      * @param punWidth
      * @param punHeight
      */
-    fun getOverlayImageData(overlayHandle: VROverlayHandle, buffer: ByteBuffer, size: Vec2i): Error {
-        val width = stackGet().nmalloc(1, Vec2i.size)
-        val height = width + Int.BYTES
-        return Error of nVROverlay_GetOverlayImageData(overlayHandle, buffer.adr, buffer.rem, width, height).also {
-            size(memGetInt(width), memGetInt(height))
-        }
-    }
+    fun getOverlayImageData(overlayHandle: VROverlayHandle, buffer: ByteBuffer, size: Vec2i): Error =
+            stak {
+                val width = it.nmalloc(1, Vec2i.size)
+                val height = width + Int.BYTES
+                Error of nVROverlay_GetOverlayImageData(overlayHandle, buffer.adr, buffer.rem, width, height).also {
+                    size(memGetInt(width), memGetInt(height))
+                }
+            }
 
     /**
      * Kind of useless on JVM, but it will be offered anyway on the enum itself
@@ -378,14 +379,15 @@ object vrOverlay : vrInterface {
      * @param overlayHandle
      * @param color
      */
-    fun getOverlayColor(overlayHandle: VROverlayHandle, color: Vec3): Error {
-        val red = stackGet().nmalloc(1, Vec3.size)
-        val green = red + Float.BYTES
-        val blue = green + Float.BYTES
-        return Error of nVROverlay_GetOverlayColor(overlayHandle, red, green, blue).also {
-            color(memGetFloat(red), memGetFloat(green), memGetFloat(blue))
-        }
-    }
+    fun getOverlayColor(overlayHandle: VROverlayHandle, color: Vec3): Error =
+            stak {
+                val red = it.nmalloc(1, Vec3.size)
+                val green = red + Float.BYTES
+                val blue = green + Float.BYTES
+                Error of nVROverlay_GetOverlayColor(overlayHandle, red, green, blue).also {
+                    color(memGetFloat(red), memGetFloat(green), memGetFloat(blue))
+                }
+            }
 
     /**
      * Sets the alpha of the overlay quad. Use 1.0 for 100 percent opacity to 0.0 for 0 percent opacity.
@@ -542,7 +544,7 @@ object vrOverlay : vrInterface {
             nVROverlay_GetOverlayRenderModel(overlayHandle, value.adr, value.rem, color.adr, error.adr)
 
     fun setOverlayRenderModel(overlayHandle: VROverlayHandle, renderModel: String, color: HmdColor): Error =
-            Error of nVROverlay_SetOverlayRenderModel(overlayHandle, addressOfAscii(renderModel), color.adr)
+            stak { Error of nVROverlay_SetOverlayRenderModel(overlayHandle, it.addressOfAscii(renderModel), color.adr) }
 
     /**
      * Returns the transform type of this overlay.
@@ -610,7 +612,7 @@ object vrOverlay : vrInterface {
      * @param componentName
      */
     fun setOverlayTransformTrackedDeviceComponent(overlayHandle: VROverlayHandle, deviceIndex: TrackedDeviceIndex, componentName: String): Error =
-            Error of nVROverlay_SetOverlayTransformTrackedDeviceComponent(overlayHandle, deviceIndex, addressOfAscii(componentName))
+            stak { Error of nVROverlay_SetOverlayTransformTrackedDeviceComponent(overlayHandle, deviceIndex, it.addressOfAscii(componentName)) }
 
     /**
      * Gets the transform information when the overlay is rendering on a component.
@@ -845,7 +847,7 @@ object vrOverlay : vrInterface {
      * @param filePath
      */
     fun setOverlayFromFile(overlayHandle: VROverlayHandle, filePath: String): Error =
-            Error of nVROverlay_SetOverlayFromFile(overlayHandle, addressOfAscii(filePath))
+            stak { Error of nVROverlay_SetOverlayFromFile(overlayHandle, it.addressOfAscii(filePath)) }
 
     /**
      * Get the native texture handle/device for an overlay you have created.
@@ -903,7 +905,7 @@ object vrOverlay : vrInterface {
      * @param thumbnailHandle  ~ VROverlayHandle *
      */
     fun createDashboardOverlay(overlayKey: String, overlayFriendlyName: String, mainHandle: LongBuffer, thumbnailHandle: LongBuffer): Error =
-            Error of nVROverlay_CreateDashboardOverlay(addressOfAscii(overlayKey), addressOfAscii(overlayFriendlyName), mainHandle.adr, thumbnailHandle.adr)
+            stak { Error of nVROverlay_CreateDashboardOverlay(it.addressOfAscii(overlayKey), it.addressOfAscii(overlayFriendlyName), mainHandle.adr, thumbnailHandle.adr) }
 
     /** Returns true if the dashboard is visible. */
     val isDashboardVisible: Boolean
@@ -940,7 +942,7 @@ object vrOverlay : vrInterface {
      *
      * @param overlayToShow
      */
-    fun showDashboard(overlayToShow: String) = nVROverlay_ShowDashboard(addressOfAscii(overlayToShow))
+    fun showDashboard(overlayToShow: String) = stak { nVROverlay_ShowDashboard(it.addressOfAscii(overlayToShow)) }
 
     /** Returns the tracked device that has the laser pointer in the dashboard. */
     val primaryDashboardDevice: TrackedDeviceIndex
@@ -959,7 +961,7 @@ object vrOverlay : vrInterface {
      */
     fun showKeyboard(inputMode: GamepadTextInputMode, lineInputMode: GamepadTextInputLineMode, description: String, charMax: Int,
                      existingText: String, useMinimalMode: Boolean, userValue: Long): Error =
-            Error of nVROverlay_ShowKeyboard(inputMode.i, lineInputMode.i, addressOfAscii(description), charMax, addressOfAscii(existingText), useMinimalMode, userValue)
+            stak { Error of nVROverlay_ShowKeyboard(inputMode.i, lineInputMode.i, it.addressOfAscii(description), charMax, it.addressOfAscii(existingText), useMinimalMode, userValue) }
 
     /**
      * @param overlayHandle
@@ -973,18 +975,19 @@ object vrOverlay : vrInterface {
      */
     fun showKeyboardForOverlay(overlayHandle: VROverlayHandle, inputMode: GamepadTextInputMode, lineInputMode: GamepadTextInputLineMode,
                                description: String, charMax: Int, existingText: String, useMinimalMode: Boolean, userValue: Long): Error =
-            Error of nVROverlay_ShowKeyboardForOverlay(overlayHandle, inputMode.i, lineInputMode.i, addressOfAscii(description), charMax, addressOfAscii(existingText), useMinimalMode, userValue)
+            stak { Error of nVROverlay_ShowKeyboardForOverlay(overlayHandle, inputMode.i, lineInputMode.i, it.addressOfAscii(description), charMax, it.addressOfAscii(existingText), useMinimalMode, userValue) }
 
     /**
      * Get the textSize that was entered into the textSize input.
      *
      * @param textSize
      */
-    fun getKeyboardText(textSize: Int): String {
-        val text = stackGet().malloc(textSize)
-        val size = nVROverlay_GetKeyboardText(text.adr, textSize)
-        return MemoryUtil.memASCII(text, size - 1)
-    }
+    fun getKeyboardText(textSize: Int): String =
+            stak {
+                val text = it.malloc(textSize)
+                val size = nVROverlay_GetKeyboardText(text.adr, textSize)
+                memASCII(text, size - 1)
+            }
 
     /** Hide the virtual keyboard. */
     fun hideKeyboard() = VROverlay_HideKeyboard()
@@ -1031,15 +1034,16 @@ object vrOverlay : vrInterface {
      * @param button2Text
      * @param button3Text
      */
-    fun showMessageOverlay(text: String, caption: String, button0Text: String, button1Text: String?, button2Text: String?, button3Text: String?): MessageResponse {
-        val textEncoded = addressOfAscii(text)
-        val captionEncoded = addressOfAscii(caption)
-        val button0TextEncoded = addressOfAscii(button0Text)
-        val button1TextEncoded = button1Text?.let { addressOfAscii(it) } ?: NULL
-        val button2TextEncoded = button2Text?.let { addressOfAscii(it) } ?: NULL
-        val button3TextEncoded = button3Text?.let { addressOfAscii(it) } ?: NULL
-        return MessageResponse of nVROverlay_ShowMessageOverlay(textEncoded, captionEncoded, button0TextEncoded, button1TextEncoded, button2TextEncoded, button3TextEncoded)
-    }
+    fun showMessageOverlay(text: String, caption: String, button0Text: String, button1Text: String?, button2Text: String?, button3Text: String?): MessageResponse =
+            stak {s ->
+                val textEncoded = s.addressOfAscii(text)
+                val captionEncoded = s.addressOfAscii(caption)
+                val button0TextEncoded = s.addressOfAscii(button0Text)
+                val button1TextEncoded = button1Text?.let { s.addressOfAscii(it) } ?: NULL
+                val button2TextEncoded = button2Text?.let { s.addressOfAscii(it) } ?: NULL
+                val button3TextEncoded = button3Text?.let { s.addressOfAscii(it) } ?: NULL
+                MessageResponse of nVROverlay_ShowMessageOverlay(textEncoded, captionEncoded, button0TextEncoded, button1TextEncoded, button2TextEncoded, button3TextEncoded)
+            }
 
     /** If the calling process owns the overlay and it's open, this will close it. */
     fun closeMessageOverlay() = VROverlay_CloseMessageOverlay()

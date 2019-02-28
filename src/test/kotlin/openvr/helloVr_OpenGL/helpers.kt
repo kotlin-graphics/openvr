@@ -22,6 +22,7 @@ import org.lwjgl.opengl.EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EX
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE
 import org.lwjgl.opengl.GL12.GL_TEXTURE_MAX_LEVEL
+import org.lwjgl.opengl.GL15
 import org.lwjgl.opengl.GL20.glEnableVertexAttribArray
 import org.lwjgl.opengl.GL30.*
 import org.lwjgl.opengl.GL32.GL_TEXTURE_2D_MULTISAMPLE
@@ -126,8 +127,8 @@ class CGLRenderModel(val modelName: String, vrModel: RenderModel, vrDiffuseTextu
 
         // Populate a vertex buffer
         glGenBuffers(bufferName)
-        glBindArrayBuffer(bufferName[Buffer.VERTEX])
-        glArrayBufferData(vrModel.vertices, Usage.StaticDraw)
+        glBindBuffer(GL15.GL_ARRAY_BUFFER, bufferName[Buffer.VERTEX])
+        glBufferData(GL_ARRAY_BUFFER, vrModel.vertices, GL15.GL_STATIC_DRAW)
 
         // Identify the components in the vertex buffer
         glEnableVertexAttribArray(semantic.attr.POSITION)
@@ -136,8 +137,8 @@ class CGLRenderModel(val modelName: String, vrModel: RenderModel, vrDiffuseTextu
         glVertexAttribPointer(semantic.attr.TEX_COORD, Vec2.length, GL_FLOAT, false, RenderModelVertex.SIZEOF, RenderModelVertex.RFTEXTURECOORD)
 
         // Create and populate the index buffer
-        glBindElementBuffer(bufferName[Buffer.INDEX])
-        glElementBufferData(vrModel.indices, Usage.StaticDraw)
+        glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, bufferName[Buffer.INDEX])
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, vrModel.indices, GL15.GL_STATIC_DRAW)
 
         glBindVertexArray()
 

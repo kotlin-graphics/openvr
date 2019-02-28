@@ -8,7 +8,6 @@ import gln.glViewport
 import gln.glf.glf
 import gln.glf.semantic
 import gln.program.glUseProgram
-import gln.program.usingProgram
 import gln.vertexArray.glBindVertexArray
 import gln.vertexArray.glEnableVertexAttribArray
 import gln.vertexArray.glVertexAttribPointer
@@ -22,11 +21,15 @@ import openvr.lib.vr
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE
-import org.lwjgl.opengl.GL15.glDeleteBuffers
-import org.lwjgl.opengl.GL15.glGenBuffers
+import org.lwjgl.opengl.GL15.*
+import org.lwjgl.opengl.GL15C.GL_ARRAY_BUFFER
+import org.lwjgl.opengl.GL15C.glBindBuffer
 import org.lwjgl.opengl.GL20
-import org.lwjgl.opengl.GL30.glDeleteVertexArrays
-import org.lwjgl.opengl.GL30.glGenVertexArrays
+import org.lwjgl.opengl.GL20.glUniform1i
+import org.lwjgl.opengl.GL20C
+import org.lwjgl.opengl.GL20C.glGetUniformLocation
+import org.lwjgl.opengl.GL20C.glUseProgram
+import org.lwjgl.opengl.GL30.*
 import org.lwjgl.opengl.GLUtil
 import uno.glfw.GlfwWindow
 import uno.glfw.VSync
@@ -88,11 +91,11 @@ class CompanionWindow {
 
             glGenBuffers(bufferName)
 
-            glBindArrayBuffer(bufferName[Buffer.VERTEX])
-            glArrayBufferData(vertices, Usage.StaticDraw)
+            glBindBuffer(GL_ARRAY_BUFFER, bufferName[Buffer.VERTEX])
+            glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW)
 
-            glBindElementBuffer(bufferName[Buffer.INDEX])
-            glElementBufferData(indices, Usage.StaticDraw)
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bufferName[Buffer.INDEX])
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW)
 
             glEnableVertexAttribArray(glf.pos2_tc2)
             glVertexAttribPointer(glf.pos2_tc2)
@@ -155,7 +158,8 @@ class CompanionWindow {
                     outColor = texture(myTexture, uv);
                 }""") {
         init {
-            usingProgram(name) { "myTexture".unit = semantic.sampler.DIFFUSE }
+            glUseProgram(name)
+            glUniform1i(glGetUniformLocation(name, "myTexture"), semantic.sampler.DIFFUSE)
         }
     }
 }

@@ -1,5 +1,6 @@
 package openvr.lib
 
+import glm_.BYTES
 import kool.set
 import kool.adr
 import kool.rem
@@ -59,7 +60,8 @@ object vrInput : vrInterface {
             pError[0] = value.i
         }
 
-    enum class VRSkeletalTransformSpace { Model, Parent;
+    enum class VRSkeletalTransformSpace {
+        Model, Parent;
 
         @JvmField
         val i = ordinal
@@ -69,7 +71,8 @@ object vrInput : vrInterface {
         }
     }
 
-    enum class VRSkeletalReferencePose { BindPose, OpenHand, Fist, GripLimit;
+    enum class VRSkeletalReferencePose {
+        BindPose, OpenHand, Fist, GripLimit;
 
         @JvmField
         val i = ordinal
@@ -79,7 +82,8 @@ object vrInput : vrInterface {
         }
     }
 
-    enum class VRFinger { Thumb, Index, Middle, Ring, Pinky;
+    enum class VRFinger {
+        Thumb, Index, Middle, Ring, Pinky;
 
         @JvmField
         val i = ordinal
@@ -89,7 +93,8 @@ object vrInput : vrInterface {
         }
     }
 
-    enum class VRFingerSplay { Thumb_Index, Index_Middle, Middle_Ring, Ring_Pinky;
+    enum class VRFingerSplay {
+        Thumb_Index, Index_Middle, Middle_Ring, Ring_Pinky;
 
         @JvmField
         val i = ordinal
@@ -121,7 +126,8 @@ object vrInput : vrInterface {
         }
     }
 
-    enum class VRInputFilterCancelType { Timers, Momentum;
+    enum class VRInputFilterCancelType {
+        Timers, Momentum;
 
         @JvmField
         val i = ordinal
@@ -142,7 +148,8 @@ object vrInput : vrInterface {
         }
     }
 
-    enum class FilterCancelType { Timers, Momentum;
+    enum class FilterCancelType {
+        Timers, Momentum;
 
         val i = ordinal
 
@@ -159,11 +166,11 @@ object vrInput : vrInterface {
      *
      * <p>This call must be made before the first call to {@link #VRInput_UpdateActionState UpdateActionState} or {@link VRSystem#VRSystem_PollNextEvent PollNextEvent}.</p>
      */
-    fun setActionManifestPath(actionManifestPath: URL): Error {
-        val file = File(actionManifestPath.file)
-        val pPath = addressOfAscii(file.absolutePath)
-        return Error of nVRInput_SetActionManifestPath(pPath)
-    }
+    fun setActionManifestPath(actionManifestPath: URL): Error =
+            stak {
+                val file = File(actionManifestPath.file)
+                Error of nVRInput_SetActionManifestPath(it.addressOfAscii(file.absolutePath))
+            }
 
     /**
      * JVM custom
@@ -172,8 +179,10 @@ object vrInput : vrInterface {
      *
      * Note: Multi-thread unsafe if reading the error from the class property. */
     fun getActionSetHandle(actionSetName: String, pErr: VRInputErrorBuffer = pError): VRActionSetHandle =
-            stak.longAddress {
-                pErr[0] = nVRInput_GetActionSetHandle(addressOfAscii(actionSetName), it)
+            stak {
+                val pHandle = it.nmalloc(8, Long.BYTES)
+                pErr[0] = nVRInput_GetActionSetHandle(it.addressOfAscii(actionSetName), pHandle)
+                memGetLong(pHandle)
             }
 
     /** JVM custom
@@ -182,8 +191,10 @@ object vrInput : vrInterface {
      *
      *  Note: Multi-thread unsafe if reading the error from the class property.     */
     fun getActionHandle(actionName: String, pErr: VRInputErrorBuffer = pError): VRActionHandle =
-            stak.longAddress {
-                pErr[0] = nVRInput_GetActionHandle(addressOfAscii(actionName), it)
+            stak {
+                val pHandle = it.nmalloc(8, Long.BYTES)
+                pErr[0] = nVRInput_GetActionHandle(it.addressOfAscii(actionName), pHandle)
+                memGetLong(pHandle)
             }
 
     /** JVM custom
@@ -192,8 +203,10 @@ object vrInput : vrInterface {
      *
      * Note: Multi-thread unsafe if reading the error from the class property.     */
     fun getInputSourceHandle(inputSourcePath: String, pErr: VRInputErrorBuffer = pError): VRInputValueHandle =
-            stak.longAddress {
-                pErr[0] = nVRInput_GetInputSourceHandle(addressOfAscii(inputSourcePath), it)
+            stak {
+                val pHandle = it.nmalloc(8, Long.BYTES)
+                pErr[0] = nVRInput_GetInputSourceHandle(it.addressOfAscii(inputSourcePath), pHandle)
+                memGetLong(pHandle)
             }
 
     /**
