@@ -208,6 +208,10 @@ enum class TrackedDeviceProperty(@JvmField val i: Int) {
     /** Whether device supports being identified from vrmonitor (e.g. blink LED, vibrate haptics, etc) */
     Identifiable_Bool(1043),
     BootloaderVersion_Uint64(1044),
+    /** additional string to include in system reports about a tracked device */
+    AdditionalSystemReportData_String(1045),
+    /** additional FW components from a device that gets propagated into reports */
+    CompositeFirmwareVersion_String(1046),
 
     // Properties that are unique to TrackedDeviceClass_HMD
     ReportsTimeSinceVSync_Bool(2000),
@@ -328,6 +332,9 @@ enum class TrackedDeviceProperty(@JvmField val i: Int) {
     TrackingRangeMinimumMeters_Float(4004),
     TrackingRangeMaximumMeters_Float(4005),
     ModeLabel_String(4006),
+    /** volatile, based on radio presence and fw discovery */
+    CanWirelessIdentify_Bool(4007),
+    Nonce_Int32(4008),
 
 
     // Properties that are used for user interface like icons names
@@ -556,7 +563,7 @@ enum class VREventType(@JvmField val i: Int) {
     DashboardActivated(502),
     DashboardDeactivated(503),
     /** Sent to the overlay manager - data is overlay   */
-    DashboardThumbSelected(504),
+    // DashboardThumbSelected(504), No longer sent
     /** Sent to the overlay manager - data is overlay   */
     DashboardRequested(505),
     /** Send to the overlay manager */
@@ -602,6 +609,8 @@ enum class VREventType(@JvmField val i: Int) {
     RoomViewHidden(527),
     /** data is showUi */
     ShowUI(528),
+    /** data is showDevTools */
+    ShowDevTools(529),
 
     Notification_Shown(600),
     Notification_Hidden(601),
@@ -618,6 +627,8 @@ enum class VREventType(@JvmField val i: Int) {
     QuitAcknowledged(703),
     /** The driver has requested that SteamVR shut down */
     DriverRequestedQuit(704),
+    /** A driver or other component wants the user to restart SteamVR */
+    RestartRequested(705),
 
     /**  Sent when the process needs to call VRChaperone()->ReloadInfo() */
     ChaperoneDataHasChanged(800),
@@ -677,6 +688,12 @@ enum class VREventType(@JvmField val i: Int) {
     Compositor_MirrorWindowHidden(1401),
     Compositor_ChaperoneBoundsShown(1410),
     Compositor_ChaperoneBoundsHidden(1411),
+    DisplayDisconnected(1412),
+    DisplayReconnected(1413),
+    /** data is hdcpError */
+    HDCPError(1414),
+    ApplicationNotResponding(1415),
+    ApplicationResumed(1416),
 
     TrackedCamera_StartVideoStream(1500),
     TrackedCamera_StopVideoStream(1501),
@@ -712,6 +729,9 @@ enum class VREventType(@JvmField val i: Int) {
     SpatialAnchors_RequestPoseUpdate(1802),
     /** data is spatialAnchor. sent to specific driver */
     SpatialAnchors_RequestDescriptorUpdate(1803),
+
+    /** user or system initiated generation of a system report. broadcast */
+    SystemReport_Started(1900),
 
     // Vendors are free to expose private events in this reserved region
     VendorSpecific_Reserved_Start(10000),
@@ -814,7 +834,7 @@ enum class DualAnalogWhich {
 }
 
 enum class ShowUiType {
-    ControllerBinding, ManageTrackers, QuickStart, Pairing;
+    ControllerBinding, ManageTrackers, QuickStart, Pairing, Settings;
 
     @JvmField
     val i = ordinal
@@ -824,12 +844,17 @@ enum class ShowUiType {
     }
 }
 
-enum class HiddenAreaMeshType(@JvmField val i: Int) {
+enum class HdcpError {
+    None, LinkLost, Tampered, DeviceRevoked, Unknown;
 
-    Standard(0),
-    Inverse(1),
-    LineLoop(2),
-    Max(3);
+    val i = ordinal
+}
+
+enum class HiddenAreaMeshType {
+    Standard, Inverse, LineLoop, Max;
+
+    @JvmField
+    val i = ordinal
 
     companion object {
         infix fun of(i: Int) = values().first { it.i == i }
@@ -989,6 +1014,7 @@ enum class VRInitError(@JvmField val i: Int) {
     Init_USBServiceBusy(140),
     VRWebHelperStartupFailed(141),
     TrackerManagerInitFailed(142),
+    AlreadyRunning(143),
 
     Driver_Failed(200),
     Driver_Unknown(201),
@@ -1121,6 +1147,8 @@ enum class VRInitError(@JvmField val i: Int) {
 
     companion object {
         infix fun of(i: Int) = values().first { it.i == i }
+        /** Strictly a placeholder */
+        val last = values().last()
     }
 
     /** Returns the name of the enum value for an EVRInitError. This function may be called outside of VR_Init()/VR_Shutdown().

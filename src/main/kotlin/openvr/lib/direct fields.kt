@@ -17,8 +17,7 @@ import kool.Ptr
 import kool.adr
 import kool.cap
 import org.lwjgl.openvr.*
-import org.lwjgl.system.MemoryUtil.memGetFloat
-import org.lwjgl.system.MemoryUtil.memPutFloat
+import org.lwjgl.system.MemoryUtil.*
 import org.lwjgl.vulkan.*
 //import vkk.VkFormat
 //import vkk.VkImage
@@ -385,8 +384,11 @@ val VREventMouse.button: VRMouseButton
 
 val VREventScroll.delta: Vec2
     get() = Vec2(VREventScroll.nxdelta(adr), VREventScroll.nydelta(adr))
-val VREventScroll.repeatCount: Int
-    get() = VREventScroll.nrepeatCount(adr)
+val VREventScroll.unused: Int
+    get() = memGetInt(adr + Vec2.size) // TODO 1.3.20
+/** For scrolling on an overlay with laser mouse, this is the overlay's vertical size relative to the overlay height. Range: [0,1] */
+val VREventScroll.viewportScale: Float
+    get() = memGetFloat(adr + Vec2.size + Int.BYTES) // TODO 1.3.20
 
 
 val VREventTouchPadMove.fingerDown: Boolean

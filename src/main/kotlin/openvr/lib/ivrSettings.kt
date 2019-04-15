@@ -332,6 +332,10 @@ object vrSettings : vrInterface {
             get() = getBool(section, "enableImuFallback")
             set(value) = setBool(section, "enableImuFallback", value)
 
+        var newPairing: Boolean
+            get() = getBool(section, "newPairing")
+            set(value) = setBool(section, "newPairing", value)
+
         var enable: Boolean
             get() = getBool(section, "enable")
             set(value) = setBool(section, "enable", value)
@@ -657,17 +661,21 @@ object vrSettings : vrInterface {
             get() = getBool(section, "arcadeMode")
             set(value) = setBool(section, "arcadeMode", value)
 
-        var webUI: Boolean
-            get() = getBool(section, "webUI")
-            set(value) = setBool(section, "webUI", value)
+        var useWebDashboard: Boolean
+            get() = getBool(section, "useWebDashboard")
+            set(value) = setBool(section, "useWebDashboard", value)
 
-        var webUIDevTools: Boolean
-            get() = getBool(section, "webUIDevTools")
-            set(value) = setBool(section, "webUIDevTools", value)
+        var useWebSettings: Boolean
+            get() = getBool(section, "useWebSettings")
+            set(value) = setBool(section, "useWebSettings", value)
 
-        var webUIDashboard: Boolean
-            get() = getBool(section, "webUIDashboard")
-            set(value) = setBool(section, "webUIDashboard", value)
+        var useWebIPD: Boolean
+            get() = getBool(section, "useWebIPD")
+            set(value) = setBool(section, "useWebIPD", value)
+
+        var useWebPowerMenu: Boolean
+            get() = getBool(section, "useWebPowerMenu")
+            set(value) = setBool(section, "useWebPowerMenu", value)
     }
 
     object modelskins {

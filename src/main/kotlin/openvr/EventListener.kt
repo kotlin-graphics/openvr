@@ -110,7 +110,7 @@ open class EventListener {
             ET.OverlayHidden.i -> overlayHidden()
             ET.DashboardActivated.i -> dashboardActivated()
             ET.DashboardDeactivated.i -> dashboardDeactivated()
-            ET.DashboardThumbSelected.i -> dashboardThumbSelected()
+            //ET.DashboardThumbSelected.i -> dashboardThumbSelected()
             ET.DashboardRequested.i -> dashboardRequested()
             ET.ResetDashboard.i -> resetDashboard()
             ET.RenderToast.i -> renderToast()
@@ -183,13 +183,9 @@ open class EventListener {
             ET.MessageOverlay_Closed.i -> messageOverlay_Closed()
 
             else -> {
-                val eventT = ET.values().find { it.i == event.eventType() }
-
-                if (eventT != null) {
-                    println("WARNING:Eventtype " + eventT.name + "(" + eventT.i + ") is not handled")
-                } else {
-                    println("WARNING:Eventtype(" + event.eventType() + ") is unknown")
-                }
+                ET.values().find { it.i == event.eventType() }?.let { e ->
+                    println("WARNING:Event type ${e.name}(${e.i}) is not handled")
+                } ?: println("WARNING:Event type(${event.eventType}) is unknown")
             }   // None, VendorSpecific_Reserved_Start / End
         }
     }
