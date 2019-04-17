@@ -184,7 +184,7 @@ open class EventListener {
 
             else -> {
                 ET.values().find { it.i == event.eventType() }?.let { e ->
-                    println("WARNING:Event type ${e.name}(${e.i}) is not handled")
+                    println("WARNING:Event type ${e.name} (${e.i}) is not handled")
                 } ?: println("WARNING:Event type(${event.eventType}) is unknown")
             }   // None, VendorSpecific_Reserved_Start / End
         }
