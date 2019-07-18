@@ -3,10 +3,10 @@ package openvr.helloVr_OpenGL
 import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2
 import glm_.vec4.Vec4
-import gln.clear.glClearColorBuffer
-import gln.clear.glClearDepthBuffer
-import gln.debug.GlDebugSeverity
-import gln.debug.glDebugMessageCallback
+import gln.misc.GlDebugSeverity
+import gln.misc.glClearColorBuffer
+import gln.misc.glClearDepthBuffer
+import gln.misc.glDebugMessageCallback
 import openvr.lib.*
 import openvr.lib.VREventType
 import openvr.lib.vrRenderModels.freeNative
@@ -216,6 +216,7 @@ class Application {
         val analogData = vr.InputAnalogActionData()
         if (vrInput.getAnalogActionData(actionAnalongInput, analogData, vr.invalidInputValueHandle) == vrInput.Error.None && analogData.active)
             analogValue.put(analogData.x, analogData.y)
+        analogValue.println("analogValue: ")
 
         rHand[Hand.Left].showController = true
         rHand[Hand.Right].showController = true
@@ -239,9 +240,8 @@ class Application {
                 if (vrInput.getOriginTrackedDeviceInfo(poseData.activeOrigin, originInfo) == vrInput.Error.None
                         && originInfo.trackedDeviceIndex != vr.trackedDeviceIndexInvalid) {
                     val renderModelName = hmd.getStringTrackedDeviceProperty(originInfo.trackedDeviceIndex, TrackedDeviceProperty.RenderModelName_String)
-                    if (renderModelName != rHand[hand].renderModelName) {
+                    if (renderModelName != rHand[hand].renderModelName)
                         rHand[hand].renderModel = findOrLoadRenderModel(renderModelName)
-                    }
                 }
             }
         }

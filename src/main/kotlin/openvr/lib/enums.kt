@@ -1,6 +1,5 @@
 package openvr.lib
 
-import kool.stak
 import org.lwjgl.openvr.VR.VR_GetVRInitErrorAsEnglishDescription
 import org.lwjgl.openvr.VR.VR_GetVRInitErrorAsSymbol
 import org.lwjgl.openvr.VRSystem.*
@@ -848,6 +847,10 @@ enum class HdcpError {
     None, LinkLost, Tampered, DeviceRevoked, Unknown;
 
     val i = ordinal
+
+    companion object {
+        infix fun of(i: Int) = values().first { it.i == i }
+    }
 }
 
 enum class HiddenAreaMeshType {
@@ -1265,6 +1268,8 @@ enum class VRComponentProperty(@JvmField val i: Int) {
         infix fun of(i: Int) = values().first { it.i == i }
     }
 }
+
+infix fun Int.has(property: VRComponentProperty): Boolean = and(property.i) != 0
 
 // ivrextendeddisplay.h
 

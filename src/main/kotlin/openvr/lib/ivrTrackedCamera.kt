@@ -6,7 +6,6 @@ import glm_.vec2.Vec2i
 import kool.adr
 import kool.rem
 import kool.set
-import kool.stak
 import org.lwjgl.PointerBuffer
 import org.lwjgl.openvr.CameraVideoStreamFrameHeader
 import org.lwjgl.openvr.HmdVector2

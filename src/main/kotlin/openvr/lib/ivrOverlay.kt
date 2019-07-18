@@ -8,7 +8,6 @@ import glm_.vec3.Vec3
 import kool.adr
 import kool.rem
 import kool.set
-import kool.stak
 import org.lwjgl.PointerBuffer
 import org.lwjgl.openvr.*
 import org.lwjgl.openvr.VROverlay.*

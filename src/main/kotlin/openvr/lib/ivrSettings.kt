@@ -2,7 +2,6 @@ package openvr.lib
 
 import kool.adr
 import kool.set
-import kool.stak
 import org.lwjgl.openvr.VRSettings.*
 import org.lwjgl.system.MemoryUtil.memASCII
 import org.lwjgl.system.MemoryUtil.memCallocInt

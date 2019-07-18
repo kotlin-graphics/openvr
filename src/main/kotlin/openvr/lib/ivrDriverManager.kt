@@ -1,7 +1,6 @@
 package openvr.lib
 
 import kool.adr
-import kool.stak
 import org.lwjgl.openvr.VRDriverManager.*
 import org.lwjgl.system.MemoryUtil.NULL
 import org.lwjgl.system.MemoryUtil.memASCII

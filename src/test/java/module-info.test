@@ -1,0 +1,2 @@
+--add-reads
+  com.github.kotlin_graphics.openvr=com.github.kotlin_graphics.gln

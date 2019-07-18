@@ -1,7 +1,7 @@
 package openvr.helloVr_OpenGL
 
 import glm_.bool
-import kool.stak
+import openvr.lib.stak
 import org.lwjgl.opengl.*
 import org.lwjgl.opengl.GL20.GL_FRAGMENT_SHADER
 import org.lwjgl.opengl.GL20.GL_VERTEX_SHADER

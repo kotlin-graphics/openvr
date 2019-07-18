@@ -2,7 +2,6 @@ package openvr.lib
 
 import kool.adr
 import kool.rem
-import kool.stak
 import org.lwjgl.openvr.VRIOBuffer.*
 import org.lwjgl.system.MemoryUtil.NULL
 import java.nio.ByteBuffer

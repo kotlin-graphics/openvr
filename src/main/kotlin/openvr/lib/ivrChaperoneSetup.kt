@@ -5,7 +5,6 @@ import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2
 import kool.adr
 import kool.rem
-import kool.stak
 import org.lwjgl.openvr.HmdQuad
 import org.lwjgl.openvr.HmdVector2
 import org.lwjgl.openvr.VRChaperoneSetup

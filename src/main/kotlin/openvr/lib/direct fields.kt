@@ -385,10 +385,10 @@ val VREventMouse.button: VRMouseButton
 val VREventScroll.delta: Vec2
     get() = Vec2(VREventScroll.nxdelta(adr), VREventScroll.nydelta(adr))
 val VREventScroll.unused: Int
-    get() = memGetInt(adr + Vec2.size) // TODO 1.3.20
+    get() = VREventScroll.nunused(adr)
 /** For scrolling on an overlay with laser mouse, this is the overlay's vertical size relative to the overlay height. Range: [0,1] */
 val VREventScroll.viewportScale: Float
-    get() = memGetFloat(adr + Vec2.size + Int.BYTES) // TODO 1.3.20
+    get() = VREventScroll.nviewportscale(adr)
 
 
 val VREventTouchPadMove.fingerDown: Boolean
@@ -544,6 +544,14 @@ val VREventInputBindingLoad.pathUrl: Long
 
 val VREventShowUI.type: ShowUiType
     get() = ShowUiType of VREventShowUI.neType(adr)
+
+
+val VREventShowDevTools.browserIdentifier: Int
+    get() = VREventShowDevTools.nnBrowserIdentifier(adr)
+
+
+val VREventHDCPError.code: HdcpError
+    get() = HdcpError of VREventHDCPError.neCode(adr)
 
 
 val VREventInputActionManifestLoad.pathAppKey: Long
@@ -1114,6 +1122,12 @@ var VRActiveActionSet.restrictedToDevice: VRInputValueHandle
 var VRActiveActionSet.secondaryActionSet: VRActionSetHandle
     get() = VRActiveActionSet.nulSecondaryActionSet(adr)
     set(value) = VRActiveActionSet.nulSecondaryActionSet(adr, value)
+
+/** The priority of this action set relative to other action sets. Any inputs bound to a source (e.g. trackpad, joystick, trigger)
+ *  will disable bindings in other active action sets with a smaller priority. */
+var VRActiveActionSet.priority: Int
+    get() = VRActiveActionSet.nnPriority(adr)
+    set(value) = VRActiveActionSet.nnPriority(adr, value)
 
 
 // Contains summary information about the current skeletal pose

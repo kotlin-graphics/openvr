@@ -2,7 +2,6 @@ package openvr.lib
 
 import glm_.BYTES
 import kool.set
-import kool.stak
 import org.lwjgl.openvr.SpatialAnchorPose
 import org.lwjgl.openvr.VRSpatialAnchors.*
 import org.lwjgl.system.MemoryUtil.*

@@ -2,7 +2,6 @@ package openvr.lib
 
 import glm_.BYTES
 import glm_.vec2.Vec2i
-import kool.stak
 import org.lwjgl.openvr.HmdColor
 import org.lwjgl.openvr.HmdQuad
 import org.lwjgl.openvr.VRChaperone

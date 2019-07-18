@@ -15,8 +15,8 @@ import kool.cap
 import kool.free
 import kool.Buffer
 import kool.IntBuffer
-import kool.stak
 import openvr.lib.VREye
+import openvr.lib.stak
 import openvr.lib.vr
 import org.lwjgl.opengl.GL
 import org.lwjgl.opengl.GL11.*

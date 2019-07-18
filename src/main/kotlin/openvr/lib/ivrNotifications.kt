@@ -1,7 +1,6 @@
 package openvr.lib
 
 import kool.adr
-import kool.stak
 import org.lwjgl.openvr.NotificationBitmap
 import org.lwjgl.openvr.VRNotifications.VRNotifications_RemoveNotification
 import org.lwjgl.openvr.VRNotifications.nVRNotifications_CreateNotification

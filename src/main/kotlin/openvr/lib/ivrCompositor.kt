@@ -3,7 +3,6 @@ package openvr.lib
 import glm_.vec4.Vec4
 import kool.adr
 import kool.cap
-import kool.stak
 import org.lwjgl.PointerBuffer
 import org.lwjgl.openvr.*
 import org.lwjgl.openvr.VRCompositor.*

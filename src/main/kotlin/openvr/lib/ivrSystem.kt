@@ -8,7 +8,6 @@ import glm_.vec4.Vec4
 import kool.adr
 import kool.rem
 import kool.set
-import kool.stak
 import org.lwjgl.openvr.*
 import org.lwjgl.openvr.VRSystem.*
 import org.lwjgl.system.MemoryUtil.*

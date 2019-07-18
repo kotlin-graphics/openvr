@@ -3,7 +3,6 @@ package openvr.lib
 import kool.adr
 import kool.rem
 import kool.set
-import kool.stak
 import org.lwjgl.openvr.VRScreenshots.*
 import org.lwjgl.system.MemoryUtil.*
 import java.nio.IntBuffer

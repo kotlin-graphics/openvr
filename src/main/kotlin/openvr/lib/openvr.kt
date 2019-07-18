@@ -13,7 +13,6 @@ import glm_.vec3.Vec3d
 import glm_.vec4.Vec4
 import kool.Ptr
 import kool.adr
-import kool.stak
 import org.lwjgl.openvr.*
 import org.lwjgl.openvr.VR.*
 import org.lwjgl.system.MemoryUtil.*

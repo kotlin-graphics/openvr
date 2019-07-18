@@ -3,7 +3,7 @@ package openvr.lib
 import glm_.b
 import kool.Adr
 import kool.Ptr
-import kool.stak
+import kool.Stack
 import org.lwjgl.openvr.VR.nVR_IsInterfaceVersionValid
 import org.lwjgl.system.CustomBuffer
 import org.lwjgl.system.MemoryStack
@@ -11,6 +11,8 @@ import org.lwjgl.system.MemoryUtil.memPutByte
 import org.lwjgl.system.Pointer
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KProperty
+
+typealias stak = Stack
 
 interface vrInterface {
 

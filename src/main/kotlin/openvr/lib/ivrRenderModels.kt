@@ -2,7 +2,6 @@ package openvr.lib
 
 import kool.adr
 import kool.set
-import kool.stak
 import org.lwjgl.PointerBuffer
 import org.lwjgl.openvr.*
 import org.lwjgl.openvr.VRRenderModels.*
@@ -61,6 +60,9 @@ object vrRenderModels : vrInterface {
             pError[0] = value.i
         }
 
+    /** In ms */
+    var loadPollingInterval = 1L
+
     /**
      * JVM custom
      *
@@ -75,7 +77,6 @@ object vrRenderModels : vrInterface {
     @JvmOverloads
     fun loadRenderModel(renderModelName: String, pErr: VRVRRenderModelsErrorBuffer = pError): RenderModel? =
             stak {
-
                 val pModel = it.mallocPointer(1)
                 var err: Int
                 while (true) {
@@ -83,14 +84,13 @@ object vrRenderModels : vrInterface {
                     if (err != vrRenderModels.Error.Loading.i)
                         break
 
-                    Thread.sleep(1)
+                    Thread.sleep(loadPollingInterval)
                 }
-
-                if (err != vrRenderModels.Error.None.i) {
-                    pErr[0] = err
-                    null // move on to the next tracked device
-                } else
-                    RenderModel.create(pModel[0])
+                pErr[0] = err // save error in any case
+                when (err) {
+                    vrRenderModels.Error.None.i -> RenderModel.create(pModel[0])
+                    else -> null
+                }
             }
 
     /**
@@ -99,9 +99,18 @@ object vrRenderModels : vrInterface {
      *
      * <p>The resulting render model is valid until {@link VR#VR_ShutdownInternal ShutdownInternal} is called or until {@link #VRRenderModels_FreeRenderModel FreeRenderModel} is called. When the application is finished with
      * the render model it should call {@link #VRRenderModels_FreeRenderModel FreeRenderModel} to free the memory associated with the model.</p>
+     *
+     * Note: Multi-thread unsafe if not passing a pError and reading it from the class property.
      */
-    fun loadRenderModel_Async(renderModelName: String, renderModel: PointerBuffer): Error =
-            stak { Error of nVRRenderModels_LoadRenderModel_Async(it.addressOfAscii(renderModelName), renderModel.adr) }
+    fun loadRenderModel_Async(renderModelName: String, pErr: VRVRRenderModelsErrorBuffer = pError): RenderModel? =
+            stak {
+                val pModel = it.mallocPointer(1)
+                pErr[0] = nVRRenderModels_LoadRenderModel_Async(it.addressOfAscii(renderModelName), pModel.adr)
+                when (pErr[0]) {
+                    vrRenderModels.Error.None.i -> RenderModel.create(pModel[0])
+                    else -> null
+                }
+            }
 
     /** Frees a previously returned render model It is safe to call this on a null ptr. */
     fun RenderModel.freeNative() = nVRRenderModels_FreeRenderModel(adr)
@@ -113,29 +122,32 @@ object vrRenderModels : vrInterface {
      *  Note: Multi-thread unsafe if not passing a pError and reading it from the class property. */
     @JvmOverloads
     fun loadTexture(textureId: TextureId, pErr: VRVRRenderModelsErrorBuffer = pError): RenderModelTextureMap? =
-
             stak {
-
                 val pTexture = it.mallocPointer(1)
                 var err: Int
                 while (true) {
                     err = nVRRenderModels_LoadTexture_Async(textureId, pTexture.adr)
                     if (err != vrRenderModels.Error.Loading.i)
                         break
-
-                    Thread.sleep(1)
+                    Thread.sleep(loadPollingInterval)
                 }
-
-                if (err != vrRenderModels.Error.None.i) {
-                    pErr[0] = err
-                    null // move on to the next tracked device
-                } else
-                    RenderModelTextureMap.create(pTexture[0])
+                pErr[0] = err // save error in any case
+                when (err) {
+                    vrRenderModels.Error.None.i -> RenderModelTextureMap.create(pTexture[0])
+                    else -> null
+                }
             }
 
     /** Loads and returns a texture for use in the application. */
-    fun loadTexture_Async(textureId: TextureId, texture: PointerBuffer): Error =
-            Error of nVRRenderModels_LoadTexture_Async(textureId, texture.adr)
+    fun loadTexture_Async(textureId: TextureId, pErr: VRVRRenderModelsErrorBuffer = pError): RenderModelTextureMap? =
+            stak {
+                val pTexture = it.mallocPointer(1)
+                pErr[0] = nVRRenderModels_LoadTexture_Async(textureId, pTexture.adr)
+                when (pErr[0]) {
+                    vrRenderModels.Error.None.i -> RenderModelTextureMap.create(pTexture[0])
+                    else -> null
+                }
+            }
 
     /** Frees a previously returned texture. It is safe to call this on a null ptr. */
     fun RenderModelTextureMap.freeNative() = nVRRenderModels_FreeTexture(adr)
@@ -181,13 +193,14 @@ object vrRenderModels : vrInterface {
      * available components. If the index is out of range, this function will return 0. Otherwise, it will return the size of the buffer required for the
      * name.
      */
-    fun getComponentName(renderModelName: String, componentIndex: Int): String =
+    fun getComponentName(renderModelName: String, componentIndex: Int): String? =
             stak {
                 val renderModelNameEncoded = it.addressOfAscii(renderModelName)
                 val componentNameLen = nVRRenderModels_GetComponentName(renderModelNameEncoded, componentIndex, NULL, 0)
                 val componentName = it.malloc(componentNameLen)
-                val result = VRRenderModels.nVRRenderModels_GetComponentName(renderModelNameEncoded, componentIndex, componentName.adr, componentNameLen)
-                memASCII(componentName, result - 1)
+                val result = nVRRenderModels_GetComponentName(renderModelNameEncoded, componentIndex, componentName.adr, componentNameLen)
+                if (result == 0) null
+                else memASCII(componentName, result - 1)
             }
 
     /**
@@ -210,14 +223,18 @@ object vrRenderModels : vrInterface {
      * Use this to get the render model name for the specified rendermode/component combination, to be passed to {@link #VRRenderModels_LoadRenderModel_Async LoadRenderModel_Async}. If the component
      * name is out of range, this function will return 0. Otherwise, it will return the size of the buffer required for the name.
      */
-    fun getComponentRenderModelName(renderModelName: String, componentName: String): String =
+    fun getComponentRenderModelName(renderModelName: String, componentName: String): String? =
             stak {
                 val renderModelNameEncoded = it.addressOfAscii(renderModelName)
                 val componentNameEncoded = it.addressOfAscii(componentName)
                 val componentRenderModelNameLen = nVRRenderModels_GetComponentRenderModelName(renderModelNameEncoded, componentNameEncoded, NULL, 0)
-                val componentRenderModelName = it.malloc(componentRenderModelNameLen)
-                val result = nVRRenderModels_GetComponentRenderModelName(renderModelNameEncoded, componentNameEncoded, componentRenderModelName.adr, componentRenderModelNameLen)
-                memASCII(componentRenderModelName, result - 1)
+                if (componentRenderModelNameLen == 0)
+                    null
+                else {
+                    val componentRenderModelName = it.malloc(componentRenderModelNameLen)
+                    val result = nVRRenderModels_GetComponentRenderModelName(renderModelNameEncoded, componentNameEncoded, componentRenderModelName.adr, componentRenderModelNameLen)
+                    memASCII(componentRenderModelName, result - 1)
+                }
             }
 
     /** Use this to query information about the component, as a function of the controller state.

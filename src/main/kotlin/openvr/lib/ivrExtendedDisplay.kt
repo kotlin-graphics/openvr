@@ -3,7 +3,6 @@ package openvr.lib
 import glm_.BYTES
 import glm_.vec2.Vec2i
 import kool.adr
-import kool.stak
 import org.lwjgl.openvr.VRExtendedDisplay.*
 import org.lwjgl.system.MemoryUtil.memGetInt
 import java.nio.IntBuffer

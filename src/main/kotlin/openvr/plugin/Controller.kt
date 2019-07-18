@@ -8,6 +8,7 @@ import org.lwjgl.openvr.TrackedDevicePose
 import org.lwjgl.openvr.VRControllerState
 
 
+@Deprecated("Use the new input system https://github.com/ValveSoftware/openvr/wiki/SteamVR-SteamVR_Input")
 object Controller {
 
     enum class ButtonMask(val i: Long) {
@@ -50,7 +51,7 @@ object Controller {
             since they are sync'd to the input timestamp that caused them to update.    */
         val transform get() = update().run { _transform put _pose.deviceToAbsoluteTracking }
         val velocity get() = update().run { _velocity.put(_pose.velocity.x, _pose.velocity.y, -_pose.velocity.z) }
-        val angularVelocity get() = update().run { _angularVelocity.put(-_pose.angularVelocity.x, -_pose.angularVelocity.y, _pose.angularVelocity.z) }
+        val angularVelocity get() = update().run { _angularVelocity(-_pose.angularVelocity.x, -_pose.angularVelocity.y, _pose.angularVelocity.z) }
         val state get() = update().run { _state }
         val prevState get() = update().run { _prevState }
         val pose get() = update().run { _pose }

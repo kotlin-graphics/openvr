@@ -4,9 +4,9 @@ import glm_.BYTES
 import kool.set
 import kool.adr
 import kool.rem
-import kool.stak
 import org.lwjgl.openvr.*
 import org.lwjgl.openvr.VRInput.*
+import org.lwjgl.system.MemoryUtil
 import org.lwjgl.system.MemoryUtil.*
 import java.io.File
 import java.net.URL
@@ -137,7 +137,7 @@ object vrInput : vrInterface {
         }
     }
 
-    enum class VRInputStringBits(@JvmField val i: Int) {
+    enum class VRInputString(@JvmField val i: Int) {
         Hand(0x01),
         ControllerType(0x02),
         InputSource(0x04),
@@ -255,6 +255,12 @@ object vrInput : vrInterface {
     /**
      * Reads the state of a skeletal action given its handle. TODO more convenient?
      */
+    fun getSkeletalActionData(action: VRActionHandle, actionData: InputSkeletalActionData): Error =
+            Error of nVRInput_GetSkeletalActionData(action, actionData.adr, InputSkeletalActionData.SIZEOF)
+
+    /**
+     * Reads the state of a skeletal action given its handle. TODO more convenient?
+     */
     fun getSkeletalActionData(action: VRActionHandle, actionData: InputSkeletalActionData.Buffer): Error =
             Error of nVRInput_GetSkeletalActionData(action, actionData.adr, InputSkeletalActionData.SIZEOF)
 
@@ -272,8 +278,12 @@ object vrInput : vrInterface {
             }
 
     /** Fills the given array with the index of each bone's parent in the skeleton associated with the given action */
-    fun getBoneHierarchy(action: VRActionHandle, parentIndices: IntBuffer): Error =
-            Error of nVRInput_GetBoneHierarchy(action, parentIndices.adr, parentIndices.rem)
+    fun getBoneHierarchy(action: VRActionHandle, boneCount: Int, pErr: VRInputErrorBuffer = pError): IntArray =
+            stak {
+                val parentIndices = it.nmalloc(Int.BYTES, boneCount * Int.BYTES)
+                pErr[0] = nVRInput_GetBoneHierarchy(action, parentIndices, boneCount)
+                IntArray(boneCount) { memGetInt(parentIndices + it * Int.BYTES) }
+            }
 
     /** JVM Custom
      *
@@ -366,6 +376,10 @@ object vrInput : vrInterface {
     /** Shows the current binding all the actions in the specified action sets. */
     fun showBindingsForActionSet(sets: VRActiveActionSet.Buffer, originToHighlight: VRInputValueHandle): Error =
             Error of nVRInput_ShowBindingsForActionSet(sets.adr, VRActiveActionSet.SIZEOF, sets.rem, originToHighlight)
+
+    /** --------------- Legacy Input ------------------- */
+//    val isUsingLegacyInput: Boolean
+//        get() = VRInput.VRInput_is
 
     override val version: String
         get() = "IVRInput_005"

@@ -6,10 +6,10 @@ import glm_.mat4x4.Mat4
 import glm_.vec3.Vec3
 import glm_.vec3.Vec3i
 import glm_.vec4.Vec4
-import gln.clear.glClearColorBuffer
-import gln.clear.glClearDepthBuffer
 import gln.glf.glf
 import gln.glf.semantic
+import gln.misc.glClearColorBuffer
+import gln.misc.glClearDepthBuffer
 import gln.texture.glBindTexture2d
 import gln.uniform.glUniform
 import gln.vertexArray.glBindVertexArray

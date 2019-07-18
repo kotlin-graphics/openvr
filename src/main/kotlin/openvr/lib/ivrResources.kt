@@ -1,7 +1,6 @@
 package openvr.lib
 
 import kool.adr
-import kool.stak
 import org.lwjgl.openvr.VRResources.nVRResources_GetResourceFullPath
 import org.lwjgl.openvr.VRResources.nVRResources_LoadSharedResource
 import org.lwjgl.system.MemoryUtil.NULL
