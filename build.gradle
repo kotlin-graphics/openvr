@@ -52,7 +52,7 @@ dependencies {
             runtime "org.lwjgl:lwjgl$it:$lwjgl_version:natives-$lwjgl_natives"
     }
 
-    implementation 'com.beust:klaxon:5.0.7'
+    implementation 'com.beust:klaxon:5.0.9'
 }
 
 repositories {

@@ -78,23 +78,22 @@ class Hand(
     /** A transform on the hand to center attached objects on" */
     var objectAttachmentPoint: Transform? = null
 
-//    public Camera noSteamVRFallbackCamera
+    lateinit var noSteamVRFallbackCamera: Camera
     var noSteamVRFallbackMaxDistanceNoItem = 10f
     var noSteamVRFallbackMaxDistanceWithItem = 0.5f
     private var noSteamVRFallbackInteractorDistance = -1f
 
-//    public GameObject renderModelPrefab
+    lateinit var renderModelPrefab: GameObject
     protected val renderModels = ArrayList<RenderModel>()
-//    protected RenderModel mainRenderModel
-//    protected RenderModel hoverhighlightRenderModel
-//
-//    public bool showDebugText = false
-//    public bool spewDebugText = false
-//    public bool showDebugInteractables = false
-//
-//    public struct AttachedObject
-//    {
-//        public GameObject attachedObject
+    protected lateinit var mainRenderModel:  RenderModel
+    protected lateinit var hoverhighlightRenderModel:  RenderModel
+
+    var showDebugText = false
+    var spewDebugText = false
+    var showDebugInteractables = false
+
+    class AttachedObject    {
+        lateinit var attachedObject: GameObject
 //        public Interactable interactable
 //        public Rigidbody attachedRigidbody
 //        public CollisionDetectionMode collisionDetectionMode
@@ -116,10 +115,10 @@ class Hand(
 //        {
 //            return (attachmentFlags & flag) == flag
 //        }
-//    }
-//
+    }
+
 //    private List<AttachedObject> attachedObjects = new List<AttachedObject>()
-//
+
 //    public ReadOnlyCollection<AttachedObject> AttachedObjects
 //    {
 //        get { return attachedObjects.AsReadOnly(); }
