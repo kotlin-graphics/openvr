@@ -22,7 +22,7 @@ object vr {
 
     const val steamVrVersionMajor = 1
     const val steamVrVersionMinor = 3
-    const val steamVrVersionBuild = 20
+    const val steamVrVersionBuild = 22
 
     const val steamVrVersion = "$steamVrVersionMajor.$steamVrVersionMinor.$steamVrVersionBuild beta 00"
 
