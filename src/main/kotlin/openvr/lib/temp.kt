@@ -45,6 +45,16 @@ fun MemoryStack.addressOfAscii(chars: CharSequence, nullTerminated: Boolean = tr
     return adr
 }
 
+fun <R> MemoryStack.asciiAddress(chars: CharSequence, block: (Adr) -> R): R = asciiAddress(chars, true, block)
+fun <R> MemoryStack.asciiAddress(chars: CharSequence, nullTerminated: Boolean, block: (Adr) -> R): R {
+    val adr = nmalloc(1, chars.length + if (nullTerminated) 1 else 0)
+    for (i in chars.indices)
+        memPutByte(adr + i, chars[i].b)
+    if (nullTerminated)
+        memPutByte(adr + chars.length, 0)
+    return block(adr)
+}
+
 inline val <SELF : CustomBuffer<SELF>>CustomBuffer<SELF>.rem
     get() = remaining()
 

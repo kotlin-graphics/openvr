@@ -269,13 +269,14 @@ object vrCompositor : vrInterface {
     val canRenderScene: Boolean
         get() = VRCompositor_CanRenderScene()
 
-    /** Creates a window on the primary monitor to display what is being shown in the headset. */
+    /** Opens the headset view (as either a window or docked widget depending on user's preferences) that displays what the user
+     * sees in the headset. */
     fun showMirrorWindow() = VRCompositor_ShowMirrorWindow()
 
-    /** Closes the mirror window. */
+    /** Closes the headset view, either as a window or docked widget. */
     fun hideMirrorWindow() = VRCompositor_HideMirrorWindow()
 
-    /** Returns true if the mirror window is shown. */
+    /** Returns true if the headset view (either as a window or docked widget) is shown. */
     val isMirrorWindowVisible: Boolean
         get() = VRCompositor_IsMirrorWindowVisible()
 

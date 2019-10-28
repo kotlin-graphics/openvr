@@ -21,8 +21,8 @@ import org.lwjgl.system.MemoryUtil.*
 object vr {
 
     const val steamVrVersionMajor = 1
-    const val steamVrVersionMinor = 4
-    const val steamVrVersionBuild = 18
+    const val steamVrVersionMinor = 5
+    const val steamVrVersionBuild = 17
 
     const val steamVrVersion = "$steamVrVersionMajor.$steamVrVersionMinor.$steamVrVersionBuild beta 00"
 

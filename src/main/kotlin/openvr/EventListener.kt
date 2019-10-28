@@ -31,8 +31,8 @@ open class EventListener {
         left = -1
         right = -1
         for (i in 0 until maxTrackedDeviceCount) {
-            var dc: TrackedDeviceClass = hmd.getTrackedDeviceClass(i)
-            var cr: TrackedControllerRole = hmd.getControllerRoleForTrackedDeviceIndex(i)
+            val dc: TrackedDeviceClass = hmd.getTrackedDeviceClass(i)
+            val cr: TrackedControllerRole = hmd.getControllerRoleForTrackedDeviceIndex(i)
 
             if (dc == TrackedDeviceClass.Controller && hmd.getControllerState(i, states[i])) {
                 if (cr == TrackedControllerRole.LeftHand)

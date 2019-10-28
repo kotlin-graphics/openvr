@@ -689,6 +689,12 @@ object vrSettings : vrInterface {
         val section = "modelskins"
     }
 
+    object driverKeys {
+
+        val enable = "enable"
+        val loadPriority = "loadPriority"
+    }
+
     object webInterface {
 
         val section = "WebInterface"

@@ -211,6 +211,7 @@ enum class TrackedDeviceProperty(@JvmField val i: Int) {
     AdditionalSystemReportData_String(1045),
     /** additional FW components from a device that gets propagated into reports */
     CompositeFirmwareVersion_String(1046),
+    Firmware_RemindUpdate_Bool(1047),
 
     // Properties that are unique to TrackedDeviceClass_HMD
     ReportsTimeSinceVSync_Bool(2000),
@@ -270,6 +271,7 @@ enum class TrackedDeviceProperty(@JvmField val i: Int) {
     NamedIconPathControllerRightDeviceOff_String(2052),
     /** placeholder icon for sensor/base if not yet detected/loaded */
     NamedIconPathTrackingReferenceDeviceOff_String(2053),
+    /** currently no effect. was used to disable HMD pose prediction on MR, which is now done by MR driver setting velocity=0 */
     DoNotApplyPrediction_Bool(2054),
     CameraToHeadTransforms_Matrix34_Array(2055),
     /** custom resolution of compositor calls to IVRSystem::ComputeDistortion   */
@@ -295,6 +297,9 @@ enum class TrackedDeviceProperty(@JvmField val i: Int) {
     /** Prop_NumCameras_Int32-sized array of double[vr::k_unMaxDistortionFunctionParameters] (max size is vr::k_unMaxCameras) */
     CameraDistortionCoefficients_Float_Array(2073),
     ExpectedControllerType_String(2074),
+    /** one of EHmdTrackingStyle */
+    HmdTrackingStyle_Int32(2075),
+    DriverProvidedChaperoneVisibility_Bool(2076),
 
     /** populated by compositor from actual EDID list when available from GPU driver */
     Prop_DisplayAvailableFrameRates_Float_Array(2080),
@@ -422,6 +427,19 @@ enum class TrackedPropertyError(@JvmField val i: Int) {
 
     /** Returns a string that corresponds with the specified property error. The string will be the name of the error enum value for all valid error codes. */
     override fun toString(): String = stak { memASCII(nVRSystem_GetPropErrorNameFromEnum(i)) }
+}
+
+/** Used to drive certain text in the UI when talking about the tracking system for the HMD */
+enum class HmdTrackingStyle {
+    Unknown,
+    /** base stations and lasers */
+    Lighthouse,
+    /** Cameras and LED, Rift 1 style */
+    OutsideInCameras,
+    /** Cameras on HMD looking at the world */
+    InsideOutCameras;
+
+    val i = ordinal
 }
 
 /** Allows the application to control how scene textures are used by the compositor when calling Submit. */
@@ -845,14 +863,12 @@ enum class DualAnalogWhich {
     }
 }
 
-enum class ShowUiType {
-    ControllerBinding, ManageTrackers,
+enum class ShowUiType(@JvmField val i: Int) {
+    ControllerBinding(0), ManageTrackers(1),
     //    QuickStart, Deprecated
-    Pairing,
-    Settings;
-
-    @JvmField
-    val i = ordinal
+    Pairing(3),
+    Settings(4),
+    DebugCommands(5);
 
     companion object {
         infix fun of(i: Int) = values().first { it.i == i }
@@ -1146,6 +1162,8 @@ enum class VRInitError(@JvmField val i: Int) {
     Compositor_CreateTextIndexBuffer(482),
     Compositor_CreateMirrorTextures(483),
     Compositor_CreateLastFrameRenderTexture(484),
+    Compositor_CreateMirrorOverlay(485),
+    Compositor_FailedToCreateVirtualDisplayBackbuffer(486),
 
     VendorSpecific_UnableToConnectToOculusRuntime(1000),
     VendorSpecific_WindowsNotInDevMode(1001),
@@ -1163,6 +1181,7 @@ enum class VRInitError(@JvmField val i: Int) {
     VendorSpecific_HmdFound_UserDataAddressRange(1111),
     VendorSpecific_HmdFound_UserDataError(1112),
     VendorSpecific_HmdFound_ConfigFailedSanityCheck(1113),
+    VendorSpecific_OculusRuntimeBadInstall(1114),
 
     Steam_SteamInstallationNotFound(2000);
 

@@ -1106,6 +1106,17 @@ val InputOriginInfo.renderModelComponentName: String
     get() = InputOriginInfo.nrchRenderModelComponentNameString(adr)
 
 
+
+val InputBindingInfo.devicePathName: String
+    get() = InputBindingInfo.nrchDevicePathNameString(adr)
+val InputBindingInfo.inputPathName: String
+    get() = InputBindingInfo.nrchInputPathNameString(adr)
+val InputBindingInfo.modelName: String
+    get() = InputBindingInfo.nrchModeNameString(adr)
+val InputBindingInfo.slotName: String
+    get() = InputBindingInfo.nrchSlotNameString(adr)
+
+
 /** This is the handle of the action set to activate for this frame. */
 var VRActiveActionSet.actionSet: VRActionSetHandle
     get() = VRActiveActionSet.nulActionSet(adr)

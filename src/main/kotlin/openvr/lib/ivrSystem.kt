@@ -666,5 +666,5 @@ object vrSystem : vrInterface {
     fun acknowledgeQuit_UserPrompt() = VRSystem_AcknowledgeQuit_UserPrompt()
 
     override val version: String
-        get() = "IVRSystem_019"
+        get() = "IVRSystem_020"
 }

@@ -126,7 +126,7 @@ object vrInput : vrInterface {
         }
     }
 
-    enum class VRSummaryType    {
+    enum class VRSummaryType {
         /** The skeletal summary data will match the animated bone transforms for the action. */
         FromAnimation,
 
@@ -259,7 +259,7 @@ object vrInput : vrInterface {
     /** Reads the state of a pose action given its handle for the number of seconds relative to now. This
      * will generally be called with negative times from the fUpdateTime fields in other actions. */
     fun getPoseActionDataRelativeToNow(action: VRActionHandle, origin: TrackingUniverseOrigin, predictedSecondsFromNow: Float, actionData: InputPoseActionData, restrictToDevice: VRInputValueHandle): Error =
-        Error of nVRInput_GetPoseActionDataRelativeToNow(action, origin.i, predictedSecondsFromNow, actionData.adr, InputPoseActionData.SIZEOF, restrictToDevice)
+            Error of nVRInput_GetPoseActionDataRelativeToNow(action, origin.i, predictedSecondsFromNow, actionData.adr, InputPoseActionData.SIZEOF, restrictToDevice)
 
     /** Reads the state of a pose action given its handle. The returned values will match the values returned
      * by the last call to IVRCompositor::WaitGetPoses(). */
@@ -383,6 +383,15 @@ object vrInput : vrInterface {
     fun getOriginTrackedDeviceInfo(origin: VRInputValueHandle, originInfo: InputOriginInfo): Error =
             Error of nVRInput_GetOriginTrackedDeviceInfo(origin, originInfo.adr, InputOriginInfo.SIZEOF)
 
+    /** Retrieves useful information about the bindings for an action
+     *
+     *  @return [JVM] returnedBindingInfoCount
+     *  Note: Multi-thread unsafe if reading the error from the class property. */
+    fun getActionBindingInfo(action: VRActionHandle, originInfo: InputBindingInfo.Buffer): Int =
+            stak.intAddress {
+                pError[0] = nVRInput_GetActionBindingInfo(action, originInfo.adr, InputBindingInfo.SIZEOF, originInfo.rem, it)
+            }
+
     /** Shows the current binding for the action in-headset. */
     fun showActionOrigins(actionSetHandle: VRActionSetHandle, actionHandle: VRActionHandle): Error =
             Error of VRInput_ShowActionOrigins(actionSetHandle, actionHandle)
@@ -396,5 +405,5 @@ object vrInput : vrInterface {
 //        get() = VRInput.VRInput_is
 
     override val version: String
-        get() = "IVRInput_006"
+        get() = "IVRInput_007"
 }

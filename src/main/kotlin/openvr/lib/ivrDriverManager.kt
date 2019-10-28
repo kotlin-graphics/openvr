@@ -27,6 +27,9 @@ object vrDriverManager : vrInterface {
     infix fun getDriverHandle(driverName: String): DriverHandle =
             stak { nVRDriverManager_GetDriverHandle(it.addressOfAscii(driverName)) }
 
+    fun isEnabled(driver: Int): Boolean =
+        VRDriverManager_IsEnabled(driver)
+
     override val version: String
         get() = "IVRDriverManager_001"
 }
