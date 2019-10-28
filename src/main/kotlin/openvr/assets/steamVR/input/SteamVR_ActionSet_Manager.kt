@@ -34,12 +34,13 @@ object SteamVR_ActionSet_Manager {
     fun updateActionStates(force: Boolean = false) {
 
         if (force || Time.frameCount != lastFrameUpdated) {
+
             lastFrameUpdated = Time.frameCount
 
             if (changed)
                 updateActionSetsArray()
 
-            if (rawActiveActionSetArray != null && rawActiveActionSetArray.hasRemaining()) {
+            if (::rawActiveActionSetArray.isInitialized && rawActiveActionSetArray.hasRemaining()) {
                 val err = vrInput updateActionState rawActiveActionSetArray
                 if (err != vrInput.Error.None)
                     System.err.println("[SteamVR] UpdateActionState error: ${vrInput.error}")
@@ -65,6 +66,7 @@ object SteamVR_ActionSet_Manager {
             for (source in sources) {
 
                 if (set readRawSetActive source) {
+
                     val activeSet = VRActiveActionSet.calloc().apply {
                         actionSet = set.handle
                         priority = set readRawSetPriority source
@@ -80,6 +82,7 @@ object SteamVR_ActionSet_Manager {
 
         if (::rawActiveActionSetArray.isInitialized)
             rawActiveActionSetArray.free()
+
         rawActiveActionSetArray = VRActiveActionSet.calloc(activeActionSetsList.size)
         activeActionSetsList.forEachIndexed { i, set -> rawActiveActionSetArray[i] = set }
 

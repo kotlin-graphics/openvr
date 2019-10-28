@@ -5,60 +5,57 @@ import openvr.lib.vrInput
 
 object SteamVR_Input_Source {
 
-    private val inputSourceHandlesBySource = mutableMapOf<SteamVR_Input_Sources, VRInputValueHandle>()
-    private val inputSourceSourcesByHandle = mutableMapOf<VRInputValueHandle, SteamVR_Input_Sources>()
+    val numSources = SteamVR_Input_Sources.values().size
 
-//    private var enumType: KClass<Enum<*>> = SteamVR_Input_Sources::class as KClass<Enum<*>>
-//    private val descriptionType = String
+    private val inputSourceHandlesBySource: LongArray
+    private val inputSourceSourcesByHandle: MutableMap<Long, SteamVR_Input_Sources>
 
-    lateinit var allSources: Array<SteamVR_Input_Sources>
+    private var _allSources: Array<SteamVR_Input_Sources>? = null
 
-    infix fun getHandle(inputSource: SteamVR_Input_Sources) = inputSourceHandlesBySource[inputSource] ?: 0
-    infix fun getSource(handle: VRInputValueHandle) = inputSourceSourcesByHandle[handle] ?: SteamVR_Input_Sources.Any
+    infix fun getHandle(inputSource: SteamVR_Input_Sources): Long =
+            inputSourceHandlesBySource.getOrElse(inputSource.ordinal) { 0 }
 
-//    public static SteamVR_Input_Sources[] GetAllSources()
-//    {
-//        if (allSources == null)
-//            allSources = (SteamVR_Input_Sources[])System.Enum.GetValues(typeof(SteamVR_Input_Sources));
-//
-//        return allSources;
-//    }
-//
-//    private static string GetPath(string inputSourceEnumName)
-//    {
-//        return ((DescriptionAttribute)enumType.GetMember(inputSourceEnumName)[0].GetCustomAttributes(descriptionType, false)[0]).Description;
-//    }
+    infix fun getSource(handle: Long): SteamVR_Input_Sources =
+            inputSourceSourcesByHandle[handle] ?: SteamVR_Input_Sources.Any
 
-    fun initialize() {
+    val allSources: Array<SteamVR_Input_Sources>
+        get() {
+            if (_allSources == null)
+                _allSources = SteamVR_Input_Sources.values()
+
+            return _allSources!!
+        }
+
+    private fun getPath(inputSourceEnumName: String): String =
+            SteamVR_Input_Sources.valueOf(inputSourceEnumName).description
+
+    init {
+
         val allSourcesList = ArrayList<SteamVR_Input_Sources>()
-//        val enumNames = enumType.java.enumConstants.map { it.name }
-        inputSourceHandlesBySource.clear()
-        inputSourceSourcesByHandle.clear()
+        val enumNames = SteamVR_Input_Sources.values().map { it.name }
+        inputSourceHandlesBySource = LongArray(enumNames.size)
+        inputSourceSourcesByHandle = mutableMapOf()
 
-        val enums = SteamVR_Input_Sources.values()
+        for (enumIndex in enumNames.indices) {
 
-        for (enumIndex in enums.indices)        {
-
-            val enum = enums[enumIndex]
-            val path = enum.description
+            val path = getPath(enumNames[enumIndex])
 
             val handle = vrInput.getInputSourceHandle(path)
 
             if (vrInput.error != vrInput.Error.None)
-                System.err.println("""[SteamVR] getInputSourceHandle ($path) error: ${vrInput.error}""")
+                System.err.println("[SteamVR] getInputSourceHandle (" + path + ") error: " + vrInput.error)
 
-            if (enum == SteamVR_Input_Sources.Any) { //todo: temporary hack
-                inputSourceHandlesBySource[enum] = 0
-                inputSourceSourcesByHandle[0] = enum
-            }
-            else {
-                inputSourceHandlesBySource[enum] = handle
-                inputSourceSourcesByHandle[handle] = enum
+            if (enumNames[enumIndex] == SteamVR_Input_Sources.Any.name) { //todo: temporary hack
+                inputSourceHandlesBySource[enumIndex] = 0
+                inputSourceSourcesByHandle[0] = SteamVR_Input_Sources.values()[enumIndex]
+            } else {
+                inputSourceHandlesBySource[enumIndex] = handle
+                inputSourceSourcesByHandle[handle] = SteamVR_Input_Sources.values()[enumIndex]
             }
 
-            allSourcesList += enum
+            allSourcesList += SteamVR_Input_Sources.values()[enumIndex]
         }
 
-        allSourcesList.toArray(allSources)
+        allSourcesList.toArray(_allSources!!)
     }
 }

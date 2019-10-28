@@ -84,10 +84,6 @@ class SteamVR_Behaviour_Skeleton {
     var onTrackingChangedEvent: SteamVR_Behaviour_Skeleton_TrackingChangeHandler? = null
 
 
-    protected var blendPoser: SteamVR_Skeleton_Poser? = null
-    protected var blendSnapshot: SteamVR_Skeleton_PoseSnapshot? = null
-
-
     /** Can be set to mirror the bone data across the x axis
      *  "Is this rendermodel a mirror of another one?" */
     lateinit var mirroring: MirrorType
@@ -106,6 +102,13 @@ class SteamVR_Behaviour_Skeleton {
     /** Is the skeleton action bound? */
     val skeletonAvailable: Boolean
         get() = skeletonAction!!.activeBinding
+
+
+    /** The current skeletonPoser we're getting pose data from */
+    protected var blendPoser: SteamVR_Skeleton_Poser? = null
+    /** The current pose snapshot */
+    protected var blendSnapshot: SteamVR_Skeleton_PoseSnapshot? = null
+
 
     /** @Returns whether this action is bound and the action set is active */
     val isActive: Boolean
@@ -260,11 +263,28 @@ class SteamVR_Behaviour_Skeleton {
      *      Full: Body part location can be measured directly throughout the entire range of motion of the body part.
      *          Examples include hi-end mocap systems, or gloves that measure the rotation of each finger segment. */
     val skeletalTrackingLevel: vrInput.VRSkeletalTrackingLevel
-        get() = skeletonAction!!.skeletalTrackingLevel
+        get() = when {
+            skeletonAvailable -> skeletonAction!!.skeletalTrackingLevel
+            else -> vrInput.VRSkeletalTrackingLevel.Estimated
+        }
 
     /** @Returns true if we are in the process of blending the skeletonBlend field (between animation and bone data) */
 //    val isBlending: Boolean
 //        get() = blendRoutine != null
+
+    /*
+        public float predictedSecondsFromNow
+        {
+            get
+            {
+                return skeletonAction.predictedSecondsFromNow;
+            }
+            set
+            {
+                skeletonAction.predictedSecondsFromNow = value;
+            }
+        }
+        */
 
     val actionSet: SteamVR_ActionSet?
         get() = skeletonAction!!.actionSet
@@ -334,8 +354,11 @@ class SteamVR_Behaviour_Skeleton {
             updatePose()
 
         blendPoser?.let {
-            if (skeletonBlend < 1)
-                (blendSnapshot ?: it.getBlendedPose(this)).copyFrom(it.getBlendedPose(this))
+            if (skeletonBlend < 1) {
+                if (blendSnapshot == null)
+                    blendSnapshot = it.getBlendedPose(this)
+                blendSnapshot = it.getBlendedPose(this)
+            }
         }
 
         if (rangeOfMotionBlendRoutine == null) {
@@ -372,7 +395,7 @@ class SteamVR_Behaviour_Skeleton {
     /** Blend from the current skeletonBlend amount to full bone data. (skeletonBlend = 1)
      *  @param overTime: How long you want the blend to take (in seconds) */
     fun blendToSkeleton(overTime: Float = 0.1f) {
-        blendSnapshot = blendPoser!!.getBlendedPose(this)
+        blendPoser?.let { blendSnapshot = it.getBlendedPose(this) }
         blendPoser = null
         blendTo(1f, overTime)
     }
@@ -469,16 +492,17 @@ class SteamVR_Behaviour_Skeleton {
 //        }
     }
 
-//    private Vector3[] oldROMPositionBuffer = new Vector3[SteamVR_Action_Skeleton.numBones];
-//    private Vector3[] newROMPositionBuffer = new Vector3[SteamVR_Action_Skeleton.numBones];
-//    private Quaternion[] oldROMRotationBuffer = new Quaternion[SteamVR_Action_Skeleton.numBones];
-//    private Quaternion[] newROMRotationBuffer = new Quaternion[SteamVR_Action_Skeleton.numBones]
-
     protected suspend fun doRangeOfMotionBlend(oldRangeOfMotion: VRSkeletalMotionRange,
                                                newRangeOfMotion: VRSkeletalMotionRange, overTime: Float) {
         TODO()
 //        float startTime = Time . time
 //                float endTime = startTime +overTime
+//
+//        Vector3[] oldBonePositions;
+//        Quaternion[] oldBoneRotations;
+//
+//        Vector3[] newBonePositions;
+//        Quaternion[] newBoneRotations;
 //
 //                while (Time.time < endTime) {
 //                    `yield` return null
@@ -487,30 +511,30 @@ class SteamVR_Behaviour_Skeleton {
 //                    if (skeletonBlend > 0) {
 //                        skeletonAction.SetRangeOfMotion(oldRangeOfMotion)
 //                        skeletonAction.UpdateValueWithoutEvents()
-//                        CopyBonePositions(oldROMPositionBuffer);
-//                        CopyBoneRotations(oldROMRotationBuffer);
+//                        oldBonePositions = (Vector3[])GetBonePositions().Clone();
+//                        oldBoneRotations = (Quaternion[])GetBoneRotations().Clone();
 //
 //                        skeletonAction.SetRangeOfMotion(newRangeOfMotion)
 //                        skeletonAction.UpdateValueWithoutEvents()
-//                        CopyBonePositions(newROMPositionBuffer);
-//                        CopyBoneRotations(newROMRotationBuffer)
+//                        newBonePositions = GetBonePositions();
+//                        newBoneRotations = GetBoneRotations()
 //
 //                        for (int boneIndex = 0; boneIndex < bones.Length; boneIndex++)
 //                        {
 //                            if (bones[boneIndex] == null)
 //                                continue
 //
-//                            if (SteamVR_Utils.IsValid(newROMRotationBuffer[boneIndex]) == false || SteamVR_Utils.IsValid(oldROMRotationBuffer[boneIndex]) == false) {
+//                            if (SteamVR_Utils.IsValid(newBoneRotations[boneIndex]) == false || SteamVR_Utils.IsValid(oldBoneRotations[boneIndex]) == false) {
 //                                continue
 //                            }
 //
-//                            Vector3 blendedRangeOfMotionPosition = Vector3 . Lerp (oldROMPositionBuffer[boneIndex], newROMPositionBuffer[boneIndex], lerp)
-//                            Quaternion blendedRangeOfMotionRotation = Quaternion . Lerp (oldROMRotationBuffer[boneIndex], newROMRotationBuffer[boneIndex], lerp)
+//                            Vector3 blendedRangeOfMotionPosition = Vector3 . Lerp (oldBonePositions[boneIndex], newBonePositions[boneIndex], lerp)
+//                            Quaternion blendedRangeOfMotionRotation = Quaternion . Lerp (oldBoneRotations[boneIndex], newBoneRotations[boneIndex], lerp)
 //
 //                            if (skeletonBlend < 1) {
 //                                if (blendPoser != null) {
 //                                    SetBonePosition(boneIndex, Vector3.Lerp(blendSnapshot.bonePositions[boneIndex], blendedRangeOfMotionPosition, skeletonBlend))
-//                                    SetBoneRotation(boneIndex, Quaternion.Lerp(blendSnapshot.boneRotations[boneIndex], blendedRangeOfMotionRotation, skeletonBlend))
+//                                    SetBoneRotation(boneIndex, Quaternion.Lerp(GetBlendPoseForBone(boneIndex, blendedRangeOfMotionRotation), blendedRangeOfMotionRotation, skeletonBlend))
 //                                } else {
 //                                    SetBonePosition(boneIndex, Vector3.Lerp(bones[boneIndex].localPosition, blendedRangeOfMotionPosition, skeletonBlend))
 //                                    SetBoneRotation(boneIndex, Quaternion.Lerp(bones[boneIndex].localRotation, blendedRangeOfMotionRotation, skeletonBlend))
@@ -531,13 +555,14 @@ class SteamVR_Behaviour_Skeleton {
 //        rangeOfMotionBlendRoutine = null
     }
 
-    private val bonePositionBuffer = Array(SteamVR_Action_Skeleton.numBones) { Vec3() }
-    private val boneRotationBuffer = Array(SteamVR_Action_Skeleton.numBones) { Quat() }
+    //why does this exist
+    protected fun getBlendPoseForBone(boneIndex: Int, skeletonRotation: Quat): Quat =
+            blendSnapshot!!.boneRotations[boneIndex]
 
-    protected fun updateSkeletonTransforms() {
+    fun updateSkeletonTransforms() {
 
-        copyBonePositions(bonePositionBuffer)
-        copyBoneRotations(boneRotationBuffer)
+        val bonePositions = getBonePositions()
+        val boneRotations = getBoneRotations()
 
         if (skeletonBlend <= 0)
             blendPoser?.let {
@@ -548,17 +573,19 @@ class SteamVR_Behaviour_Skeleton {
 
                     if ((boneIndex == JointIndex.wrist.i && mainPose!!.ignoreWristPoseData) ||
                             (boneIndex == JointIndex.root.i && mainPose!!.ignoreRootPoseData)) {
-                        setBonePosition(boneIndex, bonePositionBuffer[boneIndex])
-                        setBoneRotation(boneIndex, boneRotationBuffer[boneIndex])
+                        setBonePosition(boneIndex, bonePositions[boneIndex])
+                        setBoneRotation(boneIndex, boneRotations[boneIndex])
                     } else {
+                        val poseRotation = getBlendPoseForBone(boneIndex, boneRotations[boneIndex])
                         setBonePosition(boneIndex, blendSnapshot!!.bonePositions[boneIndex])
-                        setBoneRotation(boneIndex, blendSnapshot!!.boneRotations[boneIndex])
+                        setBoneRotation(boneIndex, poseRotation)
                     }
                 }
             } ?: run {
                 for (boneIndex in bones.indices) {
+                    val poseRotation = getBlendPoseForBone(boneIndex, boneRotations[boneIndex])
                     setBonePosition(boneIndex, blendSnapshot!!.bonePositions[boneIndex])
-                    setBoneRotation(boneIndex, blendSnapshot!!.boneRotations[boneIndex])
+                    setBoneRotation(boneIndex, poseRotation)
                 }
             }
         else if (skeletonBlend >= 1) {
@@ -567,8 +594,8 @@ class SteamVR_Behaviour_Skeleton {
                 if (bones[boneIndex] == null)
                     continue
 
-                setBonePosition(boneIndex, bonePositionBuffer[boneIndex])
-                setBoneRotation(boneIndex, boneRotationBuffer[boneIndex])
+                setBonePosition(boneIndex, bonePositions[boneIndex])
+                setBoneRotation(boneIndex, boneRotations[boneIndex])
             }
         } else {
             for (boneIndex in bones.indices) {
@@ -582,20 +609,22 @@ class SteamVR_Behaviour_Skeleton {
 
                         if ((boneIndex == JointIndex.wrist.i && mainPose!!.ignoreWristPoseData) ||
                                 (boneIndex == JointIndex.root.i && mainPose!!.ignoreRootPoseData)) {
-                            setBonePosition(boneIndex, bonePositionBuffer[boneIndex])
-                            setBoneRotation(boneIndex, boneRotationBuffer[boneIndex])
+                            setBonePosition(boneIndex, bonePositions[boneIndex])
+                            setBoneRotation(boneIndex, boneRotations[boneIndex])
                         } else {
-                            setBonePosition(boneIndex, glm.mix(blendSnapshot!!.bonePositions[boneIndex], bonePositionBuffer[boneIndex], skeletonBlend))
-                            setBoneRotation(boneIndex, glm.lerp(blendSnapshot!!.boneRotations[boneIndex], boneRotationBuffer[boneIndex], skeletonBlend))
+                            //Quaternion poseRotation = GetBlendPoseForBone(boneIndex, boneRotations[boneIndex]);
+                            setBonePosition(boneIndex, glm.mix(blendSnapshot!!.bonePositions[boneIndex], bonePositions[boneIndex], skeletonBlend))
+                            setBoneRotation(boneIndex, glm.lerp(blendSnapshot!!.boneRotations[boneIndex], boneRotations[boneIndex], skeletonBlend))
+                            //SetBoneRotation(boneIndex, GetBlendPoseForBone(boneIndex, boneRotations[boneIndex]));
                         }
                     }
                     blendSnapshot == null -> {
-                        setBonePosition(boneIndex, glm.mix(bones[boneIndex]!!.localPosition, bonePositionBuffer[boneIndex], skeletonBlend))
-                        setBoneRotation(boneIndex, glm.lerp(bones[boneIndex]!!.localRotation, boneRotationBuffer[boneIndex], skeletonBlend))
+                        setBonePosition(boneIndex, glm.mix(bones[boneIndex]!!.localPosition, bonePositions[boneIndex], skeletonBlend))
+                        setBoneRotation(boneIndex, glm.lerp(bones[boneIndex]!!.localRotation, boneRotations[boneIndex], skeletonBlend))
                     }
                     else -> {
-                        setBonePosition(boneIndex, glm.mix(blendSnapshot!!.bonePositions[boneIndex], bonePositionBuffer[boneIndex], skeletonBlend))
-                        setBoneRotation(boneIndex, glm.lerp(blendSnapshot!!.boneRotations[boneIndex], boneRotationBuffer[boneIndex], skeletonBlend))
+                        setBonePosition(boneIndex, glm.mix(blendSnapshot!!.bonePositions[boneIndex], bonePositions[boneIndex], skeletonBlend))
+                        setBoneRotation(boneIndex, glm.lerp(blendSnapshot!!.boneRotations[boneIndex], boneRotations[boneIndex], skeletonBlend))
                     }
                 }
             }
@@ -606,12 +635,12 @@ class SteamVR_Behaviour_Skeleton {
         onBoneTransformsUpdatedEvent?.invoke(this, inputSource!!)
     }
 
-    protected fun setBonePosition(boneIndex: Int, localPosition: Vec3) {
+    fun setBonePosition(boneIndex: Int, localPosition: Vec3) {
         if (!onlySetRotations) //ignore position sets if we're only setting rotations
             bones[boneIndex]!!.localPosition put localPosition
     }
 
-    protected fun setBoneRotation(boneIndex: Int, localRotation: Quat) =
+    fun setBoneRotation(boneIndex: Int, localRotation: Quat) =
             bones[boneIndex]!!.localRotation put localRotation
 
     /** Gets the transform for a bone by the joint index. Joint indexes specified in: SteamVR_Skeleton_JointIndexes
@@ -640,44 +669,31 @@ class SteamVR_Behaviour_Skeleton {
         else -> bones[joint]!!.rotation
     }
 
-    protected fun copyBonePositions(positionBuffer: Array<Vec3>) {
-        if (skeletonAvailable) {
+    protected fun getBonePositions(): Array<Vec3> = when {
+        skeletonAvailable -> {
             val rawSkeleton = skeletonAction!!.getBonePositions()
-
             if (mirroring == MirrorType.LeftToRight || mirroring == MirrorType.RightToLeft)
-                for (boneIndex in positionBuffer.indices)
-                    mirrorBonePosition(rawSkeleton[boneIndex], positionBuffer[boneIndex], boneIndex)
-            else
-                for (i in rawSkeleton.indices)
-                    positionBuffer[i] put rawSkeleton[i] // ~ rawSkeleton.CopyTo(positionBuffer, 0)
-        } else { //fallback to getting skeleton pose from skeletonPoser
-            fallbackPoser?.let {
-                val pos = it.getBlendedPose(skeletonAction!!, inputSource!!).bonePositions
-                for (i in pos.indices)
-                    positionBuffer[i] put pos[i]
-            }
-                    ?: throw Error("Skeleton Action is not bound, and you have not provided a fallback SkeletonPoser. Please create one to drive hand animation when no skeleton data is available.")
+                for (boneIndex in rawSkeleton.indices)
+                    rawSkeleton[boneIndex] = mirrorPosition(boneIndex, rawSkeleton[boneIndex])
+            rawSkeleton
         }
+        //fallback to getting skeleton pose from skeletonPoser
+        else -> fallbackPoser?.getBlendedPose(skeletonAction!!, inputSource!!)?.bonePositions
+                ?: throw Error("Skeleton Action is not bound, and you have not provided a fallback SkeletonPoser. Please create one to drive hand animation when no skeleton data is available.")
     }
 
-    protected fun copyBoneRotations(rotationBuffer: Array<Quat>) {
-        if (skeletonAvailable) {
+    protected fun getBoneRotations(): Array<Quat> = when {
+        skeletonAvailable -> {
             val rawSkeleton = skeletonAction!!.getBoneRotations()
 
             if (mirroring == MirrorType.LeftToRight || mirroring == MirrorType.RightToLeft)
-                for (boneIndex in rotationBuffer.indices)
-                    mirrorBoneRotation(rawSkeleton[boneIndex], rotationBuffer[boneIndex], boneIndex)
-            else
-                for (i in rotationBuffer.indices)
-                    rotationBuffer[i] put rawSkeleton[i] // ~ rawSkeleton.CopyTo(rotationBuffer, 0)
-        } else { //fallback to getting skeleton pose from skeletonPoser
-            fallbackPoser?.let {
-                val rot = it.getBlendedPose(skeletonAction!!, inputSource!!).boneRotations
-                for (i in rot.indices)
-                    rotationBuffer[i] = rot[i]
-            }
-                    ?: throw Error("Skeleton Action is not bound, and you have not provided a fallback SkeletonPoser. Please create one to drive hand animation when no skeleton data is available.")
+                for (boneIndex in rawSkeleton.indices)
+                    rawSkeleton[boneIndex] = mirrorRotation(boneIndex, rawSkeleton[boneIndex])
+            rawSkeleton
         }
+        //fallback to getting skeleton pose from skeletonPoser
+        else -> fallbackPoser?.getBlendedPose(skeletonAction!!, inputSource!!)?.boneRotations
+                ?: throw Error("Skeleton Action is not bound, and you have not provided a fallback SkeletonPoser. Please create one to drive hand animation when no skeleton data is available.")
     }
 
     protected fun updatePose() {
@@ -759,10 +775,21 @@ class SteamVR_Behaviour_Skeleton {
 //            Debug.LogError("<b>[SteamVR Input]</b> Unable to get the reference transform for " + inputSource.ToString() + ". Please make sure SteamVR is open and both controllers are connected.")
 //        }
 //
+//        if (mirroring == MirrorType.LeftToRight || mirroring == MirrorType.RightToLeft)
+//        {
 //        for (int boneIndex = 0; boneIndex < transforms.Length; boneIndex++)
 //        {
-//            bones[boneIndex].localPosition = transforms[boneIndex].pos
-//            bones[boneIndex].localRotation = transforms[boneIndex].rot
+//            bones[boneIndex].localPosition = MirrorPosition(boneIndex, transforms[boneIndex].pos);
+//            bones[boneIndex].localRotation = MirrorRotation(boneIndex, transforms[boneIndex].rot);
+//        }
+//        }
+//        else
+//        {
+//            for (int boneIndex = 0; boneIndex < transforms.Length; boneIndex++)
+//            {
+//                bones[boneIndex].localPosition = transforms[boneIndex].pos;
+//                bones[boneIndex].localRotation = transforms[boneIndex].rot;
+//            }
 //        }
 //
 //        if (temporarySession)
@@ -771,31 +798,21 @@ class SteamVR_Behaviour_Skeleton {
 
     companion object {
 
-        fun mirrorBonePosition(source: Vec3, dest: Vec3, boneIndex: Int) {
-            if (boneIndex == JointIndex.wrist.i || isMetacarpal(boneIndex)) {
-                dest.x = -source.x
-                dest.y = source.y
-                dest.z = source.z
-            } else if (boneIndex != JointIndex.root.i) {
-                dest.x = -source.x
-                dest.y = -source.y
-                dest.z = -source.z
-            } else
-                dest put source
+        fun mirrorPosition(boneIndex: Int, rawPosition: Vec3): Vec3 = when {
+            boneIndex == JointIndex.wrist.i || isMetacarpal(boneIndex) -> rawPosition.times(-1, 1, 1)
+            boneIndex != JointIndex.root.i -> rawPosition.negate()
+            else -> Vec3(rawPosition)
         }
 
         private val rightFlipAngle = glm.angleAxis(180.rad, Vec3(1, 0, 0))
 
-        fun mirrorBoneRotation(source: Quat, dest: Quat, boneIndex: Int) {
-            if (boneIndex == JointIndex.wrist.i) {
-                dest.x = source.x
-                dest.y = source.y * -1
-                dest.z = source.z * -1
-                dest.w = source.w
-            } else if (isMetacarpal(boneIndex))
-                dest put (rightFlipAngle * source)
-            else
-                dest put source
+        fun mirrorRotation(boneIndex: Int, rawRotation: Quat): Quat = when {
+            boneIndex == JointIndex.wrist.i -> Quat(rawRotation).apply {
+                y *= -1
+                z *= -1
+            }
+            isMetacarpal(boneIndex) -> rightFlipAngle * rawRotation
+            else -> Quat(rawRotation)
         }
 
         protected fun isMetacarpal(boneIndex: Int): Boolean =

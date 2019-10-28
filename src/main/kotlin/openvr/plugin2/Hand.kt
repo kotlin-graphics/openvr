@@ -110,6 +110,7 @@ class Hand(
 //        public Vector3 easeSourcePosition
 //        public Quaternion easeSourceRotation
 //        public float attachTime
+//        public AllowTeleportWhileAttachedToHand allowTeleportWhileAttachedToHand;
 //
 //        public bool HasAttachFlag(AttachmentFlags flag)
 //        {
@@ -226,6 +227,16 @@ class Hand(
 //            }
 //
 //            return null
+//        }
+//    }
+//
+//    public AllowTeleportWhileAttachedToHand currentAttachedTeleportManager
+//    {
+//        get
+//        {
+//            if (currentAttachedObjectInfo.HasValue)
+//                return currentAttachedObjectInfo.Value.allowTeleportWhileAttachedToHand;
+//            return null;
 //        }
 //    }
 //
@@ -382,6 +393,7 @@ class Hand(
 //
 //        attachedObject.attachedObject = objectToAttach
 //        attachedObject.interactable = objectToAttach.GetComponent<Interactable>()
+//        attachedObject.allowTeleportWhileAttachedToHand = objectToAttach.GetComponent<AllowTeleportWhileAttachedToHand>();
 //        attachedObject.handAttachmentPointTransform = this.transform
 //
 //        if (attachedObject.interactable != null) {
@@ -748,6 +760,11 @@ class Hand(
 //        if (!playerInstance) {
 //            Debug.LogError("<b>[SteamVR Interaction]</b> No player instance found in Hand Start()")
 //        }
+//
+//        if (this.gameObject.layer == 0)
+//        Debug.LogWarning("<b>[SteamVR Interaction]</b> Hand is on default layer. This puts unnecessary strain on hover checks as it is always true for hand colliders (which are then ignored).");
+//        else
+//        hoverLayerMask &= ~(1 << this.gameObject.layer); //ignore self for hovering
 //
 //        // allocate array for colliders
 //        overlappingColliders = new Collider [ColliderArraySize]

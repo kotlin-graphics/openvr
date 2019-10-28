@@ -157,7 +157,7 @@ object SteamVR_Input {
         startupFrame = Time.frameCount
 
         SteamVR_ActionSet_Manager.initialize()
-        SteamVR_Input_Source.initialize()
+//        SteamVR_Input_Source.initialize()
 
         actions.forEach { it.initialize(true) }
         actionSets.forEach { it.initialize(true) }

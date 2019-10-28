@@ -267,21 +267,15 @@ class SteamVR_ActionSet_Data : ISteamVR_ActionSet {
 
     override var handle: VRActionHandle = 0
 
-    protected val rawSetActive = mutableMapOf<SteamVR_Input_Sources, Boolean>()
+    protected val rawSetActive = BooleanArray(SteamVR_Input_Source.numSources)
 
-    protected val rawSetLastChanged = mutableMapOf<SteamVR_Input_Sources, Float>()
+    protected val rawSetLastChanged = FloatArray(SteamVR_Input_Source.numSources)
 
-    protected val rawSetPriority = mutableMapOf<SteamVR_Input_Sources, Int>()
+    protected val rawSetPriority = IntArray(SteamVR_Input_Source.numSources)
 
     protected var initialized = false
 
-    fun preInitialize() {
-        for (source in SteamVR_Input_Source.allSources) {
-            rawSetActive[source] = false
-            rawSetLastChanged[source] = 0f
-            rawSetPriority[source] = 0
-        }
-    }
+    fun preInitialize() {}
 
     fun finishPreInitialize() {
         val allActionsList = ArrayList<SteamVR_Action>()
@@ -339,7 +333,7 @@ class SteamVR_ActionSet_Data : ISteamVR_ActionSet {
      *
      *  @param source: The device to check. Any means all devices here (not left or right, but all) */
     override fun isActive(source: SteamVR_Input_Sources): Boolean = when {
-        initialized -> rawSetActive[source]!! || rawSetActive[SteamVR_Input_Sources.Any]!!
+        initialized -> rawSetActive[source.ordinal] || rawSetActive[0]
         else -> false
     }
 
@@ -350,7 +344,7 @@ class SteamVR_ActionSet_Data : ISteamVR_ActionSet {
      *
      *  @param source: The device to check. Any means all devices here (not left or right, but all) */
     override fun getTimeLastChanged(source: SteamVR_Input_Sources): Float = when {
-        initialized -> rawSetLastChanged[source]!!
+        initialized -> rawSetLastChanged[source.ordinal]
         else -> 0f
     }
 
@@ -373,21 +367,23 @@ class SteamVR_ActionSet_Data : ISteamVR_ActionSet {
      *      Any if you want to activate for everything */
     override fun activate(activateForSource: SteamVR_Input_Sources, priority: Int, disableAllOtherActionSets: Boolean) {
 
+        val sourceIndex = activateForSource.ordinal
+
         if (disableAllOtherActionSets)
             SteamVR_ActionSet_Manager.disableAllActionSets()
 
-        if (rawSetActive[activateForSource] == false) {
-            rawSetActive[activateForSource] = true
+        if (!rawSetActive[sourceIndex]) {
+            rawSetActive[sourceIndex] = true
             SteamVR_ActionSet_Manager.setChanged()
 
-            rawSetLastChanged[activateForSource] = Time.realtimeSinceStartup
+            rawSetLastChanged[sourceIndex] = Time.realtimeSinceStartup
         }
 
-        if (rawSetPriority[activateForSource] != priority) {
-            rawSetPriority[activateForSource] = priority
+        if (rawSetPriority[sourceIndex] != priority) {
+            rawSetPriority[sourceIndex] = priority
             SteamVR_ActionSet_Manager.setChanged()
 
-            rawSetLastChanged[activateForSource] = Time.realtimeSinceStartup
+            rawSetLastChanged[sourceIndex] = Time.realtimeSinceStartup
         }
     }
 
@@ -397,13 +393,15 @@ class SteamVR_ActionSet_Data : ISteamVR_ActionSet {
     /** Deactivate the action set so its actions can no longer be called */
     override fun deactivate(forSource: SteamVR_Input_Sources) {
 
-        if (rawSetActive[forSource] != false) {
-            rawSetLastChanged[forSource] = Time.realtimeSinceStartup
+        val sourceIndex = forSource.ordinal
+
+        if (rawSetActive[sourceIndex]) {
+            rawSetLastChanged[sourceIndex] = Time.realtimeSinceStartup
             SteamVR_ActionSet_Manager.setChanged()
         }
 
-        rawSetActive[forSource] = false
-        rawSetPriority[forSource] = 0
+        rawSetActive[sourceIndex] = false
+        rawSetPriority[sourceIndex] = 0
     }
 
     private var cachedShortName: String? = null
@@ -444,11 +442,11 @@ class SteamVR_ActionSet_Data : ISteamVR_ActionSet {
 
     fun hideBindingHints() = vrInput.showBindingsForActionSet(emptySetCache, 0)
 
-    override fun readRawSetActive(inputSource: SteamVR_Input_Sources): Boolean = rawSetActive[inputSource]!!
+    override fun readRawSetActive(inputSource: SteamVR_Input_Sources): Boolean = rawSetActive[inputSource.ordinal]
 
-    override fun readRawSetLastChanged(inputSource: SteamVR_Input_Sources): Float = rawSetLastChanged[inputSource]!!
+    override fun readRawSetLastChanged(inputSource: SteamVR_Input_Sources): Float = rawSetLastChanged[inputSource.ordinal]
 
-    override fun readRawSetPriority(inputSource: SteamVR_Input_Sources): Int = rawSetPriority[inputSource]!!
+    override fun readRawSetPriority(inputSource: SteamVR_Input_Sources): Int = rawSetPriority[inputSource.ordinal]
 }
 
 /** Action sets are logical groupings of actions. Multiple sets can be active at one time. */

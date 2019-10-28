@@ -14,6 +14,8 @@ class SteamVR_Skeleton_Pose {
     protected val leftHandInputSource = SteamVR_Input_Sources.LeftHand.ordinal
     protected val rightHandInputSource = SteamVR_Input_Sources.RightHand.ordinal
 
+    var applyToSkeletonRoot = true
+
     fun getHand(hand: Int): SteamVR_Skeleton_Pose_Hand? = when (hand) {
         leftHandInputSource -> leftHand
         rightHandInputSource -> rightHand
@@ -52,18 +54,20 @@ class SteamVR_Skeleton_Pose_Hand(val inputSource: SteamVR_Input_Sources) {
     var bonePositions = emptyArray<Vec3>()
     val boneRotations = emptyArray<Quat>()
 
-    fun getMovementTypeForBone(boneIndex: Int): SteamVR_Skeleton_FingerExtensionTypes {
-        val fingerIndex = JointIndex.getFingerForBone(boneIndex)
+//    public SteamVR_Skeleton_Pose_Hand(SteamVR_Input_Sources source)
+//    {
+//        inputSource = source;
+//    }
 
-        return when (fingerIndex) {
-            FingerIndex.thumb.i -> thumbFingerMovementType
-            FingerIndex.index.i -> indexFingerMovementType
-            FingerIndex.middle.i -> middleFingerMovementType
-            FingerIndex.ring.i -> ringFingerMovementType
-            FingerIndex.pinky.i -> pinkyFingerMovementType
-            else -> SteamVR_Skeleton_FingerExtensionTypes.Static
-        }
-    }
+    fun getMovementTypeForBone(boneIndex: Int): SteamVR_Skeleton_FingerExtensionTypes =
+            when (JointIndex.getFingerForBone(boneIndex)) {
+                FingerIndex.thumb.i -> thumbFingerMovementType
+                FingerIndex.index.i -> indexFingerMovementType
+                FingerIndex.middle.i -> middleFingerMovementType
+                FingerIndex.ring.i -> ringFingerMovementType
+                FingerIndex.pinky.i -> pinkyFingerMovementType
+                else -> SteamVR_Skeleton_FingerExtensionTypes.Static
+            }
 }
 
 enum class SteamVR_Skeleton_FingerExtensionTypes { Static, Free, Extend, Contract }

@@ -123,13 +123,13 @@ abstract class SteamVR_Action_In<SourceMap, SourceElement> : SteamVR_ActionT<Sou
 
 abstract class SteamVR_Action_In_Source_Map<SourceElement : SteamVR_Action_In_Source> : SteamVR_Action_Source_MapT<SourceElement>() {
 
-    protected val updatingSources = ArrayList<SteamVR_Input_Sources>()
+    protected val updatingSources = ArrayList<Int>()
 
     /** [Should not be called by user code]
      *  @Returns whether the system has determined this source should be updated (based on code calls)
      *  Should only be used if you've set SteamVR_Action.startUpdatingSourceOnAccess to false.
      *  @param inputSource: The device you would like to get data from. Any if the action is not device specific. */
-    fun isUpdating(inputSource: SteamVR_Input_Sources): Boolean = updatingSources.any { it == inputSource }
+    fun isUpdating(inputSource: SteamVR_Input_Sources): Boolean = updatingSources.any { it == inputSource.ordinal }
 
     override fun onAccessSource(inputSource: SteamVR_Input_Sources) {
         if (SteamVR_Action.startUpdatingSourceOnAccess)
@@ -142,12 +142,17 @@ abstract class SteamVR_Action_In_Source_Map<SourceElement : SteamVR_Action_In_So
      *
      *  @param inputSource: The device you would like to get data from. Any if the action is not device specific. */
     fun forceAddSourceToUpdateList(inputSource: SteamVR_Input_Sources) {
-        if (!sources[inputSource]!!.isUpdating) {
-            updatingSources += inputSource
-            sources[inputSource]!!.isUpdating = true
+        val sourceIndex = inputSource.ordinal
+
+        if (sources[sourceIndex] == null)
+            sources[sourceIndex] = newSourceElement()
+
+        if (!sources[sourceIndex]!!.isUpdating) {
+            updatingSources += sourceIndex
+            sources[sourceIndex]!!.isUpdating = true
 
             if (!SteamVR_Input.isStartupFrame)
-                sources[inputSource]!!.updateValue()
+                sources[sourceIndex]!!.updateValue()
         }
     }
 

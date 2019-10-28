@@ -569,7 +569,7 @@ class SteamVR_Action_Skeleton : SteamVR_Action_Pose_Base<SteamVR_Action_Skeleton
 
 class SteamVR_Action_Skeleton_Source_Map : SteamVR_Action_Pose_Source_Map<SteamVR_Action_Skeleton_Source>() {
     override fun getSourceElementForIndexer(inputSource: SteamVR_Input_Sources): SteamVR_Action_Skeleton_Source? =
-            sources[SteamVR_Input_Sources.Any] //just in case somebody tries to access a different element, redirect them to the correct one.
+            sources[0] //just in case somebody tries to access a different element, redirect them to the correct one.
 }
 
 /** Skeleton Actions are our best approximation of where your hands are while holding vr controllers and pressing buttons. We give you 31 bones to help you animate hand models.
@@ -1125,17 +1125,10 @@ enum class JointIndex(val i: Int) {
     pinkyAux(30);
 
     val finger: Int
-        get() = when (this) {
-            root, wrist -> -1
-            thumbMetacarpal, thumbMiddle, thumbDistal, thumbTip, thumbAux -> 0
-            indexMetacarpal, indexProximal, indexMiddle, indexDistal, indexTip, indexAux -> 1
-            middleMetacarpal, middleProximal, middleMiddle, middleDistal, middleTip, middleAux -> 2
-            ringMetacarpal, ringProximal, ringMiddle, ringDistal, ringTip, ringAux -> 3
-            pinkyMetacarpal, pinkyProximal, pinkyMiddle, pinkyDistal, pinkyTip, pinkyAux -> 4
-            else -> -1
-        }
+        get() = getFingerForBone(i)
 
     companion object {
+
         fun getFingerForBone(boneIndex: Int): Int = when (boneIndex) {
             root.i, wrist.i -> -1
             thumbMetacarpal.i, thumbMiddle.i, thumbDistal.i, thumbTip.i, thumbAux.i -> 0
@@ -1144,6 +1137,15 @@ enum class JointIndex(val i: Int) {
             ringMetacarpal.i, ringProximal.i, ringMiddle.i, ringDistal.i, ringTip.i, ringAux.i -> 3
             pinkyMetacarpal.i, pinkyProximal.i, pinkyMiddle.i, pinkyDistal.i, pinkyTip.i, pinkyAux.i -> 4
             else -> -1
+        }
+
+        fun getBoneForFingerTip(fingerIndex: Int): Int = when (fingerIndex) {
+            FingerIndex.thumb.i -> thumbTip.i
+            FingerIndex.index.i -> indexTip.i
+            FingerIndex.middle.i -> middleTip.i
+            FingerIndex.ring.i -> ringTip.i
+            FingerIndex.pinky.i -> pinkyTip.i
+            else -> indexTip.i
         }
     }
 }

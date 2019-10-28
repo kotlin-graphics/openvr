@@ -103,7 +103,7 @@ class SteamVR_Action_Vibration :
 
 class SteamVR_Action_Vibration_Source_Map : SteamVR_Action_Source_MapT<SteamVR_Action_Vibration_Source>() {
     fun isUpdating(inputSource: SteamVR_Input_Sources): Boolean =
-            sources[inputSource]!!.timeLastExecuted != 0f
+            sources[inputSource.ordinal]!!.timeLastExecuted != 0f
 }
 
 class SteamVR_Action_Vibration_Source : SteamVR_Action_Out_Source() {

@@ -321,7 +321,7 @@ abstract class SteamVR_Action : ISteamVR_Action {
             //    /actions/default/in/foobar
             val pathParts = path.split('/')
             val existingAction = when {
-                pathParts.size >= 2 && pathParts[2].isEmpty() -> {
+                pathParts.size >= 5 && pathParts[2].isEmpty() -> {
                     val set = pathParts[2]
                     val name = pathParts[4]
                     SteamVR_Input.getBaseAction(set, name)
@@ -358,23 +358,23 @@ abstract class SteamVR_Action_Source_MapT<SourceElement : SteamVR_Action_Source>
 
     open fun onAccessSource(inputSource: SteamVR_Input_Sources) {}
 
-    protected val sources = mutableMapOf<SteamVR_Input_Sources, SourceElement>()
+    protected val sources: MutableList<SourceElement?> = MutableList(3) { null }
 
     /** [Should not be called by user code] Initializes the individual sources as well as the base map itself.
      *  Gets the handle for the action from SteamVR and does any other SteamVR related setup that needs to be done */
     override fun initialize() {
         super.initialize()
-        sources.values.forEach { it.initialize() }
+        sources.filterNotNull().forEach { it.initialize() }
     }
 
     override fun preinitializeMap(inputSource: SteamVR_Input_Sources, wrappingAction: SteamVR_Action) {
-        sources[inputSource] = newSourceElement<SourceElement>().apply { preinitialize(wrappingAction, inputSource) }
+        sources[inputSource.ordinal] = newSourceElement<SourceElement>().apply { preinitialize(wrappingAction, inputSource) }
     }
 
     /** Normally I'd just make the indexer virtual and override that but some unity versions don't like that */
     protected open fun getSourceElementForIndexer(inputSource: SteamVR_Input_Sources): SourceElement? {
         onAccessSource(inputSource)
-        return sources[inputSource]
+        return sources[inputSource.ordinal]
     }
 }
 

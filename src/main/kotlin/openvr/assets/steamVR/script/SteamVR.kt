@@ -1,4 +1,9 @@
-//package openvr.assets.steamVR.script
+package openvr.assets.steamVR.script
+
+import openvr.lib.TrackedDeviceProperty
+import openvr.lib.vr
+import openvr.lib.vrSystem
+
 //
 ////======= Copyright (c) Valve Corporation, All rights reserved. ===============
 ////
@@ -6,8 +11,8 @@
 ////
 ////=============================================================================
 //
-//class SteamVR {
-//
+object SteamVR {
+    //
 //    // Use this to check if SteamVR is currently active without attempting
 //    // to activate it in the process.
 //    public static bool active
@@ -239,9 +244,10 @@
 //
 //    public float hmd_SecondsFromVsyncToPhotons
 //    { get { return GetFloatProperty(ETrackedDeviceProperty.Prop_SecondsFromVsyncToPhotons_Float); } }
-//    public float hmd_DisplayFrequency
-//    { get { return GetFloatProperty(ETrackedDeviceProperty.Prop_DisplayFrequency_Float); } }
-//
+    val hmd_DisplayFrequency: Float
+        get() = getFloatProperty(TrackedDeviceProperty.DisplayFrequency_Float)
+
+    //
 //    public string GetTrackedDeviceString(uint deviceId)
 //    {
 //        var error = ETrackedPropertyError.TrackedProp_Success;
@@ -266,12 +272,9 @@
 //        return (error != ETrackedPropertyError.TrackedProp_Success) ? error.ToString() : "<unknown>";
 //    }
 //
-//    public float GetFloatProperty(ETrackedDeviceProperty prop, uint deviceId = OpenVR.k_unTrackedDeviceIndex_Hmd)
-//    {
-//        var error = ETrackedPropertyError.TrackedProp_Success;
-//        return hmd.GetFloatTrackedDeviceProperty(deviceId, prop, ref error);
-//    }
-//
+    fun getFloatProperty(prop: TrackedDeviceProperty, deviceId: Int = vr.trackedDeviceIndex_Hmd): Float =
+            vrSystem.getFloatTrackedDeviceProperty(deviceId, prop)
+
 //
 //    private static bool runningTemporarySession = false;
 //    public static bool InitializeTemporarySession(bool initInput = false)
@@ -681,4 +684,4 @@
 //        if (_instance != null)
 //            _instance.Dispose();
 //    }
-//}
+}

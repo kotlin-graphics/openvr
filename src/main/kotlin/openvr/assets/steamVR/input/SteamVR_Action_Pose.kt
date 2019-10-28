@@ -3,6 +3,7 @@ package openvr.assets.steamVR.input
 import glm_.glm
 import glm_.quat.Quat
 import glm_.vec3.Vec3
+import openvr.assets.steamVR.script.SteamVR
 import openvr.lib.*
 import openvr.plugin2.SteamVR_Input_Sources
 import openvr.plugin2.Transform
@@ -339,7 +340,7 @@ open class SteamVR_Action_Pose_Source_Map<Source> : SteamVR_Action_In_Source_Map
 
     /** Sets all pose (and skeleton) actions to use the specified universe origin without going through the sourcemap indexer */
     fun setTrackingUniverseOrigin(newOrigin: TrackingUniverseOrigin) =
-            sources.values.forEach { it.universeOrigin = newOrigin }
+            sources.filterNotNull().forEach { it.universeOrigin = newOrigin }
 
     fun updateValues(skipStateAndEventUpdates: Boolean) =
             updatingSources.forEach { sources[it]!!.updateValue(skipStateAndEventUpdates) }
@@ -473,6 +474,10 @@ open class SteamVR_Action_Pose_Source : SteamVR_Action_In_Source(), ISteamVR_Act
      *  Updates the data for this action and this input source. Sends related events. */
     override fun updateValue() = updateValue(false)
 
+    companion object {
+        val framesAhead = 2
+    }
+
     /** [Should not be called by user code]
      *  Updates the data for this action and this input source. Sends related events. */
     open fun updateValue(skipStateAndEventUpdates: Boolean) {
@@ -484,7 +489,10 @@ open class SteamVR_Action_Pose_Source : SteamVR_Action_In_Source(), ISteamVR_Act
         lastVelocity put velocity
         lastAngularVelocity put angularVelocity
 
-        val err = vrInput.getPoseActionDataForNextFrame(handle, universeOrigin, poseActionData, inputSourceHandle)
+        val err = when(framesAhead) {
+            0 -> vrInput.getPoseActionDataForNextFrame(handle, universeOrigin, poseActionData, inputSourceHandle);
+            else -> vrInput.getPoseActionDataRelativeToNow(handle, universeOrigin, framesAhead * (Time.timeScale / SteamVR.hmd_DisplayFrequency), poseActionData, inputSourceHandle)
+        }
         if (err != vrInput.Error.None)
             System.err.println("[SteamVR] GetPoseActionData error ($fullPath): $err Handle: $handle. SteamVR_Input source: $inputSource")
 

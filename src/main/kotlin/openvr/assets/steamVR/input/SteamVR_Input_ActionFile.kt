@@ -80,8 +80,6 @@ TODO()
 
     fun copyFilesToPath(toPath: String, overwrite: Boolean)    {
         TODO()
-//        if (Directory.Exists(toPath) == false)
-//            Directory.CreateDirectory(toPath);
 //
 //        string[] files = SteamVR_Input . actionFile . GetFilesToCopy ()
 //
