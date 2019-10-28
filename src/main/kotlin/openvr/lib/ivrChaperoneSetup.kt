@@ -182,6 +182,11 @@ object vrChaperoneSetup : vrInterface {
     /** Hides the chaperone data in the working set to preview in the compositor (if it was visible).*/
     fun hideWorkingSetPreview() = VRChaperoneSetup_HideWorkingSetPreview()
 
+    /** Fire an event that the tracking system can use to know room setup is about to begin. This lets the tracking
+     * system make any last minute adjustments that should be incorporated into the new setup.  If the user is adjusting
+     * live in HMD using a tweak tool, keep in mind that calling this might cause the user to see the room jump. */
+    fun roomSetupStarting() = VRChaperoneSetup_RoomSetupStarting()
+
     override val version: String
         get() = "IVRChaperoneSetup_006"
 }

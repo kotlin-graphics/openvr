@@ -12,7 +12,6 @@ import gln.texture.glTex2dParameter
 import gln.texture.glTexImage2D
 import gln.vertexArray.glBindVertexArray
 import gln.vertexArray.glVertexAttribPointer
-import gln.vertexArray.withVertexArray
 import kool.free
 import kool.Buffer
 import kool.IntBuffer
@@ -168,13 +167,14 @@ class CGLRenderModel(val modelName: String, vrModel: RenderModel, vrDiffuseTextu
     /** Purpose: Draws the render model */
     fun draw() {
 
-        withVertexArray(vertexArrayName) {
+        glBindVertexArray(vertexArrayName)
 
-            glActiveTexture(GL_TEXTURE0 + semantic.sampler.DIFFUSE)
-            glBindTexture2d(textureName)
+        glActiveTexture(GL_TEXTURE0 + semantic.sampler.DIFFUSE)
+        glBindTexture2d(textureName)
 
-            glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_SHORT, 0)
-        }
+        glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_SHORT, 0)
+
+        glBindVertexArray(0)
     }
 
     /** Purpose: Frees the GL resources for a render model     */

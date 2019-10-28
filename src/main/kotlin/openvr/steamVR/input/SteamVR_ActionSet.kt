@@ -1,6 +1,7 @@
 package openvr.steamVR.input
 
 import openvr.lib.VRActionHandle
+import openvr.lib.actionSet
 import openvr.lib.vrInput
 import openvr.plugin2.SteamVR_Input_Source
 import openvr.plugin2.SteamVR_Input_Sources
@@ -9,6 +10,7 @@ import openvr.steamVR_Input.actionSetClasses.SteamVR_Input_ActionSet_default
 import openvr.steamVR_Input.actionSetClasses.SteamVR_Input_ActionSet_mixedreality
 import openvr.steamVR_Input.actionSetClasses.SteamVR_Input_ActionSet_platformer
 import openvr.unity.Time
+import org.lwjgl.openvr.VRActiveActionSet
 
 //======= Copyright (c) Valve Corporation, All rights reserved. ===============
 
@@ -187,7 +189,7 @@ abstract class SteamVR_ActionSet : ISteamVR_ActionSet/*, ISerializationCallbackR
 
     override fun readRawSetPriority(inputSource: SteamVR_Input_Sources): Int = setData!!.readRawSetPriority(inputSource)
 
-    fun <CreateType : SteamVR_ActionSet>createType(): CreateType = when(this) {
+    fun <CreateType : SteamVR_ActionSet> createType(): CreateType = when (this) {
         is SteamVR_Input_ActionSet_default -> SteamVR_Input_ActionSet_default()
         is SteamVR_Input_ActionSet_buggy -> SteamVR_Input_ActionSet_buggy()
         is SteamVR_Input_ActionSet_mixedreality -> SteamVR_Input_ActionSet_mixedreality()
@@ -413,6 +415,34 @@ class SteamVR_ActionSet_Data : ISteamVR_ActionSet {
 
             return cachedShortName!!
         }
+
+    var emptySetCache: VRActiveActionSet.Buffer = VRActiveActionSet.calloc(0)
+    var setCache: VRActiveActionSet.Buffer = VRActiveActionSet.calloc(1)
+
+    /** Shows all the bindings for the actions in this set.
+     *
+     *  @param originToHighlight: Highlights the binding of the passed in action (or the first action in the set if none is specified) */
+    fun showBindingHints(originToHighlight_: ISteamVR_Action_In? = null): Boolean {
+        var originToHighlight = originToHighlight_
+        if (originToHighlight == null)
+            for (action in allActions) {
+                if (action.direction == SteamVR_ActionDirections.In && action.active) {
+                    originToHighlight = action as ISteamVR_Action_In
+                    break
+                }
+            }
+
+
+        if (originToHighlight != null) {
+            setCache[0].actionSet = handle
+            vrInput.showBindingsForActionSet(setCache, originToHighlight.activeOrigin)
+            return true
+        }
+
+        return false
+    }
+
+    fun hideBindingHints() = vrInput.showBindingsForActionSet(emptySetCache, 0)
 
     override fun readRawSetActive(inputSource: SteamVR_Input_Sources): Boolean = rawSetActive[inputSource]!!
 

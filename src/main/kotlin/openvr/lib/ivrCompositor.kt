@@ -413,6 +413,15 @@ object vrCompositor : vrInterface {
     val isMotionSmoothingEnabled: Boolean
         get() = VRCompositor_IsMotionSmoothingEnabled()
 
+    /** Indicates whether or not motion smoothing is supported by the current hardware. */
+    val isMotionSmoothingSupported: Boolean
+        get() = VRCompositor_IsMotionSmoothingSupported()
+
+    /** Indicates whether or not the current scene focus app is currently loading.  This is inferred from its use of FadeGrid to
+     * explicitly fade to the compositor to cover up the fact that it cannot render at a sustained full framerate during this time. */
+    val isCurrentSceneFocusAppLoading: Boolean
+        get() = VRCompositor_IsCurrentSceneFocusAppLoading()
+
     override val version: String
         get() = "IVRCompositor_022"
 }

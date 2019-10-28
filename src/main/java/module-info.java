@@ -12,6 +12,7 @@ module com.github.kotlin_graphics.openvr {
     requires org.lwjgl.vulkan;
     requires java.desktop;
     requires klaxon;
+    requires kotlinx.coroutines.core;
 
     exports openvr;
     exports openvr.lib;

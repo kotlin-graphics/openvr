@@ -296,6 +296,13 @@ enum class TrackedDeviceProperty(@JvmField val i: Int) {
     CameraDistortionCoefficients_Float_Array(2073),
     ExpectedControllerType_String(2074),
 
+    /** populated by compositor from actual EDID list when available from GPU driver */
+    Prop_DisplayAvailableFrameRates_Float_Array(2080),
+    /** if this is true but Prop_DisplayAvailableFrameRates_Float_Array is empty, explain to user */
+    Prop_DisplaySupportsMultipleFramerates_Bool(2081),
+
+    Prop_DashboardLayoutPathName_String(2090),
+
     // Driver requested mura correction properties
     DriverRequestedMuraCorrectionMode_Int32(2200),
     DriverRequestedMuraFeather_InnerLeft_Int32(2201),
@@ -374,7 +381,7 @@ enum class TrackedDeviceProperty(@JvmField val i: Int) {
 
     // Properties that are set internally based on other information provided by drivers
     ControllerType_String(7000),
-    LegacyInputProfile_String(7001),
+//    LegacyInputProfile_String(7001),  // This is no longer used. See "legacy_binding" in the input profile instead.
     /** Allows hand assignments to prefer some controllers over others. High numbers are selected over low numbers */
     ControllerHandSelectionPriority_Int32(7002),
 
@@ -629,14 +636,19 @@ enum class VREventType(@JvmField val i: Int) {
     /** A driver or other component wants the user to restart SteamVR */
     RestartRequested(705),
 
-    /**  Sent when the process needs to call VRChaperone()->ReloadInfo() */
+    /**  this will never happen with the new chaperone system */
     ChaperoneDataHasChanged(800),
     ChaperoneUniverseHasChanged(801),
+    /** this will never happen with the new chaperone system */
     ChaperoneTempDataHasChanged(802),
     ChaperoneSettingsHaveChanged(803),
     SeatedZeroPoseReset(804),
     /** Sent when the process needs to reload any cached data it retrieved from VRChaperone()   */
     ChaperoneFlushCache(805),
+    /** Triggered by CVRChaperoneClient::RoomSetupStarting */
+    ChaperoneRoomSetupStarting(806),
+    /** Triggered by CVRChaperoneClient::CommitWorkingCopy */
+    ChaperoneRoomSetupFinished(807),
 
     AudioSettingsHaveChanged(820),
 
@@ -693,6 +705,7 @@ enum class VREventType(@JvmField val i: Int) {
     HDCPError(1414),
     ApplicationNotResponding(1415),
     ApplicationResumed(1416),
+    OutOfVideoMemory(1417),
 
     TrackedCamera_StartVideoStream(1500),
     TrackedCamera_StopVideoStream(1501),
@@ -793,9 +806,9 @@ enum class VRButtonId(@JvmField val i: Int) {
 
     Dashboard_Back(Grip.i),
 
-    Knuckles_A(Grip.i),
-    Knuckles_B(ApplicationMenu.i),
-    Knuckles_JoyStick(Axis3.i),
+    IndexController_A(Grip.i),
+    IndexController_B(ApplicationMenu.i),
+    IndexController_JoyStick(Axis3.i),
 
     Max(64);
 
@@ -833,7 +846,10 @@ enum class DualAnalogWhich {
 }
 
 enum class ShowUiType {
-    ControllerBinding, ManageTrackers, QuickStart, Pairing, Settings;
+    ControllerBinding, ManageTrackers,
+    //    QuickStart, Deprecated
+    Pairing,
+    Settings;
 
     @JvmField
     val i = ordinal
@@ -1015,9 +1031,10 @@ enum class VRInitError(@JvmField val i: Int) {
     Init_FirmwareUpdateBusy(138),
     Init_FirmwareRecoveryBusy(139),
     Init_USBServiceBusy(140),
-    VRWebHelperStartupFailed(141),
-    TrackerManagerInitFailed(142),
-    AlreadyRunning(143),
+    Init_VRWebHelperStartupFailed(141),
+    Init_TrackerManagerInitFailed(142),
+    Init_AlreadyRunning(143),
+    Init_FailedForVrMonitor(144),
 
     Driver_Failed(200),
     Driver_Unknown(201),
@@ -1032,6 +1049,7 @@ enum class VRInitError(@JvmField val i: Int) {
     // Driver_HmdDisplayNotFoundAfterFix(210), // not needed: here for historic reasons
     Driver_HmdDriverIdOutOfBounds(211),
     Driver_HmdDisplayMirrored(212),
+    Driver_HmdDisplayNotFoundLaptop(213),
 
     IPC_ServerInitFailed(300),
     IPC_ConnectFailed(301),

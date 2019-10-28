@@ -1,6 +1,7 @@
 package openvr.steamVR.script
 
 import openvr.lib.TrackingUniverseOrigin
+import openvr.steamVR.input.SteamVR_Action_Pose
 import openvr.steamVR.input.SteamVR_UpdateModes
 import java.net.URL
 
@@ -10,7 +11,15 @@ object SteamVR_Settings {
 
     var pauseGameWhenDashboardVisible = true
     var lockPhysicsUpdateRateToRenderFrequency = true
-    var trackingSpace = TrackingUniverseOrigin.Standing
+    var trackingSpace: TrackingUniverseOrigin
+        get() = trackingSpaceOrigin
+        set(newValue) {
+            trackingSpaceOrigin = newValue
+            if (SteamVR_Behaviour.isPlaying)
+                SteamVR_Action_Pose.setTrackingUniverseOrigin(trackingSpaceOrigin)
+        }
+
+    private var trackingSpaceOrigin = TrackingUniverseOrigin.Standing
 
     /** Filename local to the project root (or executable, in a build) */
     var actionsFilePath: URL? = ClassLoader.getSystemResource("actions.json")

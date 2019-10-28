@@ -1123,6 +1123,15 @@ class Hand(
 //        }
 //    }
 //
+//    /// <summary>
+//    /// Snap an attached object to its target position and rotation. Good for error correction.
+//    /// </summary>
+//    public void ResetAttachedTransform(AttachedObject attachedObject)
+//    {
+//        attachedObject.attachedObject.transform.position = TargetItemPosition(attachedObject);
+//        attachedObject.attachedObject.transform.rotation = TargetItemRotation(attachedObject);
+//    }
+//
 //    protected Vector3 TargetItemPosition(AttachedObject attachedObject)
 //    {
 //        if (attachedObject.interactable != null && attachedObject.interactable.skeletonPoser != null && HasSkeleton()) {

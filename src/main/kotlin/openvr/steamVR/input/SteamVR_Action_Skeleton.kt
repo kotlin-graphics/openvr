@@ -8,6 +8,7 @@ import glm_.quat.Quat
 import glm_.vec3.Vec3
 import kool.indices
 import openvr.lib.*
+import openvr.lib.vrInput.VRSummaryType
 import openvr.plugin.Utils
 import openvr.plugin2.SteamVR_Input_Sources
 import openvr.plugin2.Transform
@@ -97,6 +98,13 @@ class SteamVR_Action_Skeleton : SteamVR_Action_Pose_Base<SteamVR_Action_Skeleton
             sourceMap!![SteamVR_Input_Sources.Any]!!.skeletalTransformSpace = value
         }
 
+    /** The type of summary data that will be retrieved by default. FromAnimation is smoothed data to based on the skeletal animation system. FromDevice is as recent from the device as we can get - may be different data from smoothed. */
+    var summaryDataType: VRSummaryType
+        get() = sourceMap!![SteamVR_Input_Sources.Any]!!.summaryDataType
+        set(newValue) {
+            sourceMap!![SteamVR_Input_Sources.Any]!!.summaryDataType = newValue
+        }
+
     /** Get the accuracy level of the skeletal tracking data.
      *      Estimated: Body part location can’t be directly determined by the device. Any skeletal pose provided
      *          by the device is estimated based on the active buttons, triggers, joysticks, or other input sensors.
@@ -168,7 +176,7 @@ class SteamVR_Action_Skeleton : SteamVR_Action_Pose_Base<SteamVR_Action_Skeleton
 
     /** [Previous Update] A 0-1 value representing the size of the gap between the thumb and index fingers */
     override val lastThumbIndexSplay: Float
-        get () = sourceMap!![SteamVR_Input_Sources.Any]!!.lastThumbIndexSplay
+        get() = sourceMap!![SteamVR_Input_Sources.Any]!!.lastThumbIndexSplay
 
     /** [Previous Update] A 0-1 value representing the size of the gap between the index and middle fingers */
     override val lastIndexMiddleSplay: Float
@@ -203,11 +211,11 @@ class SteamVR_Action_Skeleton : SteamVR_Action_Pose_Base<SteamVR_Action_Skeleton
         get() = sourceMap!![SteamVR_Input_Sources.Any]!!.poseChanged
 
 
-    /** The amount of time in the future (or past!) the input system will predict poses for. Default is one frame forward (at 90hz) to account for render time. */
-    var predictedSecondsFromNow: Float
-        get() = sourceMap!![SteamVR_Input_Sources.Any]!!.predictedSecondsFromNow
-        set(value) {
-            sourceMap!![SteamVR_Input_Sources.Any]!!.predictedSecondsFromNow = value
+    /** Skips processing the full per bone data and only does the summary data */
+    override var onlyUpdateSummaryData: Boolean
+        get() = sourceMap!![SteamVR_Input_Sources.Any]!!.onlyUpdateSummaryData
+        set(newValue) {
+            sourceMap!![SteamVR_Input_Sources.Any]!!.onlyUpdateSummaryData = newValue
         }
 
     /** True if this action is bound and the ActionSet is active
@@ -621,6 +629,9 @@ class SteamVR_Action_Skeleton_Source : SteamVR_Action_Pose_Source(), ISteamVR_Ac
     /** The space to get bone data in. Parent space by default */
     override lateinit var skeletalTransformSpace: vrInput.VRSkeletalTransformSpace
 
+    /** The type of summary data that will be retrieved by default. FromAnimation is smoothed data to based on the skeletal animation system. FromDevice is as recent from the device as we can get - may be different data from smoothed. */
+    lateinit var summaryDataType: VRSummaryType
+
 
     /** A 0-1 value representing how curled the thumb is. 0 being straight, 1 being fully curled. */
     override val thumbCurl: Float
@@ -718,6 +729,9 @@ class SteamVR_Action_Skeleton_Source : SteamVR_Action_Pose_Source(), ISteamVR_Ac
     var poseChanged = false
         protected set
 
+    /** Skips processing the full per bone data and only does the summary data */
+    override var onlyUpdateSummaryData: Boolean = false
+
 
     protected val skeletalSummaryData = VRSkeletalSummaryData.calloc()
     protected var lastSkeletalSummaryData = VRSkeletalSummaryData.calloc()
@@ -763,10 +777,11 @@ class SteamVR_Action_Skeleton_Source : SteamVR_Action_Pose_Source(), ISteamVR_Ac
         lastSkeletonActionData = skeletonActionData // TODO check assignment/copy
         lastSkeletalSummaryData = skeletalSummaryData
 
-        repeat(SteamVR_Action_Skeleton.numBones) {
-            lastBonePositions[it] = bonePositions[it]
-            lastBoneRotations[it] = boneRotations[it]
-        }
+        if (!onlyUpdateSummaryData)
+            repeat(SteamVR_Action_Skeleton.numBones) {
+                lastBonePositions[it] = bonePositions[it]
+                lastBoneRotations[it] = boneRotations[it]
+            }
 
         FingerIndex.values().forEach { lastFingerCurls[it.i] = fingerCurls[it.i] } // TODO check values()
 
@@ -782,31 +797,32 @@ class SteamVR_Action_Skeleton_Source : SteamVR_Action_Pose_Source(), ISteamVR_Ac
         }
 
         if (active) {
-            error = vrInput.getSkeletalBoneData(handle, skeletalTransformSpace, rangeOfMotion, tempBoneTransforms)
-            if (error != vrInput.Error.None)
-                System.err.println("[SteamVR] GetSkeletalBoneData error ($fullPath): $error handle: $handle")
+            if (onlyUpdateSummaryData == false) {
+                error = vrInput.getSkeletalBoneData(handle, skeletalTransformSpace, rangeOfMotion, tempBoneTransforms)
+                if (error != vrInput.Error.None)
+                    System.err.println("[SteamVR] GetSkeletalBoneData error ($fullPath): $error handle: $handle")
 
-            getSkeletalSummaryData(true)
+                for (boneIndex in tempBoneTransforms.indices) {
+                    // SteamVR's coordinate system is right handed, and Unity's is left handed.  The FBX data has its
+                    // X axis flipped when Unity imports it, so here we need to flip the X axis as well
+                    val p = tempBoneTransforms[boneIndex].position
+                    bonePositions[boneIndex].x = -p.x
+                    bonePositions[boneIndex].y = p.y
+                    bonePositions[boneIndex].z = p.z
 
-            for (boneIndex in tempBoneTransforms.indices) {
-                // SteamVR's coordinate system is right handed, and Unity's is left handed.  The FBX data has its
-                // X axis flipped when Unity imports it, so here we need to flip the X axis as well
-                val p = tempBoneTransforms[boneIndex].position
-                bonePositions[boneIndex].x = -p.x
-                bonePositions[boneIndex].y = p.y
-                bonePositions[boneIndex].z = p.z
+                    val o = tempBoneTransforms[boneIndex].orientation
+                    boneRotations[boneIndex].x = o.x
+                    boneRotations[boneIndex].y = -o.y
+                    boneRotations[boneIndex].z = -o.z
+                    boneRotations[boneIndex].w = o.w
+                }
 
-                val o = tempBoneTransforms[boneIndex].orientation
-                boneRotations[boneIndex].x = o.x
-                boneRotations[boneIndex].y = -o.y
-                boneRotations[boneIndex].z = -o.z
-                boneRotations[boneIndex].w = o.w
+                // Now that we're in the same handedness as Unity, rotate the root bone around the Y axis
+                // so that forward is facing down +Z
+
+                boneRotations[0] = SteamVR_Action_Skeleton.steamVRFixUpRotation * boneRotations[0]
             }
-
-            // Now that we're in the same handedness as Unity, rotate the root bone around the Y axis
-            // so that forward is facing down +Z
-
-            boneRotations[0] = SteamVR_Action_Skeleton.steamVRFixUpRotation * boneRotations[0]
+            updateSkeletalSummaryData(summaryDataType, true)
         }
 
         if (!changed)
@@ -907,9 +923,17 @@ class SteamVR_Action_Skeleton_Source : SteamVR_Action_Pose_Source(), ISteamVR_Ac
     /** Get the skeletal summary data structure from OpenVR.
      *  Contains curl and splay data in finger order: thumb, index, middlg, ring, pinky.
      *  Easier access at named members: indexCurl, ringSplay, etc. */
-    protected fun getSkeletalSummaryData(force: Boolean = false): VRSkeletalSummaryData {
-        if (force) {
-            vrInput.getSkeletalSummaryData(handle, skeletalSummaryData)
+    protected fun getSkeletalSummaryData(summaryType: VRSummaryType = VRSummaryType.FromAnimation, force: Boolean = false): VRSkeletalSummaryData {
+        updateSkeletalSummaryData(summaryType, force)
+        return skeletalSummaryData
+    }
+
+    /** Updates the skeletal summary data structure from OpenVR.
+     *  Contains curl and splay data in finger order: thumb, index, middlg, ring, pinky.
+     *  Easier access at named members: indexCurl, ringSplay, etc. */
+    protected fun updateSkeletalSummaryData(summaryType: VRSummaryType = VRSummaryType.FromAnimation, force: Boolean = false) {
+        if (force || this.summaryDataType != summaryType && active) {
+            vrInput.getSkeletalSummaryData(handle, summaryType, skeletalSummaryData)
             if (vrInput.error != vrInput.Error.None)
                 System.err.println("[SteamVR] GetSkeletalSummaryData error ($fullPath): ${vrInput.error} handle: $handle")
 
@@ -925,8 +949,6 @@ class SteamVR_Action_Skeleton_Source : SteamVR_Action_Pose_Source(), ISteamVR_Ac
             fingerSplays[2] = skeletalSummaryData.flFingerSplay(2)
             fingerSplays[3] = skeletalSummaryData.flFingerSplay(3)
         }
-
-        return skeletalSummaryData
     }
 
     override fun checkAndSendEvents() {
@@ -983,6 +1005,9 @@ interface ISteamVR_Action_Skeleton_Source {
 
     /** The space to get bone data in. Parent space by default */
     var skeletalTransformSpace: vrInput.VRSkeletalTransformSpace
+
+    /** Skips processing the full per bone data and only does the summary data */
+    var onlyUpdateSummaryData: Boolean
 
     /** A 0-1 value representing how curled the thumb is. 0 being straight, 1 being fully curled. */
     val thumbCurl: Float

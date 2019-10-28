@@ -230,7 +230,7 @@ open class Transform : Component() {
 
     /** Transforms /position/ from local space to world space. */
     fun transformPoint(position: Vec3): Vec3 {
-        val p = Vec4(position)
+        val p = Vec4(position, 0f)
         localToWorldMatrix.timesAssign(p)
         return p.toVec3()
     }

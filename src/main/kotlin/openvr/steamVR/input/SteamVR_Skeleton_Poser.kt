@@ -135,7 +135,8 @@ class SteamVR_Skeleton_Poser {
     /** Updates all pose animation and blending. Can be called from different places without performance concerns, as it will only let itself run once per frame. */
     fun updatePose(skeletonAction: SteamVR_Action_Skeleton, inputSource: SteamVR_Input_Sources) {
         // only allow this function to run once per frame
-        if (poseUpdatedThisFrame) return
+        if (poseUpdatedThisFrame)
+            return
 
         poseUpdatedThisFrame = true
 
@@ -157,7 +158,6 @@ class SteamVR_Skeleton_Poser {
 
     protected fun applyBlenderBehaviours(skeletonAction: SteamVR_Action_Skeleton, inputSource: SteamVR_Input_Sources,
                                          snapshot: SteamVR_Skeleton_PoseSnapshot) {
-
         // apply blending for each behaviour
         for (behaviourIndex in blendingBehaviours.indices) {
             blendingBehaviours[behaviourIndex].update(Time.deltaTime, inputSource)
@@ -171,7 +171,6 @@ class SteamVR_Skeleton_Poser {
                 blendingBehaviours[behaviourIndex].applyBlending(snapshot, blendPoses, inputSource)
             }
         }
-
     }
 
     protected fun lateUpdate() {
@@ -208,31 +207,49 @@ class SteamVR_Skeleton_Poser {
             else -> snapshotR
         }
 
+        //buffers for mirrored poses
+        private lateinit var additivePositionBuffer: Array<Vec3>
+        private lateinit var additiveRotationBuffer: Array<Quat>
+
         fun updateAdditiveAnimation(skeletonAction: SteamVR_Action_Skeleton, inputSource: SteamVR_Input_Sources) {
 
             val snapshot = getHandSnapshot(inputSource)
             val poseHand = pose.getHand(inputSource)!!
+
+            //setup mirrored pose buffers
+            if (!::additivePositionBuffer.isInitialized) additivePositionBuffer = Array(skeletonAction.boneCount) { Vec3() }
+            if (!::additiveRotationBuffer.isInitialized) additiveRotationBuffer = Array(skeletonAction.boneCount) { Quat() }
 
             for (boneIndex in snapshotL.bonePositions.indices) {
 
                 val fingerIndex = JointIndex.getFingerForBone(boneIndex)
                 val extensionType = poseHand.getMovementTypeForBone(boneIndex)// lerp to closed pose by fingercurl
 
+                //do target pose mirroring on left hand
+                if (inputSource == SteamVR_Input_Sources.LeftHand) {
+                    SteamVR_Behaviour_Skeleton.mirrorBonePosition(skeletonAction.bonePositions[boneIndex], additivePositionBuffer[boneIndex], boneIndex)
+                    SteamVR_Behaviour_Skeleton.mirrorBoneRotation(skeletonAction.boneRotations[boneIndex], additiveRotationBuffer[boneIndex], boneIndex)
+                } else {
+                    additivePositionBuffer[boneIndex] = skeletonAction.bonePositions[boneIndex];
+                    additiveRotationBuffer[boneIndex] = skeletonAction.boneRotations[boneIndex];
+                }
+
+
                 // lerp to open pose by fingercurl
                 when (extensionType) {
                     SteamVR_Skeleton_FingerExtensionTypes.Free -> {
-                        snapshot.bonePositions[boneIndex] put skeletonAction.bonePositions[boneIndex]
-                        snapshot.boneRotations[boneIndex] put skeletonAction.boneRotations[boneIndex]
+                        snapshot.bonePositions[boneIndex] put additivePositionBuffer[boneIndex]
+                        snapshot.boneRotations[boneIndex] put additiveRotationBuffer[boneIndex]
                     }
                     SteamVR_Skeleton_FingerExtensionTypes.Extend -> {
                         // lerp to open pose by fingercurl
-                        snapshot.bonePositions[boneIndex] = glm.mix(poseHand.bonePositions[boneIndex], skeletonAction.bonePositions[boneIndex], 1 - skeletonAction.fingerCurls[fingerIndex])
-                        snapshot.boneRotations[boneIndex] = glm.lerp(poseHand.boneRotations[boneIndex], skeletonAction.boneRotations[boneIndex], 1 - skeletonAction.fingerCurls[fingerIndex])
+                        snapshot.bonePositions[boneIndex] = glm.mix(poseHand.bonePositions[boneIndex], additivePositionBuffer[boneIndex], 1 - skeletonAction.fingerCurls[fingerIndex])
+                        snapshot.boneRotations[boneIndex] = glm.lerp(poseHand.boneRotations[boneIndex], additiveRotationBuffer[boneIndex], 1 - skeletonAction.fingerCurls[fingerIndex])
                     }
                     SteamVR_Skeleton_FingerExtensionTypes.Contract -> {
                         // lerp to closed pose by fingercurl
-                        snapshot.bonePositions[boneIndex] = glm.mix(poseHand.bonePositions[boneIndex], skeletonAction.bonePositions[boneIndex], skeletonAction.fingerCurls[fingerIndex])
-                        snapshot.boneRotations[boneIndex] = glm.lerp(poseHand.boneRotations[boneIndex], skeletonAction.boneRotations[boneIndex], skeletonAction.fingerCurls[fingerIndex])
+                        snapshot.bonePositions[boneIndex] = glm.mix(poseHand.bonePositions[boneIndex], additivePositionBuffer[boneIndex], skeletonAction.fingerCurls[fingerIndex])
+                        snapshot.boneRotations[boneIndex] = glm.lerp(poseHand.boneRotations[boneIndex], additiveRotationBuffer[boneIndex], skeletonAction.fingerCurls[fingerIndex])
                     }
                 }
             }
@@ -339,9 +356,9 @@ class SteamVR_Skeleton_PoseSnapshot(boneCount: Int, var inputSource: SteamVR_Inp
         inputSource = source.inputSource
         position put source.position
         rotation put source.rotation
-        for (i in bonePositions.indices) {
-            bonePositions[i] put source.bonePositions[i]
-            boneRotations[i] put source.boneRotations[i]
+        for (boneIndex in bonePositions.indices) {
+            bonePositions[boneIndex] put source.bonePositions[boneIndex]
+            boneRotations[boneIndex] put source.boneRotations[boneIndex]
         }
     }
 }

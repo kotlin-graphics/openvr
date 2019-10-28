@@ -112,7 +112,7 @@ object vrInput : vrInterface {
         Estimated,
         /** body part location can be measured directly but with fewer degrees of freedom than the actual body
          *  part. Certain body part positions may be unmeasured by the device and estimated from other input data.
-         *  E.g. Knuckles, gloves that only measure finger curl */
+         *  E.g. Index Controllers, gloves that only measure finger curl */
         Partial,
         /** Body part location can be measured directly throughout the entire range of motion of the body part.
          *  E.g. Mocap suit for the full body, gloves that measure rotation of each finger segment */
@@ -124,6 +124,18 @@ object vrInput : vrInterface {
         companion object {
             infix fun of(i: Int) = values().first { it.i == i }
         }
+    }
+
+    enum class VRSummaryType    {
+        /** The skeletal summary data will match the animated bone transforms for the action. */
+        FromAnimation,
+
+        /** The skeletal summary data will include unprocessed data directly from the device when available.
+         *  This data is generally less latent than the data that is computed from the animations. */
+        FromDevice;
+
+        @JvmField
+        val i = ordinal
     }
 
     enum class VRInputFilterCancelType {
@@ -244,13 +256,15 @@ object vrInput : vrInterface {
     fun getAnalogActionData(action: VRActionHandle, actionData: InputAnalogActionData, restrictToDevice: VRInputValueHandle): Error =
             Error of nVRInput_GetAnalogActionData(action, actionData.adr, InputAnalogActionData.SIZEOF, restrictToDevice)
 
-    /**
-     * Reads the state of a pose action given its handle. TODO more convenient?
-     *
-     * @param origin one of:<br><table><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseSeated}</td></tr><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseStanding}</td></tr><tr><td>{@link VR#ETrackingUniverseOrigin_TrackingUniverseRawAndUncalibrated}</td></tr></table>
-     */
-    fun getPoseActionData(action: VRActionHandle, origin: TrackingUniverseOrigin, predictedSecondsFromNow: Float, actionData: InputPoseActionData, restrictToDevice: VRInputValueHandle): Error =
-            Error of nVRInput_GetPoseActionData(action, origin.i, predictedSecondsFromNow, actionData.adr, InputPoseActionData.SIZEOF, restrictToDevice)
+    /** Reads the state of a pose action given its handle for the number of seconds relative to now. This
+     * will generally be called with negative times from the fUpdateTime fields in other actions. */
+    fun getPoseActionDataRelativeToNow(action: VRActionHandle, origin: TrackingUniverseOrigin, predictedSecondsFromNow: Float, actionData: InputPoseActionData, restrictToDevice: VRInputValueHandle): Error =
+        Error of nVRInput_GetPoseActionDataRelativeToNow(action, origin.i, predictedSecondsFromNow, actionData.adr, InputPoseActionData.SIZEOF, restrictToDevice)
+
+    /** Reads the state of a pose action given its handle. The returned values will match the values returned
+     * by the last call to IVRCompositor::WaitGetPoses(). */
+    fun getPoseActionDataForNextFrame(action: VRActionHandle, origin: TrackingUniverseOrigin, actionData: InputPoseActionData, restrictToDevice: VRInputValueHandle): Error =
+            Error of nVRInput_GetPoseActionDataForNextFrame(action, origin.i, actionData.adr, InputPoseActionData.SIZEOF, restrictToDevice)
 
     /**
      * Reads the state of a skeletal action given its handle. TODO more convenient?
@@ -325,8 +339,8 @@ object vrInput : vrInterface {
      *
      *  Note: Multi-thread unsafe if reading the error from the class property. */
     @JvmOverloads
-    fun getSkeletalSummaryData(action: VRActionHandle, skeletalSummaryData: VRSkeletalSummaryData = vr.VRSkeletalSummaryData(), pErr: VRInputErrorBuffer = pError): VRSkeletalSummaryData {
-        pErr[0] = nVRInput_GetSkeletalSummaryData(action, skeletalSummaryData.adr)
+    fun getSkeletalSummaryData(action: VRActionHandle, summaryType: VRSummaryType, skeletalSummaryData: VRSkeletalSummaryData = vr.VRSkeletalSummaryData(), pErr: VRInputErrorBuffer = pError): VRSkeletalSummaryData {
+        pErr[0] = nVRInput_GetSkeletalSummaryData(action, summaryType.i, skeletalSummaryData.adr)
         return skeletalSummaryData
     }
 
@@ -382,5 +396,5 @@ object vrInput : vrInterface {
 //        get() = VRInput.VRInput_is
 
     override val version: String
-        get() = "IVRInput_005"
+        get() = "IVRInput_006"
 }

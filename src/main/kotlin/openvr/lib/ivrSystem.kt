@@ -628,30 +628,6 @@ object vrSystem : vrInterface {
 
 
     // ------------------------------------
-    // Debug Methods
-    // ------------------------------------
-
-
-    /**
-     * Sends a request to the driver for the specified device and returns the response. The maximum response size is 32k, but this method can be called with a
-     * smaller buffer. If the response exceeds the size of the buffer, it is truncated.
-     *
-     * @param deviceIndex
-     * @param request
-     * @param unResponseBufferSize
-     *
-     * @return the size of the response including its terminating null
-     */
-    fun driverDebugRequest(deviceIndex: TrackedDeviceIndex, request: String, responseBufferSize: Int = vr.maxDriverDebugResponseSize): String =
-            stak {
-                val responseBuffer = it.malloc(responseBufferSize)
-                val pRequest = it.addressOfAscii(request)
-                val size = VRSystem.nVRSystem_DriverDebugRequest(deviceIndex, pRequest, responseBuffer.adr, responseBufferSize)
-                memASCII(responseBuffer, size - 1)
-            }
-
-
-    // ------------------------------------
     // Firmware methods
     // ------------------------------------
 

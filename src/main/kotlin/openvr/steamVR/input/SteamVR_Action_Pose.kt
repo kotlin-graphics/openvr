@@ -154,7 +154,10 @@ class SteamVR_Action_Pose : SteamVR_Action_Pose_Base<SteamVR_Action_Pose_Source_
     companion object {
 
         /** Sets all pose and skeleton actions to use the specified universe origin. */
-        fun setTrackingUniverseOrigin(newOrigin: TrackingUniverseOrigin) = setUniverseOrigin(newOrigin)
+        fun setTrackingUniverseOrigin(newOrigin: TrackingUniverseOrigin) {
+            setUniverseOrigin(newOrigin)
+            vrCompositor.trackingSpace = newOrigin
+        }
     }
 }
 
@@ -346,9 +349,6 @@ open class SteamVR_Action_Pose_Source : SteamVR_Action_In_Source(), ISteamVR_Act
 
     var universeOrigin = TrackingUniverseOrigin.RawAndUncalibrated
 
-    /** The amount of time in the future (or past!) the input system will predict poses for. Default is one frame forward (at 90hz) to account for render time. */
-    var predictedSecondsFromNow = 0.011f
-
     /** The distance the pose needs to move/rotate before a change is detected */
     var changeTolerance = Float.MIN_VALUE
 
@@ -484,7 +484,7 @@ open class SteamVR_Action_Pose_Source : SteamVR_Action_In_Source(), ISteamVR_Act
         lastVelocity put velocity
         lastAngularVelocity put angularVelocity
 
-        val err = vrInput.getPoseActionData(handle, universeOrigin, predictedSecondsFromNow, poseActionData, inputSourceHandle)
+        val err = vrInput.getPoseActionDataForNextFrame(handle, universeOrigin, poseActionData, inputSourceHandle)
         if (err != vrInput.Error.None)
             System.err.println("[SteamVR] GetPoseActionData error ($fullPath): $err Handle: $handle. SteamVR_Input source: $inputSource")
 
@@ -492,7 +492,7 @@ open class SteamVR_Action_Pose_Source : SteamVR_Action_In_Source(), ISteamVR_Act
         changed = isChanged()
 
         if (changed)
-            changedTime = updateTime + predictedSecondsFromNow
+            changedTime = updateTime
 
         if (!skipStateAndEventUpdates)
             checkAndSendEvents()
@@ -520,7 +520,7 @@ open class SteamVR_Action_Pose_Source : SteamVR_Action_In_Source(), ISteamVR_Act
      *  @param secondsFromNow: The time offset in the future (estimated) or in the past (previously recorded) you want to get data from
      *  @returns true if we successfully returned a pose */
     fun getVelocitiesAtTimeOffset(secondsFromNow: Float, velocityAtTime: Vec3, angularVelocityAtTime: Vec3): Boolean {
-        val err = vrInput.getPoseActionData(handle, universeOrigin, secondsFromNow, tempPoseActionData, inputSourceHandle)
+        val err = vrInput.getPoseActionDataRelativeToNow(handle, universeOrigin, secondsFromNow, tempPoseActionData, inputSourceHandle)
         if (err != vrInput.Error.None) {
             System.err.println("[SteamVR] GetPoseActionData error ($fullPath): $err handle: $handle") //todo: this should be an error
 
@@ -540,7 +540,7 @@ open class SteamVR_Action_Pose_Source : SteamVR_Action_In_Source(), ISteamVR_Act
      *  @param secondsFromNow: The time offset in the future (estimated) or in the past (previously recorded) you want to get data from
      *  @returns true if we successfully returned a pose */
     fun getPoseAtTimeOffset(secondsFromNow: Float, positionAtTime: Vec3, rotationAtTime: Quat, velocityAtTime: Vec3, angularVelocityAtTime: Vec3): Boolean {
-        val err = vrInput.getPoseActionData(handle, universeOrigin, secondsFromNow, tempPoseActionData, inputSourceHandle)
+        val err = vrInput.getPoseActionDataRelativeToNow(handle, universeOrigin, secondsFromNow, tempPoseActionData, inputSourceHandle)
         if (err != vrInput.Error.None) {
             System.err.println("[SteamVR] GetPoseActionData error ($fullPath): $err handle: $handle") //todo: this should be an error
 

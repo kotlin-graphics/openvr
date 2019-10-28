@@ -9,7 +9,6 @@ import gln.texture.glTex2dParameter
 import gln.texture.glTexImage2D
 import gln.vertexArray.glBindVertexArray
 import gln.vertexArray.glVertexAttribPointer
-import gln.vertexArray.withVertexArray
 import kool.IntBuffer
 import kool.free
 import kool.get
@@ -35,7 +34,7 @@ class Model(val name: String) {
     fun draw(matrixUL: Int) {
 
         components.forEach {
-//            vrRenderModels.getComponentStateForDevicePath(name, it.name, )
+            //            vrRenderModels.getComponentStateForDevicePath(name, it.name, )
         }
     }
 
@@ -129,13 +128,14 @@ class ModelComponent(val name: String, vrModel: RenderModel, vrDiffuseTexture: R
     /** Purpose: Draws the render model */
     fun draw() {
 
-        withVertexArray(vertexArrayName) {
+        glBindVertexArray(vertexArrayName)
 
-            glActiveTexture(GL_TEXTURE0 + semantic.sampler.DIFFUSE)
-            glBindTexture2d(textureName)
+        glActiveTexture(GL_TEXTURE0 + semantic.sampler.DIFFUSE)
+        glBindTexture2d(textureName)
 
-            glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_SHORT, 0)
-        }
+        glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_SHORT, 0)
+
+        glBindVertexArray(0)
     }
 
     /** Purpose: Frees the GL resources for a render model     */

@@ -236,6 +236,10 @@ object vrSettings : vrInterface {
             get() = getBool(section, "debugInputBinding")
             set(value) = setBool(section, "debugInputBinding", value)
 
+        var doNotFadeToGrid: Boolean
+            get() = getBool(section, "doNotFadeToGrid")
+            set(value) = setBool(section, "doNotFadeToGrid", value)
+
         var inputBindingUI: Boolean
             get() = getBool(section, "inputBindingUI")
             set(value) = setBool(section, "inputBindingUI", value)
@@ -322,10 +326,13 @@ object vrSettings : vrInterface {
             get() = getString(section, "PowerManagedBaseStations")
             set(value) = setString(section, "PowerManagedBaseStations", value)
 
-
-        var PowerManagedBaseStations2: String
+        var powerManagedBaseStations2: String
             get() = getString(section, "PowerManagedBaseStations2")
             set(value) = setString(section, "PowerManagedBaseStations2", value)
+
+        var inactivityTimeoutForBaseStations: Int
+            get() = getInt(section, "InactivityTimeoutForBaseStations")
+            set(value) = setInt(section, "InactivityTimeoutForBaseStations", value)
 
         var enableImuFallback: Boolean
             get() = getBool(section, "enableImuFallback")
@@ -480,9 +487,9 @@ object vrSettings : vrInterface {
             get() = getFloat(section, "perfTestData")
             set(value) = setFloat(section, "perfTestData", value)
 
-        var linuxGPUProfiling: Boolean
-            get() = getBool(section, "linuxGPUProfiling")
-            set(value) = setBool(section, "linuxGPUProfiling", value)
+        var gpuProfiling: Boolean
+            get() = getBool(section, "GPUProfiling")
+            set(value) = setBool(section, "GPUProfiling", value)
     }
 
     object vrWebHelper {

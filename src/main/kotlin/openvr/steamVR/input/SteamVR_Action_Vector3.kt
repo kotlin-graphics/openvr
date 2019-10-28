@@ -273,7 +273,7 @@ class SteamVR_Action_Vector3_Source : SteamVR_Action_In_Source(), ISteamVR_Actio
                 onChange.forEach { it(vector3Action, inputSource, axis, delta) }
             }
 
-            if (axis anyNotEqual 0f)
+            if (axis.anyNotEqual(0f))
                 onAxis.forEach { it(vector3Action, inputSource, axis, delta) }
 
             onUpdate.forEach { it(vector3Action, inputSource, axis, delta) }

@@ -15,6 +15,7 @@ import openvr.lib.VRActionHandle
 import openvr.lib.vrInput
 import openvr.plugin2.SteamVR_Input_Source
 import openvr.plugin2.SteamVR_Input_Sources
+import org.lwjgl.openvr.VRInput
 
 /** This is the base level action for SteamVR Input Actions. All SteamVR_Action_In and SteamVR_Action_Out inherit from this.
  *  Initializes the ulong handle for the action, has some helper references that all actions will have. */
@@ -202,11 +203,14 @@ abstract class SteamVR_Action : ISteamVR_Action {
     protected var needsReinit: Boolean = false
 
     /** [Should not be called by user code] Gets a copy of the underlying source map so we're always using the same underlying event data */
-    fun <CreateType : SteamVR_Action> getCopy(): CreateType =
-            newCreateType().apply {
-                initializeCopy(actionPath, sourceMap)
-                //return (CreateType)this; //no need to make copies in builds - will reduce memory alloc //todo: having this enabled was not working. all sets were the same (maybe actions too)
-            } as CreateType
+    fun <CreateType : SteamVR_Action> getCopy(): CreateType = when {
+        //no need to make copies at runtime
+        SteamVR_Input.shouldMakeCopy -> newCreateType().apply {
+            initializeCopy(actionPath, sourceMap)
+        }
+        else -> this
+    } as CreateType
+
 
     abstract fun tryNeedsInitData(): String?
 
@@ -261,6 +265,18 @@ abstract class SteamVR_Action : ISteamVR_Action {
     override fun hashCode(): Int = actionPath?.hashCode() ?: 0
 
     /** Compares two SteamVR_Actions by their action path instead of references */
+    fun equals(other: SteamVR_Action?): Boolean {
+        if(other == null)
+            return false
+
+        //SteamVR_Action_Source_Map thisMap = this.GetSourceMap();
+        //SteamVR_Action_Source_Map otherMap = other.GetSourceMap();
+
+        //return this.actionPath == other.actionPath && thisMap.fullPath == otherMap.fullPath;
+        return this.actionPath == other.actionPath
+    }
+
+    /** Compares two SteamVR_Actions by their action path instead of references */
     override fun equals(other: Any?): Boolean = when {
         other == null -> when {
             actionPath.isNullOrEmpty() -> true //if we haven't set a path, say this action is equal to null
@@ -269,7 +285,7 @@ abstract class SteamVR_Action : ISteamVR_Action {
         }
         other === this -> true
 
-        other is SteamVR_Action -> actionPath == other.actionPath
+        other is SteamVR_Action -> equals(other)
 
         else -> false
     }
@@ -329,6 +345,10 @@ abstract class SteamVR_Action : ISteamVR_Action {
 
             return cachedShortName!!
         }
+
+    fun showOrigins() = vrInput.showActionOrigins(actionSet!!.handle, handle)
+
+    fun hideOrigins() = vrInput.showActionOrigins(0, 0)
 }
 
 abstract class SteamVR_Action_Source_MapT<SourceElement : SteamVR_Action_Source> : SteamVR_Action_Source_Map() {

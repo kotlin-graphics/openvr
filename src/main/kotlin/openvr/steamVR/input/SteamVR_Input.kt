@@ -8,6 +8,7 @@ import openvr.lib.vrInput
 import openvr.lib.vrInput.VRInputString
 import openvr.plugin2.SteamVR_Input_Source
 import openvr.plugin2.SteamVR_Input_Sources
+import openvr.steamVR.script.SteamVR_Behaviour
 import openvr.steamVR.script.SteamVR_Settings
 import openvr.steamVR.script.SteamVR_Utils
 import openvr.steamVR_Input.SteamVR_Actions
@@ -23,6 +24,7 @@ typealias Action = () -> Unit
 fun main() {
     println(org.lwjgl.openvr.VR.k_nSteamVRVersionBuild)
 }
+
 object SteamVR_Input {
 
     val defaultInputGameObjectName = "[SteamVR SteamVR_Input]"
@@ -838,6 +840,9 @@ object SteamVR_Input {
         else -> null.also { println("[SteamVR] Wrong type.") }
     } as Array<T>
 
+    internal val shouldMakeCopy: Boolean
+        get() = !SteamVR_Behaviour.isPlaying
+
     /** Gets the localized name of the device that the action corresponds to.
      *
      *  @param inputSource
@@ -860,6 +865,11 @@ object SteamVR_Input {
     fun identifyActionsFile(showLogs: Boolean = true) {
         val path = SteamVR_Settings.actionsFilePath
         if (path != null) {
+//            if (OpenVR.Input == null)
+//            {
+//                Debug.LogError("<b>[SteamVR]</b> Could not instantiate OpenVR Input interface.");
+//                return;
+//            }
             val err = vrInput.setActionManifestPath(path)
             if (err != vrInput.Error.None)
                 System.err.println("[SteamVR] Error loading action manifest into SteamVR: $err")
