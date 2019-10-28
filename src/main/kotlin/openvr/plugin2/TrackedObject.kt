@@ -22,7 +22,8 @@ class TrackedObject {
         Device12(12),
         Device13(13),
         Device14(14),
-        Device15(15);
+        Device15(15),
+        Device16(16);
     }
 
     var index = Index.None

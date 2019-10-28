@@ -6,8 +6,8 @@
 
 package openvr.plugin2
 
-import openvr.steamVR.input.*
-import openvr.steamVR.interactionSystem.core.scripts.RenderModel
+import openvr.assets.steamVR.input.*
+import openvr.assets.steamVR.interactionSystem.core.scripts.RenderModel
 
 
 typealias AttachmentFlags = Int
@@ -1502,44 +1502,3 @@ class Hand(
 //        return trackedObject.GetDeviceIndex()
 //    }
 }
-
-
-//#if UNITY_EDITOR
-////-------------------------------------------------------------------------
-//[UnityEditor.CustomEditor(typeof(Hand))]
-//class HandEditor : UnityEditor.Editor {
-//    //-------------------------------------------------
-//    // Custom Inspector GUI allows us to click from within the UI
-//    //-------------------------------------------------
-//    public override void OnInspectorGUI()
-//    {
-//        DrawDefaultInspector()
-//
-//        /*
-//        Hand hand = (Hand)target;
-//
-//        if (hand.otherHand)
-//        {
-//            if (hand.otherHand.otherHand != hand)
-//            {
-//                UnityEditor.EditorGUILayout.HelpBox("The otherHand of this Hand's otherHand is not this Hand.", UnityEditor.MessageType.Warning);
-//            }
-//
-//            if (hand.handType == SteamVR_Input_Sources.LeftHand && hand.otherHand && hand.otherHand.handType != SteamVR_Input_Sources.RightHand)
-//            {
-//                UnityEditor.EditorGUILayout.HelpBox("This is a left Hand but otherHand is not a right Hand.", UnityEditor.MessageType.Warning);
-//            }
-//
-//            if (hand.handType == SteamVR_Input_Sources.RightHand && hand.otherHand && hand.otherHand.handType != SteamVR_Input_Sources.LeftHand)
-//            {
-//                UnityEditor.EditorGUILayout.HelpBox("This is a right Hand but otherHand is not a left Hand.", UnityEditor.MessageType.Warning);
-//            }
-//
-//            if (hand.handType == SteamVR_Input_Sources.Any && hand.otherHand && hand.otherHand.handType != SteamVR_Input_Sources.Any)
-//            {
-//                UnityEditor.EditorGUILayout.HelpBox("This is an any-handed Hand but otherHand is not an any-handed Hand.", UnityEditor.MessageType.Warning);
-//            }
-//        }
-//        */ //removing for now because it conflicts with other input sources (trackers and such)
-//    }
-//}

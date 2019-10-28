@@ -1,7 +1,7 @@
 package openvr.steamVR_Input.actionSetClasses
 
-import openvr.steamVR.input.SteamVR_ActionSet
-import openvr.steamVR.input.SteamVR_Action_Pose
+import openvr.assets.steamVR.input.SteamVR_ActionSet
+import openvr.assets.steamVR.input.SteamVR_Action_Pose
 import openvr.steamVR_Input.SteamVR_Actions
 
 //------------------------------------------------------------------------------

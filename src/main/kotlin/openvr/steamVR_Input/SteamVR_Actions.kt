@@ -1,6 +1,6 @@
 package openvr.steamVR_Input
 
-import openvr.steamVR.input.*
+import openvr.assets.steamVR.input.*
 import openvr.steamVR_Input.actionSetClasses.SteamVR_Input_ActionSet_buggy
 import openvr.steamVR_Input.actionSetClasses.SteamVR_Input_ActionSet_default
 import openvr.steamVR_Input.actionSetClasses.SteamVR_Input_ActionSet_mixedreality

@@ -17,8 +17,8 @@ module com.github.kotlin_graphics.openvr {
     exports openvr;
     exports openvr.lib;
     exports openvr.plugin2;
-    exports openvr.steamVR.input;
-    exports openvr.steamVR.interactionSystem.core.scripts;
+    exports openvr.assets.steamVR.input;
+    exports openvr.assets.steamVR.interactionSystem.core.scripts;
     exports openvr.steamVR_Input;
     exports openvr.steamVR_Input.actionSetClasses;
     exports openvr.unity;

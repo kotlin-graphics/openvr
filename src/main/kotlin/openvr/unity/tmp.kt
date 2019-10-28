@@ -3,8 +3,7 @@ package openvr.unity
 import glm_.f
 import glm_.min
 import glm_.quat.Quat
-import openvr.steamVR.script.SteamVR_Settings
-import uno.glfw.glfw
+import openvr.assets.steamVR.script.SteamVR_Settings
 import kotlin.math.abs
 import kotlin.math.acos
 
