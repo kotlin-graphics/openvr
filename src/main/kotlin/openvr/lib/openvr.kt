@@ -492,5 +492,5 @@ object vr {
 
     /** Returns a token that represents whether the VR interface handles need to be reloaded */
     val initToken: Int
-        get () = VR_GetInitToken()
+        get() = VR_GetInitToken()
 }

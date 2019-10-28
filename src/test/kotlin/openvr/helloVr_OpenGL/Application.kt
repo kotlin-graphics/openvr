@@ -230,7 +230,7 @@ class Application {
 
         for (hand in Hand.values()) {
             val poseData = vr.InputPoseActionData()
-            val err = vrInput.getPoseActionData(rHand[hand].actionPose, TrackingUniverseOrigin.Standing, 0f, poseData, vr.invalidInputValueHandle)
+            val err = vrInput.getPoseActionDataForNextFrame(rHand[hand].actionPose, TrackingUniverseOrigin.Standing, poseData, vr.invalidInputValueHandle)
             if (err != vrInput.Error.None || !poseData.active || !poseData.pose.poseIsValid)
                 rHand[hand].showController = false
             else {
