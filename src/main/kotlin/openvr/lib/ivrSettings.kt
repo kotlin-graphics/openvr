@@ -128,9 +128,9 @@ object vrSettings : vrInterface {
             get() = getFloat(section, "speakersForwardYawOffsetDegrees")
             set(value) = setFloat(section, "speakersForwardYawOffsetDegrees", value)
 
-        var basestationPowerManagement: Boolean
-            get() = getBool(section, "basestationPowerManagement")
-            set(value) = setBool(section, "basestationPowerManagement", value)
+        var basestationPowerManagement: Int
+            get() = getInt(section, "basestationPowerManagement")
+            set(value) = setInt(section, "basestationPowerManagement", value)
 
         var neverKillProcesses: Boolean
             get() = getBool(section, "neverKillProcesses")
@@ -240,10 +240,6 @@ object vrSettings : vrInterface {
             get() = getBool(section, "doNotFadeToGrid")
             set(value) = setBool(section, "doNotFadeToGrid", value)
 
-        var inputBindingUI: Boolean
-            get() = getBool(section, "inputBindingUI")
-            set(value) = setBool(section, "inputBindingUI", value)
-
         var renderCameraMode: String
             get() = getString(section, "renderCameraMode")
             set(value) = setString(section, "renderCameraMode", value)
@@ -267,6 +263,18 @@ object vrSettings : vrInterface {
         var lastVersionNoticeDate: String // TODO check type
             get() = getString(section, "lastVersionNoticeDate")
             set(value) = setString(section, "lastVersionNoticeDate", value)
+
+        var hmdDisplayColorGainR: Float
+            get() = getFloat(section, "hmdDisplayColorGainR")
+            set(value) = setFloat(section, "hmdDisplayColorGainR", value)
+
+        var hmdDisplayColorGainG: Float
+            get() = getFloat(section, "hmdDisplayColorGainG")
+            set(value) = setFloat(section, "hmdDisplayColorGainG", value)
+
+        var hmdDisplayColorGainB: Float
+            get() = getFloat(section, "hmdDisplayColorGainB")
+            set(value) = setFloat(section, "hmdDisplayColorGainB", value)
     }
 
     object directMode {
@@ -736,6 +744,28 @@ object vrSettings : vrInterface {
 
     // Dismissed warnings
 //    static const char * const k_pch_DismissedWarnings_Section = "DismissedWarnings";
+
+
+    //-----------------------------------------------------------------------------
+    // Input Settings
+    object inputSettings {
+
+        val section = "input"
+
+
+        var leftThumbstickRotation: Float
+            get() = getFloat(power.section, "leftThumbstickRotation")
+            set(value) = setFloat(power.section, "leftThumbstickRotation", value)
+
+        var rightThumbstickRotation: Float
+            get() = getFloat(power.section, "rightThumbstickRotation")
+            set(value) = setFloat(power.section, "rightThumbstickRotation", value)
+
+        var thumbstickDeadzone: Float
+            get() = getFloat(power.section, "thumbstickDeadzone")
+            set(value) = setFloat(power.section, "thumbstickDeadzone", value)
+    }
+
 
     /**
      * Returns true if file sync occurred (force or settings dirty).

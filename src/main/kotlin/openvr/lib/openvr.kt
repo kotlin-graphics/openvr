@@ -21,8 +21,8 @@ import org.lwjgl.system.MemoryUtil.*
 object vr {
 
     const val steamVrVersionMajor = 1
-    const val steamVrVersionMinor = 5
-    const val steamVrVersionBuild = 17
+    const val steamVrVersionMinor = 6
+    const val steamVrVersionBuild = 10
 
     const val steamVrVersion = "$steamVrVersionMajor.$steamVrVersionMinor.$steamVrVersionBuild beta 00"
 
@@ -311,6 +311,35 @@ object vr {
     inline fun CameraVideoStreamFrameHeader(block: CameraVideoStreamFrameHeader.() -> Unit): CameraVideoStreamFrameHeader = CameraVideoStreamFrameHeader().also(block)
 
     const val screenshotHandleInvalid: ScreenshotHandle = 0
+
+    /** Compositor frame timing reprojection flags. */
+    const val VRCompositor_ReprojectionReason_Cpu = 0x01
+    const val VRCompositor_ReprojectionReason_Gpu = 0x02
+    /** This flag indicates the async reprojection mode is active, */
+    const val VRCompositor_ReprojectionAsync = 0x04
+    // but does not indicate if reprojection actually happened or not.
+    // Use the ReprojectionReason flags above to check if reprojection
+    // was actually applied (i.e. scene texture was reused).
+    // NumFramePresents > 1 also indicates the scene texture was reused,
+    // and also the number of times that it was presented in total.
+
+    /** This flag indicates whether or not motion smoothing was triggered for this frame */
+    const val VRCompositor_ReprojectionMotion = 0x08
+
+    /** The runtime may predict more than one frame (up to four) ahead if */
+    const val VRCompositor_PredictionMask = 0x30
+    // it detects the application is taking too long to render. These two
+    // bits will contain the count of additional frames (normally zero).
+    // Use the VR_COMPOSITOR_ADDITIONAL_PREDICTED_FRAMES macro to read from
+    // the latest frame timing entry.
+
+    /** Number of frames the compositor is throttling the application. */
+    const val VRCompositor_ThrottleMask = 0xC0
+    // Use the VR_COMPOSITOR_NUMBER_OF_THROTTLED_FRAMES macro to read from
+    // the latest frame timing entry.
+
+//    #define VR_COMPOSITOR_ADDITIONAL_PREDICTED_FRAMES( timing ) ( ( ( timing ).m_nReprojectionFlags & vr::VRCompositor_PredictionMask ) >> 4 )
+//    #define VR_COMPOSITOR_NUMBER_OF_THROTTLED_FRAMES( timing ) ( ( ( timing ).m_nReprojectionFlags & vr::VRCompositor_ThrottleMask ) >> 6 )
 
 //    inline fun DriverDirectModeFrameTiming(): DriverDirectModeFrameTiming = DriverDirectModeFrameTiming.ca
 //    inline fun DriverDirectModeFrameTiming(capacity: Int): DriverDirectModeFrameTiming.Buffer = DriverDirectModeFrameTiming.create(ptr.advance(DriverDirectModeFrameTiming.SIZEOF * capacity), capacity)

@@ -176,7 +176,10 @@ object vrOverlay : vrInterface {
 
         /** If this is set the overlay will receive smooth VREvent_ScrollSmooth that emulate trackpad scrolling.
          *  Requires mouse input mode.  */
-        SendVRSmoothScrollEvents(17);
+        SendVRSmoothScrollEvents(17),
+
+        /** If this is set, the overlay texture will be protected content, preventing unauthorized reads. */
+        ProtectedContent(18);
 
         companion object {
             infix fun of(i: Int) = values().first { it.i == i }

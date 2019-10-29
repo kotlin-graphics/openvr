@@ -216,7 +216,7 @@ class Application {
         val analogData = vr.InputAnalogActionData()
         if (vrInput.getAnalogActionData(actionAnalongInput, analogData, vr.invalidInputValueHandle) == vrInput.Error.None && analogData.active)
             analogValue.put(analogData.x, analogData.y)
-        analogValue.println("analogValue: ")
+//        analogValue.println("analogValue: ")
 
         rHand[Hand.Left].showController = true
         rHand[Hand.Right].showController = true

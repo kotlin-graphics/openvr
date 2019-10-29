@@ -14,21 +14,6 @@ import java.nio.IntBuffer
 
 object vrCompositor : vrInterface {
 
-    const val ReprojectionReason_Cpu = 0x01
-    const val ReprojectionReason_Gpu = 0x02
-    /**
-     *  This flag indicates the async reprojection mode is active, but does not indicate if reprojection actually happened or not.
-     *  Use the ReprojectionReason flags above to check if reprojection was actually applied (i.e. scene texture was reused).
-     *  NumFramePresents > 1 also indicates the scene texture was reused, and also the number of times that it was presented in total.  */
-    const val ReprojectionAsync = 0x04
-
-    /** This flag indicates whether or not motion smoothing was triggered for this frame */
-    const val ReprojectionMotion = 0x08
-
-    /** The runtime may predict more than one frame (up to four) ahead if it detects the application is taking too long to render.
-     *  These two bits will contain the count of additional frames (normally zero). */
-    const val PredictionMask = 0x30
-
     /** Errors that can occur with the VR compositor */
     enum class Error(@JvmField val i: Int) {
 

@@ -13,7 +13,6 @@ import gln.misc.glClearDepthBuffer
 import gln.texture.glBindTexture2d
 import gln.uniform.glUniform
 import gln.vertexArray.glBindVertexArray
-import gln.vertexArray.glGenVertexArray
 import kool.*
 import kool.lib.isNotEmpty
 import openvr.lib.VREye
@@ -24,7 +23,6 @@ import org.lwjgl.opengl.GL13.GL_TEXTURE0
 import org.lwjgl.opengl.GL13.glActiveTexture
 import org.lwjgl.opengl.GL15C
 import org.lwjgl.opengl.GL20C
-import org.lwjgl.opengl.GL30
 import org.lwjgl.opengl.GL30C.*
 import uno.kotlin.url
 import java.awt.image.DataBufferByte
@@ -116,7 +114,7 @@ class Scene {
         glGenVertexArrays(vertexArrayName)
         glBindVertexArray(vertexArrayName)
         glf.pos3_tc2.set()
-        glBindVertexArray(vertexArrayName)
+        glBindVertexArray(0)
     }
 
     fun addCube(mat: Mat4, vertData: ArrayList<Float>) {

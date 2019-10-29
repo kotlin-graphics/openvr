@@ -305,6 +305,8 @@ enum class TrackedDeviceProperty(@JvmField val i: Int) {
     Prop_DisplayAvailableFrameRates_Float_Array(2080),
     /** if this is true but Prop_DisplayAvailableFrameRates_Float_Array is empty, explain to user */
     Prop_DisplaySupportsMultipleFramerates_Bool(2081),
+    DisplayColorMultLeft_Vector3(2082),
+    DisplayColorMultRight_Vector3(2083),
 
     Prop_DashboardLayoutPathName_String(2090),
 
@@ -1051,6 +1053,7 @@ enum class VRInitError(@JvmField val i: Int) {
     Init_TrackerManagerInitFailed(142),
     Init_AlreadyRunning(143),
     Init_FailedForVrMonitor(144),
+    Init_PropertyManagerInitFailed(145),
 
     Driver_Failed(200),
     Driver_Unknown(201),
@@ -1076,6 +1079,8 @@ enum class VRInitError(@JvmField val i: Int) {
     IPC_CompositorConnectFailed(306),
     IPC_CompositorInvalidConnectResponse(307),
     IPC_ConnectFailedAfterMultipleAttempts(308),
+    IPC_ConnectFailedAfterTargetExited(309),
+    IPC_NamespaceUnavailable(310),
 
     Compositor_Failed(400),
     Compositor_D3D11HardwareRequired(401),

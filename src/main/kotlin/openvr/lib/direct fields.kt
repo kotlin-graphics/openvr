@@ -693,51 +693,6 @@ val CameraVideoStreamFrameHeader.frameExposureTime: Long
     get() = CameraVideoStreamFrameHeader.nulFrameExposureTime(adr)
 
 
-val DriverDirectModeFrameTiming.size: Int
-    get() = DriverDirectModeFrameTiming.nm_nSize(adr)
-val DriverDirectModeFrameTiming.numFramePresents: Int
-    get() = DriverDirectModeFrameTiming.nm_nNumFramePresents(adr)
-val DriverDirectModeFrameTiming.numMisPresented: Int
-    get() = DriverDirectModeFrameTiming.nm_nNumMisPresented(adr)
-val DriverDirectModeFrameTiming.numDroppedFrames: Int
-    get() = DriverDirectModeFrameTiming.nm_nNumDroppedFrames(adr)
-val DriverDirectModeFrameTiming.reprojectionFlags: Int
-    get() = DriverDirectModeFrameTiming.nm_nReprojectionFlags(adr)
-
-
-val ImuSample.sampleTime: Double
-    get() = ImuSample.nfSampleTime(adr)
-val ImuSample.accel: Vec3
-    get() = Vec3.fromPointer(adr + ImuSample.VACCEL)
-val ImuSample.gyro: Vec3
-    get() = Vec3.fromPointer(adr + ImuSample.VGYRO)
-val ImuSample.offScaleFlags: Int
-    get() = ImuSample.nunOffScaleFlags(adr)
-
-// ivrsystem.h
-
-
-// ivrapplications.h
-
-var AppOverrideKeys.key: String
-    get() = pchKeyString()
-    set(value) = TODO()
-//stak {
-//        val encoded = it.bufferOfAscii(value)
-//        AppOverrideKeys.npchKey(adr, encoded)
-//    }
-var AppOverrideKeys.value: String
-    get() = TODO()//pchString()
-    set(value) = TODO()
-
-// ivrsettings.h
-
-// ivrchaperone.h
-
-// ivrchaperonesetup.h
-
-// ivrcompositor.h ================================================================================================================================================
-
 val CompositorFrameTiming.size: Int
     get() = CompositorFrameTiming.nm_nSize(adr)
 val CompositorFrameTiming.frameIndex: Int
@@ -786,6 +741,52 @@ val CompositorFrameTiming.compositorRenderStartMs: Float
     get() = CompositorFrameTiming.nm_flCompositorRenderStartMs(adr)
 val CompositorFrameTiming.hmdPose: TrackedDevicePose
     get() = CompositorFrameTiming.nm_HmdPose(adr)
+
+
+val DriverDirectModeFrameTiming.size: Int
+    get() = DriverDirectModeFrameTiming.nm_nSize(adr)
+val DriverDirectModeFrameTiming.numFramePresents: Int
+    get() = DriverDirectModeFrameTiming.nm_nNumFramePresents(adr)
+val DriverDirectModeFrameTiming.numMisPresented: Int
+    get() = DriverDirectModeFrameTiming.nm_nNumMisPresented(adr)
+val DriverDirectModeFrameTiming.numDroppedFrames: Int
+    get() = DriverDirectModeFrameTiming.nm_nNumDroppedFrames(adr)
+val DriverDirectModeFrameTiming.reprojectionFlags: Int
+    get() = DriverDirectModeFrameTiming.nm_nReprojectionFlags(adr)
+
+
+val ImuSample.sampleTime: Double
+    get() = ImuSample.nfSampleTime(adr)
+val ImuSample.accel: Vec3
+    get() = Vec3.fromPointer(adr + ImuSample.VACCEL)
+val ImuSample.gyro: Vec3
+    get() = Vec3.fromPointer(adr + ImuSample.VGYRO)
+val ImuSample.offScaleFlags: Int
+    get() = ImuSample.nunOffScaleFlags(adr)
+
+// ivrsystem.h
+
+
+// ivrapplications.h
+
+var AppOverrideKeys.key: String
+    get() = pchKeyString()
+    set(value) = TODO()
+//stak {
+//        val encoded = it.bufferOfAscii(value)
+//        AppOverrideKeys.npchKey(adr, encoded)
+//    }
+var AppOverrideKeys.value: String
+    get() = TODO()//pchString()
+    set(value) = TODO()
+
+// ivrsettings.h
+
+// ivrchaperone.h
+
+// ivrchaperonesetup.h
+
+// ivrcompositor.h ================================================================================================================================================
 
 
 val CompositorCumulativeStats.pid: Int
