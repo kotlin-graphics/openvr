@@ -114,6 +114,8 @@ class Scene {
         glGenVertexArrays(vertexArrayName)
         glBindVertexArray(vertexArrayName)
         glf.pos3_tc2.set()
+        glf.pos3_tc2.enable()
+        glBindBuffer(GL_ARRAY_BUFFER, 0)
         glBindVertexArray(0)
     }
 

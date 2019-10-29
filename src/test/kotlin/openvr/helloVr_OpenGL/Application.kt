@@ -231,6 +231,7 @@ class Application {
         for (hand in Hand.values()) {
             val poseData = vr.InputPoseActionData()
             val err = vrInput.getPoseActionDataForNextFrame(rHand[hand].actionPose, TrackingUniverseOrigin.Standing, poseData, vr.invalidInputValueHandle)
+//            println("${err != vrInput.Error.None} || ${!poseData.active} || ${!poseData.pose.poseIsValid}")
             if (err != vrInput.Error.None || !poseData.active || !poseData.pose.poseIsValid)
                 rHand[hand].showController = false
             else {
@@ -320,7 +321,7 @@ class Application {
                     return null // move on to the next tracked device
                 }
 
-                return CGLRenderModel(renderModelName, model, texture).also {
+                CGLRenderModel(renderModelName, model, texture).also {
                     renderModels += it
                     model.freeNative()
                     texture.freeNative()
