@@ -81,14 +81,14 @@ object vrRenderModels : vrInterface {
                 var err: Int
                 while (true) {
                     err = nVRRenderModels_LoadRenderModel_Async(it.addressOfAscii(renderModelName), pModel.adr)
-                    if (err != vrRenderModels.Error.Loading.i)
+                    if (err != Error.Loading.i)
                         break
 
                     Thread.sleep(loadPollingInterval)
                 }
                 pErr[0] = err // save error in any case
                 when (err) {
-                    vrRenderModels.Error.None.i -> RenderModel.create(pModel[0])
+                    Error.None.i -> RenderModel.create(pModel[0])
                     else -> null
                 }
             }
@@ -107,7 +107,7 @@ object vrRenderModels : vrInterface {
                 val pModel = it.mallocPointer(1)
                 pErr[0] = nVRRenderModels_LoadRenderModel_Async(it.addressOfAscii(renderModelName), pModel.adr)
                 when (pErr[0]) {
-                    vrRenderModels.Error.None.i -> RenderModel.create(pModel[0])
+                    Error.None.i -> RenderModel.create(pModel[0])
                     else -> null
                 }
             }
@@ -127,13 +127,13 @@ object vrRenderModels : vrInterface {
                 var err: Int
                 while (true) {
                     err = nVRRenderModels_LoadTexture_Async(textureId, pTexture.adr)
-                    if (err != vrRenderModels.Error.Loading.i)
+                    if (err != Error.Loading.i)
                         break
                     Thread.sleep(loadPollingInterval)
                 }
                 pErr[0] = err // save error in any case
                 when (err) {
-                    vrRenderModels.Error.None.i -> RenderModelTextureMap.create(pTexture[0])
+                    Error.None.i -> RenderModelTextureMap.create(pTexture[0])
                     else -> null
                 }
             }
@@ -144,7 +144,7 @@ object vrRenderModels : vrInterface {
                 val pTexture = it.mallocPointer(1)
                 pErr[0] = nVRRenderModels_LoadTexture_Async(textureId, pTexture.adr)
                 when (pErr[0]) {
-                    vrRenderModels.Error.None.i -> RenderModelTextureMap.create(pTexture[0])
+                    Error.None.i -> RenderModelTextureMap.create(pTexture[0])
                     else -> null
                 }
             }

@@ -109,7 +109,7 @@ class Application {
 
         vrInput.apply {
 
-            setActionManifestPath(javaClass.classLoader.getResource("hellovr_actions.json"))
+            setActionManifestPath(javaClass.classLoader.getResource("hellovr_actions.json")!!)
 
             actionHideCubes = getActionHandle("/actions/demo/in/HideCubes")
             actionHideThisController = getActionHandle("/actions/demo/in/HideThisController")
