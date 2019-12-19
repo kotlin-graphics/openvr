@@ -130,7 +130,7 @@ object vrApplications : vrInterface {
      * @param temporary
      */
     fun addApplicationManifest(applicationManifestFullPath: String, temporary: Boolean = false): Error =
-            stak { Error of nVRApplications_AddApplicationManifest(it.addressOfAscii(applicationManifestFullPath), temporary) }
+            stak.asciiAdr(applicationManifestFullPath) { Error of nVRApplications_AddApplicationManifest(it, temporary) }
 
     /**
      * Removes an application manifest from the list to load when building the list of installed applications.
@@ -233,7 +233,7 @@ object vrApplications : vrInterface {
      * @param appKey
      */
     infix fun cancelApplicationLaunch(appKey: String): Boolean =
-            stak { nVRApplications_CancelApplicationLaunch(it.addressOfAscii(appKey)) }
+            stak.asciiAdr(appKey) { nVRApplications_CancelApplicationLaunch(it) }
 
     /**
      * Identifies a running application. OpenVR can't always tell which process started in response to a URL. This function allows a URL handler (or the
@@ -252,7 +252,7 @@ object vrApplications : vrInterface {
      * @param appKey
      */
     infix fun getApplicationProcessId(appKey: String): Int =
-            stak { nVRApplications_GetApplicationProcessId(it.addressOfAscii(appKey)) }
+            stak.asciiAdr(appKey) { nVRApplications_GetApplicationProcessId(it) }
 
     /**
      * Kind of useless on JVM, but it will be offered anyway on the enum itself
@@ -285,11 +285,15 @@ object vrApplications : vrInterface {
      */
     @JvmOverloads
     fun getApplicationPropertyString(appKey: String, property: Property, propertyValueBufferLen: Int = vr.maxPropertyStringSize, error: VRApplicationErrorBuffer = pError): String =
-            stak {
-                val appKeyEncoded = it.addressOfAscii(appKey)
-                val propertyValueBuffer = it.malloc(propertyValueBufferLen)
-                val result = nVRApplications_GetApplicationPropertyString(appKeyEncoded, property.i, propertyValueBuffer.adr, propertyValueBufferLen, error.adr)
-                memASCII(propertyValueBuffer, result - 1)
+            stak { s ->
+                val appKeyEncoded = s.asciiAdr(appKey)
+                var pPropertyValue = s.nmalloc(1, propertyValueBufferLen)
+                val result = nVRApplications_GetApplicationPropertyString(appKeyEncoded, property.i, pPropertyValue, propertyValueBufferLen, error.adr)
+                if (result > propertyValueBufferLen) {
+                    pPropertyValue = s.nmalloc(1, result)
+                    nVRApplications_GetApplicationPropertyString(appKeyEncoded, property.i, pPropertyValue, propertyValueBufferLen, error.adr)
+                }
+                memASCII(pPropertyValue, result - 1)
             }
 
     /**
@@ -303,7 +307,7 @@ object vrApplications : vrInterface {
      */
     @JvmOverloads
     fun getApplicationPropertyBool(appKey: String, property: Property, error: VRApplicationErrorBuffer = pError): Boolean =
-            stak { nVRApplications_GetApplicationPropertyBool(it.addressOfAscii(appKey), property.i, error.adr) }
+            stak.asciiAdr(appKey) { nVRApplications_GetApplicationPropertyBool(it, property.i, error.adr) }
 
     /**
      * Returns a uint64 value for an application property. Returns 0 in all error cases.
@@ -316,7 +320,7 @@ object vrApplications : vrInterface {
      */
     @JvmOverloads
     fun getApplicationPropertyLong(appKey: String, property: Property, error: VRApplicationErrorBuffer = pError): Long =
-            stak { nVRApplications_GetApplicationPropertyUint64(it.addressOfAscii(appKey), property.i, error.adr) }
+            stak.asciiAdr(appKey) { nVRApplications_GetApplicationPropertyUint64(it, property.i, error.adr) }
 
     /**
      * Sets the application auto-launch flag. This is only valid for applications which return true for
@@ -335,7 +339,7 @@ object vrApplications : vrInterface {
      * @param appKey
      */
     infix fun getApplicationAutoLaunch(appKey: String): Boolean =
-            stak { nVRApplications_GetApplicationAutoLaunch(it.addressOfAscii(appKey)) }
+            stak.asciiAdr(appKey) { nVRApplications_GetApplicationAutoLaunch(it) }
 
     /**
      * Adds this mime-type to the list of supported mime types for this application.
@@ -353,8 +357,10 @@ object vrApplications : vrInterface {
      * @param appKeyBuffer
      */
     fun getDefaultApplicationForMimeType(mimeType: String, appKeyBuffer: ByteBuffer?): Boolean =
-            stak { nVRApplications_GetDefaultApplicationForMimeType(it.addressOfAscii(mimeType), appKeyBuffer?.adr
-                    ?: NULL, appKeyBuffer?.cap ?: 0) }
+            stak {
+                nVRApplications_GetDefaultApplicationForMimeType(it.addressOfAscii(mimeType), appKeyBuffer?.adr
+                        ?: NULL, appKeyBuffer?.cap ?: 0)
+            }
 
     /**
      * Get the list of supported mime types for this application, comma-delimited. TODO offer a more convenient one?
@@ -363,21 +369,23 @@ object vrApplications : vrInterface {
      * @param mimeTypesBuffer
      */
     fun getApplicationSupportedMimeTypes(appKey: String, mimeTypesBuffer: ByteBuffer?): Boolean =
-            stak { nVRApplications_GetApplicationSupportedMimeTypes(it.addressOfAscii(appKey), mimeTypesBuffer?.adr
-                    ?: NULL, mimeTypesBuffer?.rem ?: 0) }
+            stak.asciiAdr(appKey) {
+                nVRApplications_GetApplicationSupportedMimeTypes(it, mimeTypesBuffer?.adr ?: NULL, mimeTypesBuffer?.rem
+                        ?: 0)
+            }
 
     /**
      * Get the list of app-keys that support this mime type, comma-delimited, the return value is number of bytes you need to return the full string.
      *
      * @param mimeType
-     * @param appKeysThatSupportBufferSize
      */
-    fun getApplicationsThatSupportMimeType(mimeType: String, appKeysThatSupportBufferSize: Int): String =
+    infix fun getApplicationsThatSupportMimeType(mimeType: String): List<String> =
             stak {
-                val appKeysThatSupportBuffer = it.malloc(appKeysThatSupportBufferSize)
-                val pMimeType = it.addressOfAscii(mimeType)
-                val result = nVRApplications_GetApplicationsThatSupportMimeType(pMimeType, appKeysThatSupportBuffer.adr, appKeysThatSupportBufferSize)
-                memASCII(appKeysThatSupportBuffer, result - 1)
+                val pMimeType = it.asciiAdr(mimeType)
+                val size = nVRApplications_GetApplicationsThatSupportMimeType(pMimeType, NULL, 0)
+                val appKeys = it.nmalloc(1, size)
+                nVRApplications_GetApplicationsThatSupportMimeType(pMimeType, appKeys, size)
+                memASCII(appKeys, size - 1).split(',')
             }
 
     /**
@@ -386,11 +394,12 @@ object vrApplications : vrInterface {
      * @param handle
      * @param argsSize
      */
-    fun getApplicationLaunchArguments(handle: Int, argsSize: Int): String =
+    infix fun getApplicationLaunchArguments(handle: Int): String =
             stak {
-                val args = it.malloc(argsSize)
-                val result = nVRApplications_GetApplicationLaunchArguments(handle, args.adr, argsSize)
-                memASCII(args, result - 1)
+                val size = nVRApplications_GetApplicationLaunchArguments(handle, NULL, 0)
+                val args = it.nmalloc(1, size)
+                nVRApplications_GetApplicationLaunchArguments(handle, args, size)
+                memASCII(args, size - 1)
             }
 
     /**
@@ -398,11 +407,15 @@ object vrApplications : vrInterface {
      *
      * @param appKeyBuffer
      */
-    infix fun IVRApplications.getStartingApplication(appKeyBuffer: ByteBuffer): Error =
-            Error of nVRApplications_GetStartingApplication(appKeyBuffer.adr, appKeyBuffer.rem)
+    val startingApplication: String =
+            stak {
+                val appKey = it.nmalloc(1, maxKeyLength)
+                pError[0] = nVRApplications_GetStartingApplication(appKey, maxKeyLength)
+                memASCII(appKey, maxKeyLength - 1)
+            }
 
     /** Returns the application transition state. */
-    val IVRApplications.transitionState: TransitionState
+    val transitionState: TransitionState
         get() = TransitionState of VRApplications_GetTransitionState()
 
     /**
@@ -422,7 +435,7 @@ object vrApplications : vrInterface {
      * @param appKey
      */
     infix fun performApplicationPrelaunchCheck(appKey: String): Error =
-            stak { Error of nVRApplications_PerformApplicationPrelaunchCheck(it.addressOfAscii(appKey)) }
+            stak.asciiAdr(appKey) { Error of nVRApplications_PerformApplicationPrelaunchCheck(it) }
 
     /**
      * Kind of useless on JVM, but it will be offered anyway on the enum itself
@@ -449,14 +462,14 @@ object vrApplications : vrInterface {
      * @param workingDirectory
      */
     fun launchInternalProcess(binaryPath: String, arguments: String, workingDirectory: String): Error =
-            stak { Error of nVRApplications_LaunchInternalProcess(it.addressOfAscii(binaryPath), it.addressOfAscii(arguments), it.addressOfAscii(workingDirectory)) }
+            stak { Error of nVRApplications_LaunchInternalProcess(it.asciiAdr(binaryPath), it.asciiAdr(arguments), it.asciiAdr(workingDirectory)) }
 
     /**
      * Returns the current scene process ID according to the application system. A scene process will get scene focus once it starts rendering, but it will
      * appear here once it calls {@code VR_Init} with the Scene application.
      * type.
      */
-    val IVRApplications.currentSceneProcessId: Int
+    val currentSceneProcessId: Int
         get() = VRApplications_GetCurrentSceneProcessId()
 
     override val version: String

@@ -13,6 +13,7 @@ import glm_.vec3.Vec3
 import glm_.vec3.Vec3d
 import glm_.vec4.Vec4
 import glm_.vec4.Vec4ub
+import kool.BYTES
 import kool.Ptr
 import kool.adr
 import kool.cap

@@ -1,8 +1,8 @@
 package openvr.lib
 
-import glm_.BYTES
 import glm_.vec2.Vec2i
 import kool.adr
+import kool.mInt
 import org.lwjgl.openvr.VRExtendedDisplay.*
 import org.lwjgl.system.MemoryUtil.memGetInt
 import java.nio.IntBuffer
@@ -12,25 +12,19 @@ object vrExtendedDisplay : vrInterface {
     /** Size and position that the window needs to be on the VR display. */
     fun getWindowBounds(pos: Vec2i, size: Vec2i) =
             stak {
-                val x = it.nmalloc(1, Vec2i.size * 2)
-                val y = x + Int.BYTES
-                val width = y + Int.BYTES
-                val height = width + Int.BYTES
-                nVRExtendedDisplay_GetWindowBounds(x, y, width, height)
-                pos.put(memGetInt(x), memGetInt(y))
-                size.put(memGetInt(width), memGetInt(height))
+                val b = it.mInt(4)
+                nVRExtendedDisplay_GetWindowBounds(b.adr, (b + 1).adr, (b + 2).adr, (b + 3).adr)
+                pos.put(b[0], b[1])
+                size.put(b[2], b[3])
             }
 
     /** Gets the viewport in the frame buffer to draw the output of the distortion into. */
     fun getEyeOutputViewport(eye: VREye, pos: Vec2i, size: Vec2i) =
             stak {
-                val x = it.nmalloc(1, Vec2i.size * 2)
-                val y = x + Int.BYTES
-                val width = y + Int.BYTES
-                val height = width + Int.BYTES
-                nVRExtendedDisplay_GetEyeOutputViewport(eye.i, x, y, width, height)
-                pos.put(memGetInt(x), memGetInt(y))
-                size.put(memGetInt(width), memGetInt(height))
+                val v = it.mInt(4)
+                nVRExtendedDisplay_GetEyeOutputViewport(eye.i, v.adr, (v + 1).adr, (v + 2).adr, (v + 3).adr)
+                pos.put(v[0], v[1])
+                size.put(v[2], v[3])
             }
 
     /**

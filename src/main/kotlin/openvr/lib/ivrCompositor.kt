@@ -3,6 +3,7 @@ package openvr.lib
 import glm_.vec4.Vec4
 import kool.adr
 import kool.cap
+import kool.rem
 import org.lwjgl.PointerBuffer
 import org.lwjgl.openvr.*
 import org.lwjgl.openvr.VRCompositor.*
@@ -335,9 +336,10 @@ object vrCompositor : vrInterface {
      */
     val vulkanInstanceExtensionsRequired: List<String>
         get() = stak {
-            val size = VRCompositor.nVRCompositor_GetVulkanInstanceExtensionsRequired(NULL, 0)
-            val buffer = it.malloc(size)
-            memASCII(buffer, buffer.cap - 1).split(' ')
+            val size = nVRCompositor_GetVulkanInstanceExtensionsRequired(NULL, 0)
+            val buffer = it.nmalloc(1, size)
+            nVRCompositor_GetVulkanInstanceExtensionsRequired(buffer, size)
+            memASCII(buffer, size - 1).split(' ')
         }
 
     /**
@@ -349,8 +351,9 @@ object vrCompositor : vrInterface {
      */
     infix fun getVulkanDeviceExtensionsRequired(physicalDevice: VkPhysicalDevice): List<String> =
             stak {
-                val size = VRCompositor.nVRCompositor_GetVulkanDeviceExtensionsRequired(physicalDevice.adr, NULL, 0)
-                val buffer = it.malloc(size)
+                val size = nVRCompositor_GetVulkanDeviceExtensionsRequired(physicalDevice.adr, NULL, 0)
+                val buffer = it.nmalloc(1, size)
+                nVRCompositor_GetVulkanDeviceExtensionsRequired(physicalDevice.adr, buffer, size)
                 memASCII(buffer, size - 1).split(' ')
             }
 

@@ -1,7 +1,7 @@
 package openvr.lib
 
 import glm_.BYTES
-import kool.set
+import kool.*
 import kool.adr
 import kool.rem
 import org.lwjgl.openvr.*
@@ -191,11 +191,7 @@ object vrInput : vrInterface {
      *
      * Note: Multi-thread unsafe if reading the error from the class property. */
     fun getActionSetHandle(actionSetName: String, pErr: VRInputErrorBuffer = pError): VRActionSetHandle =
-            stak {
-                val pHandle = it.nmalloc(8, Long.BYTES)
-                pErr[0] = nVRInput_GetActionSetHandle(it.addressOfAscii(actionSetName), pHandle)
-                memGetLong(pHandle)
-            }
+            stak { s -> s.longAdr { pErr[0] = nVRInput_GetActionSetHandle(s.addressOfAscii(actionSetName), it) } }
 
     /** JVM custom
      *
@@ -203,11 +199,7 @@ object vrInput : vrInterface {
      *
      *  Note: Multi-thread unsafe if reading the error from the class property.     */
     fun getActionHandle(actionName: String, pErr: VRInputErrorBuffer = pError): VRActionHandle =
-            stak {
-                val pHandle = it.nmalloc(8, Long.BYTES)
-                pErr[0] = nVRInput_GetActionHandle(it.addressOfAscii(actionName), pHandle)
-                memGetLong(pHandle)
-            }
+            stak { s -> s.longAdr { pErr[0] = nVRInput_GetActionHandle(s.addressOfAscii(actionName), it) } }
 
     /** JVM custom
      *
@@ -215,11 +207,7 @@ object vrInput : vrInterface {
      *
      * Note: Multi-thread unsafe if reading the error from the class property.     */
     fun getInputSourceHandle(inputSourcePath: String, pErr: VRInputErrorBuffer = pError): VRInputValueHandle =
-            stak {
-                val pHandle = it.nmalloc(8, Long.BYTES)
-                pErr[0] = nVRInput_GetInputSourceHandle(it.addressOfAscii(inputSourcePath), pHandle)
-                memGetLong(pHandle)
-            }
+            stak { s -> s.longAdr { pErr[0] = nVRInput_GetInputSourceHandle(s.addressOfAscii(inputSourcePath), it) } }
 
     /**
      * Reads the current state into all actions. After this call, the results of {@code Get*Action} calls will be the same until the next call to
@@ -287,16 +275,14 @@ object vrInput : vrInterface {
      *  Note: Multi-thread unsafe if reading the error from the class property.*/
     @JvmOverloads
     fun getBoneCount(action: VRActionHandle, pErr: VRInputErrorBuffer = pError): Int =
-            stak.intAddress {
-                pErr[0] = nVRInput_GetBoneCount(action, it)
-            }
+            stak.intAdr { pErr[0] = nVRInput_GetBoneCount(action, it) }
 
     /** Fills the given array with the index of each bone's parent in the skeleton associated with the given action */
     fun getBoneHierarchy(action: VRActionHandle, boneCount: Int, pErr: VRInputErrorBuffer = pError): IntArray =
-            stak {
-                val parentIndices = it.nmalloc(Int.BYTES, boneCount * Int.BYTES)
-                pErr[0] = nVRInput_GetBoneHierarchy(action, parentIndices, boneCount)
-                IntArray(boneCount) { memGetInt(parentIndices + it * Int.BYTES) }
+            stak { s ->
+                val parentIndices = s.mInt(boneCount)
+                pErr[0] = nVRInput_GetBoneHierarchy(action, parentIndices.adr, boneCount)
+                IntArray(boneCount) { parentIndices[it] }
             }
 
     /** JVM Custom
@@ -306,11 +292,7 @@ object vrInput : vrInterface {
      *  Note: Multi-thread unsafe if reading the error from the class property.*/
     @JvmOverloads
     fun getBoneName(action: VRActionHandle, boneIndex: BoneIndex, pErr: VRInputErrorBuffer = pError): String =
-            stak {
-                val s = it.nmalloc(1, maxBoneNameLength)
-                pErr[0] = nVRInput_GetBoneName(action, boneIndex, s, maxBoneNameLength)
-                memASCII(s)
-            }
+            stak.asciiAdr(maxBoneNameLength) { pErr[0] = nVRInput_GetBoneName(action, boneIndex, it, maxBoneNameLength) }
 
     /** Fills the given buffer with the transforms for a specific static skeletal reference pose */
     fun getSkeletalReferenceTransforms(action: VRActionHandle, transformSpace: VRSkeletalTransformSpace, referencePose: VRSkeletalReferencePose, transformArray: VRBoneTransform.Buffer): Error =
@@ -323,9 +305,7 @@ object vrInput : vrInterface {
      *  Note: Multi-thread unsafe if reading the error from the class property. */
     @JvmOverloads
     fun getSkeletalTrackingLevel(action: VRActionHandle, pErr: VRInputErrorBuffer = pError): VRSkeletalTrackingLevel =
-            VRSkeletalTrackingLevel of stak.intAddress {
-                pErr[0] = nVRInput_GetSkeletalTrackingLevel(action, it)
-            }
+            VRSkeletalTrackingLevel of stak.intAdr { pErr[0] = nVRInput_GetSkeletalTrackingLevel(action, it) }
 
     // ---------------  Dynamic Skeletal Data ------------------- //
 
@@ -388,9 +368,7 @@ object vrInput : vrInterface {
      *  @return [JVM] returnedBindingInfoCount
      *  Note: Multi-thread unsafe if reading the error from the class property. */
     fun getActionBindingInfo(action: VRActionHandle, originInfo: InputBindingInfo.Buffer): Int =
-            stak.intAddress {
-                pError[0] = nVRInput_GetActionBindingInfo(action, originInfo.adr, InputBindingInfo.SIZEOF, originInfo.rem, it)
-            }
+            stak.intAdr { pError[0] = nVRInput_GetActionBindingInfo(action, originInfo.adr, InputBindingInfo.SIZEOF, originInfo.rem, it) }
 
     /** Shows the current binding for the action in-headset. */
     fun showActionOrigins(actionSetHandle: VRActionSetHandle, actionHandle: VRActionHandle): Error =

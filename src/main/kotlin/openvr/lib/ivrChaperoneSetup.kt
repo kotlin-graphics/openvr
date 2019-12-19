@@ -3,8 +3,11 @@ package openvr.lib
 import glm_.BYTES
 import glm_.mat4x4.Mat4
 import glm_.vec2.Vec2
+import kool.BYTES
 import kool.adr
+import kool.mInt
 import kool.rem
+import org.lwjgl.openvr.HmdMatrix34
 import org.lwjgl.openvr.HmdQuad
 import org.lwjgl.openvr.HmdVector2
 import org.lwjgl.openvr.VRChaperoneSetup
@@ -58,14 +61,12 @@ object vrChaperoneSetup : vrInterface {
      *
      * @param size
      */
-    infix fun getWorkingPlayAreaSize(size: Vec2): Boolean =
-            stak {
-                val x = it.nmalloc(1, Vec2.size)
-                val y = x + Int.BYTES
-                nVRChaperoneSetup_GetWorkingPlayAreaSize(x, y).also {
-                    size(memGetFloat(x), memGetFloat(y))
-                }
-            }
+    val workingPlayAreaSize: Vec2
+        get() = stak {
+            val s = it.mInt(2)
+            nVRChaperoneSetup_GetWorkingPlayAreaSize(s.adr, (s + 1).adr)
+            Vec2(s[0], s[1])
+        }
 
     /**
      * Returns the 4 corner positions of the Play Area (formerly named Soft Bounds) from the working copy.
@@ -100,9 +101,9 @@ object vrChaperoneSetup : vrInterface {
      *
      * @param matSeatedZeroPoseToRawTrackingPose
      */
-    infix fun getWorkingSeatedZeroPoseToRawTrackingPose(matSeatedZeroPoseToRawTrackingPose: Mat4): Boolean {
-        val hmdMat34 = vr.HmdMatrix34()
-        return VRChaperoneSetup.nVRChaperoneSetup_GetWorkingSeatedZeroPoseToRawTrackingPose(hmdMat34.adr).also {
+    infix fun getWorkingSeatedZeroPoseToRawTrackingPose(matSeatedZeroPoseToRawTrackingPose: Mat4): Boolean = stak {
+        val hmdMat34 = it.ncalloc(HmdMatrix34.ALIGNOF, 1, HmdMatrix34.SIZEOF)
+        nVRChaperoneSetup_GetWorkingSeatedZeroPoseToRawTrackingPose(hmdMat34).also {
             hmdMat34 to matSeatedZeroPoseToRawTrackingPose
         }
     }
@@ -112,9 +113,9 @@ object vrChaperoneSetup : vrInterface {
      *
      * @param matStandingZeroPoseToRawTrackingPose
      */
-    infix fun getWorkingStandingZeroPoseToRawTrackingPose(matStandingZeroPoseToRawTrackingPose: Mat4): Boolean {
-        val hmdMat34 = vr.HmdMatrix34()
-        return VRChaperoneSetup.nVRChaperoneSetup_GetWorkingStandingZeroPoseToRawTrackingPose(hmdMat34.adr).also {
+    infix fun getWorkingStandingZeroPoseToRawTrackingPose(matStandingZeroPoseToRawTrackingPose: Mat4): Boolean = stak {
+        val hmdMat34 = it.ncalloc(HmdMatrix34.ALIGNOF, 1, HmdMatrix34.SIZEOF)
+        nVRChaperoneSetup_GetWorkingStandingZeroPoseToRawTrackingPose(hmdMat34).also {
             hmdMat34 to matStandingZeroPoseToRawTrackingPose
         }
     }

@@ -1,12 +1,13 @@
 package openvr.lib
 
-import glm_.BYTES
 import glm_.vec2.Vec2i
+import kool.adr
+import kool.mInt
+import kool.rem
 import org.lwjgl.openvr.HmdColor
 import org.lwjgl.openvr.HmdQuad
 import org.lwjgl.openvr.VRChaperone
 import org.lwjgl.openvr.VRChaperone.*
-import org.lwjgl.system.MemoryUtil.memGetInt
 
 
 object vrChaperone : vrInterface {
@@ -52,14 +53,12 @@ object vrChaperone : vrInterface {
      *
      * @param size
      */
-    infix fun getPlayAreaSize(size: Vec2i): Boolean =
-            stak {
-                val x = it.nmalloc(1, Vec2i.size)
-                val y = x + Int.BYTES
-                nVRChaperone_GetPlayAreaSize(x, y).also {
-                    size.put(memGetInt(x), memGetInt(y))
-                }
-            }
+    val playAreaSize: Vec2i
+        get() = stak {
+            val s = it.mInt(2)
+            nVRChaperone_GetPlayAreaSize(s.adr, (s + 1).adr)
+            Vec2i(s[0], s[1])
+        }
 
     /**
      * Returns the 4 corner positions of the Play Area (formerly named Soft Bounds).
