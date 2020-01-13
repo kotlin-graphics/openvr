@@ -1,6 +1,7 @@
 package openvr.lib
 
 import kool.adr
+import kool.asciiAdr
 import kool.rem
 import kool.set
 import org.lwjgl.openvr.VRScreenshots.*
@@ -76,7 +77,7 @@ object vrScreenshots : vrInterface {
      * @param outScreenshotHandle ~ScreenshotHandle *
      */
     fun requestScreenshot(outScreenshotHandle: VRScreenshotHandleBuffer, type: Type, previewFilename: String, vrFilename: String): Error =
-            stak { Error of nVRScreenshots_RequestScreenshot(outScreenshotHandle.adr, type.i, it.addressOfAscii(previewFilename), it.addressOfAscii(vrFilename)) }
+            stak { Error of nVRScreenshots_RequestScreenshot(outScreenshotHandle.adr, type.i, it.asciiAdr(previewFilename), it.asciiAdr(vrFilename)) }
 
     /**
      * Called by the running VR application to indicate that it wishes to be in charge of screenshots. If the application does not call this, the Compositor
@@ -101,11 +102,11 @@ object vrScreenshots : vrInterface {
      * @return the filename
      */
     fun getScreenshotPropertyFilename(screenshotHandle: ScreenshotHandle, filenameType: PropertyFilenames, error: IntBuffer): String =
-            stak {
+            stak { s ->
                 val filenameLen = nVRScreenshots_GetScreenshotPropertyFilename(screenshotHandle, filenameType.i, NULL, 0, error.adr)
-                val filename = it.malloc(filenameLen)
-                val result = nVRScreenshots_GetScreenshotPropertyFilename(screenshotHandle, filenameType.i, filename.adr, filenameLen, error.adr)
-                memASCII(filename, result - 1)
+                s.asciiAdr(filenameLen) {
+                    nVRScreenshots_GetScreenshotPropertyFilename(screenshotHandle, filenameType.i, it, filenameLen, error.adr)
+                }
             }
 
     /**
@@ -124,7 +125,7 @@ object vrScreenshots : vrInterface {
      * @param outScreenshotHandle ~ScreenshotHandle *
      */
     fun takeStereoScreenshot(outScreenshotHandle: IntBuffer, previewFilename: String, vrFilename: String): Error =
-            stak { Error of nVRScreenshots_TakeStereoScreenshot(outScreenshotHandle.adr, it.addressOfAscii(previewFilename), it.addressOfAscii(vrFilename)) }
+            stak { Error of nVRScreenshots_TakeStereoScreenshot(outScreenshotHandle.adr, it.asciiAdr(previewFilename), it.asciiAdr(vrFilename)) }
 
     /**
      * Submit the completed screenshot.
@@ -141,7 +142,7 @@ object vrScreenshots : vrInterface {
      * @param type one of:<br><table><tr><td>{@link VR#EVRScreenshotType_VRScreenshotType_None}</td></tr><tr><td>{@link VR#EVRScreenshotType_VRScreenshotType_Mono}</td></tr><tr><td>{@link VR#EVRScreenshotType_VRScreenshotType_Stereo}</td></tr><tr><td>{@link VR#EVRScreenshotType_VRScreenshotType_Cubemap}</td></tr><tr><td>{@link VR#EVRScreenshotType_VRScreenshotType_MonoPanorama}</td></tr><tr><td>{@link VR#EVRScreenshotType_VRScreenshotType_StereoPanorama}</td></tr></table>
      */
     fun submitScreenshot(screenshotHandle: ScreenshotHandle, type: Type, sourcePreviewFilename: String, sourceVRFilename: String): Error =
-            stak { Error of nVRScreenshots_SubmitScreenshot(screenshotHandle, type.i, it.addressOfAscii(sourcePreviewFilename), it.addressOfAscii(sourceVRFilename)) }
+            stak { Error of nVRScreenshots_SubmitScreenshot(screenshotHandle, type.i, it.asciiAdr(sourcePreviewFilename), it.asciiAdr(sourceVRFilename)) }
 
     override val version: String
         get() = "IVRScreenshots_001"

@@ -1,13 +1,10 @@
 package openvr.lib
 
-import glm_.BYTES
 import glm_.mat4x4.Mat4
 import glm_.s
 import glm_.vec2.Vec2i
 import glm_.vec4.Vec4
-import kool.adr
-import kool.rem
-import kool.set
+import kool.*
 import org.lwjgl.openvr.*
 import org.lwjgl.openvr.VRSystem.*
 import org.lwjgl.system.MemoryUtil.*
@@ -40,10 +37,9 @@ object vrSystem : vrInterface {
      */
     val recommendedRenderTargetSize: Vec2i
         get() = stak {
-            val width = it.nmalloc(1, Vec2i.size)
-            val height = width + Int.BYTES
-            nVRSystem_GetRecommendedRenderTargetSize(width, height)
-            Vec2i(memGetInt(width), memGetInt(height))
+            val s = it.mInt(2)
+            nVRSystem_GetRecommendedRenderTargetSize(s.adr, (s + 1).adr)
+            Vec2i(s[0], s[1])
         }
 
     /**
@@ -68,12 +64,9 @@ object vrSystem : vrInterface {
      */
     infix fun getProjectionRaw(eye: VREye): FloatArray =
             stak {
-                val left = it.nmalloc(1, Vec4.size)
-                val right = left + Float.BYTES
-                val top = right + Float.BYTES
-                val bottom = top + Float.BYTES
-                nVRSystem_GetProjectionRaw(eye.i, left, right, top, bottom)
-                floatArrayOf(memGetFloat(left), memGetFloat(right), memGetFloat(top), memGetFloat(bottom))
+                val p = it.mFloat(4)
+                nVRSystem_GetProjectionRaw(eye.i, p.adr, (p + 1).adr, (p + 2).adr, (p + 3).adr)
+                floatArrayOf(p[0], p[1], p[2], p[3])
             }
 
     /**

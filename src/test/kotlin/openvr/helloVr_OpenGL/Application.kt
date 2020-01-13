@@ -7,6 +7,8 @@ import gln.misc.GlDebugSeverity
 import gln.misc.glClearColorBuffer
 import gln.misc.glClearDepthBuffer
 import gln.misc.glDebugMessageCallback
+import kool.getValue
+import kool.setValue
 import openvr.lib.*
 import openvr.lib.VREventType
 import openvr.lib.vrRenderModels.freeNative
@@ -24,7 +26,6 @@ import java.nio.IntBuffer
 import java.nio.file.Paths
 import kotlin.reflect.KMutableProperty0
 import openvr.lib.TrackedDeviceClass as TDC
-import org.lwjgl.opengl.KHRDebug.glDebugMessageCallback as _
 
 fun main() {
 

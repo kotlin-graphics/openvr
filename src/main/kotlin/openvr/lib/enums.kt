@@ -491,6 +491,8 @@ enum class VRState(@JvmField val i: Int) {
 /** The types of events that could be posted (and what the parameters mean for each event value) */
 enum class VREventType(@JvmField val i: Int) {
 
+    /** Jvm custom, for newer events in upcoming releases */
+    Unknown(-1),
     None(0),
 
     TrackedDeviceActivated(100),
@@ -770,7 +772,7 @@ enum class VREventType(@JvmField val i: Int) {
     VendorSpecific_Reserved_End(19999);
 
     companion object {
-        infix fun of(i: Int) = values().first { it.i == i }
+        infix fun of(i: Int) = values().find { it.i == i } ?: Unknown
     }
 
     /** Returns the name of an {@code EVREvent} enum value. */

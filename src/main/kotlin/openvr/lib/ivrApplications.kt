@@ -138,7 +138,7 @@ object vrApplications : vrInterface {
      * @param applicationManifestFullPath
      */
     infix fun removeApplicationManifest(applicationManifestFullPath: String): Error =
-            stak { Error of nVRApplications_RemoveApplicationManifest(it.addressOfAscii(applicationManifestFullPath)) }
+            stak { Error of nVRApplications_RemoveApplicationManifest(it.asciiAdr(applicationManifestFullPath)) }
 
     /**
      * Returns true if an application is installed.
@@ -146,7 +146,7 @@ object vrApplications : vrInterface {
      * @param appKey
      */
     infix fun isApplicationInstalled(appKey: String): Boolean =
-            stak { nVRApplications_IsApplicationInstalled(it.addressOfAscii(appKey)) }
+            stak { nVRApplications_IsApplicationInstalled(it.asciiAdr(appKey)) }
 
     /** Returns the number of applications available in the list. */
     val applicationCount: Int
@@ -196,7 +196,7 @@ object vrApplications : vrInterface {
      * @param appKey
      */
     infix fun launchApplication(appKey: String): Error =
-            stak { Error of nVRApplications_LaunchApplication(it.addressOfAscii(appKey)) }
+            stak { Error of nVRApplications_LaunchApplication(it.asciiAdr(appKey)) }
 
     /**
      * Launches an instance of an application of type template, with its app key being {@code newAppKey} (which must be unique) and optionally override
@@ -207,7 +207,7 @@ object vrApplications : vrInterface {
      * @param keys
      */
     fun launchTemplateApplication(templateAppKey: String, newAppKey: String, keys: AppOverrideKeys.Buffer): Error =
-            stak { Error of nVRApplications_LaunchTemplateApplication(it.addressOfAscii(templateAppKey), it.addressOfAscii(newAppKey), keys.adr, keys.rem) }
+            stak { Error of nVRApplications_LaunchTemplateApplication(it.asciiAdr(templateAppKey), it.asciiAdr(newAppKey), keys.adr, keys.rem) }
 
     /**
      * Launches the application currently associated with this mime type and passes it the option args, typically the filename or object name of the item
@@ -217,7 +217,7 @@ object vrApplications : vrInterface {
      * @param args
      */
     fun launchApplicationFromMimeType(mimeType: String, args: String): Error =
-            stak { Error of nVRApplications_LaunchApplicationFromMimeType(it.addressOfAscii(mimeType), it.addressOfAscii(args)) }
+            stak { Error of nVRApplications_LaunchApplicationFromMimeType(it.asciiAdr(mimeType), it.asciiAdr(args)) }
 
     /**
      * Launches the dashboard overlay application if it is not already running. This call is only valid for dashboard overlay applications.
@@ -225,7 +225,7 @@ object vrApplications : vrInterface {
      * @param appKey
      */
     infix fun launchDashboardOverlay(appKey: String): Error =
-            stak { Error of nVRApplications_LaunchDashboardOverlay(it.addressOfAscii(appKey)) }
+            stak { Error of nVRApplications_LaunchDashboardOverlay(it.asciiAdr(appKey)) }
 
     /**
      * Cancel a pending launch for an application.
@@ -244,7 +244,7 @@ object vrApplications : vrInterface {
      * @param appKey
      */
     fun identifyApplication(processId: Int, appKey: String): Error =
-            stak { Error of nVRApplications_IdentifyApplication(processId, it.addressOfAscii(appKey)) }
+            stak { Error of nVRApplications_IdentifyApplication(processId, it.asciiAdr(appKey)) }
 
     /**
      * Returns the process ID for an application. Return 0 if the application was not found or is not running.
@@ -330,7 +330,7 @@ object vrApplications : vrInterface {
      * @param autoLaunch
      */
     fun setApplicationAutoLaunch(appKey: String, autoLaunch: Boolean): Error =
-            stak { Error of nVRApplications_SetApplicationAutoLaunch(it.addressOfAscii(appKey), autoLaunch) }
+            stak { Error of nVRApplications_SetApplicationAutoLaunch(it.asciiAdr(appKey), autoLaunch) }
 
     /**
      * Gets the application auto-launch flag. This is only valid for applications which return true for
@@ -348,7 +348,7 @@ object vrApplications : vrInterface {
      * @param mimeType
      */
     fun setDefaultApplicationForMimeType(appKey: String, mimeType: String): Error =
-            stak { Error of nVRApplications_SetDefaultApplicationForMimeType(it.addressOfAscii(appKey), it.addressOfAscii(mimeType)) }
+            stak { Error of nVRApplications_SetDefaultApplicationForMimeType(it.asciiAdr(appKey), it.asciiAdr(mimeType)) }
 
     /**
      * Return the app key that will open this mime type. TODO offer a more convenient one?
@@ -358,7 +358,7 @@ object vrApplications : vrInterface {
      */
     fun getDefaultApplicationForMimeType(mimeType: String, appKeyBuffer: ByteBuffer?): Boolean =
             stak {
-                nVRApplications_GetDefaultApplicationForMimeType(it.addressOfAscii(mimeType), appKeyBuffer?.adr
+                nVRApplications_GetDefaultApplicationForMimeType(it.asciiAdr(mimeType), appKeyBuffer?.adr
                         ?: NULL, appKeyBuffer?.cap ?: 0)
             }
 

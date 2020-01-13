@@ -1,6 +1,7 @@
 package openvr.lib
 
 import kool.adr
+import kool.asciiAdr
 import org.lwjgl.openvr.VRDriverManager.*
 import org.lwjgl.system.MemoryUtil.NULL
 import org.lwjgl.system.MemoryUtil.memASCII
@@ -25,7 +26,7 @@ object vrDriverManager : vrInterface {
      * @param driverName the driver name
      */
     infix fun getDriverHandle(driverName: String): DriverHandle =
-            stak { nVRDriverManager_GetDriverHandle(it.addressOfAscii(driverName)) }
+            stak { nVRDriverManager_GetDriverHandle(it.asciiAdr(driverName)) }
 
     fun isEnabled(driver: Int): Boolean =
         VRDriverManager_IsEnabled(driver)

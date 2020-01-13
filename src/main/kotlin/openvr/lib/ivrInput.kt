@@ -181,7 +181,7 @@ object vrInput : vrInterface {
     fun setActionManifestPath(actionManifestPath: URL): Error =
             stak {
                 val file = File(actionManifestPath.file)
-                Error of nVRInput_SetActionManifestPath(it.addressOfAscii(file.absolutePath))
+                Error of nVRInput_SetActionManifestPath(it.asciiAdr(file.absolutePath))
             }
 
     /**
@@ -191,7 +191,7 @@ object vrInput : vrInterface {
      *
      * Note: Multi-thread unsafe if reading the error from the class property. */
     fun getActionSetHandle(actionSetName: String, pErr: VRInputErrorBuffer = pError): VRActionSetHandle =
-            stak { s -> s.longAdr { pErr[0] = nVRInput_GetActionSetHandle(s.addressOfAscii(actionSetName), it) } }
+            stak { s -> s.longAdr { pErr[0] = nVRInput_GetActionSetHandle(s.asciiAdr(actionSetName), it) } }
 
     /** JVM custom
      *
@@ -199,7 +199,7 @@ object vrInput : vrInterface {
      *
      *  Note: Multi-thread unsafe if reading the error from the class property.     */
     fun getActionHandle(actionName: String, pErr: VRInputErrorBuffer = pError): VRActionHandle =
-            stak { s -> s.longAdr { pErr[0] = nVRInput_GetActionHandle(s.addressOfAscii(actionName), it) } }
+            stak { s -> s.longAdr { pErr[0] = nVRInput_GetActionHandle(s.asciiAdr(actionName), it) } }
 
     /** JVM custom
      *
@@ -207,7 +207,7 @@ object vrInput : vrInterface {
      *
      * Note: Multi-thread unsafe if reading the error from the class property.     */
     fun getInputSourceHandle(inputSourcePath: String, pErr: VRInputErrorBuffer = pError): VRInputValueHandle =
-            stak { s -> s.longAdr { pErr[0] = nVRInput_GetInputSourceHandle(s.addressOfAscii(inputSourcePath), it) } }
+            stak { s -> s.longAdr { pErr[0] = nVRInput_GetInputSourceHandle(s.asciiAdr(inputSourcePath), it) } }
 
     /**
      * Reads the current state into all actions. After this call, the results of {@code Get*Action} calls will be the same until the next call to
@@ -353,11 +353,7 @@ object vrInput : vrInterface {
      *  Note: Multi-thread unsafe if reading the error from the class property. */
     @JvmOverloads
     fun getOriginLocalizedName(origin: VRInputValueHandle, stringSectionsToInclude: Int, pErr: VRInputErrorBuffer = pError): String =
-            stak {
-                val s = it.nmalloc(1, 64)
-                pErr[0] = nVRInput_GetOriginLocalizedName(origin, s, 64, stringSectionsToInclude)
-                memASCII(s)
-            }
+            stak.asciiAdr(64) { pErr[0] = nVRInput_GetOriginLocalizedName(origin, it, 64, stringSectionsToInclude) }
 
     /** Retrieves useful information for the origin of this action. TODO more convenient? */
     fun getOriginTrackedDeviceInfo(origin: VRInputValueHandle, originInfo: InputOriginInfo): Error =

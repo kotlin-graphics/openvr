@@ -1,10 +1,9 @@
 package openvr.lib
 
-import kool.adr
+import kool.asciiAdr
 import org.lwjgl.openvr.VRResources.nVRResources_GetResourceFullPath
 import org.lwjgl.openvr.VRResources.nVRResources_LoadSharedResource
 import org.lwjgl.system.MemoryUtil.NULL
-import org.lwjgl.system.MemoryUtil.memASCII
 
 
 object vrResources : vrInterface {
@@ -15,12 +14,12 @@ object vrResources : vrInterface {
      * @return the size in bytes of the buffer required to hold the specified resource
      */
     infix fun loadSharedResource(resourceName: String): String =
-            stak {
-                val resourceNameEncoded = it.addressOfAscii(resourceName)
+            stak { s ->
+                val resourceNameEncoded = s.asciiAdr(resourceName)
                 val bufferLen = nVRResources_LoadSharedResource(resourceNameEncoded, NULL, 0)
-                val buffer = it.malloc(bufferLen)
-                val result = nVRResources_LoadSharedResource(resourceNameEncoded, buffer.adr, bufferLen)
-                memASCII(buffer, result - 1)
+                s.asciiAdr(bufferLen) {
+                    nVRResources_LoadSharedResource(resourceNameEncoded, it, bufferLen)
+                }
             }
 
     /**
@@ -28,13 +27,13 @@ object vrResources : vrInterface {
      * those and returns the actual physical path. {@code resourceTypeDirectory} is the subdirectory of resources to look in.
      */
     fun getResourceFullPath(resourceName: String, resourceTypeDirectory: String): String =
-            stak {
-                val resourceNameEncoded = it.addressOfAscii(resourceName)
-                val resourceTypeDirectoryEncoded = it.addressOfAscii(resourceTypeDirectory)
+            stak { s ->
+                val resourceNameEncoded = s.asciiAdr(resourceName)
+                val resourceTypeDirectoryEncoded = s.asciiAdr(resourceTypeDirectory)
                 val bufferLen = nVRResources_GetResourceFullPath(resourceNameEncoded, resourceTypeDirectoryEncoded, NULL, 0)
-                val pathBuffer = it.malloc(bufferLen)
-                val result = nVRResources_GetResourceFullPath(resourceNameEncoded, resourceTypeDirectoryEncoded, pathBuffer.adr, bufferLen)
-                memASCII(pathBuffer, result - 1)
+                s.asciiAdr(bufferLen) {
+                    nVRResources_GetResourceFullPath(resourceNameEncoded, resourceTypeDirectoryEncoded, it, bufferLen)
+                }
             }
 
     override val version: String

@@ -1,6 +1,7 @@
 package openvr.lib
 
 import kool.adr
+import kool.asciiAdr
 import org.lwjgl.openvr.NotificationBitmap
 import org.lwjgl.openvr.VRNotifications.VRNotifications_RemoveNotification
 import org.lwjgl.openvr.VRNotifications.nVRNotifications_CreateNotification
@@ -89,8 +90,7 @@ object vrNotifications : vrInterface {
     fun createNotification(overlayHandle: VROverlayHandle, userValue: Long, type: Type, text: String,
                            style: Style, image: NotificationBitmap?, notificationId: IntBuffer): Error =
             stak {
-                val pText = it.addressOfAscii(text)
-                Error of nVRNotifications_CreateNotification(overlayHandle, userValue, type.i, pText, style.i, image?.adr
+                Error of nVRNotifications_CreateNotification(overlayHandle, userValue, type.i, it.asciiAdr(text), style.i, image?.adr
                         ?: NULL, notificationId.adr)
             }
 

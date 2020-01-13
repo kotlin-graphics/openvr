@@ -3,6 +3,7 @@ package openvr
 import glm_.glm
 import glm_.vec2.Vec2
 import glm_.vec3.Vec3
+import kool.adr
 import openvr.lib.*
 import openvr.lib.VREventType as ET
 import openvr.lib.vr.maxTrackedDeviceCount

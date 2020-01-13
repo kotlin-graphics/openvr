@@ -13,6 +13,7 @@ module com.github.kotlin_graphics.openvr {
     requires java.desktop;
     requires klaxon;
     requires kotlinx.coroutines.core;
+    requires com.github.kotlin_graphics.gln;
 
     exports openvr;
     exports openvr.lib;

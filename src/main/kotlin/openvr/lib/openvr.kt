@@ -11,8 +11,7 @@ import glm_.vec2.Vec2
 import glm_.vec3.Vec3
 import glm_.vec3.Vec3d
 import glm_.vec4.Vec4
-import kool.Ptr
-import kool.adr
+import kool.*
 import org.lwjgl.openvr.*
 import org.lwjgl.openvr.VR.*
 import org.lwjgl.system.MemoryUtil.*
@@ -483,18 +482,18 @@ object vr {
     fun init(applicationType: VRApplication = VRApplication.Scene): VRInitError =
             stak {
 
-                val error = it.nmalloc(4, Int.BYTES)
-                val token = nVR_InitInternal(error, applicationType.i)
+                val pError = it.mInt()
+                val token = nVR_InitInternal(pError.adr, applicationType.i)
+                val error = VRInitError of pError[0]
 
-                if (memGetInt(error) == VRInitError.None.i) {
+                if (error == VRInitError.None) {
                     OpenVR.create(token)
                     if (!vrSystem.isInterfaceVersionValid) {
                         VR_ShutdownInternal()
                         return VRInitError.Init_InterfaceNotFound
                     }
                 }
-
-                VRInitError of memGetInt(error)
+                error
             }
 
     /** unloads vrclient.dll. Any interface pointers from the interface are invalid after this point */
@@ -517,7 +516,7 @@ object vr {
     /** Returns the interface of the specified version. This method must be called after VR_Init. The
      * pointer returned is valid until VR_Shutdown is called.     */
     fun getGenericInterface(interfaceVersion: String, error: VRInitErrorBuffer): Ptr =
-            stak { nVR_GetGenericInterface(it.addressOfAscii(interfaceVersion), error.adr) }
+            stak { nVR_GetGenericInterface(it.asciiAdr(interfaceVersion), error.adr) }
 
     /** Returns a token that represents whether the VR interface handles need to be reloaded */
     val initToken: Int

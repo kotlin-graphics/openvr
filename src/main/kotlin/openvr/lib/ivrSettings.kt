@@ -1,6 +1,7 @@
 package openvr.lib
 
 import kool.adr
+import kool.asciiAdr
 import kool.set
 import org.lwjgl.openvr.VRSettings.*
 import org.lwjgl.system.MemoryUtil.memASCII
@@ -778,52 +779,52 @@ object vrSettings : vrInterface {
     /** Note: Multi-thread unsafe if not passing a pError and reading it from the class property. */
     @JvmOverloads
     fun setBool(section: String, settingsKey: String, value: Boolean, pErr: VRSettingsErrorBuffer = pError) =
-            stak { nVRSettings_SetBool(it.addressOfAscii(section), it.addressOfAscii(settingsKey), value, pErr.adr) }
+            stak { nVRSettings_SetBool(it.asciiAdr(section), it.asciiAdr(settingsKey), value, pErr.adr) }
 
     /** Note: Multi-thread unsafe if not passing a pError and reading it from the class property. */
     @JvmOverloads
     fun setInt(section: String, settingsKey: String, value: Int, pErr: VRSettingsErrorBuffer = pError) =
-            stak { nVRSettings_SetInt32(it.addressOfAscii(section), it.addressOfAscii(settingsKey), value, pErr.adr) }
+            stak { nVRSettings_SetInt32(it.asciiAdr(section), it.asciiAdr(settingsKey), value, pErr.adr) }
 
     /** Note: Multi-thread unsafe if not passing a pError and reading it from the class property. */
     @JvmOverloads
     fun setFloat(section: String, settingsKey: String, value: Float, pErr: VRSettingsErrorBuffer = pError) =
-            stak { nVRSettings_SetFloat(it.addressOfAscii(section), it.addressOfAscii(settingsKey), value, pErr.adr) }
+            stak { nVRSettings_SetFloat(it.asciiAdr(section), it.asciiAdr(settingsKey), value, pErr.adr) }
 
     /** Note: Multi-thread unsafe if not passing a pError and reading it from the class property. */
     @JvmOverloads
     fun setString(section: String, settingsKey: String, value: String, pErr: VRSettingsErrorBuffer = pError) =
-            stak { nVRSettings_SetString(it.addressOfAscii(section), it.addressOfAscii(settingsKey), it.addressOfAscii(value), pErr.adr) }
+            stak { nVRSettings_SetString(it.asciiAdr(section), it.asciiAdr(settingsKey), it.asciiAdr(value), pErr.adr) }
 
     /** Note: Multi-thread unsafe if not passing a pError and reading it from the class property. */
     @JvmOverloads
     fun getBool(section: String, settingsKey: String, pErr: VRSettingsErrorBuffer = pError): Boolean =
-            stak { nVRSettings_GetBool(it.addressOfAscii(section), it.addressOfAscii(settingsKey), pErr.adr) }
+            stak { nVRSettings_GetBool(it.asciiAdr(section), it.asciiAdr(settingsKey), pErr.adr) }
 
     /** Note: Multi-thread unsafe if not passing a pError and reading it from the class property. */
     @JvmOverloads
     fun getInt(section: String, settingsKey: String, pErr: VRSettingsErrorBuffer = pError): Int =
-            stak { nVRSettings_GetInt32(it.addressOfAscii(section), it.addressOfAscii(settingsKey), pErr.adr) }
+            stak { nVRSettings_GetInt32(it.asciiAdr(section), it.asciiAdr(settingsKey), pErr.adr) }
 
     /** Note: Multi-thread unsafe if not passing a pError and reading it from the class property. */
     fun getFloat(section: String, settingsKey: String, pErr: VRSettingsErrorBuffer = pError): Float =
-            stak { nVRSettings_GetFloat(it.addressOfAscii(section), it.addressOfAscii(settingsKey), pErr.adr) }
+            stak { nVRSettings_GetFloat(it.asciiAdr(section), it.asciiAdr(settingsKey), pErr.adr) }
 
     /** Note: Multi-thread unsafe if not passing a pError and reading it from the class property. */
     fun getString(section: String, settingsKey: String, pErr: VRSettingsErrorBuffer = pError): String =
-            stak {
-                val s = it.nmalloc(1, maxKeyLength)
-                nVRSettings_GetString(it.addressOfAscii(section), it.addressOfAscii(settingsKey), s, maxKeyLength, pErr.adr)
-                memASCII(s)
+            stak { s ->
+                s.asciiAdr(maxKeyLength) {
+                    nVRSettings_GetString(s.asciiAdr(section), s.asciiAdr(settingsKey), it, maxKeyLength, pErr.adr)
+                }
             }
 
     /** Note: Multi-thread unsafe if not passing a pError and reading it from the class property. */
     fun removeSection(section: String, pErr: VRSettingsErrorBuffer = pError) =
-            stak { nVRSettings_RemoveSection(it.addressOfAscii(section), pErr.adr) }
+            stak { nVRSettings_RemoveSection(it.asciiAdr(section), pErr.adr) }
 
     /** Note: Multi-thread unsafe if not passing a pError and reading it from the class property. */
     fun removeKeyInSection(section: String, settingsKey: String, pErr: VRSettingsErrorBuffer = pError) =
-            stak { nVRSettings_RemoveKeyInSection(it.addressOfAscii(section), it.addressOfAscii(settingsKey), pErr.adr) }
+            stak { nVRSettings_RemoveKeyInSection(it.asciiAdr(section), it.asciiAdr(settingsKey), pErr.adr) }
 
     override val version: String
         get() = "IVRSettings_002"

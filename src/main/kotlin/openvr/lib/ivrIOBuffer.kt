@@ -1,6 +1,7 @@
 package openvr.lib
 
 import kool.adr
+import kool.asciiAdr
 import kool.rem
 import org.lwjgl.openvr.VRIOBuffer.*
 import org.lwjgl.system.MemoryUtil.NULL
@@ -43,7 +44,7 @@ object vrIOBuffer : vrInterface {
      * @param buffer ~ IOBufferHandle *
      */
     fun open(path: String, mode: Mode, elementSize: Int, elements: Int, buffer: LongBuffer): Error =
-            stak { Error of nVRIOBuffer_Open(it.addressOfAscii(path), mode.i, elementSize, elements, buffer.adr) }
+            stak { Error of nVRIOBuffer_Open(it.asciiAdr(path), mode.i, elementSize, elements, buffer.adr) }
 
     /** Closes a previously opened or created buffer. */
     infix fun close(buffer: IOBufferHandle): Error = Error of VRIOBuffer_Close(buffer)

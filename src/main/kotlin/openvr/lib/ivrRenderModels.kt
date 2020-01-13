@@ -1,6 +1,8 @@
 package openvr.lib
 
 import kool.adr
+import kool.asciiAdr
+import kool.mPointer
 import kool.set
 import org.lwjgl.PointerBuffer
 import org.lwjgl.openvr.*
@@ -77,10 +79,10 @@ object vrRenderModels : vrInterface {
     @JvmOverloads
     fun loadRenderModel(renderModelName: String, pErr: VRVRRenderModelsErrorBuffer = pError): RenderModel? =
             stak {
-                val pModel = it.mallocPointer(1)
+                val pModel = it.mPointer()
                 var err: Int
                 while (true) {
-                    err = nVRRenderModels_LoadRenderModel_Async(it.addressOfAscii(renderModelName), pModel.adr)
+                    err = nVRRenderModels_LoadRenderModel_Async(it.asciiAdr(renderModelName), pModel.adr)
                     if (err != Error.Loading.i)
                         break
 
@@ -104,8 +106,8 @@ object vrRenderModels : vrInterface {
      */
     fun loadRenderModel_Async(renderModelName: String, pErr: VRVRRenderModelsErrorBuffer = pError): RenderModel? =
             stak {
-                val pModel = it.mallocPointer(1)
-                pErr[0] = nVRRenderModels_LoadRenderModel_Async(it.addressOfAscii(renderModelName), pModel.adr)
+                val pModel = it.mPointer()
+                pErr[0] = nVRRenderModels_LoadRenderModel_Async(it.asciiAdr(renderModelName), pModel.adr)
                 when (pErr[0]) {
                     Error.None.i -> RenderModel.create(pModel[0])
                     else -> null
@@ -123,7 +125,7 @@ object vrRenderModels : vrInterface {
     @JvmOverloads
     fun loadTexture(textureId: TextureId, pErr: VRVRRenderModelsErrorBuffer = pError): RenderModelTextureMap? =
             stak {
-                val pTexture = it.mallocPointer(1)
+                val pTexture = it.mPointer()
                 var err: Int
                 while (true) {
                     err = nVRRenderModels_LoadTexture_Async(textureId, pTexture.adr)
@@ -141,7 +143,7 @@ object vrRenderModels : vrInterface {
     /** Loads and returns a texture for use in the application. */
     fun loadTexture_Async(textureId: TextureId, pErr: VRVRRenderModelsErrorBuffer = pError): RenderModelTextureMap? =
             stak {
-                val pTexture = it.mallocPointer(1)
+                val pTexture = it.mPointer()
                 pErr[0] = nVRRenderModels_LoadTexture_Async(textureId, pTexture.adr)
                 when (pErr[0]) {
                     Error.None.i -> RenderModelTextureMap.create(pTexture[0])
@@ -169,11 +171,9 @@ object vrRenderModels : vrInterface {
      * name.
      */
     infix fun getRenderModelName(renderModelIndex: Int): String =
-            stak {
-                val renderModelNameLen = VRRenderModels.nVRRenderModels_GetRenderModelName(renderModelIndex, NULL, 0)
-                val renderModelName = it.malloc(renderModelNameLen)
-                val result = nVRRenderModels_GetRenderModelName(renderModelIndex, renderModelName.adr, renderModelNameLen)
-                memASCII(renderModelName, result - 1)
+            stak { s ->
+                val renderModelNameLen = nVRRenderModels_GetRenderModelName(renderModelIndex, NULL, 0)
+                s.asciiAdr(renderModelNameLen) { nVRRenderModels_GetRenderModelName(renderModelIndex, it, renderModelNameLen) }
             }
 
     /** Returns the number of available render models. */
@@ -186,7 +186,7 @@ object vrRenderModels : vrInterface {
      * <p>Components are useful when client application wish to draw, label, or otherwise interact with components of tracked objects.</p>
      */
     fun getComponentCount(renderModelName: String): Int =
-            stak { nVRRenderModels_GetComponentCount(it.addressOfAscii(renderModelName)) }
+            stak { nVRRenderModels_GetComponentCount(it.asciiAdr(renderModelName)) }
 
     /**
      * Use this to get the names of available components. Index does not correlate to a tracked device index, but is only used for iterating over all
@@ -195,12 +195,13 @@ object vrRenderModels : vrInterface {
      */
     fun getComponentName(renderModelName: String, componentIndex: Int): String? =
             stak {
-                val renderModelNameEncoded = it.addressOfAscii(renderModelName)
+                val renderModelNameEncoded = it.asciiAdr(renderModelName)
                 val componentNameLen = nVRRenderModels_GetComponentName(renderModelNameEncoded, componentIndex, NULL, 0)
                 val componentName = it.malloc(componentNameLen)
-                val result = nVRRenderModels_GetComponentName(renderModelNameEncoded, componentIndex, componentName.adr, componentNameLen)
-                if (result == 0) null
-                else memASCII(componentName, result - 1)
+                when (val result = nVRRenderModels_GetComponentName(renderModelNameEncoded, componentIndex, componentName.adr, componentNameLen)) {
+                    0 -> null
+                    else -> memASCII(componentName, result - 1)
+                }
             }
 
     /**
@@ -217,23 +218,21 @@ object vrRenderModels : vrInterface {
      * <p>A single component may be associated with multiple buttons. Ex: A trackpad which also provides "D-pad" functionality</p></div>
      */
     fun getComponentButtonMask(renderModelName: String, componentName: String): Long =
-            stak { nVRRenderModels_GetComponentButtonMask(it.addressOfAscii(renderModelName), it.addressOfAscii(componentName)) }
+            stak { nVRRenderModels_GetComponentButtonMask(it.asciiAdr(renderModelName), it.asciiAdr(componentName)) }
 
     /**
      * Use this to get the render model name for the specified rendermode/component combination, to be passed to {@link #VRRenderModels_LoadRenderModel_Async LoadRenderModel_Async}. If the component
      * name is out of range, this function will return 0. Otherwise, it will return the size of the buffer required for the name.
      */
     fun getComponentRenderModelName(renderModelName: String, componentName: String): String? =
-            stak {
-                val renderModelNameEncoded = it.addressOfAscii(renderModelName)
-                val componentNameEncoded = it.addressOfAscii(componentName)
-                val componentRenderModelNameLen = nVRRenderModels_GetComponentRenderModelName(renderModelNameEncoded, componentNameEncoded, NULL, 0)
-                if (componentRenderModelNameLen == 0)
-                    null
-                else {
-                    val componentRenderModelName = it.malloc(componentRenderModelNameLen)
-                    val result = nVRRenderModels_GetComponentRenderModelName(renderModelNameEncoded, componentNameEncoded, componentRenderModelName.adr, componentRenderModelNameLen)
-                    memASCII(componentRenderModelName, result - 1)
+            stak { s ->
+                val renderModelNameEncoded = s.asciiAdr(renderModelName)
+                val componentNameEncoded = s.asciiAdr(componentName)
+                when (val componentRenderModelNameLen = nVRRenderModels_GetComponentRenderModelName(renderModelNameEncoded, componentNameEncoded, NULL, 0)) {
+                    0 -> null
+                    else -> s.asciiAdr(componentRenderModelNameLen) {
+                        nVRRenderModels_GetComponentRenderModelName(renderModelNameEncoded, componentNameEncoded, it, componentRenderModelNameLen)
+                    }
                 }
             }
 
@@ -246,26 +245,26 @@ object vrRenderModels : vrInterface {
      * Otherwise, return true
      * Note: For dynamic objects, visibility may be dynamic. (I.e., true/false will be returned based on controller state and controller mode state ) */
     fun getComponentStateForDevicePath(renderModelName: CharSequence, componentName: CharSequence, devicePath: VRInputValueHandle, state: RenderModelControllerModeState, componentState: RenderModelComponentState): Boolean =
-            stak { nVRRenderModels_GetComponentStateForDevicePath(it.addressOfAscii(renderModelName), it.addressOfAscii(componentName), devicePath, state.adr, componentState.adr) }
+            stak { nVRRenderModels_GetComponentStateForDevicePath(it.asciiAdr(renderModelName), it.asciiAdr(componentName), devicePath, state.adr, componentState.adr) }
 
     /** This version of GetComponentState takes a controller state block instead of an action origin.     */
     @Deprecated("You should use the new input system and GetComponentStateForDevicePath instead.", ReplaceWith("getComponentStateForDevicePath"))
     fun getComponentState(renderModelName: String, componentName: String, controllerState: VRControllerState,
                           state: RenderModelControllerModeState, componentState: RenderModelComponentState): Boolean =
-            stak { nVRRenderModels_GetComponentState(it.addressOfAscii(renderModelName), it.addressOfAscii(componentName), controllerState.adr, state.adr, componentState.adr) }
+            stak { nVRRenderModels_GetComponentState(it.asciiAdr(renderModelName), it.asciiAdr(componentName), controllerState.adr, state.adr, componentState.adr) }
 
     /** Returns true if the render model has a component with the specified name. */
     fun renderModelHasComponent(renderModelName: String, componentName: String): Boolean =
-            stak { nVRRenderModels_RenderModelHasComponent(it.addressOfAscii(renderModelName), it.addressOfAscii(componentName)) }
+            stak { nVRRenderModels_RenderModelHasComponent(it.asciiAdr(renderModelName), it.asciiAdr(componentName)) }
 
     /** Returns the URL of the thumbnail image for this rendermodel. */
     fun getRenderModelThumbnailURL(renderModelName: String, error: IntBuffer): String =
-            stak {
-                val renderModelNameEncoded = it.addressOfAscii(renderModelName)
-                val thumbnailURLLen = nVRRenderModels_GetRenderModelThumbnailURL(renderModelNameEncoded, NULL, 0, error.adr)
-                val thumbnailURL = it.malloc(thumbnailURLLen)
-                val result = nVRRenderModels_GetRenderModelThumbnailURL(renderModelNameEncoded, thumbnailURL.adr, thumbnailURLLen, error.adr)
-                memASCII(thumbnailURL, result - 1)
+            stak { s ->
+                val renderModelNameEncoded = s.asciiAdr(renderModelName)
+                val thumbnailUrlLen = nVRRenderModels_GetRenderModelThumbnailURL(renderModelNameEncoded, NULL, 0, error.adr)
+                s.asciiAdr(thumbnailUrlLen) {
+                    nVRRenderModels_GetRenderModelThumbnailURL(renderModelNameEncoded, it, thumbnailUrlLen, error.adr)
+                }
             }
 
     /**
@@ -274,12 +273,12 @@ object vrRenderModels : vrInterface {
      * @param error ~ Error *
      */
     fun getRenderModelOriginalPath(renderModelName: String, error: IntBuffer): String =
-            stak {
-                val renderModelNameEncoded = it.addressOfAscii(renderModelName)
+            stak { s ->
+                val renderModelNameEncoded = s.asciiAdr(renderModelName)
                 val originalPathLen = nVRRenderModels_GetRenderModelOriginalPath(renderModelNameEncoded, NULL, 0, error.adr)
-                val originalPath = it.malloc(originalPathLen)
-                val result = nVRRenderModels_GetRenderModelOriginalPath(renderModelNameEncoded, originalPath.adr, originalPathLen, error.adr)
-                memASCII(originalPath, result - 1)
+                s.asciiAdr(originalPathLen) {
+                    nVRRenderModels_GetRenderModelOriginalPath(renderModelNameEncoded, it, originalPathLen, error.adr)
+                }
             }
 
     override val version: String
