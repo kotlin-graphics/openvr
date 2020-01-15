@@ -1,10 +1,10 @@
 # JVM OpenVR Wrapper (synchronized with 1.2.10)
 
-[![Build Status](https://travis-ci.org/kotlin-graphics/openvr.svg?branch=master)](https://travis-ci.org/kotlin-graphics/openvr) 
-[![License](https://img.shields.io/badge/License-BSD%203--Clause-orange.svg)](https://github.com/kotlin-graphics/openvr/blob/master/LICENSE.txt)
-![](https://reposs.herokuapp.com/?path=kotlin-graphics/openvr&color=yellow) 
+[![Build Status](https://github.com/kotlin-graphics/openvr/workflows/build/badge.svg)](https://github.com/kotlin-graphics/openvr/actions?workflow=build)
+[![license](https://img.shields.io/badge/License-MIT-orange.svg)](https://github.com/kotlin-graphics/openvr/blob/master/LICENSE) 
 [![Release](https://jitpack.io/v/kotlin-graphics/openvr.svg)](https://jitpack.io/#kotlin-graphics/openvr) 
-[![Slack Status](http://slack.kotlinlang.org/badge.svg)](http://slack.kotlinlang.org/)
+![Size](https://github-size-badge.herokuapp.com/kotlin-graphics/openvr.svg)
+[![Github All Releases](https://img.shields.io/github/downloads/kotlin-graphics/openvr/total.svg)]()
 
 OpenVR SDK
 ---
