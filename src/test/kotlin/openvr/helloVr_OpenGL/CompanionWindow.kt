@@ -103,7 +103,7 @@ class CompanionWindow {
             glBindVertexArray()
         }
 
-        window.framebufferSizeCallback = { size -> resolution put size }
+        window.framebufferSizeCB = { size -> resolution put size }
     }
 
     fun render() {

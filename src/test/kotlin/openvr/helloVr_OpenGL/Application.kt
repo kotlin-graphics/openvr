@@ -18,7 +18,7 @@ import org.lwjgl.opengl.KHRDebug.glDebugMessageControl
 import org.lwjgl.openvr.TrackedDevicePose
 import org.lwjgl.openvr.VREvent
 import org.lwjgl.system.MemoryUtil.NULL
-import uno.glfw.GlfwWindow.CursorStatus
+import uno.glfw.GlfwWindow.CursorMode
 import uno.glfw.Key
 import uno.glfw.glfw
 import uno.glfw.windowHint.Profile
@@ -176,7 +176,7 @@ class Application {
 
     fun runMainLoop() {
 
-        window.cursorStatus = CursorStatus.Hidden
+        window.cursorMode = CursorMode.hidden
 
         window.loop {
             handleInput()
