@@ -38,7 +38,7 @@ Or for example:
 ```kotlin
 GetStringTrackedDeviceProperty.invoke(..): Int
 ```
-where you are supposed to call it one first time to get the right size for the buffer to accomodate the char array for the string and then a second time to actually retrieve the string.
+where you are supposed to call it one first time to get the right size for the buffer to accommodate the char array for the string and then a second time to actually retrieve the string.
 You have the possibility to call directly 
 ```kotlin
 getStringTrackedDeviceProperty(..): String
