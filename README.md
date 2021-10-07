@@ -51,7 +51,7 @@ that returns directly the resulting string, bringing down a lot of boilerplate c
 
 ### Sample:
 
-You can find the OpenGL sample [here](src/test/kotlin/main/helloVr_OpenGL)
+You can find the OpenGL sample [here](src/test/kotlin/openvr/helloVr_OpenGL)
 
 ### Contributions:
 
